@@ -7,8 +7,9 @@ namespace Tests\Unit\Concerns;
 use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use CalebDW\PhpstanLaravel\Properties\MigrationHelper;
 use CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper;
-use CalebDW\PhpstanLaravel\Properties\Schema\PhpMyAdminDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper;
+use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use PHPStan\Testing\PHPStanTestCase;
@@ -48,14 +49,15 @@ trait HasDatabaseHelper
     }
 
     /** @param  string[] $dirs */
-    private function getSquashedMigrationHelper(array $dirs = ['foo'], bool $disableScan = false): SquashedMigrationHelper
+    private function getSquashedMigrationHelper(array $dirs = ['foo'], bool $disableScan = false, string $driver = SqlParserManager::DRIVER_AUTO): SquashedMigrationHelper
     {
         return new SquashedMigrationHelper(
             $dirs,
             new FileHelper(
                 self::getContainer()->getByType(PHPStanFileHelper::class),
             ),
-            new PhpMyAdminDataTypeToPhpTypeConverter(),
+            new SqlDataTypeToPhpTypeConverter(),
+            new SqlParserManager($driver),
             $disableScan,
         );
     }

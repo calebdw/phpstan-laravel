@@ -28,21 +28,24 @@
     "illuminate/http": "^12.67.0 || ^13.26.1",
     "illuminate/pipeline": "^12.67.0 || ^13.26.1",
     "illuminate/support": "^12.67.0 || ^13.26.1",
-    "phpmyadmin/sql-parser": "^5.9.0",
     "phpstan/phpstan": "^2.2.9"
   },
   "require-dev": {
     "doctrine/coding-standard": "^14.0",
+    "iamcal/sql-parser": "^0.7.0",
     "nikic/php-parser": "^5.6",
     "laravel/framework": "^12.67.0 || ^13.26.1",
     "mockery/mockery": "^1.6",
     "orchestra/canvas": "^10.0 || ^11",
     "orchestra/testbench-core": "^10.0 || ^11",
+    "phpmyadmin/sql-parser": "^5.9.0",
     "phpstan/phpstan-deprecation-rules": "^2.0.1",
     "phpunit/phpunit": "^12.5.8 || ^13.1.8"
   },
   "suggest": {
-    "orchestra/testbench": "Using phpstan-laravel for analysing a package needs Testbench"
+    "iamcal/sql-parser": "Required to parse squashed schema dumps with the `iamcal` parser driver (MIT)",
+    "orchestra/testbench": "Using phpstan-laravel for analysing a package needs Testbench",
+    "phpmyadmin/sql-parser": "Required to parse squashed schema dumps with the `phpmyadmin` parser driver (GPL-2.0-or-later)"
   },
   "autoload": {
     "psr-4": {

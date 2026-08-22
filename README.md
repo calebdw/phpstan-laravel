@@ -59,6 +59,26 @@ Then analyse as usual:
 vendor/bin/phpstan analyse
 ```
 
+If your project uses squashed schema dumps (`database/schema`), also install an
+SQL parser — neither is a hard requirement, so you pick the one whose license
+you want in your dependency tree:
+
+```bash
+composer require --dev iamcal/sql-parser      # MIT
+composer require --dev phpmyadmin/sql-parser  # GPL-2.0-or-later
+```
+
+Either works; see [`sqlParser`](docs/custom-config-parameters.md#sqlparser) to
+select one explicitly or register your own.
+
+> [!NOTE]
+> A GPL-2.0 package in `require-dev` does **not** put your application under the
+> GPL. Copyleft applies to distributing the code, and a dev-only analyser is not
+> linked into or shipped with what you deploy — `composer install --no-dev`
+> excludes it outright. The MIT option is there for projects with a blanket
+> policy against GPL code, which is a policy question rather than a legal one.
+> See [the full note](docs/custom-config-parameters.md#a-note-on-the-gpl-20-parser).
+
 > [!TIP]
 > Coming from Larastan? See the [migration guide](docs/migrating-from-larastan.md).
 

@@ -75,3 +75,50 @@ jobs:
           version="${{ matrix.laravel }}"
           version="${version%%.*}.0"
           tests/analyse.sh laravel "$version"
+
+  sql-parser:
+    name: "SQL parser: ${{ matrix.parser }} only"
+
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        parser: ["iamcal", "phpmyadmin"]
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v6"
+
+      - name: "Setup PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "8.3"
+          extensions: "dom, curl, libxml, mbstring, zip, fileinfo"
+          tools: "composer:v2"
+          coverage: "none"
+
+      - name: "Install dependencies from composer.json"
+        run: "composer update --no-interaction --no-progress"
+
+      # Both parsers are optional, so each has to be able to carry the suite on
+      # its own. Removing the other one is the only way to prove it.
+      - name: "Uninstall the other parser"
+        run: |
+          if [ "${{ matrix.parser }}" = "iamcal" ]; then
+            composer remove --dev --no-interaction --no-progress phpmyadmin/sql-parser
+          else
+            composer remove --dev --no-interaction --no-progress iamcal/sql-parser
+          fi
+
+      - name: "Confirm exactly one parser is installed"
+        run: |
+          installed="$(composer show --name-only 2>/dev/null | grep -c 'sql-parser' || true)"
+          test "$installed" -eq 1
+          composer show --name-only | grep 'sql-parser'
+
+      - name: "Execute unit tests"
+        run: "composer run-script test:unit"
+
+      - name: "Execute static analysis"
+        run: "composer run-script test:types"

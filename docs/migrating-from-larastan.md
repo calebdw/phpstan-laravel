@@ -111,7 +111,36 @@ grep -rl '@phpstan-ignore' app src tests \
     | xargs sed -i 's/\blarastan\./laravel./g; s/\brules\.modelAppends\b/laravel.modelAppends/g'
 ```
 
-## 5. Namespace change
+## 5. Install an SQL parser if you use schema dumps
+
+Larastan required a parser for squashed schema dumps outright — `phpmyadmin/sql-parser`
+in the `calebdw/larastan` fork, `iamcal/sql-parser` upstream. Neither is a hard
+requirement here, so that the license entering your dependency tree is your
+choice rather than this package's:
+
+```bash
+composer require --dev iamcal/sql-parser      # MIT
+composer require --dev phpmyadmin/sql-parser  # GPL-2.0-or-later
+```
+
+If you have no dumps under `database/schema`, you need neither — the parser is
+only resolved when there is a dump to read. Otherwise analysis fails with
+instructions telling you to install one. Use
+[`sqlParser`](custom-config-parameters.md#sqlparser) to name a driver explicitly
+instead of letting it pick.
+
+Two schema types are now inferred more precisely, which may surface new errors
+in code that relied on the looser types:
+
+- `UNSIGNED` integer columns are `non-negative-int` rather than `int`
+- `ENUM` columns are a union of their literal values rather than `string`
+
+A dump that creates the same table more than once (`DROP TABLE IF EXISTS`
+followed by `CREATE TABLE`, repeated) now resolves to the **last** definition
+rather than the first, matching what replaying the dump would actually leave you
+with.
+
+## 6. Namespace change
 
 The PHP namespace changed from `Larastan\Larastan\` to `CalebDW\PhpstanLaravel\`. This only
 matters if you reference the extension's classes directly — for example a custom rule that

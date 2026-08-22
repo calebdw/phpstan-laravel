@@ -5,19 +5,14 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Properties;
 
 use CalebDW\PhpstanLaravel\Internal\FileHelper;
-use CalebDW\PhpstanLaravel\Properties\Schema\PhpMyAdminDataTypeToPhpTypeConverter;
-use PhpMyAdmin\SqlParser\Components\CreateDefinition;
-use PhpMyAdmin\SqlParser\Exceptions\ParserException;
-use PhpMyAdmin\SqlParser\Parser;
-use PhpMyAdmin\SqlParser\Statement;
-use PhpMyAdmin\SqlParser\Statements\CreateStatement;
+use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
+use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 
-use function array_filter;
 use function array_key_exists;
 use function database_path;
 use function explode;
 use function file_get_contents;
-use function is_array;
 use function ksort;
 
 final class SquashedMigrationHelper
@@ -26,7 +21,8 @@ final class SquashedMigrationHelper
     public function __construct(
         private array $schemaPaths,
         private FileHelper $fileHelper,
-        private PhpMyAdminDataTypeToPhpTypeConverter $converter,
+        private SqlDataTypeToPhpTypeConverter $converter,
+        private SqlParserManager $parserManager,
         private bool $disableSchemaScan,
     ) {
     }
@@ -49,6 +45,10 @@ final class SquashedMigrationHelper
 
         ksort($filesArray);
 
+        // Resolved lazily: neither parser is a hard requirement, so a project
+        // without schema dumps never needs one installed.
+        $parser = $this->parserManager->driver();
+
         foreach ($filesArray as $file) {
             // Laravel generates schema files with the format `connectionName-schema.{sql,dump}`
             // If the file name does not match the expected format, then we just use the
@@ -64,32 +64,25 @@ final class SquashedMigrationHelper
             }
 
             try {
-                $parser = new Parser($fileContents);
-            } catch (ParserException) {
+                $tableDefinitions = $parser->parseTables($fileContents);
+            } catch (SqlParserFailure) {
                 // TODO: re-throw the exception with a clear message?
                 continue;
             }
 
-            /** @var CreateStatement[] $createStatements */
-            $createStatements = array_filter($parser->statements, static fn (Statement $statement) => $statement instanceof CreateStatement && $statement->name !== null);
-
-            foreach ($createStatements as $createStatement) {
-                if ($createStatement->name?->table === null || array_key_exists($createStatement->name->table, $connection->tables)) {
+            foreach ($tableDefinitions as $definition) {
+                if (array_key_exists($definition->name, $connection->tables)) {
                     continue;
                 }
 
-                $table = new SchemaTable($createStatement->name->table);
+                $table = new SchemaTable($definition->name);
 
-                if (! is_array($createStatement->fields)) {
-                    continue;
-                }
-
-                foreach ($createStatement->fields as $field) {
-                    if ($field->name === null || $field->type === null) {
-                        continue;
-                    }
-
-                    $table->setColumn(new SchemaColumn($field->name, $this->converter->convert($field->type), $this->isNullable($field)));
+                foreach ($definition->columns as $column) {
+                    $table->setColumn(new SchemaColumn(
+                        $column->name,
+                        $this->converter->convert($column->type, $column->typeOptions, $column->values),
+                        $column->nullable,
+                    ));
                 }
 
                 $connection->setTable($table);
@@ -97,10 +90,5 @@ final class SquashedMigrationHelper
 
             $modelDatabaseHelper->setConnection($connection);
         }
-    }
-
-    private function isNullable(CreateDefinition $definition): bool
-    {
-        return ! $definition->options?->has('NOT NULL');
     }
 }
