@@ -183,3 +183,42 @@ parameters:
     laravel:
         checkModelAppends: false
 ```
+
+## `checkStrictContracts`
+
+**default**: `false`
+
+By default, when this extension sees a class or interface FQCN passed to
+`resolve()`, `app()`, `App::make()`/`App::makeWith()`, or
+`Container::make()`/`makeWith()`/`resolve()`, it asks the container what that
+identifier is bound to and infers the concrete class that would be returned at
+runtime.
+
+That is convenient, but it can hide a real problem: if the binding differs
+between environments — production versus testing, or per-tenant — code that
+type-hinted an interface can come to rely on methods that only exist on one
+particular implementation, and the analysis will happily agree.
+
+Enable this option to take the argument at face value instead. A class or
+interface FQCN is inferred as itself, so you only get the API you actually asked
+for. Aliases such as `resolve('cache')` are unaffected and still resolve to their
+concrete implementation, since they are not class strings.
+
+### Example
+
+```php
+use Illuminate\Contracts\Config\Repository;
+
+$repository = resolve(Repository::class);
+\PHPStan\dumpType($repository);
+```
+
+Disabled (the default), this dumps `Illuminate\Config\Repository` — the concrete
+class bound in the container. Enabled, it dumps
+`Illuminate\Contracts\Config\Repository`, the interface that was requested.
+
+```neon
+parameters:
+    laravel:
+        checkStrictContracts: true
+```

@@ -33,6 +33,7 @@ parameters:
     noModelForwardingToBuilder: false
     noModelStaticForwardingToBuilder: false
     sqlParser: auto
+    checkStrictContracts: false
 
 parametersSchema:
   laravel: structure([
@@ -59,6 +60,7 @@ parametersSchema:
     noModelForwardingToBuilder: bool()
     noModelStaticForwardingToBuilder: bool()
     sqlParser: string()
+    checkStrictContracts: bool()
   ])
 
 conditionalTags:
@@ -315,6 +317,7 @@ services:
     tags: [phpstan.staticMethodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\RelationClosureHelper
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AppMakeHelper
+    arguments: {checkStrictContracts: %laravel.checkStrictContracts%}
   - class: CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver
   - class: CalebDW\PhpstanLaravel\Internal\ConsoleApplicationHelper
   - class: CalebDW\PhpstanLaravel\Internal\FileHelper
