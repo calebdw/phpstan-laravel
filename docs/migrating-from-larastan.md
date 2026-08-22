@@ -140,7 +140,22 @@ followed by `CREATE TABLE`, repeated) now resolves to the **last** definition
 rather than the first, matching what replaying the dump would actually leave you
 with.
 
-## 6. Namespace change
+## 6. Relative directory options resolve differently
+
+The directory options — `configDirectories`, `databaseMigrationsPath`,
+`squashedMigrationsPath`, `viewDirectories`, `translationDirectories` — are now
+registered with PHPStan's `expandRelativePaths`, so a relative path is resolved
+against the config file that declares it. Larastan documented this behaviour but
+never wired it up, so relative paths there actually resolved against whichever
+directory you happened to run PHPStan from.
+
+If you run PHPStan from your project root with the config file at the root — the
+usual setup — nothing changes. It only differs if the declaring config file lives
+in a subdirectory, in which case paths that used to be written relative to the
+project root should now be written relative to that file (or made absolute with
+`%currentWorkingDirectory%`).
+
+## 7. Namespace change
 
 The PHP namespace changed from `Larastan\Larastan\` to `CalebDW\PhpstanLaravel\`. This only
 matters if you reference the extension's classes directly — for example a custom rule that

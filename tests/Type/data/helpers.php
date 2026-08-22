@@ -213,6 +213,24 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
     assertType('array{driver: string, provider: string}|array{guard: string, passwords: string}|null', config($var));
     assertType('mixed', config('nonexistent'));
     assertType('mixed', config('auth.null'));
+    assertType("Illuminate\Support\Collection<'guard'|'passwords', string>", Config::collection('auth.defaults'));
+    // not an array, so the declared return type stands
+    assertType('Illuminate\Support\Collection<(int|string), mixed>', Config::collection('auth.defaults.guard'));
+}
+
+function testConfigRepository(\Illuminate\Config\Repository $repository, \Illuminate\Contracts\Config\Repository $contract): void
+{
+    assertType('array{guard: string, passwords: string}|null', $repository->get('auth.defaults'));
+    assertType('string|null', $repository->get('auth.defaults.guard'));
+    assertType("'bar'|array{guard: string, passwords: string}", $repository->get('auth.defaults', 'bar'));
+    assertType('array{guard: string, passwords: string}', $repository->array('auth.defaults'));
+    assertType("array{'auth.defaults': array{guard: string, passwords: string}}", $repository->getMany(['auth.defaults']));
+    assertType("Illuminate\Support\Collection<'guard'|'passwords', string>", $repository->collection('auth.defaults'));
+    assertType('mixed', $repository->get('nonexistent'));
+
+    assertType('array{guard: string, passwords: string}|null', $contract->get('auth.defaults'));
+    assertType('string|null', $contract->get('auth.defaults.guard'));
+    assertType('mixed', $contract->get('nonexistent'));
 }
 
 /**

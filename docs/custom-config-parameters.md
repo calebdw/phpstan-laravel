@@ -156,6 +156,113 @@ parameters:
         disableSchemaScan: true
 ```
 
+## `configDirectories`
+
+**default**: `[]`
+
+This extension already knows the types of your configuration values without any
+setup. It boots the application to analyse your code, and booting registers every
+service provider, which means the config repository in the container holds the
+merged configuration of the app and all of its packages. Calls to `config()`, to
+the facade — `Config::get()`, `Config::array()`, `Config::collection()`,
+`Config::getMany()` — and to the same methods on an injected
+`Illuminate\Config\Repository` or its contract are all answered from that live
+repository, so **if you are analysing an application there is nothing to
+configure here.**
+
+That falls apart in one situation: a package analysed on its own. There is no
+application to boot, so nothing publishes or merges the package's own config
+files, and the repository knows nothing about them. Rather than making package
+authors stand up a full Testbench workbench just to get config types, set
+`configDirectories` and the extension will parse those files statically instead.
+
+```neon
+parameters:
+    laravel:
+        configDirectories:
+            - config
+            - modules/*/config
+```
+
+Paths may be absolute or relative to the PHPStan config file that declares them,
+and directories are searched recursively. `*` and `?` glob patterns are supported
+for the directory portion, which is useful for modular layouts. A file's name is what the first
+segment of a config key is matched against, wherever the file sits in the tree —
+`modules/billing/config/invoices.php` answers `config('invoices.*')`. If two
+files share a name, the first one found wins, in the order the directories are
+listed.
+
+The same parameter tells [`NoEnvCallsOutsideOfConfigRule`](rules.md#noenvcallsoutsideofconfigrule)
+where `env()` calls are allowed to live, so if you already set it for that rule
+you get the type inference for free.
+
+### How a key is resolved
+
+The container is always asked first, and the parsed files only answer keys it
+does not have. Setting this option therefore never changes the types you get for
+an application's own config — it can only fill in keys that were missing.
+
+### Example
+
+```php
+// config/pennant.php
+return [
+    'default' => 'database',
+    'stores' => [
+        'database' => ['connection' => null],
+    ],
+];
+
+// src/Feature.php
+\PHPStan\dumpType(config('pennant.default'));           // string|null
+\PHPStan\dumpType(config('pennant.stores.database'));    // array{connection: null}|null
+\PHPStan\dumpType(config('pennant.missing'));            // mixed
+```
+
+Scalar values are widened to their general type — `'database'` becomes `string`
+— for the same reason the container path does it: the value in the file is only
+the default, and the deployed value can be anything of that type. Array shapes
+are kept, since the set of keys is a property of the file rather than of the
+environment.
+
+When that is too lossy, annotate the returned array and the declared type is used
+verbatim:
+
+```php
+// config/pennant.php
+
+/** @return array{default: 'array'|'database', stores: array<string, array{connection: string|null}>} */
+return [
+    'default' => 'database',
+    'stores' => [
+        'database' => ['connection' => null],
+    ],
+];
+```
+
+```php
+\PHPStan\dumpType(config('pennant.default')); // 'array'|'database'|null
+```
+
+Docblocks are only trusted while PHPStan's own
+[`treatPhpDocTypesAsCertain`](https://phpstan.org/config-reference#treatphpdoctypesascertain)
+is enabled, which it is by default.
+
+### Performance
+
+Nothing is read until it is needed. The directories are not even scanned unless a
+config key turns up missing from the container, each file is parsed at most once
+per run, and resolved keys are cached. Leaving this option unset costs nothing at
+all.
+
+### Limitations
+
+`config()->all()` and `Config::all()` are answered from the container only, as
+returning them would mean parsing every config file and defeat the laziness
+described above. Keys whose value is built at runtime — a function call, a match
+on the environment — are typed as whatever PHPStan infers for that expression,
+which may be `mixed`.
+
 ## `checkModelProperties`
 
 **default**: `false`

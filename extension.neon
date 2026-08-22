@@ -63,6 +63,13 @@ parametersSchema:
     checkStrictContracts: bool()
   ])
 
+expandRelativePaths:
+  - '[parameters][laravel][configDirectories][]'
+  - '[parameters][laravel][databaseMigrationsPath][]'
+  - '[parameters][laravel][squashedMigrationsPath][]'
+  - '[parameters][laravel][translationDirectories][]'
+  - '[parameters][laravel][viewDirectories][]'
+
 conditionalTags:
   CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule: {phpstan.rules.rule: %laravel.noEnvCallsOutsideOfConfig%}
   CalebDW\PhpstanLaravel\Rules\NoModelMakeRule: {phpstan.rules.rule: %laravel.noModelMake%}
@@ -139,6 +146,12 @@ services:
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\ConfigDynamicStaticMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConfigDynamicMethodReturnTypeExtension
+    arguments: {class: Illuminate\Config\Repository}
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConfigDynamicMethodReturnTypeExtension
+    arguments: {class: Illuminate\Contracts\Config\Repository}
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AuthExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\GuardDynamicStaticMethodReturnTypeExtension
@@ -323,6 +336,8 @@ services:
   - class: CalebDW\PhpstanLaravel\Internal\FileHelper
   - class: CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper
   - class: CalebDW\PhpstanLaravel\Support\ConfigHelper
+  - class: CalebDW\PhpstanLaravel\Support\ConfigParser
+    arguments: {configDirectories: %laravel.configDirectories%, parser: @currentPhpVersionSimpleDirectParser, treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%}
   - class: CalebDW\PhpstanLaravel\Support\PluckHelper
   - class: CalebDW\PhpstanLaravel\ReturnTypes\FormRequestSafeDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]

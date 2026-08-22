@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use CalebDW\PhpstanLaravel\Concerns\HasContainer;
+use Illuminate\Contracts\Config\Repository;
+use Illuminate\Support\Collection;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\FunctionReflection;
@@ -18,6 +21,7 @@ use PHPStan\Type\Constant\ConstantFloatType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\FloatType;
+use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
@@ -40,19 +44,23 @@ final class ConfigHelper
 {
     use HasContainer;
 
+    public function __construct(private ConfigParser $configParser)
+    {
+    }
+
     public function determineConfigType(
         FunctionReflection|MethodReflection $reflection,
-        FuncCall|StaticCall $call,
+        FuncCall|MethodCall|StaticCall $call,
         Scope $scope,
     ): Type|null {
-        $repository = $this->getContainer()->get('config');
+        $repository = $this->getRepository();
 
-        if (! $repository) {
+        if (! $repository && ! $this->configParser->hasDirectories()) {
             return null;
         }
 
         if ($reflection->getName() === 'all') {
-            return $this->getTypeFromValue($repository->all());
+            return $repository ? $this->getTypeFromValue($repository->all()) : null;
         }
 
         $args    = $call->getArgs();
@@ -78,14 +86,35 @@ final class ConfigHelper
             }
 
             return TypeCombinator::union(...array_map(
-                function ($constantArray) use ($repository): Type {
+                function ($constantArray) use ($repository, $scope): Type {
                     $array = $this->getArrayFromConstantArrayType($constantArray);
 
                     if (! $array) {
                         return new MixedType();
                     }
 
-                    return $this->getTypeFromValue($repository->get($array));
+                    $builder = ConstantArrayTypeBuilder::createEmpty();
+
+                    if (count($array) > ConstantArrayTypeBuilder::ARRAY_COUNT_LIMIT) {
+                        $builder->degradeToGeneralArray(true);
+                    }
+
+                    foreach ($array as $index => $value) {
+                        $key     = is_int($index) ? $value : $index;
+                        $default = is_int($index) ? null : $value;
+
+                        if (! is_string($key)) {
+                            return new MixedType();
+                        }
+
+                        $builder->setOffsetValueType(
+                            new ConstantStringType($key),
+                            $this->resolveKey($key, $repository, $scope)
+                                ?? $this->getTypeFromValue($default),
+                        );
+                    }
+
+                    return $builder->getArray();
                 },
                 $constantArrays,
             ));
@@ -109,24 +138,51 @@ final class ConfigHelper
         }
 
         $configType = TypeCombinator::union(...array_map(
-            function ($key) use ($repository): Type {
-                $default = new stdClass();
-                $value   = $repository->get($key->getValue(), $default);
-
-                if ($value === $default) {
-                    return new MixedType();
-                }
-
-                return $this->getTypeFromValue($value);
-            },
+            fn ($key): Type => $this->resolveKey($key->getValue(), $repository, $scope)
+                ?? new MixedType(),
             $constantStrings,
         ));
+
+        if ($reflection->getName() === 'collection') {
+            return $configType->isArray()->yes()
+                ? new GenericObjectType(Collection::class, [
+                    $configType->getIterableKeyType(),
+                    $configType->getIterableValueType(),
+                ])
+                : null;
+        }
 
         if ($reflection->getName() === 'array') {
             return $configType;
         }
 
         return TypeCombinator::union($configType, $defaultType);
+    }
+
+    /**
+     * Resolves the type of the given key from the booted container,
+     * falling back to statically parsing the configured directories
+     * for keys the container does not know about.
+     */
+    private function resolveKey(string $key, Repository|null $repository, Scope $scope): Type|null
+    {
+        if ($repository) {
+            $default = new stdClass();
+            $value   = $repository->get($key, $default);
+
+            if ($value !== $default) {
+                return $this->getTypeFromValue($value);
+            }
+        }
+
+        return $this->configParser->getType($key, $scope);
+    }
+
+    private function getRepository(): Repository|null
+    {
+        $repository = $this->resolve('config');
+
+        return $repository instanceof Repository ? $repository : null;
     }
 
     private function getTypeFromValue(mixed $value, bool $constant = false): Type

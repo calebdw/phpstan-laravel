@@ -1,0 +1,6 @@
+includes:
+    - ../../phpstan-tests.neon
+parameters:
+    laravel:
+        configDirectories:
+            - %rootDir%/../../../tests/Type/data/config

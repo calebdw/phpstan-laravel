@@ -5,35 +5,37 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
 use CalebDW\PhpstanLaravel\Support\ConfigHelper;
-use Illuminate\Support\Facades\Config;
-use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
+use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 use function in_array;
 
 /** @internal */
-final class ConfigDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
+final class ConfigDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private ConfigHelper $configHelper)
-    {
+    /** @param class-string $class */
+    public function __construct(
+        private ConfigHelper $configHelper,
+        private string $class,
+    ) {
     }
 
     public function getClass(): string
     {
-        return Config::class;
+        return $this->class;
     }
 
-    public function isStaticMethodSupported(MethodReflection $methodReflection): bool
+    public function isMethodSupported(MethodReflection $methodReflection): bool
     {
         return in_array($methodReflection->getName(), ['get', 'getMany', 'array', 'collection', 'all'], true);
     }
 
-    public function getTypeFromStaticMethodCall(
+    public function getTypeFromMethodCall(
         MethodReflection $methodReflection,
-        StaticCall $methodCall,
+        MethodCall $methodCall,
         Scope $scope,
     ): Type|null {
         return $this->configHelper->determineConfigType($methodReflection, $methodCall, $scope);
