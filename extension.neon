@@ -1,0 +1,335 @@
+parameters:
+  universalObjectCratesClasses:
+    - Illuminate\Http\Request
+    - Illuminate\Support\Optional
+  earlyTerminatingFunctionCalls:
+    - abort
+    - dd
+  mixinExcludeClasses:
+    - Eloquent
+  bootstrapFiles:
+    - bootstrap.php
+  laravel:
+    checkOctaneCompatibility: false
+    noEnvCallsOutsideOfConfig: true
+    noModelMake: true
+    noUnnecessaryCollectionCall: true
+    noUnnecessaryCollectionCallOnly: []
+    noUnnecessaryCollectionCallExcept: []
+    noUnnecessaryEnumerableToArrayCalls: false
+    squashedMigrationsPath: []
+    databaseMigrationsPath: []
+    disableMigrationScan: false
+    disableSchemaScan: false
+    configDirectories: []
+    viewDirectories: []
+    translationDirectories: []
+    checkModelProperties: false
+    checkUnusedViews: false
+    checkMissingTranslations: false
+    checkModelAppends: true
+    checkModelMethodVisibility: false
+    checkAuthCallsWhenInRequestScope: false
+    noModelForwardingToBuilder: false
+    noModelStaticForwardingToBuilder: false
+
+parametersSchema:
+  laravel: structure([
+    checkOctaneCompatibility: bool()
+    noEnvCallsOutsideOfConfig: bool()
+    noModelMake: bool()
+    noUnnecessaryCollectionCall: bool()
+    noUnnecessaryCollectionCallOnly: listOf(string())
+    noUnnecessaryCollectionCallExcept: listOf(string())
+    noUnnecessaryEnumerableToArrayCalls: bool()
+    databaseMigrationsPath: listOf(string())
+    disableMigrationScan: bool()
+    configDirectories: listOf(string())
+    viewDirectories: listOf(string())
+    translationDirectories: listOf(string())
+    squashedMigrationsPath: listOf(string())
+    disableSchemaScan: bool()
+    checkModelProperties: bool()
+    checkUnusedViews: bool()
+    checkMissingTranslations: bool()
+    checkModelAppends: bool()
+    checkModelMethodVisibility: bool()
+    checkAuthCallsWhenInRequestScope: bool()
+    noModelForwardingToBuilder: bool()
+    noModelStaticForwardingToBuilder: bool()
+  ])
+
+conditionalTags:
+  CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule: {phpstan.rules.rule: %laravel.noEnvCallsOutsideOfConfig%}
+  CalebDW\PhpstanLaravel\Rules\NoModelMakeRule: {phpstan.rules.rule: %laravel.noModelMake%}
+  CalebDW\PhpstanLaravel\Rules\NoUnnecessaryCollectionCallRule: {phpstan.rules.rule: %laravel.noUnnecessaryCollectionCall%}
+  CalebDW\PhpstanLaravel\Rules\NoUnnecessaryEnumerableToArrayCallsRule: {phpstan.rules.rule: %laravel.noUnnecessaryEnumerableToArrayCalls%}
+  CalebDW\PhpstanLaravel\Rules\OctaneCompatibilityRule: {phpstan.rules.rule: %laravel.checkOctaneCompatibility%}
+  CalebDW\PhpstanLaravel\Rules\UnusedViewsRule: {phpstan.rules.rule: %laravel.checkUnusedViews%}
+  CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule: {phpstan.rules.rule: %laravel.checkMissingTranslations%}
+  CalebDW\PhpstanLaravel\Rules\ModelAppendsRule: {phpstan.rules.rule: %laravel.checkModelAppends%}
+  CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule: {phpstan.rules.rule: %laravel.checkModelMethodVisibility%}
+  CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule: {phpstan.rules.rule: %laravel.checkAuthCallsWhenInRequestScope%}
+  CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule: {phpstan.rules.rule: %laravel.checkAuthCallsWhenInRequestScope%}
+  CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilder: {phpstan.rules.rule: %laravel.noModelForwardingToBuilder%}
+  CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilder: {phpstan.rules.rule: %laravel.noModelStaticForwardingToBuilder%}
+
+services:
+  - class: CalebDW\PhpstanLaravel\Methods\RelationForwardsCallsExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\ModelForwardsCallsExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\EloquentBuilderForwardsCallsExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\HigherOrderTapProxyExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\HigherOrderCollectionProxyExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\StorageMethodsClassReflectionExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\ContractsMethodsExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\FacadesMethodsExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\ManagersMethodsExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\AuthsMethodsExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\ModelFactoryMethodsClassReflectionExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\RedirectResponseMethodsClassReflectionExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\MacroMethodsClassReflectionExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\ViewWithMethodsClassReflectionExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Properties\ModelAccessorExtension
+    tags: [phpstan.broker.propertiesClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Properties\ModelPropertyExtension
+    tags: [phpstan.broker.propertiesClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Properties\HigherOrderCollectionProxyPropertyExtension
+    tags: [phpstan.broker.propertiesClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\HigherOrderTapProxyExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerArrayAccessDynamicMethodReturnTypeExtension
+    arguments: {className: Illuminate\Contracts\Container\Container}
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerArrayAccessDynamicMethodReturnTypeExtension
+    arguments: {className: Illuminate\Container\Container}
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerArrayAccessDynamicMethodReturnTypeExtension
+    arguments: {className: Illuminate\Foundation\Application}
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerArrayAccessDynamicMethodReturnTypeExtension
+    arguments: {className: Illuminate\Contracts\Foundation\Application}
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Properties\ModelRelationsExtension
+    tags: [phpstan.broker.propertiesClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelOnlyDynamicMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelFactoryDynamicStaticMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelDynamicStaticMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppMakeDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConfigDynamicStaticMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\AuthExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\GuardDynamicStaticMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\AuthManagerExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\DateExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\GuardExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\RequestFileExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\RequestRouteExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\RequestUserExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentBuilderExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\RelationCollectionExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelFindExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\BuilderModelFindExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\TestCaseExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Support\CollectionHelper
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\AuthExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\CollectExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ConfigDynamicFunctionReturnTypeExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\NowAndTodayExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ResponseExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ValidatorExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\LiteralExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\CollectionFilterRejectDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\CollectionWhereNotNullDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\NewModelQueryDynamicMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\FactoryDynamicMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Types\AbortIfFunctionTypeSpecifyingExtension
+    arguments: {methodName: 'abort', negate: false}
+    tags: [phpstan.typeSpecifier.functionTypeSpecifyingExtension]
+  - class: CalebDW\PhpstanLaravel\Types\AbortIfFunctionTypeSpecifyingExtension
+    arguments: {methodName: 'abort', negate: true}
+    tags: [phpstan.typeSpecifier.functionTypeSpecifyingExtension]
+  - class: CalebDW\PhpstanLaravel\Types\AbortIfFunctionTypeSpecifyingExtension
+    arguments: {methodName: throw, negate: false}
+    tags: [phpstan.typeSpecifier.functionTypeSpecifyingExtension]
+  - class: CalebDW\PhpstanLaravel\Types\AbortIfFunctionTypeSpecifyingExtension
+    arguments: {methodName: throw, negate: true}
+    tags: [phpstan.typeSpecifier.functionTypeSpecifyingExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\AppExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ValueExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\StrExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\TapExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StorageDynamicStaticMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Types\GenericEloquentCollectionTypeNodeResolverExtension
+    tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\Types\ViewStringTypeNodeResolverExtension
+    tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\Rules\OctaneCompatibilityRule
+  - class: CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule
+    arguments: {configDirectories: %laravel.configDirectories%}
+  - class: CalebDW\PhpstanLaravel\Rules\NoModelMakeRule
+  - class: CalebDW\PhpstanLaravel\Rules\NoUnnecessaryCollectionCallRule
+    arguments: {onlyMethods: %laravel.noUnnecessaryCollectionCallOnly%, excludeMethods: %laravel.noUnnecessaryCollectionCallExcept%}
+  - class: CalebDW\PhpstanLaravel\Rules\NoUnnecessaryEnumerableToArrayCallsRule
+  - class: CalebDW\PhpstanLaravel\Rules\ModelAppendsRule
+  - class: CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule
+  - class: CalebDW\PhpstanLaravel\Types\GenericEloquentBuilderTypeNodeResolverExtension
+    tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppEnvironmentReturnTypeExtension
+    arguments: {class: "Illuminate\\Foundation\\Application"}
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppEnvironmentReturnTypeExtension
+    arguments: {class: "Illuminate\\Contracts\\Foundation\\Application"}
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppFacadeEnvironmentReturnTypeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Types\ModelProperty\ModelPropertyTypeNodeResolverExtension
+    arguments: {active: %laravel.checkModelProperties%}
+    tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\Support\ModelHelper
+  - class: CalebDW\PhpstanLaravel\Properties\MigrationHelper
+    arguments: {databaseMigrationPath: %laravel.databaseMigrationsPath%, disableMigrationScan: %laravel.disableMigrationScan%, parser: @currentPhpVersionSimpleDirectParser}
+  - class: CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper
+    arguments: {schemaPaths: %laravel.squashedMigrationsPath%, disableSchemaScan: %laravel.disableSchemaScan%}
+  - class: CalebDW\PhpstanLaravel\Properties\ModelCastHelper
+  - class: CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper
+  - class: CalebDW\PhpstanLaravel\Properties\ModelPropertyHelper
+  - class: CalebDW\PhpstanLaravel\Rules\ModelRuleHelper
+  - class: CalebDW\PhpstanLaravel\Methods\BuilderHelper
+    arguments: {checkProperties: %laravel.checkModelProperties%}
+  - class: CalebDW\PhpstanLaravel\Rules\RelationExistenceRule
+    tags: [phpstan.rules.rule]
+  - class: CalebDW\PhpstanLaravel\Rules\CheckDispatchArgumentTypesCompatibleWithClassConstructorRule
+    arguments: {dispatchableClass: Illuminate\Foundation\Bus\Dispatchable}
+    tags: [phpstan.rules.rule]
+  - class: CalebDW\PhpstanLaravel\Rules\CheckDispatchArgumentTypesCompatibleWithClassConstructorRule
+    arguments: {dispatchableClass: Illuminate\Foundation\Events\Dispatchable}
+    tags: [phpstan.rules.rule]
+  - class: CalebDW\PhpstanLaravel\Properties\Schema\PhpMyAdminDataTypeToPhpTypeConverter
+  - class: CalebDW\PhpstanLaravel\StubFilesExtension
+    tags: [phpstan.stubFilesExtension]
+  - class: CalebDW\PhpstanLaravel\Rules\UnusedViewsRule
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedViewFunctionCollector
+    tags: [phpstan.collector]
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedEmailViewCollector
+    tags: [phpstan.collector]
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedViewMakeCollector
+    tags: [phpstan.collector]
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedViewFacadeMakeCollector
+    tags: [phpstan.collector]
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedRouteFacadeViewCollector
+    tags: [phpstan.collector]
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedViewInAnotherViewCollector
+  - class: CalebDW\PhpstanLaravel\Support\ViewFileHelper
+    arguments: {viewDirectories: %laravel.viewDirectories%}
+  - class: CalebDW\PhpstanLaravel\Support\ViewParser
+    arguments: {parser: @currentPhpVersionSimpleDirectParser}
+  - class: CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule
+    arguments: {translationDirectories: %laravel.translationDirectories%}
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationFunctionCollector
+    tags: [phpstan.collector]
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationTranslatorCollector
+    tags: [phpstan.collector]
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationFacadeCollector
+    tags: [phpstan.collector]
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ApplicationMakeDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerMakeDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand\ArgumentDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand\HasArgumentDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand\OptionDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand\HasOptionDynamicReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\TranslatorGetReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrPluckExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentBuilderPluckExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerablePluckExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\LangGetReturnTypeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\TransHelperReturnTypeExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\DoubleUnderscoreHelperReturnTypeExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Parameters\EloquentBuilderRelationParameterExtension
+    tags: [phpstan.methodParameterClosureTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Parameters\ModelRelationParameterExtension
+    tags: [phpstan.staticMethodParameterClosureTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Parameters\RelationClosureHelper
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppMakeHelper
+  - class: CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver
+  - class: CalebDW\PhpstanLaravel\Internal\ConsoleApplicationHelper
+  - class: CalebDW\PhpstanLaravel\Internal\FileHelper
+  - class: CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper
+  - class: CalebDW\PhpstanLaravel\Support\ConfigHelper
+  - class: CalebDW\PhpstanLaravel\Support\PluckHelper
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\FormRequestSafeDynamicMethodReturnTypeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule
+  - class: CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule
+  - class: CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilder
+  - class: CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilder
+  - class: Illuminate\Filesystem\Filesystem
+    autowired: self
+  - class: CalebDW\PhpstanLaravel\Ignore\FacadeStaticCallIgnoreExtension
+    tags: [phpstan.ignoreErrorExtension]
+
+rules:
+  - CalebDW\PhpstanLaravel\Rules\UselessConstructs\NoUselessWithFunctionCallsRule
+  - CalebDW\PhpstanLaravel\Rules\UselessConstructs\NoUselessValueFunctionCallsRule
+  - CalebDW\PhpstanLaravel\Rules\DeferrableServiceProviderMissingProvidesRule
+  - CalebDW\PhpstanLaravel\Rules\ConsoleCommand\UndefinedArgumentOrOptionRule

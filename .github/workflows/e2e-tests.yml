@@ -1,0 +1,71 @@
+---
+name: "E2E"
+
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - 'docs/**'
+    # Prevent duplicating jobs on PR-s from local branches
+    branches:
+      - "master"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - 'docs/**'
+
+jobs:
+  integration-tests:
+    name: "Test with ${{ matrix.project }} on PHP ${{ matrix.php-version }}"
+
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: monicahq-monica
+            php-version: "8.3"
+
+          - project: filamentphp-filament
+            php-version: "8.4"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+
+      - name: "Perform static analysis"
+        run: "tests/analyse.sh ${{ matrix.project }}"
+
+      - name: "Generate baseline"
+        if: ${{ failure() }}
+        working-directory: "build/e2e/${{ matrix.project }}"
+        run: |
+          composer exec phpstan analyse -- \
+            -c "${GITHUB_WORKSPACE}/e2e/${{ matrix.project }}.neon" \
+            -b "${GITHUB_WORKSPACE}/e2e/${{ matrix.project }}.baseline.neon" \
+            --allow-empty-baseline
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: "baseline-${{ matrix.project }}"
+          path: "e2e/${{ matrix.project }}.baseline.neon"
+
+  merge-artifacts:
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: ${{ always() && needs.integration-tests.result == 'failure' }}
+    steps:
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: baselines
+          pattern: baseline-*

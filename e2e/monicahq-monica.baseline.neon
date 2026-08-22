@@ -1,0 +1,37 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CardDAV\\CardDAVBackend\:\:getDeletedObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<TKey of \(int\|string\), TValue\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/CardDAVBackend.php
+
+		-
+			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CardDAV\\CardDAVBackend\:\:getObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<TKey of \(int\|string\), TValue\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/CardDAVBackend.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\ContactTask, App\\Models\\Contact\>\:\:completed\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/ManageTasks/Web/ViewHelpers/ModuleContactTasksViewHelper.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\ContactTask, App\\Models\\Contact\>\:\:notCompleted\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/ManageTasks/Web/ViewHelpers/ModuleContactTasksViewHelper.php
+
+		-
+			message: '#^Method App\\Domains\\Settings\\ManageNotificationChannels\\Web\\Controllers\\TelegramWebhookController\:\:store\(\) should return Illuminate\\Http\\Response but returns Illuminate\\Http\\JsonResponse\.$#'
+			identifier: return.type
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Settings/ManageNotificationChannels/Web/Controllers/TelegramWebhookController.php
+
+		-
+			message: '#^PHPDoc type array of property App\\Models\\File\:\:\$dispatchesEvents is not covariant with PHPDoc type array\<string, class\-string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$dispatchesEvents\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Models/File.php

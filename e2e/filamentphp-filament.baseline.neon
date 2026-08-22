@@ -1,0 +1,49 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to static method fromString\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/panels/src/AvatarProviders/UiAvatarsProvider.php
+
+		-
+			message: '#^Call to method blue\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+
+		-
+			message: '#^Call to method green\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+
+		-
+			message: '#^Call to method red\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+
+		-
+			message: '#^Call to static method fromString\(\) on an unknown class Spatie\\Color\\Hex\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+
+		-
+			message: '#^Call to static method fromString\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+
+		-
+			message: '#^Parameter \$color of method Filament\\Support\\Colors\\Color\:\:generateShades\(\) has invalid type Spatie\\Color\\Rgb\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+
+		-
+			message: '#^Call to static method fromString\(\) on an unknown class Spatie\\Color\\Hex\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/ColorManager.php

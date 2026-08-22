@@ -1,0 +1,93 @@
+{
+  "name": "calebdw/phpstan-laravel",
+  "type": "phpstan-extension",
+  "description": "A PHPStan extension for analysis of Laravel applications and packages.",
+  "homepage": "https://github.com/calebdw/phpstan-laravel",
+  "keywords": [
+    "laravel",
+    "phpstan",
+    "phpstan-extension",
+    "php",
+    "package",
+    "static analysis",
+    "code analysis"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Caleb White",
+      "email": "cdwhite3@pm.me"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "illuminate/console": "^12.67.0 || ^13.26.1",
+    "illuminate/container": "^12.67.0 || ^13.26.1",
+    "illuminate/contracts": "^12.67.0 || ^13.26.1",
+    "illuminate/database": "^12.67.0 || ^13.26.1",
+    "illuminate/http": "^12.67.0 || ^13.26.1",
+    "illuminate/pipeline": "^12.67.0 || ^13.26.1",
+    "illuminate/support": "^12.67.0 || ^13.26.1",
+    "phpmyadmin/sql-parser": "^5.9.0",
+    "phpstan/phpstan": "^2.2.9"
+  },
+  "require-dev": {
+    "doctrine/coding-standard": "^14.0",
+    "nikic/php-parser": "^5.6",
+    "laravel/framework": "^12.67.0 || ^13.26.1",
+    "mockery/mockery": "^1.6",
+    "orchestra/canvas": "^10.0 || ^11",
+    "orchestra/testbench-core": "^10.0 || ^11",
+    "phpstan/phpstan-deprecation-rules": "^2.0.1",
+    "phpunit/phpunit": "^12.5.8 || ^13.1.8"
+  },
+  "suggest": {
+    "orchestra/testbench": "Using phpstan-laravel for analysing a package needs Testbench"
+  },
+  "autoload": {
+    "psr-4": {
+      "CalebDW\\PhpstanLaravel\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "App\\": "tests/application/app/",
+      "Database\\Factories\\": "tests/application/database/factories/",
+      "Database\\Migrations\\": "tests/application/database/migrations/"
+    },
+    "classmap": [
+      "tests/"
+    ]
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "extra": {
+    "phpstan": {
+      "includes": [
+        "extension.neon"
+      ]
+    }
+  },
+  "scripts": {
+    "test:cs": "phpcs",
+    "test:types": "phpstan analyse --ansi --memory-limit 300M",
+    "test:unit": "phpunit --colors=always -d memory_limit=1408M",
+    "test:application": "tests/analyse.sh laravel",
+    "test:e2e": "tests/analyse.sh",
+    "test": [
+      "@test:types",
+      "@test:unit"
+    ]
+  },
+  "scripts-descriptions": {
+    "test:application": "Analyse a freshly installed Laravel application (build/laravel)",
+    "test:e2e": "Analyse a real-world application, e.g. `composer test:e2e monicahq-monica`"
+  }
+}
