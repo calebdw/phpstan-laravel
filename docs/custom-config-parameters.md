@@ -291,6 +291,23 @@ parameters:
         checkModelAppends: false
 ```
 
+## `checkConfigAccessors`
+
+**default**: `true`
+
+This config parameter enables the check for the config repository's typed
+accessors — `string`, `integer`, `float`, `boolean`, `array` and `collection` —
+being called for keys that do not hold the required type, each of which throws
+at runtime. You can read the details [here](rules.md#configaccessorrule).
+
+To disable you can set it to `false`:
+
+```neon
+parameters:
+    laravel:
+        checkConfigAccessors: false
+```
+
 ## `checkStrictContracts`
 
 **default**: `false`

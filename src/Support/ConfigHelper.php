@@ -160,6 +160,15 @@ final class ConfigHelper
     }
 
     /**
+     * Resolves the type of a single config key, for callers that have a
+     * key in hand rather than a call to take it from.
+     */
+    public function getKeyType(string $key, Scope $scope): Type|null
+    {
+        return $this->resolveKey($key, $this->getRepository(), $scope);
+    }
+
+    /**
      * Resolves the type of the given key from the booted container,
      * falling back to statically parsing the configured directories
      * for keys the container does not know about.

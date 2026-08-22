@@ -147,6 +147,7 @@ These are toggled with a boolean option under `laravel:`:
 | `NoModelMake` | `noModelMake` | ✅ on |
 | `NoUnnecessaryCollectionCall` | `noUnnecessaryCollectionCall` | ✅ on |
 | `ModelAppendsRule` | `checkModelAppends` | ✅ on |
+| `ConfigAccessorRule` | `checkConfigAccessors` | ✅ on |
 | `NoEnvCallsOutsideOfConfig` | `noEnvCallsOutsideOfConfig` | ✅ on |
 | `ModelPropertyRule` | `checkModelProperties` | ❌ off |
 | `OctaneCompatibilityRule` | `checkOctaneCompatibility` | ❌ off |

@@ -28,6 +28,7 @@ parameters:
     checkUnusedViews: false
     checkMissingTranslations: false
     checkModelAppends: true
+    checkConfigAccessors: true
     checkModelMethodVisibility: false
     checkAuthCallsWhenInRequestScope: false
     noModelForwardingToBuilder: false
@@ -55,6 +56,7 @@ parametersSchema:
     checkUnusedViews: bool()
     checkMissingTranslations: bool()
     checkModelAppends: bool()
+    checkConfigAccessors: bool()
     checkModelMethodVisibility: bool()
     checkAuthCallsWhenInRequestScope: bool()
     noModelForwardingToBuilder: bool()
@@ -79,6 +81,7 @@ conditionalTags:
   CalebDW\PhpstanLaravel\Rules\UnusedViewsRule: {phpstan.rules.rule: %laravel.checkUnusedViews%}
   CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule: {phpstan.rules.rule: %laravel.checkMissingTranslations%}
   CalebDW\PhpstanLaravel\Rules\ModelAppendsRule: {phpstan.rules.rule: %laravel.checkModelAppends%}
+  CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule: {phpstan.rules.rule: %laravel.checkConfigAccessors%}
   CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule: {phpstan.rules.rule: %laravel.checkModelMethodVisibility%}
   CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule: {phpstan.rules.rule: %laravel.checkAuthCallsWhenInRequestScope%}
   CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule: {phpstan.rules.rule: %laravel.checkAuthCallsWhenInRequestScope%}
@@ -235,6 +238,7 @@ services:
     arguments: {onlyMethods: %laravel.noUnnecessaryCollectionCallOnly%, excludeMethods: %laravel.noUnnecessaryCollectionCallExcept%}
   - class: CalebDW\PhpstanLaravel\Rules\NoUnnecessaryEnumerableToArrayCallsRule
   - class: CalebDW\PhpstanLaravel\Rules\ModelAppendsRule
+  - class: CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule
   - class: CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule
   - class: CalebDW\PhpstanLaravel\Types\GenericEloquentBuilderTypeNodeResolverExtension
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
