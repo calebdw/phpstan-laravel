@@ -8,6 +8,8 @@ use function PHPStan\Testing\assertType;
 
 function test(User $user): void
 {
+    assertType('App\User', User::createOrRestore(['id' => 1]));
+
     assertType('array{name: string, email: string}', $user->only('name', 'email'));
     assertType('array{name: string, email: string}', $user->only(['name', 'email']));
     assertType('array{name: string, nonexistent: null}', $user->only(['name', 'nonexistent']));

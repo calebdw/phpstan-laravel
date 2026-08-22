@@ -17,7 +17,7 @@ final class IamcalSqlParser implements SqlParser
     /** @inheritDoc */
     public function parseTables(string $sql): array
     {
-        $parser                      = new VendorSqlParser();
+        $parser = new VendorSqlParser();
         // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         $parser->throw_on_bad_syntax = true;
 

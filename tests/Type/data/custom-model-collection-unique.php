@@ -1,6 +1,6 @@
 <?php
 
-namespace Bug1985;
+namespace CustomModelCollectionUnique;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -8,7 +8,7 @@ use function PHPStan\Testing\assertType;
 
 function test(): void
 {
-    assertType('Bug1985\ModelCollection<int, Bug1985\User>', User::all()->unique());
+    assertType('CustomModelCollectionUnique\ModelCollection<int, CustomModelCollectionUnique\User>', User::all()->unique());
 }
 
 class User extends Model

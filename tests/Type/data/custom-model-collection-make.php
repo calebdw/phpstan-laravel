@@ -1,6 +1,6 @@
 <?php
 
-namespace Bug2073;
+namespace CustomModelCollectionMake;
 
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
@@ -14,8 +14,8 @@ use function PHPStan\Testing\assertType;
  */
 function test(Collection $collection): void
 {
-    assertType('Bug2073\ModelCollection<int, Bug2073\User<int>>', ModelCollection::make($collection));
-    assertType('Bug2073\ModelCollection<int, Bug2073\User<int>>', ModelCollection::make($collection->all()));
+    assertType('CustomModelCollectionMake\ModelCollection<int, CustomModelCollectionMake\User<int>>', ModelCollection::make($collection));
+    assertType('CustomModelCollectionMake\ModelCollection<int, CustomModelCollectionMake\User<int>>', ModelCollection::make($collection->all()));
 }
 
 /**

@@ -28,6 +28,7 @@ function test(): void
     }
 
     assertType('string', Builder::globalCustomMacro(b: 99));
+    assertType('string', Builder::macroWithEnumDefaultValue());
     assertType('string', Post::globalCustomMacro(b: 99));
     assertType('string', PostBuilder::globalCustomMacro(b: 99));
     assertType('string', User::first()->accounts()->globalCustomMacro(b: 99));

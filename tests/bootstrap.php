@@ -60,6 +60,11 @@ class CustomCollectionMacro
 
 (new CustomCollectionMacro())->registerMacro();
 
-if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
-    include_once 'enum-definition.php';
+enum FooEnum: string
+{
+    case Foo = 'foo';
 }
+
+Builder::macro('macroWithEnumDefaultValue', static function (string $arg = 'foobar', $b = FooEnum::Foo): string {
+    return $arg;
+});

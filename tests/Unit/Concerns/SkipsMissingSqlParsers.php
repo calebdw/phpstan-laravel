@@ -15,7 +15,7 @@ use function sprintf;
  */
 trait SkipsMissingSqlParsers
 {
-    private const PARSER_CLASSES = [
+    private const array PARSER_CLASSES = [
         SqlParserManager::DRIVER_IAMCAL => 'iamcal\SQLParser',
         SqlParserManager::DRIVER_PHPMYADMIN => 'PhpMyAdmin\SqlParser\Parser',
     ];

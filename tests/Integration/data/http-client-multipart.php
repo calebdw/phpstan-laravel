@@ -1,6 +1,6 @@
 <?php
 
-namespace Bug2431;
+namespace HttpClientMultipart;
 
 use Illuminate\Support\Facades\Http;
 

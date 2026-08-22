@@ -7,8 +7,6 @@ namespace Type;
 use PHPStan\Testing\TypeInferenceTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-use function Orchestra\Testbench\laravel_version_compare;
-
 class GeneralTypeTest extends TypeInferenceTestCase
 {
     /** @return iterable<mixed> */
@@ -21,19 +19,12 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-pluck.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/auth.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/benchmark.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1346.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1565.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1718.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1760.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1819.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1830.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1985.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-1997.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2044.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2057.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2073.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2111.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-2188.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-support-collection.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/mixin-infinite-recursion.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-model-collection-unique.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-intersection-types.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-model-collection-make.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/belongs-to-many-generics.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-filter.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-helper.php');
@@ -50,11 +41,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/custom-eloquent-collection.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/database-transaction.php');
 
-        if (laravel_version_compare('12.0.0', '>=')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/date-extension-l12.php');
-        } else {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/date-extension-l11.php');
-        }
+        yield from self::gatherAssertTypes(__DIR__ . '/data/date-extension.php');
 
         yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder-pluck.php');
@@ -88,41 +75,10 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/view.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/where-relation.php');
 
-        if (laravel_version_compare('11.28.0', '>=')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections-l11-28.php');
-        }
-
-        if (laravel_version_compare('11.0.0', '>=') && laravel_version_compare('12.0.0', '<')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods-l11.php');
-        }
-
-        if (laravel_version_compare('12.0.0', '>=')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods-l12.php');
-            yield from self::gatherAssertTypes(__DIR__ . '/data/model-scope-attribute-l12.php');
-        }
-
-        if (laravel_version_compare('12.15.0', '>=')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/passthru-l12-15.php');
-        } else {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/passthru.php');
-        }
-
-        if (laravel_version_compare('12.19.0', '>=')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder-l12-19.php');
-        }
-
-        if (laravel_version_compare('12.20.0', '>=')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/arr-pluck-l12-20.php');
-            yield from self::gatherAssertTypes(__DIR__ . '/data/collection-stubs-l12-20.php');
-        }
-
-        if (laravel_version_compare('12.41.0', '>=')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/facades-l12-41.php');
-        } elseif (laravel_version_compare('12.20.0', '>=')) {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/facades-l12-20.php');
-        } else {
-            yield from self::gatherAssertTypes(__DIR__ . '/data/facades.php');
-        }
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-scope-attribute.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/passthru.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/facades.php');
 
         //##############################################################################################################
 

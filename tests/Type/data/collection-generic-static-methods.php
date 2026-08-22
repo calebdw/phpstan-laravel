@@ -159,6 +159,9 @@ function test(
     assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User|string>>', $secondCustomEloquentCollection->zip(['foo']));
     assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, int|string>>', $items->zip(['foo', 'bar']));
 
+    assertType('Illuminate\Support\Collection<int<0, 1>, Illuminate\Database\Eloquent\Collection<int, App\User>>', $collection->partition('foo'));
+    assertType('Illuminate\Support\Collection<int<0, 1>, App\TransactionCollection<int, App\Transaction>>', $customEloquentCollection->partition('foo'));
+    assertType('Illuminate\Support\Collection<int<0, 1>, App\UserCollection>', $secondCustomEloquentCollection->partition('foo'));
     assertType('Illuminate\Support\Collection<int<0, 1>, Illuminate\Support\Collection<string, int>>', $items->partition('foo'));
 
     assertType('Illuminate\Support\Collection<int, App\User|int>', $collection->pad(10, 10));

@@ -37,6 +37,9 @@ function test(
     assertType('App\User|false', $collection->find(1, false));
 
     assertType('Illuminate\Support\Collection<int, int>', $collection->pluck('id'));
+    assertType('Illuminate\Support\Collection<int, non-falsy-string>', User::get()->pluck(fn (User $user) => "$user->id - $user->email", 'id'));
+    assertType('Illuminate\Support\Collection<non-falsy-string, int>', User::get()->pluck('id', fn (User $user) => "$user->id - $user->email"));
+    assertType('Illuminate\Support\Collection<non-falsy-string, string>', User::get()->pluck(fn (User $user) => $user->email, fn (User $user) => "$user->id - $user->email"));
 
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', User::all()->mapInto(User::class));
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $collection->flatMap(function (User $user, int $id): array {
@@ -115,6 +118,28 @@ function test(
     assertType('App\User|null', $collection->shift());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $collection->shift(5));
 
+    // Nested generics are inferred through collect() and map().
+    assertType('Illuminate\Support\Collection<int, CollectionStubs\Wrapper<CollectionStubs\Inner<int>>>', collect([new Wrapper(new Inner(42))]));
+    assertType('Illuminate\Support\Collection<int, CollectionStubs\Wrapper<CollectionStubs\Inner<int>>>', collect([42])->map(fn (int $i) => new Wrapper(new Inner($i))));
+
     assertType('App\User|null', $collectionOfUsers->shift());
     assertType('Illuminate\Support\Collection<int, App\User>', $collectionOfUsers->shift(5));
+}
+
+/** @template T */
+class Wrapper
+{
+    /** @param  T  $value */
+    public function __construct(public mixed $value)
+    {
+    }
+}
+
+/** @template T */
+class Inner
+{
+    /** @param  T  $value */
+    public function __construct(public mixed $value)
+    {
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bug1565;
+namespace CustomSupportCollection;
 
 use Illuminate\Support\Collection;
 
@@ -26,5 +26,5 @@ class TestCollection extends Collection
 function test(TestCollection $collection): void
 {
     assertType('mixed', $collection->random());
-    assertType('Bug1565\TestCollection', $collection->map(fn ($val) => 'string'));
+    assertType('CustomSupportCollection\TestCollection', $collection->map(fn ($val) => 'string'));
 }

@@ -316,3 +316,21 @@ class ModelWithPropertyAnnotations extends Model
 class ExtendsModelWithPropertyAnnotations extends ModelWithPropertyAnnotations
 {
 }
+
+/** A relation declared on an interface cannot be resolved to a builder. */
+interface UserContract
+{
+    /** @return BelongsToMany<TeamContract> */
+    public function teams(): BelongsToMany;
+
+    public function getKey();
+}
+
+interface TeamContract
+{
+}
+
+function testRelationDeclaredOnInterface(UserContract $user): void
+{
+    assertType('*ERROR*', $user->teams()->whereKey($user->getKey()));
+}

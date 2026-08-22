@@ -40,11 +40,22 @@ interface Enumerable extends \Countable, \IteratorAggregate, \JsonSerializable, 
     */
    public function combine($values);
 
-    /**
-     * Chunk the collection into chunks with a callback.
-     *
-     * @param  callable(TValue, TKey, static<TKey, TValue>): bool  $callback
-     * @return static<int, static<TKey, TValue>>
-     */
-    public function chunkWhile(callable $callback);
+   /**
+    * Chunk the collection into chunks with a callback.
+    *
+    * @param  callable(TValue, TKey, static<int, TValue>): bool  $callback
+    * @return static<int, static<TKey, TValue>>
+    */
+   public function chunkWhile(callable $callback);
+
+   /**
+    * Get the values of a given key.
+    *
+    * @template TPluckValueReturn = mixed
+    * @template TPluckKeyReturn of array-key = array-key
+    * @param  int|string|array<array-key, string>|(\Closure(TValue): TPluckValueReturn)|null  $value
+    * @param  string|array<array-key, string>|(\Closure(TValue): TPluckKeyReturn)|null  $key
+    * @return static<TPluckKeyReturn, TPluckValueReturn>
+    */
+   public function pluck($value, $key = null);
 }

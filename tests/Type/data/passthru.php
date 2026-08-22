@@ -7,5 +7,5 @@ use App\User;
 use function PHPStan\Testing\assertType;
 
 function test() {
-    assertType('Illuminate\Database\Eloquent\Builder<App\User>', User::getCountForPagination());
+    assertType('int<0, max>', User::query()->getCountForPagination());
 }

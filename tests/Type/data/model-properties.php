@@ -13,6 +13,8 @@ use App\GuardedModel;
 use App\Role;
 use App\RoleUser;
 use App\Team;
+use App\UlidModel;
+use App\UuidModel;
 use App\Thread;
 use App\User;
 use Carbon\Carbon;
@@ -134,4 +136,11 @@ class ModelWithCasts extends Model
             'string' => AsStringable::class.':'.$argument,
         ];
     }
+}
+
+/** ULID and UUID primary keys are strings, not ints. */
+function testUlidAndUuidPrimaryKeys(UlidModel $ulid, UuidModel $uuid): void
+{
+    assertType('string', $ulid->id);
+    assertType('string', $uuid->id);
 }

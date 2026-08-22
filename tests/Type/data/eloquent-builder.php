@@ -9,7 +9,9 @@ use App\PostBuilder;
 use App\Team;
 use App\User;
 use App\Address;
+use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
@@ -390,6 +392,9 @@ function test(
     assertType('App\ChildTeamBuilder|Illuminate\Database\Eloquent\Builder<App\User>', $userOrTeamBuilder->where('id', 5));
 
     assertType('Illuminate\Database\Eloquent\Builder<TModel of Illuminate\Database\Eloquent\Model (function EloquentBuilder\test(), argument)>', $templateBuilder->select());
+
+    assertType('EloquentBuilder\AttributeBuilder', AttributeModel::query());
+    assertType('EloquentBuilder\AttributeOverrideBuilder', AttributeOverrideModel::query());
 }
 
 class Foo extends Model
@@ -451,5 +456,55 @@ class TeamClass extends UnionClass
     public function getQuery(): Builder
     {
         return Team::query();
+    }
+}
+
+#[UseEloquentBuilder(AttributeBuilder::class)]
+class AttributeModel extends Model
+{
+}
+
+/** An explicit newEloquentBuilder() wins over the attribute. */
+#[UseEloquentBuilder(AttributeBuilder::class)]
+class AttributeOverrideModel extends Model
+{
+    public function newEloquentBuilder($query): AttributeOverrideBuilder
+    {
+        return new AttributeOverrideBuilder($query);
+    }
+}
+
+/** @extends Builder<AttributeModel> */
+class AttributeBuilder extends Builder
+{
+}
+
+/** @extends Builder<AttributeOverrideModel> */
+class AttributeOverrideBuilder extends Builder
+{
+}
+
+/**
+ * A class-level template parameter survives calls through the builder.
+ *
+ * @template TModel of Model
+ */
+class TemplatedRepository
+{
+    /** @var Builder<TModel> */
+    private Builder $query;
+
+    public function testSelect(): void
+    {
+        assertType('Illuminate\Database\Eloquent\Builder<TModel of Illuminate\Database\Eloquent\Model (class EloquentBuilder\TemplatedRepository, argument)>', $this->query->select());
+    }
+
+    /** @return Collection<int, TModel> */
+    public function testGet(): Collection
+    {
+        $models = $this->query->get();
+        assertType('Illuminate\Database\Eloquent\Collection<int, TModel of Illuminate\Database\Eloquent\Model (class EloquentBuilder\TemplatedRepository, argument)>', $models);
+
+        return $models;
     }
 }

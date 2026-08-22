@@ -1,6 +1,6 @@
 <?php
 
-namespace Bug2057;
+namespace CollectionIntersectionTypes;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -58,8 +58,8 @@ class Post extends Model
 
 function test(): void
 {
-    assertType('Bug2057\TreeLikeCollection<static(Bug2057\User)>&Illuminate\Database\Eloquent\Collection<int, Bug2057\User>', User::all());
-    assertType('Bug2057\TreeLikeCollection<static(Bug2057\User)>&Illuminate\Database\Eloquent\Collection<int, Bug2057\User>', User::all()->getTree());
-    assertType('Bug2057\TreeCollection<int, Bug2057\Post>', Post::all());
-    assertType('Bug2057\TreeCollection<int, Bug2057\Post>', Post::all()->getTree());
+    assertType('CollectionIntersectionTypes\TreeLikeCollection<static(CollectionIntersectionTypes\User)>&Illuminate\Database\Eloquent\Collection<int, CollectionIntersectionTypes\User>', User::all());
+    assertType('CollectionIntersectionTypes\TreeLikeCollection<static(CollectionIntersectionTypes\User)>&Illuminate\Database\Eloquent\Collection<int, CollectionIntersectionTypes\User>', User::all()->getTree());
+    assertType('CollectionIntersectionTypes\TreeCollection<int, CollectionIntersectionTypes\Post>', Post::all());
+    assertType('CollectionIntersectionTypes\TreeCollection<int, CollectionIntersectionTypes\Post>', Post::all()->getTree());
 }

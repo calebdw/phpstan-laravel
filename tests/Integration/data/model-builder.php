@@ -45,3 +45,36 @@ function test(User|Account $userOrAccount): void
     assertType('int', $userOrAccount->increment('counter'));
     assertType('int', $userOrAccount->decrement('counter'));
 }
+
+/**
+ * A wildcard-generic builder keeps its wildcard through ->where().
+ *
+ * @param Builder<*> $query
+ */
+function testWildcardBuilder(Builder $query): void
+{
+    assertType('Illuminate\Database\Eloquent\Builder<*>', $query->where('foo', 'bar'));
+}
+
+/**
+ * Static model calls resolve through a class-string template parameter.
+ *
+ * @template T of Model
+ *
+ * @param  class-string<T>  $class
+ * @return T
+ */
+function testFindOrFailOnClassString(string $class): mixed
+{
+    return $class::findOrFail(1);
+}
+
+/** self::query() resolves to a builder of the model even when it is final. */
+final class FinalUser extends Model
+{
+    /** @return Builder<self> */
+    public function testQuerySelf(): Builder
+    {
+        return self::query();
+    }
+}
