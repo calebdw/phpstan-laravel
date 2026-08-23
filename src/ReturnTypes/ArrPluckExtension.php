@@ -9,8 +9,10 @@ use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 
 final class ArrPluckExtension implements DynamicStaticMethodReturnTypeExtension
 {
@@ -43,6 +45,13 @@ final class ArrPluckExtension implements DynamicStaticMethodReturnTypeExtension
 
         $from = $scope->getType($arrayArg->value)->getIterableValueType();
 
-        return $this->pluckHelper->getArrayType($from, $valueArg, $keyArg, $scope);
+        $array = $this->pluckHelper->getArrayType($from, $valueArg, $keyArg, $scope);
+
+        if ($keyArg !== null) {
+            return $array;
+        }
+
+        // Without a key Arr::pluck appends, so the result is a list.
+        return TypeCombinator::intersect($array, new AccessoryArrayListType());
     }
 }
