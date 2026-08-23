@@ -63,7 +63,7 @@ function test(
     $foo
         ->groupBy('type')
         ->map(function ($grouped, $groupKey): array {
-            assertType('(int|string)', $groupKey);
+            assertType('string', $groupKey);
         });
 
     assertType('App\User|null', $collection->first());

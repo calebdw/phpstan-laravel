@@ -322,6 +322,8 @@ services:
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentBuilderPluckExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableGroupByExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableKeyByExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerablePluckExtension
