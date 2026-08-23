@@ -52,7 +52,9 @@ final class EnumerableKeyByExtension implements DynamicMethodReturnTypeExtension
         $valueType = $calledOnType->getTemplateType(Enumerable::class, 'TValue');
 
         return new GenericObjectType($class, [
-            $this->columnHelper->getKeyType($valueType, $keyArg, $scope),
+            $this->columnHelper->normalizeKey(
+                $this->columnHelper->getKeyType($valueType, $keyArg, $scope),
+            ),
             $valueType,
         ]);
     }

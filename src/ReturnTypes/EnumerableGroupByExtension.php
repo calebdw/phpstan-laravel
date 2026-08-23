@@ -11,16 +11,11 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
-use PHPStan\Type\ObjectType;
-use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use Stringable;
-use UnitEnum;
 
 use function array_reverse;
 
@@ -136,22 +131,8 @@ final class EnumerableGroupByExtension implements DynamicMethodReturnTypeExtensi
 
     private function getGroupKeyType(Type $valueType, Arg $grouper, Scope $scope): Type
     {
-        $type = $this->columnHelper->getKeyType($valueType, $grouper, $scope);
-
-        // A grouper returning an array files the item under several keys, so
-        // the group keys are that array's values rather than the array.
-        if ($type->isArray()->yes()) {
-            $type = $type->getIterableValueType();
-        }
-
-        // groupBy() normalizes the value before using it as an array key.
-        return match (true) {
-            $type->isBoolean()->yes() => new IntegerType(),
-            $type->isNull()->yes() => new StringType(),
-            (new ObjectType(UnitEnum::class))->isSuperTypeOf($type)->yes()
-                => new BenevolentUnionType([new IntegerType(), new StringType()]),
-            (new ObjectType(Stringable::class))->isSuperTypeOf($type)->yes() => new StringType(),
-            default => $type,
-        };
+        return $this->columnHelper->normalizeGroupKey(
+            $this->columnHelper->getKeyType($valueType, $grouper, $scope),
+        );
     }
 }

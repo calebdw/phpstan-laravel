@@ -20,10 +20,13 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use Stringable;
 use Throwable;
+use UnitEnum;
 
 use function array_filter;
 use function array_map;
@@ -71,6 +74,45 @@ final class ColumnHelper
     {
         return $this->getTypeFromArg($from, $keyArg, $scope)
             ?? new BenevolentUnionType([new IntegerType(), new StringType()]);
+    }
+
+    /**
+     * groupBy() casts a group key before using it as an array key: a bool
+     * becomes an int, an enum goes through enum_value(), and a Stringable or
+     * null is stringified. A grouper returning an array files its item under
+     * each of that array's values.
+     */
+    public function normalizeGroupKey(Type $type): Type
+    {
+        if ($type->isArray()->yes()) {
+            $type = $type->getIterableValueType();
+        }
+
+        return match (true) {
+            $type->isBoolean()->yes() => new IntegerType(),
+            (new ObjectType(UnitEnum::class))->isSuperTypeOf($type)->yes()
+                => new BenevolentUnionType([new IntegerType(), new StringType()]),
+            $type->isNull()->yes() => new StringType(),
+            (new ObjectType(Stringable::class))->isSuperTypeOf($type)->yes() => new StringType(),
+            default => $type,
+        };
+    }
+
+    /**
+     * keyBy() casts differently to groupBy(): every object is stringified
+     * rather than only Stringable ones. A bool is left alone there, but PHP
+     * turns it into an int on the way into the array either way.
+     */
+    public function normalizeKey(Type $type): Type
+    {
+        return match (true) {
+            $type->isBoolean()->yes() => new IntegerType(),
+            (new ObjectType(UnitEnum::class))->isSuperTypeOf($type)->yes()
+                => new BenevolentUnionType([new IntegerType(), new StringType()]),
+            $type->isNull()->yes() => new StringType(),
+            $type->isObject()->yes() => new StringType(),
+            default => $type,
+        };
     }
 
     private function getTypeFromArg(Type $from, Arg $arg, Scope $scope): Type|null

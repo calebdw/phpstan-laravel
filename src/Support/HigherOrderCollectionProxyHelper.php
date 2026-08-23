@@ -19,8 +19,10 @@ use function count;
 
 class HigherOrderCollectionProxyHelper
 {
-    public function __construct(private ReflectionProvider $reflectionProvider)
-    {
+    public function __construct(
+        private ReflectionProvider $reflectionProvider,
+        private ColumnHelper $columnHelper,
+    ) {
     }
 
     /** @phpstan-param 'method'|'property' $propertyOrMethod */
@@ -87,7 +89,11 @@ class HigherOrderCollectionProxyHelper
                 $returnType = $this->getCollectionType($collectionType, $integerType, $valueType);
                 break;
             case 'keyBy':
-                $returnType = $this->getCollectionType($collectionType, new Type\BenevolentUnionType([$integerType, new Type\StringType()]), $valueType);
+                $returnType = $this->getCollectionType(
+                    $collectionType,
+                    $this->columnHelper->normalizeKey($methodOrPropertyReturnType),
+                    $valueType,
+                );
                 break;
             case 'first':
                 $returnType = Type\TypeCombinator::addNull($valueType);
@@ -96,7 +102,14 @@ class HigherOrderCollectionProxyHelper
                 $returnType = $this->getCollectionType(SupportCollection::class, $integerType, new Type\MixedType());
                 break;
             case 'groupBy':
+                $returnType = $this->getCollectionType(
+                    $collectionType,
+                    $this->columnHelper->normalizeGroupKey($methodOrPropertyReturnType),
+                    $this->getCollectionType($collectionType, $integerType, $valueType),
+                );
+                break;
             case 'partition':
+                // Always exactly two groups, keyed 0 and 1.
                 $returnType = $this->getCollectionType($collectionType, $integerType, $this->getCollectionType($collectionType, $integerType, $valueType));
                 break;
             case 'map':
