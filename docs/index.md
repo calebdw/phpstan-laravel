@@ -21,6 +21,7 @@ $user->emial;                           // Access to an undefined property
 $user->accounts;                        // App\AccountCollection<int, App\Account>
 
 User::query()->pluck('name');           // Collection<int, string>
+$user->accounts()->pluck('name');       // Collection<int, string>
 User::all()->groupBy('email');          // Collection<string, Collection<int, App\User>>
 
 config('auth.defaults.guard');          // string|null

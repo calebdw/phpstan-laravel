@@ -5,22 +5,35 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
 use CalebDW\PhpstanLaravel\Support\ColumnHelper;
-use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
-final class EloquentBuilderPluckExtension implements DynamicMethodReturnTypeExtension
+/**
+ * Resolves pluck() against the model behind an Eloquent builder or relation.
+ *
+ * A relation forwards unknown calls to its underlying builder, so the two read
+ * the same column off the same model. They differ only in which template
+ * parameter names that model.
+ */
+final class EloquentPluckExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private ColumnHelper $columnHelper)
-    {
+    /**
+     * @param class-string $class        receiver the extension is registered for
+     * @param string       $templateType template parameter naming the model
+     */
+    public function __construct(
+        private ColumnHelper $columnHelper,
+        private string $class,
+        private string $templateType,
+    ) {
     }
 
     public function getClass(): string
     {
-        return EloquentBuilder::class;
+        return $this->class;
     }
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
@@ -40,7 +53,7 @@ final class EloquentBuilderPluckExtension implements DynamicMethodReturnTypeExte
             return null;
         }
 
-        $from = $scope->getType($methodCall->var)->getTemplateType(EloquentBuilder::class, 'TModel');
+        $from = $scope->getType($methodCall->var)->getTemplateType($this->class, $this->templateType);
 
         return $this->columnHelper->getCollectionType($from, $valueArg, $keyArg, $scope);
     }
