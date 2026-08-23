@@ -1,3 +1,14 @@
 includes:
 	- ../build/e2e/filamentphp-filament/phpstan.neon.dist
 	- filamentphp-filament.baseline.neon
+
+parameters:
+	ignoreErrors:
+		# Filament's own config ignores this under Larastan's identifier,
+		# `larastan.noEnvCallsOutsideOfConfig`, which no longer matches. Its
+		# config lives at packages/*/config rather than the application config
+		# path this rule resolves, so restate the ignore under the current
+		# identifier rather than changing what the run proves.
+		-
+			identifier: laravel.envCallOutsideConfig
+			path: ../build/e2e/filamentphp-filament/packages/support/config/filament.php

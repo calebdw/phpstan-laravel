@@ -46,10 +46,16 @@ final class SqlParserManager
     /** @var array<string, SqlParser> */
     private array $resolved = [];
 
-    /** @var Closure(class-string): bool */
+    /**
+     * Not class-string: the point of the check is that the class may not
+     * exist, and a driver's class is only a known class-string on a machine
+     * where that optional parser happens to be installed.
+     *
+     * @var Closure(string): bool
+     */
     private Closure $classExists;
 
-    /** @param (Closure(class-string): bool)|null $classExists */
+    /** @param (Closure(string): bool)|null $classExists */
     public function __construct(
         private string $defaultDriver = self::DRIVER_AUTO,
         Closure|null $classExists = null,

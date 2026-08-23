@@ -13,9 +13,10 @@
 #   --fresh               Recreate the project from scratch
 #   laravel-constraint    Only for the `laravel` target (default ^12.0)
 #
-# Projects are created under build/<target>/ so nothing is written outside this
-# directory. Real-world targets are analysed with the checked-in config in
-# e2e/<target>.neon, which refers to that path.
+# The laravel skeleton is created under build/laravel/ and real-world targets
+# under build/e2e/<target>/, so nothing is written outside build/. Real-world
+# targets are analysed with the checked-in config in e2e/<target>.neon, which
+# includes the project's own config from that path.
 
 set -euo pipefail
 
@@ -63,7 +64,15 @@ case "$TARGET" in
         ;;
 esac
 
-PROJECT_DIR="${PACKAGE_DIR}/build/${TARGET}"
+# e2e/<target>.neon includes the project's own config by relative path, so this
+# layout is part of that contract rather than an implementation detail.
+if [ "$TARGET" = "laravel" ]; then
+    PROJECT_DIR="${PACKAGE_DIR}/build/${TARGET}"
+    PROJECT_LABEL="build/${TARGET}"
+else
+    PROJECT_DIR="${PACKAGE_DIR}/build/e2e/${TARGET}"
+    PROJECT_LABEL="build/e2e/${TARGET}"
+fi
 
 if [ "$FRESH" -eq 1 ]; then
     rm -rf "$PROJECT_DIR"
@@ -72,14 +81,14 @@ fi
 # --- Fetch the project ------------------------------------------------------
 
 if [ -d "$PROJECT_DIR" ]; then
-    echo "==> Reusing build/${TARGET} (pass --fresh to recreate)"
+    echo "==> Reusing ${PROJECT_LABEL} (pass --fresh to recreate)"
 elif [ "$TARGET" = "laravel" ]; then
-    echo "==> Installing Laravel ${LARAVEL_VERSION_CONSTRAINT} into build/${TARGET}"
+    echo "==> Installing Laravel ${LARAVEL_VERSION_CONSTRAINT} into ${PROJECT_LABEL}"
     mkdir -p "$(dirname "$PROJECT_DIR")"
     composer create-project --quiet --prefer-dist \
         "laravel/laravel:${LARAVEL_VERSION_CONSTRAINT}" "$PROJECT_DIR"
 else
-    echo "==> Cloning ${REPOSITORY} at ${REF:0:8} into build/${TARGET}"
+    echo "==> Cloning ${REPOSITORY} at ${REF:0:8} into ${PROJECT_LABEL}"
     mkdir -p "$PROJECT_DIR"
     git init -q "$PROJECT_DIR"
     git -C "$PROJECT_DIR" remote add origin "https://github.com/${REPOSITORY}.git"
@@ -123,6 +132,15 @@ composer config repositories.0 \
 
 if [ "$TARGET" = "monicahq-monica" ]; then
     composer remove --dev -n tomasvotruba/bladestan
+fi
+
+# This package deliberately does not `replace` larastan/larastan, so a project
+# that already depends on it would register both extensions and report every
+# error twice. Drop it, the same as a real migration would.
+if composer show --name-only 2>/dev/null | grep -qx 'larastan/larastan'; then
+    echo "==> Removing larastan/larastan (would double-register the extension)"
+    composer remove --dev -n larastan/larastan \
+        || composer remove -n larastan/larastan
 fi
 
 # No version information with "type":"path"

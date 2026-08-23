@@ -9,3 +9,13 @@ parameters:
     paths:
         - src
     reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        # Both SQL parsers are optional, and CI analyses the package with each
+        # one uninstalled to prove the other can carry the suite alone. In that
+        # run the missing library's adapter references classes that genuinely
+        # are not there. Scoped to the two adapters, which exist only to call
+        # into their library, so nothing else is hidden.
+        - identifier: class.notFound
+          path: src/Sql/IamcalSqlParser.php
+        - identifier: class.notFound
+          path: src/Sql/PhpMyAdminSqlParser.php
