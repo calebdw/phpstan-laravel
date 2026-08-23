@@ -9,7 +9,6 @@ use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
-use PhpParser\Node\Name\FullyQualified;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
@@ -71,21 +70,19 @@ class NoModelMakeRule implements Rule
     protected function isCalledOnModel(StaticCall $call, Scope $scope): bool
     {
         $class = $call->class;
-        if ($class instanceof FullyQualified) {
-            $type = new ObjectType($class->toString());
-        } elseif ($class instanceof Expr) {
+
+        if ($class instanceof Expr) {
             $type = $scope->getType($class);
 
             if ($type->isClassString()->yes() && $type->getConstantStrings() !== []) {
                 $type = new ObjectType($type->getConstantStrings()[0]->getValue());
             }
         } else {
-            // TODO can we handle relative names, do they even occur here?
-            return false;
+            // Resolves every name form, so self, static and parent are
+            // covered as well as a written-out class name.
+            $type = $scope->resolveTypeByName($class);
         }
 
-        return (new ObjectType(Model::class))
-            ->isSuperTypeOf($type)
-            ->yes();
+        return (new ObjectType(Model::class))->isSuperTypeOf($type)->yes();
     }
 }

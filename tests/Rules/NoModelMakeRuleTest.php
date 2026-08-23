@@ -34,6 +34,15 @@ class NoModelMakeRuleTest extends RuleTestCase
         ]);
     }
 
+    public function testModelMakeViaSelfStaticAndParent(): void
+    {
+        $this->analyse([__DIR__ . '/data/ModelMakeSelf.php'], [
+            ["Called 'Model::make()' which performs unnecessary work, use 'new Model()'.", 13],
+            ["Called 'Model::make()' which performs unnecessary work, use 'new Model()'.", 18],
+            ["Called 'Model::make()' which performs unnecessary work, use 'new Model()'.", 23],
+        ]);
+    }
+
     public function testReportsModelMakeCallsInTraitRatherThanClass(): void
     {
         $actualErrors = $this->gatherAnalyserErrors([

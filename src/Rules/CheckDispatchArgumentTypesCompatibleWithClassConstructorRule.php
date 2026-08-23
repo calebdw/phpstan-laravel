@@ -107,7 +107,7 @@ class CheckDispatchArgumentTypesCompatibleWithClassConstructorRule implements Ru
             $node = (new BuilderFactory())->staticCall($node->class, $node->name, $args);
         }
 
-        // @phpstan-ignore-next-line
+        /** @phpstan-ignore phpstanApi.method (reimplementing argument checking is not worth the independence) */
         return $this->check->check(
             ParametersAcceptorSelector::selectFromArgs(
                 $scope,

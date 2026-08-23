@@ -33,13 +33,15 @@ function test(User|Account $userOrAccount): void
 {
     \App\User::query()->where(DB::raw('1'), 1)->get();
 
-    /** @see https://github.com/larastan/larastan/issues/1806 */
+    // orderBy() and orderByDesc() accept a builder for subquery ordering,
+    // not only a column name.
     \App\User::query()->orderBy(Post::query()->select('id')->whereColumn('user_id', 'users.id'));
     \App\User::query()->orderByDesc(Post::query()->select('id')->whereColumn('user_id', 'users.id'));
 
     \App\User::query()->get()->pluck('computed');
 
-    /** @see https://github.com/larastan/larastan/issues/1952 */
+    // Team returns a custom builder from newEloquentBuilder(), which has to
+    // survive a chain of inherited builder methods.
     Team::query()->where('name', 'Team A')->orderBy('name')->get();
 
     assertType('int', $userOrAccount->increment('counter'));

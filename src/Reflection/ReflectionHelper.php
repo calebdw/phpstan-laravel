@@ -27,7 +27,7 @@ final class ReflectionHelper
             }
         }
 
-        /** @phpstan-ignore-next-line */
+        /** @phpstan-ignore phpstanApi.method, phpstanApi.constructor (no public API answers whether a mixin supplies the member) */
         return (new MixinPropertiesClassReflectionExtension([$classReflection->getName()]))
             ->hasProperty($classReflection, $propertyName);
     }
@@ -47,7 +47,7 @@ final class ReflectionHelper
             }
         }
 
-        /** @phpstan-ignore-next-line */
+        /** @phpstan-ignore phpstanApi.method, phpstanApi.constructor (no public API answers whether a mixin supplies the member) */
         return (new MixinMethodsClassReflectionExtension([$classReflection->getName()]))
             ->hasMethod($classReflection, $methodName);
     }

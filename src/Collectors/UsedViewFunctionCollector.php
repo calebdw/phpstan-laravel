@@ -30,11 +30,13 @@ final class UsedViewFunctionCollector implements Collector
 
         $funcName = $scope->resolveName($funcName);
 
+        // Any global `view` is taken to be Laravel's helper. A project is free
+        // to define its own, but the only consequence is counting its argument
+        // as a used view, which makes UnusedViewsRule report less rather than
+        // report something wrong.
         if ($funcName !== 'view') {
             return null;
         }
-
-        // TODO: maybe make sure this function is coming from Laravel
 
         if (count($node->getArgs()) < 1) {
             return null;

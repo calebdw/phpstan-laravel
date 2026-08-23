@@ -252,14 +252,17 @@ class ModelCastHelper
             $modelCasts = array_merge(
                 $modelCasts,
                 array_combine(
-                    array_map(static fn ($key) => $key->getValue(), $castsMethodReturnType->getKeyTypes()), // @phpstan-ignore-line
+                    /** @phpstan-ignore method.notFound (guarded by isConstantArray() above) */
+                    array_map(static fn ($key) => $key->getValue(), $castsMethodReturnType->getKeyTypes()),
                     array_map(static function (Type $value) {
                         if ($value->isConstantValue()->yes()) {
-                            return str_replace('\\\\', '\\', (string) $value->getValue()); // @phpstan-ignore-line
+                            /** @phpstan-ignore method.notFound (guarded by isConstantValue() above) */
+                            return str_replace('\\\\', '\\', (string) $value->getValue());
                         }
 
                         return $value->describe(VerbosityLevel::value());
-                    }, $castsMethodReturnType->getValueTypes()), // @phpstan-ignore-line
+                    /** @phpstan-ignore method.notFound (guarded by isConstantArray() above) */
+                    }, $castsMethodReturnType->getValueTypes()),
                 ),
             );
         }

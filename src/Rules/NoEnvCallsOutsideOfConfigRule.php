@@ -42,7 +42,7 @@ class NoEnvCallsOutsideOfConfigRule implements Rule
             return;
         }
 
-        $this->configDirectories = [config_path()]; // @phpstan-ignore-line
+        $this->configDirectories = [config_path()];
     }
 
     public function getNodeType(): string

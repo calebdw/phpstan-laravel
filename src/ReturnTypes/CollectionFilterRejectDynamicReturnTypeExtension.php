@@ -106,7 +106,7 @@ class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodR
             $itemVariableName = $var->name;
 
             $node = new Variable($itemVariableName);
-            // @phpstan-ignore-next-line
+            /** @phpstan-ignore method.notFound (assignExpression is only on MutatingScope) */
             $scope = $scope->assignExpression($node, $valueType, $valueType);
             $scope = match ($methodName) {
                 'filter', 'where' => $scope->filterByTruthyValue($expr),

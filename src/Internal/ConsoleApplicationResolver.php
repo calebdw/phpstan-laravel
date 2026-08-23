@@ -39,7 +39,8 @@ final class ConsoleApplicationResolver
             $commands[$name] = $command;
         }
 
-        return $commands; // @phpstan-ignore-line
+        /** @phpstan-ignore return.type (the console application does not type its command list) */
+        return $commands;
     }
 
     private function getApplication(): Application

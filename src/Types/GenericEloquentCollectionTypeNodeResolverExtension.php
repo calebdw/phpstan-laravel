@@ -19,18 +19,19 @@ use PHPStan\Type\Type;
 use function count;
 
 /**
- * @see https://github.com/larastan/larastan/issues/476
- * @see https://gist.github.com/ondrejmirtes/56af016d0595788d5400b8dfb6520adc
- *
- * This extension interprets docblocks like:
+ * Interprets the older array-shorthand docblock style:
  *
  * \Illuminate\Database\Eloquent\Collection|\App\Account[] $accounts
  *
- * and transforms them into:
+ * and transforms it into the generic equivalent:
  *
  * \Illuminate\Database\Eloquent\Collection<int, \App\Account> $accounts
  *
- * Now IDE's can benefit from auto-completion, and we can benefit from the correct type passed to the generic collection
+ * so that the element type survives, both for analysis and for editor
+ * completion, without the annotation having to be rewritten.
+ *
+ * @see https://gist.github.com/ondrejmirtes/56af016d0595788d5400b8dfb6520adc
+ *      for the original sketch of this approach
  */
 class GenericEloquentCollectionTypeNodeResolverExtension implements TypeNodeResolverExtension
 {

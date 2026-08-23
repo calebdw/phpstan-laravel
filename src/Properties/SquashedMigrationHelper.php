@@ -65,9 +65,8 @@ final class SquashedMigrationHelper
 
             try {
                 $tableDefinitions = $parser->parseTables($fileContents);
-            } catch (SqlParserFailure) {
-                // TODO: re-throw the exception with a clear message?
-                continue;
+            } catch (SqlParserFailure $failure) {
+                throw SqlParserFailure::unreadableDump($file->getPathname(), $failure);
             }
 
             foreach ($tableDefinitions as $definition) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -25,6 +26,21 @@ class SquashedMigrationHelperTest extends PHPStanTestCase
     {
         yield 'phpmyadmin' => [SqlParserManager::DRIVER_PHPMYADMIN];
         yield 'iamcal' => [SqlParserManager::DRIVER_IAMCAL];
+    }
+
+    #[Test]
+    #[DataProvider('driverProvider')]
+    public function it_fails_loudly_when_a_dump_cannot_be_parsed(string $driver): void
+    {
+        $this->skipUnlessParserInstalled($driver);
+
+        $this->expectException(SqlParserFailure::class);
+        $this->expectExceptionMessageMatches('/Unable to parse the schema dump at .*unparseable_schema/');
+
+        $this->getSquashedMigrationHelper(
+            [__DIR__ . '/data/schema/unparseable_schema'],
+            driver: $driver,
+        )->parseSchemaDumps($this->modelDatabaseHelper);
     }
 
     #[Test]

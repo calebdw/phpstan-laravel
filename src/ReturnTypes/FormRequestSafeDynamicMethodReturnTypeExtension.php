@@ -46,7 +46,8 @@ class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMethodRe
             return null;
         }
 
-        assert($argType instanceof ConstantArrayType); // @phpstan-ignore-line
+        /** @phpstan-ignore phpstanApi.instanceofType (asserting the concrete type is the point of the line) */
+        assert($argType instanceof ConstantArrayType);
 
         $builder = ConstantArrayTypeBuilder::createEmpty();
 

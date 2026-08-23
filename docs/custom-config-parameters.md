@@ -153,6 +153,11 @@ Squashed schema dumps are scanned to infer model properties. Set this to
 `false` to skip them, which also removes the need for an SQL parser to be
 installed at all.
 
+A dump the parser cannot read fails the analysis rather than being skipped,
+since the tables it defines would otherwise go missing from model properties
+with nothing to say so. Setting this to `false` is the way to opt out of a
+dump you cannot fix.
+
 ### Example
 
 ```neon

@@ -28,9 +28,9 @@ final class ApplicationResolver
      */
     public static function createSymlinkToVendorPath(Application $app, string $vendorDir): void
     {
-        /** @phpstan-ignore-next-line method.internalClass (don't care) */
+        /** @phpstan-ignore method.internalClass (Testbench marks this internal, but offers no public equivalent) */
         if (class_exists(CreateVendorSymlink::class)) {
-            /** @phpstan-ignore-next-line method.internalClass, new.internalClass (don't care) */
+            /** @phpstan-ignore method.internalClass, new.internalClass (Testbench marks this internal, but offers no public equivalent) */
             (new CreateVendorSymlink($vendorDir))->bootstrap($app);
 
             return;

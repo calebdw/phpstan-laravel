@@ -43,7 +43,8 @@ final class ViewFileHelper
             ...array_values($finder->getHints()),
         );
 
-        $this->viewDirectories = $viewDirectories; // @phpstan-ignore-line
+        /** @phpstan-ignore assign.propertyType (array_merge loses the non-empty-string element type) */
+        $this->viewDirectories = $viewDirectories;
     }
 
     /** @return Generator<int, string, void, void> */
