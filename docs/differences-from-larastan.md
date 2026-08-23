@@ -204,6 +204,72 @@ $posts->keyBy('user.name');       // EloquentCollection<string, App\Post>
 Arr::keyBy($users, 'name');       // array<string, App\User>
 ```
 
+### groupBy
+
+`groupBy` returns a collection of collections, and an array argument groups
+again inside each group, once per element. That depth is a property of the
+argument rather than of the signature, so no stub can describe it — Laravel's
+own conditional type widens the values to `mixed` the moment an array is
+involved.
+
+Here the nesting follows the argument, one level per grouper. Every level is the
+receiver's own class, since `groupBy` builds each group with `newInstance()` —
+abbreviated to `Collection` below to keep the nesting readable:
+
+```php
+$users->groupBy('name');
+// Collection<string, Collection<int, User>>
+
+$users->groupBy(['name', 'id']);
+// Collection<string, Collection<int, Collection<int, User>>>
+
+$users->groupBy(['name', 'id', 'email']);
+// Collection<string, Collection<int, Collection<string, Collection<int, User>>>>
+```
+
+Group keys are resolved rather than widened to `array-key`, through the same
+lookup `pluck` and `keyBy` use, so dotted paths and callbacks work at every
+level — including callbacks that declare no types:
+
+```php
+$users->groupBy('id');                        // Collection<int, ...>
+$posts->groupBy('user.name');                 // Collection<string, ...>
+$users->groupBy(fn ($u) => $u->id);           // Collection<int, ...>
+$users->groupBy(['name', fn ($u) => $u->id]); // a column and a callback
+```
+
+`groupBy` normalizes each key before using it, and so does this:
+
+```php
+$users->groupBy(fn ($u) => $u->id > 5);        // bool becomes int
+$users->groupBy(fn ($u): Stringable => ...);   // Stringable becomes string
+$users->groupBy(fn ($u): array => [$u->name]); // several groups per item
+```
+
+`preserveKeys` affects only the innermost collection, which is why it shows up
+only where the collection's own keys are not already `int`:
+
+```php
+/** @var Collection<string, User> $keyed */
+$keyed->groupBy('id');        // Collection<int, Collection<int, User>>
+$keyed->groupBy('id', true);  // Collection<int, Collection<string, User>>
+```
+
+> [!NOTE]
+> An array argument means different things across these methods. For `pluck`
+> and `keyBy` it is the segments of a single key, so `['user', 'name']` reads
+> `user.name`. For `groupBy` it is successive grouping levels.
+
+### Higher order proxies agree with the argument forms
+
+`$users->groupBy->email` and `$users->groupBy('email')` resolve the same key
+type, rather than the proxy form falling back to `array-key`:
+
+```php
+$users->groupBy->email;  // Collection<string, Collection<int, User>>
+$users->keyBy->email;    // Collection<string, User>
+```
+
 ### Template types
 
 Collection template parameters are no longer overwritten when chaining through
