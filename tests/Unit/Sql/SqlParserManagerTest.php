@@ -6,7 +6,6 @@ namespace Tests\Unit\Sql;
 
 use CalebDW\PhpstanLaravel\Sql\IamcalSqlParser;
 use CalebDW\PhpstanLaravel\Sql\PhpMyAdminSqlParser;
-use CalebDW\PhpstanLaravel\Sql\SqlParser;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Sql\SqlParserNotAvailable;
 use PHPUnit\Framework\Attributes\Test;
@@ -109,40 +108,6 @@ class SqlParserManagerTest extends TestCase
         $this->expectExceptionMessageMatches('/Unsupported SQL parser driver "sqlite"/');
 
         $this->manager()->driver('sqlite');
-    }
-
-    #[Test]
-    public function it_can_be_extended_with_a_custom_driver(): void
-    {
-        $custom = new class implements SqlParser {
-            /** @inheritDoc */
-            public function parseTables(string $sql): array
-            {
-                return [];
-            }
-        };
-
-        $manager = $this->manager('custom')->extend('custom', static fn (): SqlParser => $custom);
-
-        $this->assertSame($custom, $manager->driver());
-    }
-
-    #[Test]
-    public function it_can_replace_a_built_in_driver(): void
-    {
-        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_PHPMYADMIN);
-
-        $custom = new class implements SqlParser {
-            /** @inheritDoc */
-            public function parseTables(string $sql): array
-            {
-                return [];
-            }
-        };
-
-        $manager = $this->manager()->extend('phpmyadmin', static fn (): SqlParser => $custom);
-
-        $this->assertSame($custom, $manager->driver('phpmyadmin'));
     }
 
     #[Test]

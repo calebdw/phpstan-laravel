@@ -45,10 +45,11 @@ Otherwise update the include in your `phpstan.neon`:
 +    - vendor/calebdw/phpstan-laravel/extension.neon
 ```
 
-## 3. Nest configuration under `laravel:`
+## 3. Move configuration under `laravel:`
 
-Every configuration option provided by this extension now lives under a `laravel:` key
-instead of being mixed into PHPStan's top-level `parameters:`.
+Every option provided by this extension now lives under a `laravel:` key instead of being
+mixed into PHPStan's top-level `parameters:`, and the options that switch a rule on or off
+sit one level deeper again, under `laravel.rules:`.
 
 ```diff
  parameters:
@@ -61,18 +62,75 @@ instead of being mixed into PHPStan's top-level `parameters:`.
 -        - resources/views
 +    laravel:
 +        checkModelProperties: true
-+        checkUnusedViews: true
 +        viewDirectories:
 +            - resources/views
++        rules:
++            unusedView: true
 ```
 
-This applies to every option provided by this extension. PHPStan's own parameters (`level`,
-`paths`, `bootstrapFiles`, `ignoreErrors`, and so on) stay exactly where they are.
+PHPStan's own parameters (`level`, `paths`, `bootstrapFiles`, `ignoreErrors`, and so on)
+stay exactly where they are.
 
-Nesting is validated, so a stale top-level option will fail with an "Unexpected item"
-error rather than being silently ignored.
+The whole tree is schema validated, so a stale or misplaced option fails with an
+"Unexpected item" error — usually with the right spelling suggested — rather than being
+silently ignored. Nothing in this section can quietly change your analysis: every rename
+below removes the old key, so a config you forget to update fails loudly.
 
-### Two options were renamed and inverted
+### Rule toggles
+
+Under `laravel.rules`, each toggle is named after what the rule reports, with no `check`
+or `no` prefix — those prefixes were split roughly half and half across the old options,
+and the name of a rule is not the place to restate whether you want it.
+
+| Larastan | Here, under `laravel.rules` |
+| --- | --- |
+| `checkAuthCallsWhenInRequestScope` | `authInRequestScope` |
+| `checkMissingTranslations` | `missingTranslation` |
+| `checkModelAppends` | `modelAppends` |
+| `checkModelMethodVisibility` | `modelMethodVisibility` |
+| `checkOctaneCompatibility` | `octaneCompatibility` |
+| `checkUnusedViews` | `unusedView` |
+| `noEnvCallsOutsideOfConfig` | `envCallOutsideConfig` |
+| `noModelMake` | `modelMake` |
+| `noUnnecessaryCollectionCall` | `unnecessaryCollectionCall.enabled` |
+| `noUnnecessaryCollectionCallOnly` | `unnecessaryCollectionCall.only` |
+| `noUnnecessaryCollectionCallExcept` | `unnecessaryCollectionCall.except` |
+| `noUnnecessaryEnumerableToArrayCalls` | `unnecessaryEnumerableToArrayCall` |
+
+Two rules have no Larastan equivalent and so are not in the table:
+`modelForwardingToBuilder` and `modelStaticForwardingToBuilder`, both off by
+default. See [rules](rules.md#model-forwarding-to-builder).
+
+The three `noUnnecessaryCollectionCall*` options are one rule with two filters, so they
+are now one structure:
+
+```diff
+ parameters:
+     laravel:
+-        noUnnecessaryCollectionCall: true
+-        noUnnecessaryCollectionCallExcept: ['contains']
++        rules:
++            unnecessaryCollectionCall:
++                enabled: true
++                except: ['contains']
+```
+
+`checkModelProperties` stays where it is, directly under `laravel:`. It is not a rule — it
+activates the `model-property` type, and the mismatches are then reported by PHPStan's own
+argument checks.
+
+### Directory and scanning options
+
+| Larastan | Here |
+| --- | --- |
+| `databaseMigrationsPath` | `migrationDirectories` |
+| `squashedMigrationsPath` | `schemaDirectories` |
+| `disableMigrationScan: true` | `scanMigrations: false` |
+| `disableSchemaScan: true` | `scanSchema: false` |
+
+Both path options were already lists despite the singular `Path`, and now match
+`configDirectories`, `viewDirectories` and `translationDirectories`. "Squashed" also no
+longer described what the option pointed at once the scan flag became `scanSchema`.
 
 The two `disable*` flags were the only negatives among the options, which made
 `disableMigrationScan: false` a double negative to read. They are now positive and
@@ -88,56 +146,111 @@ scanning is the default, so the meaning of the value flips along with the name:
 ```
 
 Both default to `true`, matching the old defaults of `disableMigrationScan: false` and
-`disableSchemaScan: false`. If you never set either, there is nothing to change. Because
-the old keys no longer exist, a leftover `disableSchemaScan` fails validation rather than
-being quietly ignored, so this cannot silently change your analysis.
+`disableSchemaScan: false`. If you never set either, there is nothing to change.
+
+### Four options no longer exist
+
+All four defaulted to `false` in Larastan, so unless you turned one on there is nothing
+to do. If you did set one, remove it — the key no longer exists and will fail validation.
+
+| Removed | What happens now |
+| --- | --- |
+| `checkConfigTypes` | Always on. `config()`, the `Config` facade and an injected repository are always typed from your own config files. |
+| `parseModelCastsMethod` | Always on. A model's `casts()` method is always read. |
+| `generalizeEnvReturnType` | Gone. `env()` keeps the literal type of its default rather than widening it, which is what `false` already did. |
+| `enableMigrationCache` | Gone, along with the cache it controlled. |
+
+The first two were opt-in improvements with no real argument for leaving them off, so
+they are simply how the extension behaves. Turning `checkConfigTypes` on by default is
+the one that can surface new errors: config values now have real types, so code that was
+handed `mixed` is now checked.
+
+### `sqlParser` only accepts the built-in drivers
+
+`sqlParser` is validated against `auto`, `iamcal` and `phpmyadmin`, so a typo fails
+configuration validation with the valid values listed instead of failing later, mid-parse.
+Registering a parser of your own is no longer supported.
 
 ### One rule is now on by default
 
-`noUnnecessaryEnumerableToArrayCalls` was off in Larastan and is on here. It flags
+`unnecessaryEnumerableToArrayCall` was off in Larastan and is on here. It flags
 `toArray()` on a collection whose values cannot be `Arrayable`, where `all()` does the
-same job without the recursive conversion. It sits alongside `noUnnecessaryCollectionCall`,
+same job without the recursive conversion. It sits alongside `unnecessaryCollectionCall`,
 which was already on, so the two redundancy checks now behave alike. Set it to `false` to
 restore the old behaviour.
 
 ## 4. Error identifiers renamed
 
-All error identifiers now use a `laravel.` prefix:
+Every identifier now uses a `laravel.` prefix and names what was found rather than the
+policy behind it, so the `no` prefix is gone from all of them. Where one concern reports
+more than one kind of error, the identifiers are grouped under a common stem.
 
-```diff
-- larastan.noModelMake
-+ laravel.noModelMake
-```
-
-Two cases do not follow a plain prefix swap:
-
-| Old | New |
+| Larastan | Here |
 | --- | --- |
+| `larastan.noModelMake` | `laravel.modelMake` |
+| `larastan.noEnvCallsOutsideOfConfig` | `laravel.envCallOutsideConfig` |
+| `larastan.noUnnecessaryCollectionCall` | `laravel.unnecessaryCollectionCall` |
+| `larastan.noAuthFacadeInRequestScope` | `laravel.authInRequestScope.facade` |
+| `larastan.noAuthHelperInRequestScope` | `laravel.authInRequestScope.helper` |
+| `larastan.noPublicModelScopeMethod` | `laravel.modelMethodVisibility.scope` |
+| `larastan.noPublicModelAccessorMethod` | `laravel.modelMethodVisibility.accessor` |
+| `larastan.unusedViews` | `laravel.unusedView` |
+| `larastan.missingTranslations` | `laravel.missingTranslation` |
 | `rules.modelAppends` | `laravel.modelAppends` |
-| `larastan.jobs.noConstructor`, `larastan.events.noConstructor` | `laravel.jobs.noConstructor`, `laravel.events.noConstructor` |
+| `larastan.jobs.noConstructor` | `laravel.jobs.noConstructor` |
+| `larastan.events.noConstructor` | `laravel.events.noConstructor` |
+
+The rest are a plain prefix swap: `larastan.octaneCompatibility` becomes
+`laravel.octaneCompatibility`, and so on for `relationExistence`,
+`unnecessaryEnumerableToArrayCall`, `console.*`, `uselessConstructs.*` and
+`deferrableServiceProvider.missingProvides`.
+
+Two plurals became singular — `unusedViews` and `missingTranslations` — because each
+error is about one view or one translation.
+
+One identifier has no counterpart. `larastan.configCollection` reported
+`Config::collection()` on a key that is not an array; that check is now part of a rule
+covering every typed accessor, and reports under `laravel.configAccessor`. An
+`ignoreErrors` entry for the old identifier can be deleted.
 
 This affects your baseline, any `ignoreErrors` entries using `identifier:`, and inline
 `@phpstan-ignore` / `@phpstan-ignore-next-line` comments.
 
-The simplest path is to regenerate the baseline:
+The simplest path by far is to regenerate the baseline:
 
 ```bash
 vendor/bin/phpstan analyse --generate-baseline
 ```
 
-If you would rather not regenerate it, rewrite the identifiers in place:
+Rewriting them in place takes more than a prefix swap, since the `no` comes off, two
+names lose a plural, and four are regrouped. The specific cases have to run before the
+general ones. Review the diff before committing:
 
 ```bash
-sed -i 's/\blarastan\./laravel./g; s/\brules\.modelAppends\b/laravel.modelAppends/g' phpstan-baseline.neon
+sed -i -E \
+  -e 's/\blarastan\.noAuthFacadeInRequestScope\b/laravel.authInRequestScope.facade/g' \
+  -e 's/\blarastan\.noAuthHelperInRequestScope\b/laravel.authInRequestScope.helper/g' \
+  -e 's/\blarastan\.noPublicModelScopeMethod\b/laravel.modelMethodVisibility.scope/g' \
+  -e 's/\blarastan\.noPublicModelAccessorMethod\b/laravel.modelMethodVisibility.accessor/g' \
+  -e 's/\blarastan\.unusedViews\b/laravel.unusedView/g' \
+  -e 's/\blarastan\.missingTranslations\b/laravel.missingTranslation/g' \
+  -e 's/\blarastan\.no([A-Z])/laravel.\l\1/g' \
+  -e 's/\blarastan\./laravel./g' \
+  -e 's/\brules\.modelAppends\b/laravel.modelAppends/g' \
+  phpstan-baseline.neon
 ```
 
-Inline ignore comments have to be updated in your source as well. Review the diff before
-committing:
+Inline ignore comments have to be updated in your source as well. The same script works
+on them, with the file list swapped:
 
 ```bash
-grep -rl '@phpstan-ignore' app src tests \
-    | xargs sed -i 's/\blarastan\./laravel./g; s/\brules\.modelAppends\b/laravel.modelAppends/g'
+grep -rl '@phpstan-ignore' app src tests | xargs sed -i -E ...
 ```
+
+> [!TIP]
+> Set [`reportUnmatchedIgnoredErrors`][unmatched] to `true` while you migrate. An
+> identifier you missed then shows up as an unmatched ignore rather than silently
+> ignoring nothing.
 
 ## 5. Install an SQL parser if you use schema dumps
 
@@ -170,8 +283,8 @@ with.
 
 ## 6. Relative directory options resolve differently
 
-The directory options — `configDirectories`, `databaseMigrationsPath`,
-`squashedMigrationsPath`, `viewDirectories`, `translationDirectories` — are now
+The directory options — `configDirectories`, `migrationDirectories`,
+`schemaDirectories`, `viewDirectories`, `translationDirectories` — are now
 registered with PHPStan's `expandRelativePaths`, so a relative path is resolved
 against the config file that declares it. Larastan documented this behaviour but
 never wired it up, so relative paths there actually resolved against whichever
@@ -204,6 +317,7 @@ MIT licensed.
 
 <!-- links -->
 [larastan]: https://github.com/larastan/larastan
+[unmatched]: https://phpstan.org/user-guide/ignoring-errors#reporting-unused-ignores
 [extension-installer]: https://phpstan.org/user-guide/extension-library#installing-extensions
 [can]: https://github.com/canvural
 [nuno]: https://github.com/nunomaduro

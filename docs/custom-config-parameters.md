@@ -1,24 +1,79 @@
 # Custom config parameters
 
-All custom config parameters that are defined by this extension are listed here.
+Every option this extension defines lives under `parameters.laravel` in your
+PHPStan configuration:
 
-## `noUnnecessaryCollectionCall`, `noUnnecessaryCollectionCallOnly`, `noUnnecessaryCollectionCallExcept`
+```neon
+parameters:
+    laravel:
+        checkModelProperties: true
+        rules:
+            unusedView: true
+```
 
-These parameters are related to the `NoUnnecessaryCollectionCall` rule. You can find the details about these parameters and the rule [here](rules.md#NoUnnecessaryCollectionCall).
+PHPStan's own parameters — `level`, `paths`, `bootstrapFiles`, `ignoreErrors`
+and so on — stay at the top level. The nesting is validated, so a misspelled or
+misplaced option fails with an "Unexpected item" error rather than being
+silently ignored.
 
-## `databaseMigrationsPath`
+There are two groups. **Rule toggles** live under `laravel.rules` and are
+documented with the rule they switch on, in [rules](rules.md). Everything else
+is on this page: where to look for your schema, and how types are inferred.
 
-By default, the default Laravel database migration path (`database/migrations`) is used to scan migration files to understand the table structure and model properties. If you have database migrations in other place than the default, you can use this config parameter to tell this extension where the database migrations are stored.
+## Rule toggles
 
-You can give absolute paths, or paths relative to the PHPStan config file.
-Paths with wildcards are also supported (passed to `glob` function).
+Each of these enables or disables one rule. Follow the link for what the rule
+reports, its error identifier, and its own options.
+
+| Option under `laravel.rules` | Default | Rule |
+| --- | --- | --- |
+| `authInRequestScope` | `false` | [Auth in request scope](rules.md#auth-in-request-scope) |
+| `configAccessor` | `true` | [Config accessor](rules.md#config-accessor) |
+| `envCallOutsideConfig` | `true` | [Env call outside config](rules.md#env-call-outside-config) |
+| `missingTranslation` | `false` | [Missing translation](rules.md#missing-translation) |
+| `modelAppends` | `true` | [Model appends](rules.md#model-appends) |
+| `modelForwardingToBuilder` | `false` | [Model forwarding to builder](rules.md#model-forwarding-to-builder) |
+| `modelMake` | `true` | [Model make](rules.md#model-make) |
+| `modelMethodVisibility` | `false` | [Model method visibility](rules.md#model-method-visibility) |
+| `modelStaticForwardingToBuilder` | `false` | [Model static forwarding to builder](rules.md#model-static-forwarding-to-builder) |
+| `octaneCompatibility` | `false` | [Octane compatibility](rules.md#octane-compatibility) |
+| `unnecessaryCollectionCall` | `true` | [Unnecessary collection call](rules.md#unnecessary-collection-call) |
+| `unnecessaryEnumerableToArrayCall` | `true` | [Unnecessary enumerable toArray call](rules.md#unnecessary-enumerable-toarray-call) |
+| `unusedView` | `false` | [Unused view](rules.md#unused-view) |
+
+`unnecessaryCollectionCall` is the one toggle that is a structure rather than a
+plain boolean, because it takes method filters as well:
+
+```neon
+parameters:
+    laravel:
+        rules:
+            unnecessaryCollectionCall:
+                enabled: true
+                only: []
+                except: []
+```
+
+Rules that are not configurable at all — they report unconditionally — are
+listed in [rules](rules.md) alongside the rest.
+
+## `migrationDirectories`
+
+**default**: `[]`
+
+Migration files are scanned to work out your table structure, which is where
+model properties come from. `database/migrations` is scanned by default; set
+this to point at migrations that live elsewhere, or in more than one place.
+
+Paths may be absolute or relative to the PHPStan config file that declares
+them, and `glob` wildcards are supported.
 
 ### Example
 
 ```neon
 parameters:
     laravel:
-        databaseMigrationsPath:
+        migrationDirectories:
             - app/Domain/*/migrations
 ```
 
@@ -41,18 +96,22 @@ parameters:
         scanMigrations: false
 ```
 
-## `squashedMigrationsPath`
+## `schemaDirectories`
 
-By default, this extension will check `database/schema` directory to find schema dumps. If you have them in other locations or if you have multiple folders, you can use this config option to add them.
+**default**: `[]`
 
-Paths with wildcards are also supported (passed to `glob` function).
+Squashed schema dumps are read for the same reason migrations are. `database/schema`
+is checked by default; set this to add other locations.
+
+Paths may be absolute or relative to the PHPStan config file that declares
+them, and `glob` wildcards are supported.
 
 ### Example
 
 ```neon
 parameters:
     laravel:
-        squashedMigrationsPath:
+        schemaDirectories:
             - app/Domain/*/schema
 ```
 
@@ -64,7 +123,7 @@ It can read (or rather, try to read) PostgreSQL dumps provided they are in the *
 The viable options for PostgreSQL at the moment are:
 
 1. Use the [laravel-ide-helper](https://github.com/barryvdh/laravel-ide-helper) package to write PHPDocs directly to the Models.
-2. Use the [laravel-migrations-generator](https://github.com/kitloong/laravel-migrations-generator) to generate migration files (or a singular squashed migration file) for this extension to scan with the `databaseMigrationsPath` setting.
+2. Use the [laravel-migrations-generator](https://github.com/kitloong/laravel-migrations-generator) to generate migration files (or a singular squashed migration file) for this extension to scan with the `migrationDirectories` setting.
 
 ## `sqlParser`
 
@@ -84,6 +143,9 @@ composer require --dev phpmyadmin/sql-parser  # GPL-2.0-or-later
 | `auto` | whichever is installed | Prefers `phpmyadmin` when both are present |
 | `iamcal` | `iamcal/sql-parser` | MIT, no dependencies of its own |
 | `phpmyadmin` | `phpmyadmin/sql-parser` | GPL-2.0-or-later, understands more of the MySQL dialect |
+
+These three are the only accepted values; anything else fails configuration
+validation with the valid ones listed.
 
 ### Example
 
@@ -132,18 +194,6 @@ the GPL requiring anything of you.
 
 This is not legal advice. If your organisation has counsel, they are the right
 people to ask about your specific situation.
-
-### Registering your own parser
-
-The driver is resolved through a manager, so you can add a parser of your own
-(for a dialect neither package handles well, for instance) by implementing
-`CalebDW\PhpstanLaravel\Sql\SqlParser` and registering it:
-
-```php
-$manager->extend('postgres', fn () => new MyPostgresSqlParser());
-```
-
-Then set `sqlParser: postgres`.
 
 ## `scanSchema`
 
@@ -202,7 +252,7 @@ segment of a config key is matched against, wherever the file sits in the tree �
 files share a name, the first one found wins, in the order the directories are
 listed.
 
-The same parameter tells [`NoEnvCallsOutsideOfConfigRule`](rules.md#noenvcallsoutsideofconfigrule)
+The same parameter tells [the env-call rule](rules.md#env-call-outside-config)
 where `env()` calls are allowed to live, so if you already set it for that rule
 you get the type inference for free.
 
@@ -273,13 +323,65 @@ described above. Keys whose value is built at runtime — a function call, a mat
 on the environment — are typed as whatever PHPStan infers for that expression,
 which may be `mixed`.
 
+## `viewDirectories`
+
+**default**: `[]`
+
+Where to look for Blade files. Left unset, the paths and namespace hints
+registered with Laravel's view finder are used, which covers a standard
+application and any package that registers its own views. Set this when views
+live somewhere the finder does not know about.
+
+```neon
+parameters:
+    laravel:
+        viewDirectories:
+            - domainA/resources/views
+            - a/path/to/views
+```
+
+Setting it replaces the finder's list rather than adding to it, so include every
+directory you want searched.
+
+This is the list the [unused view](rules.md#unused-view) rule searches, and
+where views referenced from inside another view are looked up.
+
+Paths may be absolute or relative to the PHPStan config file that declares
+them. Unlike the migration and schema options, these are plain directories —
+`glob` wildcards are not expanded.
+
+## `translationDirectories`
+
+**default**: `[]`
+
+Where to look for translation files. Left unset, the application's `lang_path()`
+is used.
+
+```neon
+parameters:
+    laravel:
+        translationDirectories:
+            - resources/lang
+            - resources/translations
+```
+
+Setting it replaces `lang_path()` rather than adding to it, so list every
+directory including the default one if you still want it searched.
+
+Used by the [missing translation](rules.md#missing-translation) rule. A
+directory it cannot see is indistinguishable from a translation that was never
+written, so register all of them or leave that rule off.
+
+Paths may be absolute or relative to the PHPStan config file that declares
+them. Unlike the migration and schema options, these are plain directories —
+`glob` wildcards are not expanded.
+
 ## `checkModelProperties`
 
 **default**: `false`
 
-This config parameter enables the checks for model properties that are passed to methods. You can read the details [here](rules.md#modelpropertyrule).
-
-To enable you can set it to `true`:
+Checks string arguments that are meant to name a column against the model's
+actual columns, so a typo is caught where it is written rather than at runtime.
 
 ```neon
 parameters:
@@ -287,38 +389,21 @@ parameters:
         checkModelProperties: true
 ```
 
-## `checkModelAppends`
+This is not a rule and has no identifier of its own. It activates the
+[`model-property`](custom-types.md) type, after which the mismatches are
+reported by PHPStan's ordinary argument checks — so they carry core identifiers
+such as `argument.type`. Laravel's own methods that expect a column are
+annotated for you; you can annotate your own the same way.
 
-**default**: `true`
+Whether it is accurate depends on how completely your columns were resolved.
+Where migrations or schema dumps are missing, or a table is built in a way the
+scanner cannot follow, the gap surfaces as a false positive rather than as
+silence — which is why it is off by default. Point
+[`migrationDirectories`](#migrationdirectories) and
+[`schemaDirectories`](#schemadirectories) at the right places before enabling
+it. [Rules](rules.md#model-properties) has a worked example.
 
-This config parameter enables the checks the model's $appends property for computed properties. You can read the details [here](rules.md#modelappendsrule).
-
-To disable you can set it to `false`:
-
-```neon
-parameters:
-    laravel:
-        checkModelAppends: false
-```
-
-## `checkConfigAccessors`
-
-**default**: `true`
-
-This config parameter enables the check for the config repository's typed
-accessors — `string`, `integer`, `float`, `boolean`, `array` and `collection` —
-being called for keys that do not hold the required type, each of which throws
-at runtime. You can read the details [here](rules.md#configaccessorrule).
-
-To disable you can set it to `false`:
-
-```neon
-parameters:
-    laravel:
-        checkConfigAccessors: false
-```
-
-## `checkStrictContracts`
+## `strictContracts`
 
 **default**: `false`
 
@@ -354,5 +439,5 @@ class bound in the container. Enabled, it dumps
 ```neon
 parameters:
     laravel:
-        checkStrictContracts: true
+        strictContracts: true
 ```

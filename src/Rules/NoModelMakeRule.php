@@ -57,7 +57,7 @@ class NoModelMakeRule implements Rule
 
         return [
             RuleErrorBuilder::message("Called 'Model::make()' which performs unnecessary work, use 'new Model()'.")
-                ->identifier('laravel.noModelMake')
+                ->identifier('laravel.modelMake')
                 ->line($node->getStartLine())
                 ->file($scope->getFile(), $scope->getFileDescription())
                 ->build(),

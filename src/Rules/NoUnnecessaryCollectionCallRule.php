@@ -329,7 +329,7 @@ class NoUnnecessaryCollectionCallRule implements Rule
             "Called '%s' on Laravel collection, but could have been retrieved as a query.",
             $methodName,
         ))
-            ->identifier('laravel.noUnnecessaryCollectionCall')
+            ->identifier('laravel.unnecessaryCollectionCall')
             ->build();
     }
 }

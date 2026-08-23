@@ -55,7 +55,7 @@ class NoPublicModelScopeAndAccessorRule implements Rule
                             $node->getMethodReflection()->getName(),
                         ),
                     )
-                    ->identifier('laravel.noPublicModelScopeMethod')
+                    ->identifier('laravel.modelMethodVisibility.scope')
                     ->line($node->getStartLine())
                     ->file($scope->getFile())
                     ->fixNode($node->getOriginalNode(), static function (Node $node) {
@@ -79,7 +79,7 @@ class NoPublicModelScopeAndAccessorRule implements Rule
                             $node->getMethodReflection()->getName(),
                         ),
                     )
-                    ->identifier('laravel.noPublicModelAccessorMethod')
+                    ->identifier('laravel.modelMethodVisibility.accessor')
                     ->line($node->getStartLine())
                     ->file($scope->getFile())
                     ->fixNode($node->getOriginalNode(), static function (Node $node) {

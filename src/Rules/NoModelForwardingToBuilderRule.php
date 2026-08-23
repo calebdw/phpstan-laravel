@@ -8,22 +8,22 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PhpParser\Node;
-use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\TypeCombinator;
 
 use function array_map;
 use function sprintf;
 
-/** @implements Rule<StaticCall> */
-final class NoModelStaticForwardingToBuilder implements Rule
+/** @implements Rule<MethodCall> */
+final class NoModelForwardingToBuilderRule implements Rule
 {
     public function getNodeType(): string
     {
-        return StaticCall::class;
+        return MethodCall::class;
     }
 
     /** @inheritDoc */
@@ -38,9 +38,7 @@ final class NoModelStaticForwardingToBuilder implements Rule
                 $scope->getType($node->name)->getConstantStrings(),
             );
 
-        $calledOnType = $node->class instanceof Name
-            ? $scope->resolveTypeByName($node->class)
-            : $scope->getType($node->class);
+        $calledOnType = TypeCombinator::removeNull($scope->getType($node->var));
 
         foreach ($calledOnType->getObjectClassReflections() as $classReflection) {
             if (! $classReflection->is(Model::class)) {
@@ -55,13 +53,20 @@ final class NoModelStaticForwardingToBuilder implements Rule
                 $methodReflection = $classReflection->getMethod($method, $scope);
                 $declaringClass   = $methodReflection->getDeclaringClass();
 
-                if (! $declaringClass->is(QueryBuilder::class) && ! $declaringClass->is(EloquentBuilder::class)) {
+                if (
+                    ! $declaringClass->is(QueryBuilder::class)
+                    && ! $declaringClass->is(EloquentBuilder::class)
+                    // Override for the with() method, which is also a static method
+                    // on the Model class, so is not caught by the above check.
+                    // Should not be called on a model instance when this rule is enabled.
+                    && $method !== 'with'
+                ) {
                     continue;
                 }
 
-                $errors[] = RuleErrorBuilder::message(sprintf('Static method [%s] is forwarded to a Builder instance, which is not allowed.', $method))
-                    ->tip(sprintf('Use [::query()->%s()] instead.', $method))
-                    ->identifier('laravel.noModelStaticForwardingToBuilder')
+                $errors[] = RuleErrorBuilder::message(sprintf('Method [%s] is forwarded to a Builder instance, which is not allowed.', $method))
+                    ->tip(sprintf('Use [::%s()], [::query()->%s()] or [->newQuery()->%s()] instead.', $method, $method, $method))
+                    ->identifier('laravel.modelForwardingToBuilder')
                     ->line($node->name->getStartLine())
                     ->build();
             }

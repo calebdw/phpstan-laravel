@@ -1,9 +1,31 @@
 # Rules
 
-All rules that are specific to Laravel applications 
-are listed here with their configurable options.
+Every rule this extension provides is listed here with its error identifier,
+the option that switches it on or off, and what it reports.
 
-## NoModelMake
+Prefer ignoring errors [by identifier][identifiers] over ignoring by message:
+identifiers are covered by the [backward compatibility
+policy](backward-compatibility.md), message wording is not.
+
+```neon
+parameters:
+    ignoreErrors:
+        - identifier: laravel.modelMake
+```
+
+Toggles live under `laravel.rules`, so a rule named `modelMake` here is
+`laravel.rules.modelMake` in your configuration:
+
+```neon
+parameters:
+    laravel:
+        rules:
+            modelMake: false
+```
+
+## Model make
+
+**identifier**: `laravel.modelMake` — **option**: `rules.modelMake`, default `true`
 
 Checks for calls to the static method `make()` on subclasses of `Illuminate\Database\Eloquent\Model`.
 While its usage does not result in an error, unnecessary work is performed and the
@@ -23,16 +45,16 @@ Called 'Model::make()' which performs unnecessary work, use 'new Model()'.
 
 ### Configuration
 
-This rule is enabled by default.
-To disable, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        noModelMake: false
+        rules:
+            modelMake: false
 ```
 
-## NoUnnecessaryCollectionCall
+## Unnecessary collection call
+
+**identifier**: `laravel.unnecessaryCollectionCall` — **option**: `rules.unnecessaryCollectionCall.enabled`, default `true`
 
 Checks for method calls on instances of `Illuminate\Support\Collection` and their 
 subclasses. If the same result could have been determined 
@@ -61,34 +83,38 @@ $user->roles()->where('name', 'a role name')->exists();
 
 ### Configuration
 
-This rule is enabled by default.
-To disable, add the following to your `phpstan.neon` file:
-
-```
+```neon
 parameters:
     laravel:
-        noUnnecessaryCollectionCall: false
+        rules:
+            unnecessaryCollectionCall:
+                enabled: false
 ```
 
-You can also configure the collection methods which this rule
-checks for. By default, all collection methods are checked.
-To only enable a specific set of methods, you could set the
-`noUnnecessaryCollectionCallOnly` configuration key. For example:
-```
+Every collection method is checked by default. `only` narrows that to a
+specific set:
+
+```neon
 parameters:
     laravel:
-        noUnnecessaryCollectionCallOnly: ['count', 'first']
-```
-will only throw errors on the `count` and `first` methods.
-The inverse is also configurable, to not throw an exception
-on the `contains` method, one could set the following value:
-```
-parameters:
-    laravel:
-        noUnnecessaryCollectionCallExcept: ['contains']
+        rules:
+            unnecessaryCollectionCall:
+                only: ['count', 'first']
 ```
 
-## NoUnnecessaryEnumerableToArrayCalls
+`except` is the inverse, leaving the listed methods alone:
+
+```neon
+parameters:
+    laravel:
+        rules:
+            unnecessaryCollectionCall:
+                except: ['contains']
+```
+
+## Unnecessary enumerable toArray call
+
+**identifier**: `laravel.unnecessaryEnumerableToArrayCall` — **option**: `rules.unnecessaryEnumerableToArrayCall`, default `true`
 
 Catches `toArray()` calls on an `Enumerable` whose values cannot be
 `Arrayable`. `toArray()` recursively converts any `Arrayable` items it finds,
@@ -119,37 +145,40 @@ alone, so it will not flag a `toArray()` that is doing real work.
 
 ### Configuration
 
-This rule is enabled by default.
-To disable, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        noUnnecessaryEnumerableToArrayCalls: false
+        rules:
+            unnecessaryEnumerableToArrayCall: false
 ```
 
-## ModelPropertyRule
+## Model properties
 
-**default**: false
+**identifier**: PHPStan's own, e.g. `argument.type` — **option**: [`checkModelProperties`](custom-config-parameters.md#checkmodelproperties), default `false`
 
-Accuracy depends on how completely the extension resolved your model's columns.
-Where migrations or schema dumps are missing, or a table is built in a way the
-scanner cannot follow, that gap surfaces as a false positive rather than as
-silence, which is why this is off by default. Point `databaseMigrationsPath` and
-`squashedMigrationsPath` at the right directories before enabling it.
+This one is not a rule. Enabling the option activates the
+[`model-property`](custom-types.md) type, and the mismatches are then reported
+by PHPStan's ordinary argument checks — which is why the errors carry core
+identifiers rather than a `laravel.*` one.
+
+Every argument typed `model-property` is checked against the model's columns,
+and an argument naming a column the model does not have is reported.
 
 ### Configuration
 
-This rule is disabled by default.
-To enable, add the following to your `phpstan.neon` file:
-
-```
+```neon
 parameters:
     laravel:
         checkModelProperties: true
 ```
 
-This rule checks every argument of a method or a function, and if the argument has the type `model-property`, it will try to check the given value against the model properties. And if the model does not have the given property, it'll produce an error.
+Whether it is accurate depends on how completely your columns were resolved.
+Where migrations or schema dumps are missing, or a table is built in a way the
+scanner cannot follow, the gap surfaces as a false positive rather than as
+silence, which is why it is off by default. Point
+[`migrationDirectories`](custom-config-parameters.md#migrationdirectories) and
+[`schemaDirectories`](custom-config-parameters.md#schemadirectories) at the
+right places before enabling it.
 
 ### Basic example
 
@@ -186,20 +215,20 @@ And if you call the function above with a property that does not exist in User m
 takesOnlyUserModelProperties('emaiil');
 ```
 
-## OctaneCompatibilityRule
+## Octane compatibility
 
-This is an optional rule that can check your application for Laravel Octane compatibility.
-You can read more about why in [the official Octane docs](https://laravel.com/docs/octane#dependency-injection-and-octane).
+**identifier**: `laravel.octaneCompatibility` — **option**: `rules.octaneCompatibility`, default `false`
+
+Checks your application for Laravel Octane compatibility. The reasoning is in
+[the official Octane docs](https://laravel.com/docs/octane#dependency-injection-and-octane).
 
 ### Configuration
 
-This rule is disabled by default.
-To enable, add the following to your `phpstan.neon` file:
-
-```
+```neon
 parameters:
     laravel:
-        checkOctaneCompatibility: true
+        rules:
+            octaneCompatibility: true
 ```
 
 ### Examples
@@ -217,9 +246,12 @@ Will result in the following error:
 
 `Consider using bind method instead or pass a closure.`
 
-## RelationExistenceRule
+## Relation existence
 
-This rule will check if the given relations to some Eloquent builder methods exists. It also supports nested relations.
+**identifier**: `laravel.relationExistence` — always enabled
+
+Checks that the relations passed to the Eloquent builder methods below exist.
+Nested relations are supported.
 
 Supported Eloquent builder methods are:
 - `has`
@@ -231,8 +263,6 @@ Supported Eloquent builder methods are:
 - `orWhereHas`
 - `whereDoesntHave`
 - `orWhereDoesntHave`
-
-This rule is not optional.
 
 ### Examples
 
@@ -247,9 +277,12 @@ This extension will report two errors:
 Relation 'foo' is not found in App\User model.
 Relation 'foo' is not found in App\Transaction model.
 ```
-## CheckDispatchArgumentTypesCompatibleWithClassConstructorRule
+## Dispatch argument types
 
-This rule will check if your job dispatch argument types are compatible with the constructor of the job class.
+**identifiers**: `laravel.jobs.noConstructor`, `laravel.events.noConstructor`, and PHPStan's own for the argument errors — always enabled
+
+Checks that the arguments you dispatch a job or event with are compatible with
+its constructor.
 
 ### Examples
 
@@ -284,9 +317,23 @@ Parameter #1 $foo of job class ExampleJob constructor expects int in ExampleJob:
 Parameter #2 $bar of job class ExampleJob constructor expects string in ExampleJob::dispatch(), int given.
 ```
 
-## NoUselessValueFunctionCallsRule
+Dispatching a class that has no constructor with arguments anyway is reported
+under `laravel.jobs.noConstructor`, or `laravel.events.noConstructor` for an
+event:
 
-This rule will check if unnecessary calls to the `value()` function are made.
+```
+Job class ExampleJob does not have a constructor and must be dispatched without any parameters.
+```
+
+The argument errors are produced by PHPStan's own argument checking, so they
+carry its identifiers rather than `laravel.*` ones. Ignoring them by identifier
+therefore cannot be narrowed to job dispatches.
+
+## Useless value() call
+
+**identifier**: `laravel.uselessConstructs.value` — always enabled
+
+Reports calls to `value()` that return the first argument unchanged.
 
 ### Examples
 
@@ -304,9 +351,11 @@ Calling the helper function 'value()' without a closure as the first argument si
 Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything
 ```
 
-## NoUselessWithFunctionCallsRuleTest
+## Useless with() call
 
-This rule will check if unnecessary calls to the `with()` function are made.
+**identifier**: `laravel.uselessConstructs.with` — always enabled
+
+Reports calls to `with()` that return the value unchanged.
 
 ### Examples
 
@@ -324,9 +373,11 @@ Calling the helper function 'with()' with only one argument simply returns the v
 Calling the helper function 'with()' without a closure as the second argument simply returns the value without doing anything
 ```
 
-## DeferrableServiceProviderMissingProvidesRule
+## Deferrable service provider without provides()
 
-This rule will check for a missing `provides` method in deferrable `ServiceProvider`s.
+**identifier**: `laravel.deferrableServiceProvider.missingProvides` — always enabled
+
+Checks for a missing `provides()` method on a deferrable `ServiceProvider`.
 
 ### Examples
 
@@ -368,29 +419,32 @@ This will result in the following error:
 ServiceProviders that implement the "DeferrableProvider" interface should implement the "provides" method that returns an array of strings or class-strings
 ```
 
-## UnusedViewsRule
+## Unused view
 
-This rule will find any unused views in your application.
+**identifier**: `laravel.unusedView` — **option**: `rules.unusedView`, default `false`
+
+Finds views in your application that are never used.
 
 > **NOTE**: Due to the nature of static analysis, this rule can produce false positives. It cannot find every usage of a view, so it is possible that a view is reported as unused when it is actually used. This is why it's an optional rule.
 
 ### Configuration
 
-This rule is disabled by default.
-To enable, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        checkUnusedViews: true
+        rules:
+            unusedView: true
 ```
 
-This rule analyzes your view files to find used views. By default, it checks the `resources/views` directory for Blade files. But if you have views in other directories you can use `viewDirectories` config option to specify them. For example:
+Blade files under `resources/views` are scanned by default. Use
+[`viewDirectories`](custom-config-parameters.md#viewdirectories) for views kept
+elsewhere:
 
 ```neon
 parameters:
     laravel:
-        checkUnusedViews: true
+        rules:
+            unusedView: true
         viewDirectories:
             - domainA/resources/views
             - a/path/to/views
@@ -410,9 +464,11 @@ parameters:
 - `@includeWhen` Blade directive.
 - `@includeFirst` Blade directive.
 
-## NoMissingTranslationsRule
+## Missing translation
 
-This rule will find any untranslated strings in your application. It is primarily meant for applications that make use of the dot syntax like `messages.greet`. If you're using translation strings as keys, this rule may be unnecessary. Enabling this rule may decrease performance as it will scan the available views and translations.
+**identifier**: `laravel.missingTranslation` — **option**: `rules.missingTranslation`, default `false`
+
+Finds untranslated strings in your application. It is primarily meant for applications that make use of the dot syntax like `messages.greet`. If you're using translation strings as keys, this rule may be unnecessary. Enabling this rule may decrease performance as it will scan the available views and translations.
 
 Translations from vendors like `vendor::key` will not be checked.
 
@@ -432,29 +488,33 @@ Translation "messages.greet" has not been found.
 
 ### Configuration
 
-This rule is disabled by default.
-To enable, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        checkMissingTranslations: true
+        rules:
+            missingTranslation: true
 ```
 
-By default, the path `resources/lang` is scanned. If you have translations elsewhere, make sure to register all the paths.
+`resources/lang` is scanned by default. If your translations live elsewhere,
+register every path with
+[`translationDirectories`](custom-config-parameters.md#translationdirectories):
 
 ```neon
 parameters:
     laravel:
-        checkMissingTranslations: true
+        rules:
+            missingTranslation: true
         translationDirectories:
             - resources/lang
             - resources/translations
 ```
 
-## NoEnvCallsOutsideOfConfig
+## Env call outside config
 
-Checks for `env` calls outside the `config` directory, which return `null` when the config is cached.
+**identifier**: `laravel.envCallOutsideConfig` — **option**: `rules.envCallOutsideConfig`, default `true`
+
+Checks for `env()` calls outside the `config` directory, which return `null`
+once the config is cached.
 
 ### Examples
 
@@ -478,16 +538,16 @@ config('app.env')
 
 ### Configuration
 
-This rule is enabled by default.
-To disable, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        noEnvCallsOutsideOfConfig: false
+        rules:
+            envCallOutsideConfig: false
 ```
 
-By default, this rule checks for env calls outside the application config directory. If your configuration files are stored elsewhere, you can use the configDirectories option to specify them.
+The application's own config directory is where `env()` is allowed by default.
+If your configuration files live elsewhere, name those directories with
+[`configDirectories`](custom-config-parameters.md#configdirectories):
 
 ```neon
 parameters:
@@ -497,7 +557,9 @@ parameters:
             - tests
 ```
 
-## ConfigAccessorRule
+## Config accessor
+
+**identifier**: `laravel.configAccessor` — **option**: `rules.configAccessor`, default `true`
 
 Checks the config repository's typed accessors — `string`, `integer`, `float`,
 `boolean`, `array` and `collection` — against the type of the key being read.
@@ -565,18 +627,18 @@ differs between environments is checked against the local one.
 
 ### Configuration
 
-This rule is enabled by default.
-To disable, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        checkConfigAccessors: false
+        rules:
+            configAccessor: false
 ```
 
-## ModelAppendsRule
+## Model appends
 
-Checks model's `$appends` property for computed properties. The properties added to `$appends` array should both exist in the model and be computed properties.
+**identifier**: `laravel.modelAppends` — **option**: `rules.modelAppends`, default `true`
+
+Checks the model's `$appends` property for computed properties. The properties added to `$appends` array should both exist in the model and be computed properties.
 
 ### Examples
 
@@ -595,16 +657,16 @@ Property 'email' is not a computed property, remove from $appends.
 
 ### Configuration
 
-This rule is enabled by default.
-To disable, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        checkModelAppends: false
+        rules:
+            modelAppends: false
 ```
 
-## NoPublicModelScopeAndAccessorRule
+## Model method visibility
+
+**identifiers**: `laravel.modelMethodVisibility.scope`, `laravel.modelMethodVisibility.accessor` — **option**: `rules.modelMethodVisibility`, default `false`
 
 Ensures Eloquent model local query scopes and attribute accessors are not part of the public API. 
 Local scopes and attribute accessors should be declared `protected`.
@@ -661,18 +723,18 @@ Fix by changing the visibility to `protected` in both cases.
 
 ### Configuration
 
-This rule is disabled by default.
-To enable, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        checkModelMethodVisibility: true
+        rules:
+            modelMethodVisibility: true
 ```
 
-## NoAuthFacadeInRequestScopeRule and NoAuthHelperInRequestScopeRule
+## Auth in request scope
 
-These rules will warn you if you are using `Auth::check()`, `Auth::user()`, `Auth::guest()`, `auth()->check()`, `auth()->user()`, or `auth()->guest()` while you have access to the request already in your current scope with `$request` variable. So it should only warn if there is a variable named `$request` in the current scope with `Illuminate\Http\Request` type (or any child class).
+**identifiers**: `laravel.authInRequestScope.facade`, `laravel.authInRequestScope.helper` — **option**: `rules.authInRequestScope`, default `false`
+
+Warns you if you are using `Auth::check()`, `Auth::user()`, `Auth::guest()`, `auth()->check()`, `auth()->user()`, or `auth()->guest()` while you have access to the request already in your current scope with `$request` variable. So it should only warn if there is a variable named `$request` in the current scope with `Illuminate\Http\Request` type (or any child class).
 
 ### Examples
 
@@ -716,17 +778,21 @@ class MyController
 
 ### Configuration
 
-This rule is disabled by default.  To enable, add the following to your `phpstan.neon` file:
+One option covers both, and the facade and helper forms report under separate
+identifiers so you can ignore one without the other.
 
 ```neon
 parameters:
     laravel:
-        checkAuthCallsWhenInRequestScope: true
+        rules:
+            authInRequestScope: true
 ```
 
-## NoModelForwardingToBuilder
+## Model forwarding to builder
 
-This rule checks for calling methods on an `Illuminate\Database\Eloquent\Model` instance that are actually forwarded to a Builder instance.
+**identifier**: `laravel.modelForwardingToBuilder` — **option**: `rules.modelForwardingToBuilder`, default `false`
+
+Checks for calling methods on an `Illuminate\Database\Eloquent\Model` instance that are actually forwarded to a Builder instance.
 It helps prevent unexpected behaviors like executing `first()`, `get()` on already fetched models.
 
 ### Examples
@@ -747,17 +813,18 @@ Method [first] is forwarded to a Builder instance, which is not allowed.
 
 ### Configuration
 
-This rule is disabled by default. To enable it, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        noModelForwardingToBuilder: true
+        rules:
+            modelForwardingToBuilder: true
 ```
 
-## NoModelStaticForwardingToBuilder
+## Model static forwarding to builder
 
-This rule checks for calling methods on an `Illuminate\Database\Eloquent\Model` instance that are actually forwarded to a Builder instance.
+**identifier**: `laravel.modelStaticForwardingToBuilder` — **option**: `rules.modelStaticForwardingToBuilder`, default `false`
+
+Checks for calling methods on an `Illuminate\Database\Eloquent\Model` instance that are actually forwarded to a Builder instance.
 It helps prevent hidden coupling and unexpected behaviors by ensuring you explicitly use `::query()` when calling query builder methods on a model.
 
 ### Examples
@@ -777,10 +844,47 @@ Static method [first] is forwarded to a Builder instance, which is not allowed.
 
 ### Configuration
 
-This rule is disabled by default. To enable it, add the following to your `phpstan.neon` file:
-
 ```neon
 parameters:
     laravel:
-        noModelStaticForwardingToBuilder: true
+        rules:
+            modelStaticForwardingToBuilder: true
 ```
+
+## Undefined console argument or option
+
+**identifiers**: `laravel.console.undefinedArgument`, `laravel.console.undefinedOption` — always enabled
+
+Checks `$this->argument()` and `$this->option()` calls inside an
+`Illuminate\Console\Command` against the signature that command is registered
+with, so a name that was never defined is caught rather than returning `null`
+at runtime.
+
+### Examples
+
+```php
+class SendReport extends Command
+{
+    protected $signature = 'report:send {user} {--queue}';
+
+    public function handle(): void
+    {
+        $this->argument('users');
+        $this->option('queued');
+    }
+}
+```
+
+Will result in the following errors:
+
+```
+Command "report:send" does not have argument "users".
+Command "report:send" does not have option "queued".
+```
+
+Options are matched by shortcut as well as by name, and a command reachable
+under more than one name is checked against each of them. Only literal string
+arguments can be checked; a name built at runtime is left alone.
+
+<!-- links -->
+[identifiers]: https://phpstan.org/user-guide/ignoring-errors#ignoring-by-identifier

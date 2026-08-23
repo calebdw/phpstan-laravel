@@ -78,7 +78,7 @@ class NoEnvCallsOutsideOfConfigRule implements Rule
 
         return [
             RuleErrorBuilder::message("Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.")
-                ->identifier('laravel.noEnvCallsOutsideOfConfig')
+                ->identifier('laravel.envCallOutsideConfig')
                 ->line($node->getStartLine())
                 ->file($scope->getFile(), $scope->getFileDescription())
                 ->build(),

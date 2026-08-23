@@ -68,7 +68,7 @@ class NoAuthFacadeInRequestScopeRule implements Rule
         if ($scope->isInClass() && $scope->getClassReflection()->is(Request::class)) {
             return [
                 RuleErrorBuilder::message(sprintf($message, 'this'))
-                    ->identifier('laravel.noAuthFacadeInRequestScope')
+                    ->identifier('laravel.authInRequestScope.facade')
                     ->fixNode($node, static function (Node $node) use ($methodName) {
                         $variable = new Node\Expr\Variable('this');
 
@@ -94,7 +94,7 @@ class NoAuthFacadeInRequestScopeRule implements Rule
 
         return [
             RuleErrorBuilder::message(sprintf($message, 'request'))
-                ->identifier('laravel.noAuthFacadeInRequestScope')
+                ->identifier('laravel.authInRequestScope.facade')
                 ->fixNode($node, static function (Node $node) use ($methodName) {
                     $variable = new Node\Expr\Variable('request');
 

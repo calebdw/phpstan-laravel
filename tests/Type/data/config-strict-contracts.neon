@@ -2,4 +2,4 @@ includes:
     - ../../phpstan-tests.neon
 parameters:
     laravel:
-        checkStrictContracts: true
+        strictContracts: true

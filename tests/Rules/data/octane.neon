@@ -3,4 +3,5 @@ includes:
 
 parameters:
     laravel:
-        checkOctaneCompatibility: true
+        rules:
+            octaneCompatibility: true

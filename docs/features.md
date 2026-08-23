@@ -23,7 +23,7 @@ the same reason `HasUlids` is.
 
 Where migrations live somewhere unconventional, or a table is built in a way the
 scanner cannot follow, point the
-[path options](custom-config-parameters.md#databasemigrationspath) at the right
+[path options](custom-config-parameters.md#migrationdirectories) at the right
 directories. Enabling
 [`checkModelProperties`](custom-config-parameters.md#checkmodelproperties) then
 checks property *names* passed to methods, catching typos in things like

@@ -75,7 +75,7 @@ final class UnusedViewsRule implements Rule
             $errors[] = RuleErrorBuilder::message('This view is not used in the project.')
                 ->file($path)
                 ->line(0)
-                ->identifier('laravel.unusedViews')
+                ->identifier('laravel.unusedView')
                 ->build();
         }
 

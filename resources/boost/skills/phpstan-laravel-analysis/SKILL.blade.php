@@ -51,14 +51,16 @@ surface:
 ```neon
 parameters:
     ignoreErrors:
-        - identifier: laravel.noModelMake
+        - identifier: laravel.modelMake
 ```
 
 ## Configuration
 
 This extension's options nest under `parameters.laravel`, unlike PHPStan's own
-options, which stay at the top level. They are schema validated, so a misplaced
-or misspelled key fails the run instead of being silently ignored.
+options, which stay at the top level. Options that switch a rule on or off nest
+one level deeper, under `parameters.laravel.rules`. The whole tree is schema
+validated, so a misplaced or misspelled key fails the run instead of being
+silently ignored.
 
 ```neon
 parameters:
@@ -67,18 +69,25 @@ parameters:
         - app
     laravel:
         checkModelProperties: true
+        rules:
+            unusedView: true
 ```
 
 Options worth knowing:
 
 - `checkModelProperties` (off) verifies property names against the columns
   resolved from migrations. The highest-value option, off by default only
-  because it depends on that column list being complete.
+  because it depends on that column list being complete. It is not a rule, so
+  it does not live under `rules`.
 - `configDirectories` lets config values be typed by parsing files, which is
   what a package without a bootable application needs.
-- `databaseMigrationsPath` and `squashedMigrationsPath` point at migrations and
-  schema dumps kept outside the default locations.
+- `migrationDirectories` and `schemaDirectories` point at migrations and schema
+  dumps kept outside the default locations.
 - `scanMigrations` and `scanSchema` (both on) turn that scanning off.
+
+Rule toggles under `rules` are named after what the rule reports and match the
+identifier suffix: `laravel.rules.modelMake` switches off the rule that reports
+`laravel.modelMake`.
 
 ## Model property inference
 

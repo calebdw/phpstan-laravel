@@ -121,7 +121,7 @@ final class NoMissingTranslationsRule implements Rule
                 $errors[] = RuleErrorBuilder::message('Translation "' . $translation . '" has not been found.')
                     ->file($file)
                     ->line($line)
-                    ->identifier('laravel.missingTranslations')
+                    ->identifier('laravel.missingTranslation')
                     ->build();
             }
         }

@@ -23,7 +23,7 @@ final class AppMakeHelper
     use HasContainer;
 
     public function __construct(
-        private readonly bool $checkStrictContracts = false,
+        private readonly bool $strictContracts = false,
     ) {
     }
 
@@ -45,7 +45,7 @@ final class AppMakeHelper
                 // container what it is bound to, so that code depending on a
                 // contract is not silently typed as whatever concrete class
                 // happens to be bound in this environment.
-                if ($this->checkStrictContracts && $constantString->isClassString()->yes()) {
+                if ($this->strictContracts && $constantString->isClassString()->yes()) {
                     $types[] = $constantString->getClassStringObjectType();
                     continue;
                 }

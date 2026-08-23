@@ -95,10 +95,14 @@ parameters:
 
     laravel:
         checkModelProperties: true
-        checkUnusedViews: true
         viewDirectories:
             - resources/views
+        rules:
+            unusedView: true
 ```
+
+Rule toggles are nested one level further, under `laravel.rules`, so that switching a rule
+on stays visibly separate from telling the extension where to look for things.
 
 Options are schema validated, so a typo or a misplaced key fails fast with a clear error
 instead of being silently ignored.
@@ -131,40 +135,43 @@ silence them, are documented in [errors to ignore](docs/errors-to-ignore.md).
 
 These rules are always active:
 
-| Rule | Catches |
+| Identifier | Catches |
 | --- | --- |
-| `RelationExistenceRule` | References to relations that do not exist |
-| `CheckDispatchArgumentTypesCompatibleWithClassConstructorRule` | `dispatch()` calls whose arguments do not match the job or event constructor |
-| `DeferrableServiceProviderMissingProvidesRule` | Deferrable providers that forget to implement `provides()` |
-| `UndefinedArgumentOrOptionRule` | Console commands reading arguments or options they never defined |
-| `NoUselessValueFunctionCallsRule` | Pointless `value()` calls |
-| `NoUselessWithFunctionCallsRule` | Pointless `with()` calls |
+| `laravel.relationExistence` | References to relations that do not exist |
+| `laravel.jobs.noConstructor`, `laravel.events.noConstructor` | `dispatch()` calls whose arguments do not match the job or event constructor |
+| `laravel.deferrableServiceProvider.missingProvides` | Deferrable providers that forget to implement `provides()` |
+| `laravel.console.undefinedArgument`, `laravel.console.undefinedOption` | Console commands reading arguments or options they never defined |
+| `laravel.uselessConstructs.value` | Pointless `value()` calls |
+| `laravel.uselessConstructs.with` | Pointless `with()` calls |
 
-These are toggled with a boolean option under `laravel:`:
+These are toggled under `laravel.rules`:
 
-| Rule | Option | Default |
+| Option | Identifier | Default |
 | --- | --- | --- |
-| `NoModelMake` | `noModelMake` | ✅ on |
-| `NoUnnecessaryCollectionCall` | `noUnnecessaryCollectionCall` | ✅ on |
-| `NoUnnecessaryEnumerableToArrayCalls` | `noUnnecessaryEnumerableToArrayCalls` | ✅ on |
-| `ModelAppendsRule` | `checkModelAppends` | ✅ on |
-| `ConfigAccessorRule` | `checkConfigAccessors` | ✅ on |
-| `NoEnvCallsOutsideOfConfig` | `noEnvCallsOutsideOfConfig` | ✅ on |
-| `ModelPropertyRule` | `checkModelProperties` | ❌ off |
-| `OctaneCompatibilityRule` | `checkOctaneCompatibility` | ❌ off |
-| `UnusedViewsRule` | `checkUnusedViews` | ❌ off |
-| `NoMissingTranslationsRule` | `checkMissingTranslations` | ❌ off |
-| `NoPublicModelScopeAndAccessorRule` | `checkModelMethodVisibility` | ❌ off |
-| `NoAuthFacadeInRequestScopeRule` / `NoAuthHelperInRequestScopeRule` | `checkAuthCallsWhenInRequestScope` | ❌ off |
-| `NoModelForwardingToBuilder` | `noModelForwardingToBuilder` | ❌ off |
-| `NoModelStaticForwardingToBuilder` | `noModelStaticForwardingToBuilder` | ❌ off |
+| `modelMake` | `laravel.modelMake` | ✅ on |
+| `unnecessaryCollectionCall` | `laravel.unnecessaryCollectionCall` | ✅ on |
+| `unnecessaryEnumerableToArrayCall` | `laravel.unnecessaryEnumerableToArrayCall` | ✅ on |
+| `modelAppends` | `laravel.modelAppends` | ✅ on |
+| `configAccessor` | `laravel.configAccessor` | ✅ on |
+| `envCallOutsideConfig` | `laravel.envCallOutsideConfig` | ✅ on |
+| `octaneCompatibility` | `laravel.octaneCompatibility` | ❌ off |
+| `unusedView` | `laravel.unusedView` | ❌ off |
+| `missingTranslation` | `laravel.missingTranslation` | ❌ off |
+| `modelMethodVisibility` | `laravel.modelMethodVisibility.scope`, `….accessor` | ❌ off |
+| `authInRequestScope` | `laravel.authInRequestScope.facade`, `….helper` | ❌ off |
+| `modelForwardingToBuilder` | `laravel.modelForwardingToBuilder` | ❌ off |
+| `modelStaticForwardingToBuilder` | `laravel.modelStaticForwardingToBuilder` | ❌ off |
 
-Each rule is documented with examples in [rules](docs/rules.md).
+Column checking is the one other thing worth switching on, and it is not a rule — see
+below. Each rule is documented with examples in [rules](docs/rules.md).
 
 ### Worth turning on
 
-Of the options above, `checkModelProperties` is the one most worth your
-attention, and the one people most often never notice. It checks every argument
+`checkModelProperties` is the option most worth your attention, and the one
+people most often never notice. It sits directly under `laravel:` rather than
+under `rules:`, because it is not a rule — it activates the
+`model-property<Model>` type, after which PHPStan's own argument checks do the
+reporting. It checks every argument
 typed `model-property<Model>` against the columns resolved from your migrations
 and schema dumps, which catches mistakes like this one throughout Laravel's own
 methods, with no annotations of your own:
@@ -177,8 +184,8 @@ User::create(['name' => 'John', 'emaiil' => 'john@example.test']);
 It is off by default only because it depends on that resolved column list being
 complete. If migrations live somewhere unusual, or a table is built in a way the
 scanner cannot follow, the result is false positives rather than silence. Point
-`databaseMigrationsPath` and `squashedMigrationsPath` at the right directories,
-then enable it:
+`migrationDirectories` and `schemaDirectories` at the right directories, then
+enable it:
 
 ```neon
 parameters:
@@ -192,7 +199,7 @@ whole class of error precisely:
 ```neon
 parameters:
     ignoreErrors:
-        - identifier: laravel.noModelMake
+        - identifier: laravel.modelMake
 ```
 
 ## 📚 Documentation

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Rules;
 
-use CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilder;
+use CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilderRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
-/** @extends RuleTestCase<NoModelStaticForwardingToBuilder> */
-class NoModelStaticForwardingToBuilderTest extends RuleTestCase
+/** @extends RuleTestCase<NoModelStaticForwardingToBuilderRule> */
+class NoModelStaticForwardingToBuilderRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new NoModelStaticForwardingToBuilder();
+        return new NoModelStaticForwardingToBuilderRule();
     }
 
     public function testRule(): void

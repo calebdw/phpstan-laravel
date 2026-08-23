@@ -43,5 +43,5 @@ providers:
 
 All of the Laravel core methods have this type thanks to the stubs. So whenever you use a Eloquent builder, relation or a model method that expects a column, it'll be checked by this extension if the column actually exists. But you can also typehint any argument with `model-property` in your code.
 
-The actual check is done by the `ModelPropertyRule`. You can read the details [here](rules.md#ModelPropertyRule).
+The type is only active when [`checkModelProperties`](custom-config-parameters.md#checkmodelproperties) is enabled. With it off, `model-property<Model>` behaves as a plain `string` and nothing is checked. There is no rule behind it — once the type is active, the mismatches are reported by PHPStan's ordinary argument checks, so they carry core identifiers such as `argument.type`. See [rules](rules.md#model-properties) for a worked example.
 

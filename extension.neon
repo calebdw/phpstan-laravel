@@ -10,83 +10,89 @@ parameters:
   bootstrapFiles:
     - bootstrap.php
   laravel:
-    checkAuthCallsWhenInRequestScope: false
-    checkConfigAccessors: true
-    checkMissingTranslations: false
-    checkModelAppends: true
-    checkModelMethodVisibility: false
-    checkModelProperties: false
-    checkOctaneCompatibility: false
-    checkUnusedViews: false
-    noEnvCallsOutsideOfConfig: true
-    noModelForwardingToBuilder: false
-    noModelMake: true
-    noModelStaticForwardingToBuilder: false
-    noUnnecessaryCollectionCall: true
-    noUnnecessaryCollectionCallOnly: []
-    noUnnecessaryCollectionCallExcept: []
-    noUnnecessaryEnumerableToArrayCalls: true
-    databaseMigrationsPath: []
-    squashedMigrationsPath: []
+    rules:
+      authInRequestScope: false
+      configAccessor: true
+      envCallOutsideConfig: true
+      missingTranslation: false
+      modelAppends: true
+      modelForwardingToBuilder: false
+      modelMake: true
+      modelMethodVisibility: false
+      modelStaticForwardingToBuilder: false
+      octaneCompatibility: false
+      unnecessaryCollectionCall:
+        enabled: true
+        only: []
+        except: []
+      unnecessaryEnumerableToArrayCall: true
+      unusedView: false
+    migrationDirectories: []
+    schemaDirectories: []
     scanMigrations: true
     scanSchema: true
     sqlParser: auto
     configDirectories: []
     translationDirectories: []
     viewDirectories: []
-    checkStrictContracts: false
+    checkModelProperties: false
+    strictContracts: false
 
 parametersSchema:
   laravel: structure([
-    checkAuthCallsWhenInRequestScope: bool()
-    checkConfigAccessors: bool()
-    checkMissingTranslations: bool()
-    checkModelAppends: bool()
-    checkModelMethodVisibility: bool()
-    checkModelProperties: bool()
-    checkOctaneCompatibility: bool()
-    checkUnusedViews: bool()
-    noEnvCallsOutsideOfConfig: bool()
-    noModelForwardingToBuilder: bool()
-    noModelMake: bool()
-    noModelStaticForwardingToBuilder: bool()
-    noUnnecessaryCollectionCall: bool()
-    noUnnecessaryCollectionCallOnly: listOf(string())
-    noUnnecessaryCollectionCallExcept: listOf(string())
-    noUnnecessaryEnumerableToArrayCalls: bool()
-    databaseMigrationsPath: listOf(string())
-    squashedMigrationsPath: listOf(string())
+    rules: structure([
+      authInRequestScope: bool()
+      configAccessor: bool()
+      envCallOutsideConfig: bool()
+      missingTranslation: bool()
+      modelAppends: bool()
+      modelForwardingToBuilder: bool()
+      modelMake: bool()
+      modelMethodVisibility: bool()
+      modelStaticForwardingToBuilder: bool()
+      octaneCompatibility: bool()
+      unnecessaryCollectionCall: structure([
+        enabled: bool()
+        only: listOf(string())
+        except: listOf(string())
+      ])
+      unnecessaryEnumerableToArrayCall: bool()
+      unusedView: bool()
+    ])
+    migrationDirectories: listOf(string())
+    schemaDirectories: listOf(string())
     scanMigrations: bool()
     scanSchema: bool()
-    sqlParser: string()
+    sqlParser: anyOf('auto', 'iamcal', 'phpmyadmin')
     configDirectories: listOf(string())
     translationDirectories: listOf(string())
     viewDirectories: listOf(string())
-    checkStrictContracts: bool()
+    checkModelProperties: bool()
+    strictContracts: bool()
   ])
 
 expandRelativePaths:
   - '[parameters][laravel][configDirectories][]'
-  - '[parameters][laravel][databaseMigrationsPath][]'
-  - '[parameters][laravel][squashedMigrationsPath][]'
+  - '[parameters][laravel][migrationDirectories][]'
+  - '[parameters][laravel][schemaDirectories][]'
   - '[parameters][laravel][translationDirectories][]'
   - '[parameters][laravel][viewDirectories][]'
 
 conditionalTags:
-  CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule: {phpstan.rules.rule: %laravel.noEnvCallsOutsideOfConfig%}
-  CalebDW\PhpstanLaravel\Rules\NoModelMakeRule: {phpstan.rules.rule: %laravel.noModelMake%}
-  CalebDW\PhpstanLaravel\Rules\NoUnnecessaryCollectionCallRule: {phpstan.rules.rule: %laravel.noUnnecessaryCollectionCall%}
-  CalebDW\PhpstanLaravel\Rules\NoUnnecessaryEnumerableToArrayCallsRule: {phpstan.rules.rule: %laravel.noUnnecessaryEnumerableToArrayCalls%}
-  CalebDW\PhpstanLaravel\Rules\OctaneCompatibilityRule: {phpstan.rules.rule: %laravel.checkOctaneCompatibility%}
-  CalebDW\PhpstanLaravel\Rules\UnusedViewsRule: {phpstan.rules.rule: %laravel.checkUnusedViews%}
-  CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule: {phpstan.rules.rule: %laravel.checkMissingTranslations%}
-  CalebDW\PhpstanLaravel\Rules\ModelAppendsRule: {phpstan.rules.rule: %laravel.checkModelAppends%}
-  CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule: {phpstan.rules.rule: %laravel.checkConfigAccessors%}
-  CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule: {phpstan.rules.rule: %laravel.checkModelMethodVisibility%}
-  CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule: {phpstan.rules.rule: %laravel.checkAuthCallsWhenInRequestScope%}
-  CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule: {phpstan.rules.rule: %laravel.checkAuthCallsWhenInRequestScope%}
-  CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilder: {phpstan.rules.rule: %laravel.noModelForwardingToBuilder%}
-  CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilder: {phpstan.rules.rule: %laravel.noModelStaticForwardingToBuilder%}
+  CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule: {phpstan.rules.rule: %laravel.rules.envCallOutsideConfig%}
+  CalebDW\PhpstanLaravel\Rules\NoModelMakeRule: {phpstan.rules.rule: %laravel.rules.modelMake%}
+  CalebDW\PhpstanLaravel\Rules\NoUnnecessaryCollectionCallRule: {phpstan.rules.rule: %laravel.rules.unnecessaryCollectionCall.enabled%}
+  CalebDW\PhpstanLaravel\Rules\NoUnnecessaryEnumerableToArrayCallsRule: {phpstan.rules.rule: %laravel.rules.unnecessaryEnumerableToArrayCall%}
+  CalebDW\PhpstanLaravel\Rules\OctaneCompatibilityRule: {phpstan.rules.rule: %laravel.rules.octaneCompatibility%}
+  CalebDW\PhpstanLaravel\Rules\UnusedViewsRule: {phpstan.rules.rule: %laravel.rules.unusedView%}
+  CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule: {phpstan.rules.rule: %laravel.rules.missingTranslation%}
+  CalebDW\PhpstanLaravel\Rules\ModelAppendsRule: {phpstan.rules.rule: %laravel.rules.modelAppends%}
+  CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule: {phpstan.rules.rule: %laravel.rules.configAccessor%}
+  CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule: {phpstan.rules.rule: %laravel.rules.modelMethodVisibility%}
+  CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule: {phpstan.rules.rule: %laravel.rules.authInRequestScope%}
+  CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule: {phpstan.rules.rule: %laravel.rules.authInRequestScope%}
+  CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilderRule: {phpstan.rules.rule: %laravel.rules.modelForwardingToBuilder%}
+  CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilderRule: {phpstan.rules.rule: %laravel.rules.modelStaticForwardingToBuilder%}
 
 services:
   - class: CalebDW\PhpstanLaravel\Methods\RelationForwardsCallsExtension
@@ -235,7 +241,7 @@ services:
     arguments: {configDirectories: %laravel.configDirectories%}
   - class: CalebDW\PhpstanLaravel\Rules\NoModelMakeRule
   - class: CalebDW\PhpstanLaravel\Rules\NoUnnecessaryCollectionCallRule
-    arguments: {onlyMethods: %laravel.noUnnecessaryCollectionCallOnly%, excludeMethods: %laravel.noUnnecessaryCollectionCallExcept%}
+    arguments: {onlyMethods: %laravel.rules.unnecessaryCollectionCall.only%, excludeMethods: %laravel.rules.unnecessaryCollectionCall.except%}
   - class: CalebDW\PhpstanLaravel\Rules\NoUnnecessaryEnumerableToArrayCallsRule
   - class: CalebDW\PhpstanLaravel\Rules\ModelAppendsRule
   - class: CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule
@@ -255,9 +261,9 @@ services:
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Support\ModelHelper
   - class: CalebDW\PhpstanLaravel\Properties\MigrationHelper
-    arguments: {databaseMigrationPath: %laravel.databaseMigrationsPath%, scanMigrations: %laravel.scanMigrations%, parser: @currentPhpVersionSimpleDirectParser}
+    arguments: {databaseMigrationPath: %laravel.migrationDirectories%, scanMigrations: %laravel.scanMigrations%, parser: @currentPhpVersionSimpleDirectParser}
   - class: CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper
-    arguments: {schemaPaths: %laravel.squashedMigrationsPath%, scanSchema: %laravel.scanSchema%}
+    arguments: {schemaPaths: %laravel.schemaDirectories%, scanSchema: %laravel.scanSchema%}
   - class: CalebDW\PhpstanLaravel\Sql\SqlParserManager
     arguments: {defaultDriver: %laravel.sqlParser%}
   - class: CalebDW\PhpstanLaravel\Properties\ModelCastHelper
@@ -340,7 +346,7 @@ services:
     tags: [phpstan.staticMethodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\RelationClosureHelper
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AppMakeHelper
-    arguments: {checkStrictContracts: %laravel.checkStrictContracts%}
+    arguments: {strictContracts: %laravel.strictContracts%}
   - class: CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver
   - class: CalebDW\PhpstanLaravel\Internal\ConsoleApplicationHelper
   - class: CalebDW\PhpstanLaravel\Internal\FileHelper
@@ -353,8 +359,8 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule
-  - class: CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilder
-  - class: CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilder
+  - class: CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilderRule
+  - class: CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilderRule
   - class: Illuminate\Filesystem\Filesystem
     autowired: self
   - class: CalebDW\PhpstanLaravel\Ignore\FacadeStaticCallIgnoreExtension

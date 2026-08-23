@@ -340,7 +340,7 @@ Migration and schema paths accept wildcards, which modular applications need:
 ```neon
 parameters:
     laravel:
-        databaseMigrationsPath:
+        migrationDirectories:
             - modules/*/database/migrations
 ```
 
@@ -357,11 +357,11 @@ Every rule is individually toggleable and every error carries a `laravel.`
 prefixed identifier, so you can ignore a category precisely. See
 [rules](rules.md) for the full list. Ones Larastan does not have:
 
-- **`noModelForwardingToBuilder`** and **`noModelStaticForwardingToBuilder`**
+- **`modelForwardingToBuilder`** and **`modelStaticForwardingToBuilder`**
   (both off) for codebases that prefer `User::query()->where(...)` to
   `User::where(...)`.
-- **`checkConfigAccessors`** (on), described above.
-- **`checkStrictContracts`** (off). By default `resolve(SomeContract::class)`
+- **`configAccessor`** (on), described above.
+- **`strictContracts`** (off). By default `resolve(SomeContract::class)`
   infers the concrete class the container is bound to, which is convenient but
   lets code drift onto methods only one implementation happens to have. Enable
   it to take the contract at face value:
@@ -380,9 +380,14 @@ prefixed identifier, so you can ignore a category precisely. See
   (GPL-2.0-or-later). Name one with
   [`sqlParser`](custom-config-parameters.md#sqlparser) or let it pick.
 - **Options nest under `laravel:`** rather than being mixed into PHPStan's own
-  `parameters`, and are schema validated, so a typo fails the run instead of
-  being silently ignored.
-- **Error identifiers are `laravel.*`** rather than `larastan.*`.
+  `parameters`, with rule toggles a level deeper under `laravel.rules`. The
+  whole tree is schema validated, so a typo fails the run — with a suggested
+  spelling — instead of being silently ignored.
+- **Error identifiers are `laravel.*`** rather than `larastan.*`, and each one
+  names what was found rather than the policy behind it: `laravel.modelMake`,
+  not `larastan.noModelMake`. Where a single concern reports more than one kind
+  of error, the identifiers are grouped —
+  `laravel.modelMethodVisibility.scope` and `.accessor`.
 - **The namespace is `CalebDW\PhpstanLaravel\`.**
 - **A narrower support policy**: PHP 8.3+, and the two most recent Laravel
   majors at recent minors. Fewer version shims means less dead code and less

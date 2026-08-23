@@ -6,7 +6,6 @@ namespace CalebDW\PhpstanLaravel\Sql;
 
 use Closure;
 
-use function array_keys;
 use function class_exists;
 
 /**
@@ -44,9 +43,6 @@ final class SqlParserManager
      */
     private const array AUTO_PREFERENCE = [self::DRIVER_PHPMYADMIN, self::DRIVER_IAMCAL];
 
-    /** @var array<string, Closure(): SqlParser> */
-    private array $customCreators = [];
-
     /** @var array<string, SqlParser> */
     private array $resolved = [];
 
@@ -74,20 +70,6 @@ final class SqlParserManager
         return $this->resolved[$driver] ??= $this->resolve($driver);
     }
 
-    /**
-     * Register a parser of your own, or replace one of the built-in drivers.
-     *
-     * @param Closure(): SqlParser $callback
-     */
-    public function extend(string $driver, Closure $callback): self
-    {
-        $this->customCreators[$driver] = $callback;
-
-        unset($this->resolved[$driver]);
-
-        return $this;
-    }
-
     /** @return list<string> */
     public function availableDrivers(): array
     {
@@ -107,10 +89,6 @@ final class SqlParserManager
     /** @throws SqlParserNotAvailable */
     private function resolve(string $driver): SqlParser
     {
-        if (isset($this->customCreators[$driver])) {
-            return ($this->customCreators[$driver])();
-        }
-
         return match ($driver) {
             self::DRIVER_AUTO => $this->createAutoDriver(),
             self::DRIVER_IAMCAL => $this->createIamcalDriver(),
@@ -170,8 +148,8 @@ final class SqlParserManager
     {
         return [
             self::DRIVER_AUTO,
-            ...array_keys(self::REQUIREMENTS),
-            ...array_keys($this->customCreators),
+            self::DRIVER_IAMCAL,
+            self::DRIVER_PHPMYADMIN,
         ];
     }
 }

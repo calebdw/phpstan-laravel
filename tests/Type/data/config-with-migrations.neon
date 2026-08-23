@@ -2,5 +2,5 @@ includes:
     - ../../phpstan-tests.neon
 parameters:
     laravel:
-        databaseMigrationsPath:
+        migrationDirectories:
             - %rootDir%/../../../tests/application/database/migrations
