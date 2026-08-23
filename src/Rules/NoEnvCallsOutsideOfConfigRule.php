@@ -14,9 +14,9 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
-use function config_path;
 use function count;
 use function is_dir;
+use function is_string;
 use function str_starts_with;
 
 /**
@@ -42,7 +42,16 @@ class NoEnvCallsOutsideOfConfigRule implements Rule
             return;
         }
 
-        $this->configDirectories = [config_path()];
+        // Resolved through the container rather than config_path(), which is
+        // a Foundation helper and is not necessarily loaded when a package is
+        // being analysed on its own.
+        $path = $this->resolve('path.config');
+
+        if (! is_string($path)) {
+            return;
+        }
+
+        $this->configDirectories = [$path];
     }
 
     public function getNodeType(): string
@@ -78,6 +87,13 @@ class NoEnvCallsOutsideOfConfigRule implements Rule
 
     protected function isCalledOutsideOfConfig(FuncCall $call, Scope $scope): bool
     {
+        // With no config directory to compare against there is no way to tell
+        // inside from outside, and reporting every call would be worse than
+        // reporting none.
+        if ($this->configDirectories === []) {
+            return false;
+        }
+
         foreach ($this->configDirectories as $configDirectory) {
             $absolutePath = $this->fileHelper->absolutizePath($configDirectory);
 
