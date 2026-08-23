@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Support\PluckHelper;
+use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -14,7 +14,7 @@ use PHPStan\Type\Type;
 
 final class EloquentBuilderPluckExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private PluckHelper $pluckHelper)
+    public function __construct(private ColumnHelper $columnHelper)
     {
     }
 
@@ -42,6 +42,6 @@ final class EloquentBuilderPluckExtension implements DynamicMethodReturnTypeExte
 
         $from = $scope->getType($methodCall->var)->getTemplateType(EloquentBuilder::class, 'TModel');
 
-        return $this->pluckHelper->getCollectionType($from, $valueArg, $keyArg, $scope);
+        return $this->columnHelper->getCollectionType($from, $valueArg, $keyArg, $scope);
     }
 }

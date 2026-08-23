@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Support\PluckHelper;
+use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
@@ -16,7 +16,7 @@ use PHPStan\Type\Type;
 
 final class EnumerablePluckExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private PluckHelper $pluckHelper)
+    public function __construct(private ColumnHelper $columnHelper)
     {
     }
 
@@ -50,6 +50,6 @@ final class EnumerablePluckExtension implements DynamicMethodReturnTypeExtension
 
         $from = $calledOnType->getTemplateType(Enumerable::class, 'TValue');
 
-        return $this->pluckHelper->getCollectionType($from, $valueArg, $keyArg, $scope, $collectionClass);
+        return $this->columnHelper->getCollectionType($from, $valueArg, $keyArg, $scope, $collectionClass);
     }
 }

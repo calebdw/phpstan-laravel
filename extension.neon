@@ -316,9 +316,13 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\TranslatorGetReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrKeyByExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrPluckExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentBuilderPluckExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableKeyByExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerablePluckExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -342,7 +346,7 @@ services:
   - class: CalebDW\PhpstanLaravel\Support\ConfigHelper
   - class: CalebDW\PhpstanLaravel\Support\ConfigParser
     arguments: {configDirectories: %laravel.configDirectories%, parser: @currentPhpVersionSimpleDirectParser, treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%}
-  - class: CalebDW\PhpstanLaravel\Support\PluckHelper
+  - class: CalebDW\PhpstanLaravel\Support\ColumnHelper
   - class: CalebDW\PhpstanLaravel\ReturnTypes\FormRequestSafeDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule

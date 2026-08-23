@@ -31,7 +31,7 @@ use function collect;
 use function explode;
 
 /** @internal */
-final class PluckHelper
+final class ColumnHelper
 {
     public function getArrayType(
         Type $from,
@@ -61,6 +61,16 @@ final class PluckHelper
             $collectionClass ?? Collection::class,
             [$type->getKeyType(), $type->getItemType()],
         );
+    }
+
+    /**
+     * Resolves the key a column or callback produces, for keyBy, which
+     * rewrites keys and leaves the values alone.
+     */
+    public function getKeyType(Type $from, Arg $keyArg, Scope $scope): Type
+    {
+        return $this->getTypeFromArg($from, $keyArg, $scope)
+            ?? new BenevolentUnionType([new IntegerType(), new StringType()]);
     }
 
     private function getTypeFromArg(Type $from, Arg $arg, Scope $scope): Type|null

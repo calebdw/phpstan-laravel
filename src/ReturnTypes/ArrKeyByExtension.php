@@ -9,12 +9,11 @@ use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Type\Accessory\AccessoryArrayListType;
+use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
 
-final class ArrPluckExtension implements DynamicStaticMethodReturnTypeExtension
+final class ArrKeyByExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private ColumnHelper $columnHelper)
     {
@@ -27,7 +26,7 @@ final class ArrPluckExtension implements DynamicStaticMethodReturnTypeExtension
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
     {
-        return $methodReflection->getName() === 'pluck';
+        return $methodReflection->getName() === 'keyBy';
     }
 
     public function getTypeFromStaticMethodCall(
@@ -36,22 +35,17 @@ final class ArrPluckExtension implements DynamicStaticMethodReturnTypeExtension
         Scope $scope,
     ): Type|null {
         $arrayArg = $methodCall->getArg('array', 0);
-        $valueArg = $methodCall->getArg('value', 1);
-        $keyArg   = $methodCall->getArg('key', 2);
+        $keyByArg = $methodCall->getArg('keyBy', 1);
 
-        if ($arrayArg === null || $valueArg === null) {
+        if ($arrayArg === null || $keyByArg === null) {
             return null;
         }
 
-        $from = $scope->getType($arrayArg->value)->getIterableValueType();
+        $valueType = $scope->getType($arrayArg->value)->getIterableValueType();
 
-        $array = $this->columnHelper->getArrayType($from, $valueArg, $keyArg, $scope);
-
-        if ($keyArg !== null) {
-            return $array;
-        }
-
-        // Without a key Arr::pluck appends, so the result is a list.
-        return TypeCombinator::intersect($array, new AccessoryArrayListType());
+        return new ArrayType(
+            $this->columnHelper->getKeyType($valueType, $keyByArg, $scope),
+            $valueType,
+        );
     }
 }
