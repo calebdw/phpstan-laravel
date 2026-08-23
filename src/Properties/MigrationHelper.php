@@ -22,7 +22,7 @@ class MigrationHelper
         /** @var string[] */
         private array $databaseMigrationPath,
         private FileHelper $fileHelper,
-        private bool $disableMigrationScan,
+        private bool $scanMigrations,
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
     ) {
@@ -30,7 +30,7 @@ class MigrationHelper
 
     public function parseMigrations(ModelDatabaseHelper &$modelDatabaseHelper): void
     {
-        if ($this->disableMigrationScan) {
+        if (! $this->scanMigrations) {
             return;
         }
 

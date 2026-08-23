@@ -10,58 +10,58 @@ parameters:
   bootstrapFiles:
     - bootstrap.php
   laravel:
+    checkAuthCallsWhenInRequestScope: false
+    checkConfigAccessors: true
+    checkMissingTranslations: false
+    checkModelAppends: true
+    checkModelMethodVisibility: false
+    checkModelProperties: false
     checkOctaneCompatibility: false
+    checkUnusedViews: false
     noEnvCallsOutsideOfConfig: true
+    noModelForwardingToBuilder: false
     noModelMake: true
+    noModelStaticForwardingToBuilder: false
     noUnnecessaryCollectionCall: true
     noUnnecessaryCollectionCallOnly: []
     noUnnecessaryCollectionCallExcept: []
-    noUnnecessaryEnumerableToArrayCalls: false
-    squashedMigrationsPath: []
+    noUnnecessaryEnumerableToArrayCalls: true
     databaseMigrationsPath: []
-    disableMigrationScan: false
-    disableSchemaScan: false
-    configDirectories: []
-    viewDirectories: []
-    translationDirectories: []
-    checkModelProperties: false
-    checkUnusedViews: false
-    checkMissingTranslations: false
-    checkModelAppends: true
-    checkConfigAccessors: true
-    checkModelMethodVisibility: false
-    checkAuthCallsWhenInRequestScope: false
-    noModelForwardingToBuilder: false
-    noModelStaticForwardingToBuilder: false
+    squashedMigrationsPath: []
+    scanMigrations: true
+    scanSchema: true
     sqlParser: auto
+    configDirectories: []
+    translationDirectories: []
+    viewDirectories: []
     checkStrictContracts: false
 
 parametersSchema:
   laravel: structure([
+    checkAuthCallsWhenInRequestScope: bool()
+    checkConfigAccessors: bool()
+    checkMissingTranslations: bool()
+    checkModelAppends: bool()
+    checkModelMethodVisibility: bool()
+    checkModelProperties: bool()
     checkOctaneCompatibility: bool()
+    checkUnusedViews: bool()
     noEnvCallsOutsideOfConfig: bool()
+    noModelForwardingToBuilder: bool()
     noModelMake: bool()
+    noModelStaticForwardingToBuilder: bool()
     noUnnecessaryCollectionCall: bool()
     noUnnecessaryCollectionCallOnly: listOf(string())
     noUnnecessaryCollectionCallExcept: listOf(string())
     noUnnecessaryEnumerableToArrayCalls: bool()
     databaseMigrationsPath: listOf(string())
-    disableMigrationScan: bool()
-    configDirectories: listOf(string())
-    viewDirectories: listOf(string())
-    translationDirectories: listOf(string())
     squashedMigrationsPath: listOf(string())
-    disableSchemaScan: bool()
-    checkModelProperties: bool()
-    checkUnusedViews: bool()
-    checkMissingTranslations: bool()
-    checkModelAppends: bool()
-    checkConfigAccessors: bool()
-    checkModelMethodVisibility: bool()
-    checkAuthCallsWhenInRequestScope: bool()
-    noModelForwardingToBuilder: bool()
-    noModelStaticForwardingToBuilder: bool()
+    scanMigrations: bool()
+    scanSchema: bool()
     sqlParser: string()
+    configDirectories: listOf(string())
+    translationDirectories: listOf(string())
+    viewDirectories: listOf(string())
     checkStrictContracts: bool()
   ])
 
@@ -255,9 +255,9 @@ services:
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Support\ModelHelper
   - class: CalebDW\PhpstanLaravel\Properties\MigrationHelper
-    arguments: {databaseMigrationPath: %laravel.databaseMigrationsPath%, disableMigrationScan: %laravel.disableMigrationScan%, parser: @currentPhpVersionSimpleDirectParser}
+    arguments: {databaseMigrationPath: %laravel.databaseMigrationsPath%, scanMigrations: %laravel.scanMigrations%, parser: @currentPhpVersionSimpleDirectParser}
   - class: CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper
-    arguments: {schemaPaths: %laravel.squashedMigrationsPath%, disableSchemaScan: %laravel.disableSchemaScan%}
+    arguments: {schemaPaths: %laravel.squashedMigrationsPath%, scanSchema: %laravel.scanSchema%}
   - class: CalebDW\PhpstanLaravel\Sql\SqlParserManager
     arguments: {defaultDriver: %laravel.sqlParser%}
   - class: CalebDW\PhpstanLaravel\Properties\ModelCastHelper

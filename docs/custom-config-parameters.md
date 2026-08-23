@@ -24,18 +24,21 @@ parameters:
 
 **Note:** If your migrations are using `if` statements to conditionally alter database structure (ex: create table only if it's not there, add column only if table exists and column does not etc...) this extension will assume those if statements evaluate to true and will consider everything from the `if` body.
 
-## `disableMigrationScan`
+## `scanMigrations`
 
-**default**: `false`
+**default**: `true`
 
-You can disable use this config to disable migration scanning.
+Migration files are scanned to infer model properties from your table
+structure. Set this to `false` to skip the scan, for instance when your models
+already carry `@property` annotations and you would rather not pay to parse
+migrations you do not need.
 
 ### Example
 
 ```neon
 parameters:
     laravel:
-        disableMigrationScan: true
+        scanMigrations: false
 ```
 
 ## `squashedMigrationsPath`
@@ -98,7 +101,7 @@ end up using a different one.
 
 If you do not use squashed schema dumps at all, you need neither package — the
 parser is only resolved when there is a dump to read. You can also set
-[`disableSchemaScan`](#disableschemascan) to skip them entirely.
+[`scanSchema`](#scanschema) to `false` to skip them entirely.
 
 ### A note on the GPL-2.0 parser
 
@@ -142,18 +145,20 @@ $manager->extend('postgres', fn () => new MyPostgresSqlParser());
 
 Then set `sqlParser: postgres`.
 
-## `disableSchemaScan`
+## `scanSchema`
 
-**default**: `false`
+**default**: `true`
 
-You can disable use this config to disable schema scanning.
+Squashed schema dumps are scanned to infer model properties. Set this to
+`false` to skip them, which also removes the need for an SQL parser to be
+installed at all.
 
 ### Example
 
 ```neon
 parameters:
     laravel:
-        disableSchemaScan: true
+        scanSchema: false
 ```
 
 ## `configDirectories`

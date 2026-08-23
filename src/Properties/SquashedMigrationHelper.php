@@ -23,13 +23,13 @@ final class SquashedMigrationHelper
         private FileHelper $fileHelper,
         private SqlDataTypeToPhpTypeConverter $converter,
         private SqlParserManager $parserManager,
-        private bool $disableSchemaScan,
+        private bool $scanSchema,
     ) {
     }
 
     public function parseSchemaDumps(ModelDatabaseHelper &$modelDatabaseHelper): void
     {
-        if ($this->disableSchemaScan) {
+        if (! $this->scanSchema) {
             return;
         }
 

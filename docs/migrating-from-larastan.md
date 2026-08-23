@@ -72,6 +72,34 @@ This applies to every option provided by this extension. PHPStan's own parameter
 Nesting is validated, so a stale top-level option will fail with an "Unexpected item"
 error rather than being silently ignored.
 
+### Two options were renamed and inverted
+
+The two `disable*` flags were the only negatives among the options, which made
+`disableMigrationScan: false` a double negative to read. They are now positive and
+scanning is the default, so the meaning of the value flips along with the name:
+
+```diff
+ parameters:
+     laravel:
+-        disableMigrationScan: true
+-        disableSchemaScan: true
++        scanMigrations: false
++        scanSchema: false
+```
+
+Both default to `true`, matching the old defaults of `disableMigrationScan: false` and
+`disableSchemaScan: false`. If you never set either, there is nothing to change. Because
+the old keys no longer exist, a leftover `disableSchemaScan` fails validation rather than
+being quietly ignored, so this cannot silently change your analysis.
+
+### One rule is now on by default
+
+`noUnnecessaryEnumerableToArrayCalls` was off in Larastan and is on here. It flags
+`toArray()` on a collection whose values cannot be `Arrayable`, where `all()` does the
+same job without the recursive conversion. It sits alongside `noUnnecessaryCollectionCall`,
+which was already on, so the two redundancy checks now behave alike. Set it to `false` to
+restore the old behaviour.
+
 ## 4. Error identifiers renamed
 
 All error identifiers now use a `laravel.` prefix:

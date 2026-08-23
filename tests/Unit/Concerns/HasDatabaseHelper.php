@@ -34,7 +34,7 @@ trait HasDatabaseHelper
     }
 
     /** @param  string[] $dirs */
-    private function getMigrationHelper(array $dirs = ['foo'], bool $disableScan = false): MigrationHelper
+    private function getMigrationHelper(array $dirs = ['foo'], bool $scan = true): MigrationHelper
     {
         return new MigrationHelper(
             self::getContainer()->getService('currentPhpVersionSimpleDirectParser'),
@@ -42,14 +42,14 @@ trait HasDatabaseHelper
             new FileHelper(
                 self::getContainer()->getByType(PHPStanFileHelper::class),
             ),
-            $disableScan,
+            $scan,
             $this->modelHelper,
             self::createReflectionProvider(),
         );
     }
 
     /** @param  string[] $dirs */
-    private function getSquashedMigrationHelper(array $dirs = ['foo'], bool $disableScan = false, string $driver = SqlParserManager::DRIVER_AUTO): SquashedMigrationHelper
+    private function getSquashedMigrationHelper(array $dirs = ['foo'], bool $scan = true, string $driver = SqlParserManager::DRIVER_AUTO): SquashedMigrationHelper
     {
         return new SquashedMigrationHelper(
             $dirs,
@@ -58,7 +58,7 @@ trait HasDatabaseHelper
             ),
             new SqlDataTypeToPhpTypeConverter(),
             new SqlParserManager($driver),
-            $disableScan,
+            $scan,
         );
     }
 }

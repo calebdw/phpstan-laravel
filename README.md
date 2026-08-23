@@ -146,6 +146,7 @@ These are toggled with a boolean option under `laravel:`:
 | --- | --- | --- |
 | `NoModelMake` | `noModelMake` | ✅ on |
 | `NoUnnecessaryCollectionCall` | `noUnnecessaryCollectionCall` | ✅ on |
+| `NoUnnecessaryEnumerableToArrayCalls` | `noUnnecessaryEnumerableToArrayCalls` | ✅ on |
 | `ModelAppendsRule` | `checkModelAppends` | ✅ on |
 | `ConfigAccessorRule` | `checkConfigAccessors` | ✅ on |
 | `NoEnvCallsOutsideOfConfig` | `noEnvCallsOutsideOfConfig` | ✅ on |
@@ -155,11 +156,35 @@ These are toggled with a boolean option under `laravel:`:
 | `NoMissingTranslationsRule` | `checkMissingTranslations` | ❌ off |
 | `NoPublicModelScopeAndAccessorRule` | `checkModelMethodVisibility` | ❌ off |
 | `NoAuthFacadeInRequestScopeRule` / `NoAuthHelperInRequestScopeRule` | `checkAuthCallsWhenInRequestScope` | ❌ off |
-| `NoUnnecessaryEnumerableToArrayCalls` | `noUnnecessaryEnumerableToArrayCalls` | ❌ off |
 | `NoModelForwardingToBuilder` | `noModelForwardingToBuilder` | ❌ off |
 | `NoModelStaticForwardingToBuilder` | `noModelStaticForwardingToBuilder` | ❌ off |
 
 Each rule is documented with examples in [rules](docs/rules.md).
+
+### Worth turning on
+
+Of the options above, `checkModelProperties` is the one most worth your
+attention, and the one people most often never notice. It checks every argument
+typed `model-property<Model>` against the columns resolved from your migrations
+and schema dumps, which catches mistakes like this one throughout Laravel's own
+methods, with no annotations of your own:
+
+```php
+User::create(['name' => 'John', 'emaiil' => 'john@example.test']);
+// Property 'emaiil' does not exist in App\User model.
+```
+
+It is off by default only because it depends on that resolved column list being
+complete. If migrations live somewhere unusual, or a table is built in a way the
+scanner cannot follow, the result is false positives rather than silence. Point
+`databaseMigrationsPath` and `squashedMigrationsPath` at the right directories,
+then enable it:
+
+```neon
+parameters:
+    laravel:
+        checkModelProperties: true
+```
 
 Every error carries a `laravel.` prefixed [identifier][identifiers], so you can ignore a
 whole class of error precisely:

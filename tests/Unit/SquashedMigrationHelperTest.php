@@ -131,7 +131,7 @@ class SquashedMigrationHelperTest extends PHPStanTestCase
     #[Test]
     public function it_can_disable_schema_scanning(): void
     {
-        $this->getSquashedMigrationHelper([__DIR__ . '/data/schema/basic_schema'], true)
+        $this->getSquashedMigrationHelper([__DIR__ . '/data/schema/basic_schema'], false)
             ->parseSchemaDumps($this->modelDatabaseHelper);
 
         $this->assertSame([], $this->modelDatabaseHelper->connections);

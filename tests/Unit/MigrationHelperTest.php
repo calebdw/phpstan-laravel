@@ -304,7 +304,7 @@ class MigrationHelperTest extends PHPStanTestCase
     #[Test]
     public function it_can_disable_migration_scanning(): void
     {
-        $this->getMigrationHelper([__DIR__ . '/data/basic_migration'], true)
+        $this->getMigrationHelper([__DIR__ . '/data/basic_migration'], false)
             ->parseMigrations($this->modelDatabaseHelper);
 
         self::assertSame([], $this->modelDatabaseHelper->connections);

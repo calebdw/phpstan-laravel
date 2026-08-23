@@ -88,15 +88,55 @@ parameters:
         noUnnecessaryCollectionCallExcept: ['contains']
 ```
 
+## NoUnnecessaryEnumerableToArrayCalls
+
+Catches `toArray()` calls on an `Enumerable` whose values cannot be
+`Arrayable`. `toArray()` recursively converts any `Arrayable` items it finds,
+so on a collection that cannot contain one it does strictly more work than
+`all()` for an identical result.
+
+### Examples
+
+```php
+collect([1, 2, 3])->toArray();
+```
+
+Will result in the following error:
+
+```
+Called [toArray()] on an Enumerable which does not contain any Arrayables.
+```
+
+Use `all()` instead:
+
+```php
+collect([1, 2, 3])->all();
+```
+
+The rule fires only when the value type is known *not* to be `Arrayable`. A
+collection of models, or one whose value type cannot be resolved, is left
+alone, so it will not flag a `toArray()` that is doing real work.
+
+### Configuration
+
+This rule is enabled by default.
+To disable, add the following to your `phpstan.neon` file:
+
+```neon
+parameters:
+    laravel:
+        noUnnecessaryEnumerableToArrayCalls: false
+```
+
 ## ModelPropertyRule
 
----
-
-**NOTE**: This rule is currently in beta! If you want to improve its analysis, you can check out the issue [here](https://github.com/larastan/larastan/issues/676) and contribute!
-
----
-
 **default**: false
+
+Accuracy depends on how completely the extension resolved your model's columns.
+Where migrations or schema dumps are missing, or a table is built in a way the
+scanner cannot follow, that gap surfaces as a false positive rather than as
+silence, which is why this is off by default. Point `databaseMigrationsPath` and
+`squashedMigrationsPath` at the right directories before enabling it.
 
 ### Configuration
 
