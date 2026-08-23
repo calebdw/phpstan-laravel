@@ -202,6 +202,8 @@ parameters:
 - [Custom config parameters](docs/custom-config-parameters.md) — the full option reference
 - [Custom types](docs/custom-types.md) — `view-string` and `model-property`
 - [Errors to ignore](docs/errors-to-ignore.md) — known limits and how to handle them
+- [Differences from Larastan](docs/differences-from-larastan.md) — what this fork adds and why you might switch
+- [Backward compatibility](docs/backward-compatibility.md) — what counts as a breaking change, and what does not
 - [Migrating from Larastan](docs/migrating-from-larastan.md)
 
 ## 👊 Contributing
