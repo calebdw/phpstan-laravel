@@ -16,6 +16,7 @@ use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 use function array_map;
@@ -133,27 +134,39 @@ class ModelPropertyHelper
 
         $camelCase = Str::camel($propertyName);
 
-        if (! $classReflection->hasNativeMethod($camelCase)) {
-            return $classReflection->hasNativeMethod('get' . Str::studly($propertyName) . 'Attribute');
+        // Mirrors getAccessor(): an unusable camel case method is not an
+        // answer on its own, as the legacy accessor may still be there.
+        if ($classReflection->hasNativeMethod($camelCase)) {
+            $methodReflection = $classReflection->getNativeMethod($camelCase);
+
+            if (! $methodReflection->isPublic() && ! $methodReflection->isPrivate()) {
+                $returnType = $methodReflection->getVariants()[0]->getReturnType();
+
+                if ($this->isAttributeAccessor($returnType, $strictGenerics)) {
+                    return true;
+                }
+            }
         }
 
-        $methodReflection = $classReflection->getNativeMethod($camelCase);
+        return $classReflection->hasNativeMethod('get' . Str::studly($propertyName) . 'Attribute');
+    }
 
-        if ($methodReflection->isPublic() || $methodReflection->isPrivate()) {
-            return false;
-        }
-
-        $returnType = $methodReflection->getVariants()[0]->getReturnType();
-
+    /** @param bool $strictGenerics Requires the Attribute generics to be defined. */
+    private function isAttributeAccessor(Type $returnType, bool $strictGenerics): bool
+    {
         if (! $strictGenerics) {
             return (new ObjectType(Attribute::class))->isSuperTypeOf($returnType)->yes();
         }
 
-        if ($returnType->getObjectClassReflections() === [] || ! $returnType->getObjectClassReflections()[0]->isGeneric()) {
+        $classReflections = $returnType->getObjectClassReflections();
+
+        if ($classReflections === [] || ! $classReflections[0]->isGeneric()) {
             return false;
         }
 
-        return (new GenericObjectType(Attribute::class, [new MixedType(), new MixedType()]))->isSuperTypeOf($returnType)->yes();
+        return (new GenericObjectType(Attribute::class, [new MixedType(), new MixedType()]))
+            ->isSuperTypeOf($returnType)
+            ->yes();
     }
 
     public function getAccessor(ClassReflection $classReflection, string $propertyName): ModelProperty
