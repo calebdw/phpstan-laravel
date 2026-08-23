@@ -27,9 +27,28 @@ function test(): void
 
     assertType('ArrayIterator<int, App\User>', User::query()->paginate()->getIterator());
 
+    // A paginator over models hands back an Eloquent collection.
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', User::paginate()->getCollection());
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', User::simplePaginate()->getCollection());
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', User::cursorPaginate()->getCollection());
+
+    // Anything else stays a support collection.
+    assertType('Illuminate\Support\Collection<int, string>', paginatorOfStrings()->getCollection());
+    assertType('Illuminate\Support\Collection<int, string>', cursorPaginatorOfStrings()->getCollection());
+
     // HasMany
     assertType('Illuminate\Pagination\LengthAwarePaginator<int, App\Account>', (new User())->accounts()->paginate());
 
     // BelongsToMany
     assertType('Illuminate\Pagination\LengthAwarePaginator<int, App\Post&object{pivot: Illuminate\Database\Eloquent\Relations\Pivot}>', (new User())->posts()->paginate());
+}
+
+/** @return \Illuminate\Pagination\LengthAwarePaginator<int, string> */
+function paginatorOfStrings(): \Illuminate\Pagination\LengthAwarePaginator
+{
+}
+
+/** @return \Illuminate\Pagination\CursorPaginator<int, string> */
+function cursorPaginatorOfStrings(): \Illuminate\Pagination\CursorPaginator
+{
 }

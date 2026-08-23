@@ -11,6 +11,23 @@ namespace Illuminate\Pagination;
 abstract class AbstractPaginator implements \Illuminate\Contracts\Support\Htmlable, \Stringable
 {
     /**
+     * @return (TValue is \Illuminate\Database\Eloquent\Model
+     *     ? \Illuminate\Database\Eloquent\Collection<TKey, TValue>
+     *     : \Illuminate\Support\Collection<TKey, TValue>)
+     */
+    public function getCollection();
+
+    /**
+     * @template TSetKey of array-key
+     * @template TSetValue
+     *
+     * @param  \Illuminate\Support\Collection<TSetKey, TSetValue>  $collection
+     * @phpstan-this-out static<TSetKey, TSetValue>
+     * @return $this
+     */
+    public function setCollection(\Illuminate\Support\Collection $collection);
+
+    /**
      * @param  TKey  $key
      * @return TValue|null
      */
@@ -65,7 +82,11 @@ class LengthAwarePaginator extends AbstractPaginator implements \Illuminate\Cont
  */
 abstract class AbstractCursorPaginator implements \Illuminate\Contracts\Support\Htmlable, \Stringable
 {
-    /** @return \Illuminate\Support\Collection<TKey, TValue> */
+    /**
+     * @return (TValue is \Illuminate\Database\Eloquent\Model
+     *     ? \Illuminate\Database\Eloquent\Collection<TKey, TValue>
+     *     : \Illuminate\Support\Collection<TKey, TValue>)
+     */
     public function getCollection();
 
     /**
