@@ -208,6 +208,17 @@ parameters:
 
 Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
+## 🤖 Laravel Boost
+
+If you use [Laravel Boost][boost], this package ships an AI guideline and a
+`phpstan-laravel-analysis` skill covering how to run the analysis, how to read
+an error identifier, the configuration surface, and what to do when a model
+property is reported as missing. Boost picks both up automatically:
+
+```bash
+php artisan boost:update
+```
+
 ## 🙏 Credits
 
 This package began as a fork of [larastan/larastan][larastan], created by
@@ -223,6 +234,7 @@ Open-sourced software licensed under the [MIT license](LICENSE).
 [composer]: https://getcomposer.org
 [extension-installer]: https://phpstan.org/user-guide/extension-library#installing-extensions
 [identifiers]: https://phpstan.org/user-guide/ignoring-errors#ignoring-by-identifier
+[boost]: https://github.com/laravel/boost
 [larastan]: https://github.com/larastan/larastan
 [can]: https://github.com/canvural
 [nuno]: https://github.com/nunomaduro
