@@ -2,8 +2,10 @@
 
 namespace FacadesL1241;
 
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 
 use function PHPStan\Testing\assertType;
 
@@ -35,4 +37,8 @@ function test(): void
         key: 'cache-key',
         callback: static fn (): int => 123,
     ));
+
+    // Inspection methods that live only on the fake, not just assertions.
+    assertType('Illuminate\Support\Collection', Queue::pushed('SomeJob'));
+    assertType('Illuminate\Support\Collection', Bus::batched('SomeJob'));
 }

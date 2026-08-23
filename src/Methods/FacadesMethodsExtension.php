@@ -8,7 +8,6 @@ use CalebDW\PhpstanLaravel\Internal\RecursionGuard;
 use CalebDW\PhpstanLaravel\Reflection\ReflectionHelper;
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
 use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Str;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -76,20 +75,21 @@ final class FacadesMethodsExtension implements MethodsClassReflectionExtension
                 }
             }
 
-            if (Str::startsWith($methodName, 'assert')) {
-                $fakeFacadeClass = $this->getFake($facadeClass);
+            // The fake is only consulted for methods the real class does not
+            // have, which is where its inspection API lives: pushed(), sent()
+            // and dispatched() alongside the assertions.
+            $fakeFacadeClass = $this->getFake($facadeClass);
 
-                if ($this->reflectionProvider->hasClass($fakeFacadeClass)) {
-                    assert(class_exists($fakeFacadeClass));
-                    $fakeReflection = $this->reflectionProvider->getClass($fakeFacadeClass);
+            if ($this->reflectionProvider->hasClass($fakeFacadeClass)) {
+                assert(class_exists($fakeFacadeClass));
+                $fakeReflection = $this->reflectionProvider->getClass($fakeFacadeClass);
 
-                    if ($fakeReflection->hasNativeMethod($methodName)) {
-                        $this->cache[$key] = new StaticMethodReflection(
-                            $fakeReflection->getNativeMethod($methodName),
-                        );
+                if ($fakeReflection->hasNativeMethod($methodName)) {
+                    $this->cache[$key] = new StaticMethodReflection(
+                        $fakeReflection->getNativeMethod($methodName),
+                    );
 
-                        return true;
-                    }
+                    return true;
                 }
             }
 
