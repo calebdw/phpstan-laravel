@@ -31,7 +31,7 @@ composer require --dev calebdw/phpstan-laravel
 
 > [!IMPORTANT]
 > Unlike `calebdw/larastan`, this package does **not** declare `replace` for
-> `larastan/larastan`. Make sure the old package is actually removed — if both are
+> `larastan/larastan`. Make sure the old package is actually removed: if both are
 > installed the extension is registered twice and you will get duplicate errors.
 
 ## 2. Update the include path
@@ -72,14 +72,14 @@ PHPStan's own parameters (`level`, `paths`, `bootstrapFiles`, `ignoreErrors`, an
 stay exactly where they are.
 
 The whole tree is schema validated, so a stale or misplaced option fails with an
-"Unexpected item" error — usually with the right spelling suggested — rather than being
+"Unexpected item" error---usually with the right spelling suggested---rather than being
 silently ignored. Nothing in this section can quietly change your analysis: every rename
 below removes the old key, so a config you forget to update fails loudly.
 
 ### Rule toggles
 
 Under `laravel.rules`, each toggle is named after what the rule reports, with no `check`
-or `no` prefix — those prefixes were split roughly half and half across the old options,
+or `no` prefix: those prefixes were split roughly half and half across the old options,
 and the name of a rule is not the place to restate whether you want it.
 
 | Larastan | Here, under `laravel.rules` |
@@ -99,7 +99,7 @@ and the name of a rule is not the place to restate whether you want it.
 
 Two rules have no Larastan equivalent and so are not in the table:
 `modelForwardingToBuilder` and `modelStaticForwardingToBuilder`, both off by
-default. See [rules](rules.md#model-forwarding-to-builder).
+default. See [rules](rules/eloquent.md#model-forwarding-to-builder).
 
 The three `noUnnecessaryCollectionCall*` options are one rule with two filters, so they
 are now one structure:
@@ -115,7 +115,7 @@ are now one structure:
 +                except: ['contains']
 ```
 
-`checkModelProperties` stays where it is, directly under `laravel:`. It is not a rule — it
+`checkModelProperties` stays where it is, directly under `laravel:`. It is not a rule: it
 activates the `model-property` type, and the mismatches are then reported by PHPStan's own
 argument checks.
 
@@ -151,7 +151,7 @@ Both default to `true`, matching the old defaults of `disableMigrationScan: fals
 ### Four options no longer exist
 
 All four defaulted to `false` in Larastan, so unless you turned one on there is nothing
-to do. If you did set one, remove it — the key no longer exists and will fail validation.
+to do. If you did set one, remove it: the key no longer exists and will fail validation.
 
 | Removed | What happens now |
 | --- | --- |
@@ -205,7 +205,7 @@ The rest are a plain prefix swap: `larastan.octaneCompatibility` becomes
 `unnecessaryEnumerableToArrayCall`, `console.*`, `uselessConstructs.*` and
 `deferrableServiceProvider.missingProvides`.
 
-Two plurals became singular — `unusedViews` and `missingTranslations` — because each
+Two plurals became singular---`unusedViews` and `missingTranslations`---because each
 error is about one view or one translation.
 
 One identifier has no counterpart. `larastan.configCollection` reported
@@ -254,7 +254,7 @@ grep -rl '@phpstan-ignore' app src tests | xargs sed -i -E ...
 
 ## 5. Install an SQL parser if you use schema dumps
 
-Larastan required a parser for squashed schema dumps outright — `phpmyadmin/sql-parser`
+Larastan required a parser for squashed schema dumps outright: `phpmyadmin/sql-parser`
 in the `calebdw/larastan` fork, `iamcal/sql-parser` upstream. Neither is a hard
 requirement here, so that the license entering your dependency tree is your
 choice rather than this package's:
@@ -264,10 +264,10 @@ composer require --dev iamcal/sql-parser      # MIT
 composer require --dev phpmyadmin/sql-parser  # GPL-2.0-or-later
 ```
 
-If you have no dumps under `database/schema`, you need neither — the parser is
+If you have no dumps under `database/schema`, you need neither: the parser is
 only resolved when there is a dump to read. Otherwise analysis fails with
 instructions telling you to install one. Use
-[`sqlParser`](custom-config-parameters.md#sqlparser) to name a driver explicitly
+[`sqlParser`](reference/configuration.md#sqlparser) to name a driver explicitly
 instead of letting it pick.
 
 Two schema types are now inferred more precisely, which may surface new errors
@@ -283,15 +283,15 @@ with.
 
 ## 6. Relative directory options resolve differently
 
-The directory options — `configDirectories`, `migrationDirectories`,
-`schemaDirectories`, `viewDirectories`, `translationDirectories` — are now
+The directory options---`configDirectories`, `migrationDirectories`,
+`schemaDirectories`, `viewDirectories`, `translationDirectories`---are now
 registered with PHPStan's `expandRelativePaths`, so a relative path is resolved
 against the config file that declares it. Larastan documented this behaviour but
 never wired it up, so relative paths there actually resolved against whichever
 directory you happened to run PHPStan from.
 
-If you run PHPStan from your project root with the config file at the root — the
-usual setup — nothing changes. It only differs if the declaring config file lives
+If you run PHPStan from your project root with the config file at the root---the
+usual setup---nothing changes. It only differs if the declaring config file lives
 in a subdirectory, in which case paths that used to be written relative to the
 project root should now be written relative to that file (or made absolute with
 `%currentWorkingDirectory%`).
@@ -299,7 +299,7 @@ project root should now be written relative to that file (or made absolute with
 ## 7. Namespace change
 
 The PHP namespace changed from `Larastan\Larastan\` to `CalebDW\PhpstanLaravel\`. This only
-matters if you reference the extension's classes directly — for example a custom rule that
+matters if you reference the extension's classes directly, for example a custom rule that
 extends one of them, or your own service definitions:
 
 ```diff

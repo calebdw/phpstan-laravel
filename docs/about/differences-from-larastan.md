@@ -6,7 +6,7 @@ namespace, its own configuration surface, its own release policy, and a good
 deal of inference that Larastan does not have.
 
 If you are moving an existing project across, [migrating from
-Larastan](migrating-from-larastan.md) covers the mechanics. This page is about
+Larastan](../migrating-from-larastan.md) covers the mechanics. This page is about
 whether you want to.
 
 ## Model metadata comes from a real model
@@ -16,7 +16,7 @@ This one is worth explaining first, because a lot of the rest follows from it.
 Model metadata is read from an actual instantiated model rather than by reading
 the class. Constructing the model runs Laravel's own boot sequence, which means
 `bootTraits()` and `initializeTraits()` run, which means **anything a trait
-contributes is visible** — casts, appends, dates, key type, incrementing,
+contributes is visible**: casts, appends, dates, key type, incrementing,
 fillable, table name.
 
 That generalises well beyond the framework's own traits. A cast registered by a
@@ -155,8 +155,8 @@ Date::create();      // Illuminate\Support\Carbon
 ### Accessors
 
 `Attribute`'s `TGet` is covariant, which matters anywhere an accessor's type
-flows into a narrower position. Both accessor styles are supported — the
-`Attribute` form and the legacy `getFooAttribute()` methods — including when a
+flows into a narrower position. Both accessor styles are supported---the
+`Attribute` form and the legacy `getFooAttribute()` methods---including when a
 same-named method shadows the legacy one.
 
 ## Collections
@@ -208,7 +208,7 @@ Arr::keyBy($users, 'name');       // array<string, App\User>
 
 `groupBy` returns a collection of collections, and an array argument groups
 again inside each group, once per element. That depth is a property of the
-argument rather than of the signature, so no stub can describe it — Laravel's
+argument rather than of the signature, so no stub can describe it: Laravel's
 own conditional type widens the values to `mixed` the moment an array is
 involved.
 
@@ -229,7 +229,7 @@ $users->groupBy(['name', 'id', 'email']);
 
 Group keys are resolved rather than widened to `array-key`, through the same
 lookup `pluck` and `keyBy` use, so dotted paths and callbacks work at every
-level — including callbacks that declare no types:
+level, including callbacks that declare no types:
 
 ```php
 $users->groupBy('id');                        // Collection<int, ...>
@@ -307,7 +307,7 @@ Config::array('auth.defaults');
 
 Analysing a package boots no application, so there is no container to ask.
 Point `configDirectories` at your config files and keys are resolved by parsing
-them instead — no Testbench workbench required:
+them instead, with no Testbench workbench required:
 
 ```neon
 parameters:
@@ -323,7 +323,7 @@ first, so this can only fill in keys that were previously `mixed`.
 ### The typed accessors are checked
 
 `string()`, `integer()`, `float()`, `boolean()`, `array()` and `collection()`
-each throw when the value is not already of that type — none of them coerce.
+each throw when the value is not already of that type: none of them coerce.
 Reading a key of the wrong type is a guaranteed runtime failure, and is now
 reported:
 
@@ -355,7 +355,7 @@ errors later with nothing pointing back at the cause.
 
 Every rule is individually toggleable and every error carries a `laravel.`
 prefixed identifier, so you can ignore a category precisely. See
-[rules](rules.md) for the full list. Ones Larastan does not have:
+[rules](../rules/index.md) for the full list. Ones Larastan does not have:
 
 - **`modelForwardingToBuilder`** and **`modelStaticForwardingToBuilder`**
   (both off) for codebases that prefer `User::query()->where(...)` to
@@ -378,11 +378,11 @@ prefixed identifier, so you can ignore a category precisely. See
   a hard dependency, so the license entering your dependency tree is your
   choice: `iamcal/sql-parser` (MIT) or `phpmyadmin/sql-parser`
   (GPL-2.0-or-later). Name one with
-  [`sqlParser`](custom-config-parameters.md#sqlparser) or let it pick.
+  [`sqlParser`](../reference/configuration.md#sqlparser) or let it pick.
 - **Options nest under `laravel:`** rather than being mixed into PHPStan's own
   `parameters`, with rule toggles a level deeper under `laravel.rules`. The
-  whole tree is schema validated, so a typo fails the run — with a suggested
-  spelling — instead of being silently ignored.
+  whole tree is schema validated, so a typo fails the run---with a suggested
+  spelling---instead of being silently ignored.
 - **Error identifiers are `laravel.*`** rather than `larastan.*`, and each one
   names what was found rather than the policy behind it: `laravel.modelMake`,
   not `larastan.noModelMake`. Where a single concern reports more than one kind
@@ -404,7 +404,7 @@ lock file.
 
 The practical consequence is that improvements ship, rather than waiting for a
 major version because someone's pipeline might go red. The full policy is in
-[backward compatibility](backward-compatibility.md).
+[backward compatibility](../about/backward-compatibility.md).
 
 ## Tooling
 

@@ -4,10 +4,12 @@
 # https://git-scm.com/docs/gitattributes
 #
 /.github              export-ignore
-/assets               export-ignore
 /docs                 export-ignore
 /e2e                  export-ignore
 /tests                export-ignore
+pyproject.toml        export-ignore
+uv.lock               export-ignore
+zensical.toml         export-ignore
 .editorconfig         export-ignore
 .gitattributes        export-ignore
 .gitignore            export-ignore

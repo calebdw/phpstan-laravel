@@ -1,0 +1,36 @@
+/* Typographic hero on the landing page, in place of a logo. */
+.md-typeset .hero-tagline {
+  font-size: 1.35rem;
+  font-weight: 300;
+  line-height: 1.4;
+  margin: -0.4rem 0 1.4rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .hero-tagline strong {
+  font-weight: 500;
+  color: var(--md-default-fg-color);
+}
+
+/* The landing page leads with the project name; a second H1-sized heading
+   above the fold competes with it. */
+.md-typeset h1 {
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+/* Rule pages open with an identifier, option and default on one line. Keep it
+   quiet so it reads as metadata rather than as prose. */
+.md-typeset h2 + p > code:first-child {
+  font-weight: 600;
+}
+
+/* Grid cards inherit a lot of padding; tighten them so four fit above the
+   fold on a laptop. */
+.md-typeset .grid.cards > ul > li {
+  padding: 0.8rem 1rem;
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+  margin: 0.6rem 0;
+}

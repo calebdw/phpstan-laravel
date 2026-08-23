@@ -5,3 +5,5 @@ coverage.xml
 .phpunit.result.cache
 .phpcs-cache
 /build/
+/site/
+/.venv/

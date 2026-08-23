@@ -1,7 +1,7 @@
-<h1 align="center">PHPStan Laravel</h1>
+<h1 align="center">phpstan-laravel</h1>
 
 <p align="center">
-  <strong>Static analysis for Laravel applications.</strong>
+  <strong>Static analysis that understands Laravel.</strong>
 </p>
 
 <p align="center">
@@ -12,41 +12,49 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/calebdw/phpstan-laravel" alt="License"></a>
 </p>
 
+<p align="center">
+  <a href="https://calebdw.github.io/phpstan-laravel/"><strong>Documentation</strong></a>
+</p>
+
 ------
 
-A [PHPStan][phpstan] extension that teaches the analyser how Laravel actually works.
+Laravel leans on magic: facades, container bindings, dynamic Eloquent
+properties, method forwarding, macros. A static analyser sees almost none of it
+on its own, so the parts of your application that carry the most behaviour are
+the parts it checks least.
 
-Laravel leans heavily on magic — facades, container bindings, dynamic Eloquent properties,
-method forwarding, macros. Out of the box a static analyser sees very little of it. This
-extension bridges that gap by booting your application during analysis and combining that
-with stubs, reflection extensions, and schema scanning, so PHPStan can reason about your
-models, relations, collections, config, and views.
+This [PHPStan][phpstan] extension closes that gap. It boots your application
+during analysis and combines that with stubs, reflection extensions and schema
+scanning, so PHPStan can reason about your models, relations, collections,
+configuration and views.
 
-It also ships a set of Laravel-specific rules that catch mistakes the framework will happily
-let you make at runtime.
+```php
+$user = User::query()->firstOrFail();   // App\User
 
-## 📋 Requirements
+$user->email;                           // string
+$user->emial;                           // Access to an undefined property
+$user->accounts;                        // App\AccountCollection<int, App\Account>
 
-| | Supported |
-| --- | --- |
-| PHP | 8.3+ |
-| Laravel | 12.67+ and 13.26+ |
-| PHPStan | 2.2.2+ |
+User::query()->pluck('name');           // Collection<int, string>
+User::all()->groupBy('email');          // Collection<string, Collection<int, App\User>>
 
-Only the two most recent Laravel releases are supported, and each is required at a recent
-minor version rather than the oldest release of that major. This keeps the codebase free of
-version-shim workarounds — `composer update` will pull a supported minor for you.
+config('auth.defaults.guard');          // string|null
+Config::string('auth.defaults.guard');  // string
 
-## 🚀 Installation
+User::create(['emial' => '...']);       // Property 'emial' does not exist
+```
 
-Install as a development dependency with [Composer][composer]:
+It also ships nineteen Laravel-specific rules for mistakes the framework will
+happily let you make at runtime.
+
+## Install
 
 ```bash
 composer require --dev calebdw/phpstan-laravel
 ```
 
-If you use the [PHPStan extension installer][extension-installer] you are done. Otherwise
-include the extension in your `phpstan.neon` (or `phpstan.neon.dist`):
+With the [PHPStan extension installer][extension-installer] that is the whole
+setup. Otherwise include the extension in your `phpstan.neon`:
 
 ```neon
 includes:
@@ -59,165 +67,27 @@ Then analyse as usual:
 vendor/bin/phpstan analyse
 ```
 
-If your project uses squashed schema dumps (`database/schema`), also install an
-SQL parser — neither is a hard requirement, so you pick the one whose license
-you want in your dependency tree:
-
-```bash
-composer require --dev iamcal/sql-parser      # MIT
-composer require --dev phpmyadmin/sql-parser  # GPL-2.0-or-later
-```
-
-Either works; see [`sqlParser`](docs/custom-config-parameters.md#sqlparser) to
-select one explicitly or register your own.
-
-> [!NOTE]
-> A GPL-2.0 package in `require-dev` does **not** put your application under the
-> GPL. Copyleft applies to distributing the code, and a dev-only analyser is not
-> linked into or shipped with what you deploy — `composer install --no-dev`
-> excludes it outright. The MIT option is there for projects with a blanket
-> policy against GPL code, which is a policy question rather than a legal one.
-> See [the full note](docs/custom-config-parameters.md#a-note-on-the-gpl-20-parser).
+Requires PHP 8.3+, Laravel 12.67+ or 13.26+, and PHPStan 2.2.2+. See
+[installation][docs-install] for squashed schema dumps, and [analysing a
+package][docs-packages] if there is no application to boot.
 
 > [!TIP]
-> Coming from Larastan? See the [migration guide](docs/migrating-from-larastan.md).
+> Coming from Larastan? See the [migration guide][docs-migrate]. Do not install
+> both: this package does not declare `replace` for `larastan/larastan`, so with
+> both installed every error is reported twice.
 
-## ⚙️ Configuration
+## Documentation
 
-Every option provided by this extension lives under the `laravel:` key, keeping it clearly
-separated from PHPStan's own parameters:
+Everything lives at **[calebdw.github.io/phpstan-laravel][docs]**:
 
-```neon
-parameters:
-    level: 6
-    paths:
-        - app
+- **[Getting started][docs-install]** for installation and configuration
+- **[Guide][docs-guide]** for what the extension understands about your code
+- **[Rules][docs-rules]** for all nineteen, with examples and defaults
+- **[Reference][docs-reference]** for every option and every error identifier
+- **[FAQ][docs-faq]** and **[troubleshooting][docs-trouble]** for the known limits
+- **[Differences from Larastan][docs-diff]** for why you might switch
 
-    laravel:
-        checkModelProperties: true
-        viewDirectories:
-            - resources/views
-        rules:
-            unusedView: true
-```
-
-Rule toggles are nested one level further, under `laravel.rules`, so that switching a rule
-on stays visibly separate from telling the extension where to look for things.
-
-Options are schema validated, so a typo or a misplaced key fails fast with a clear error
-instead of being silently ignored.
-
-See [custom config parameters](docs/custom-config-parameters.md) for the full reference,
-including migration and schema scanning, multiple database connections, and directory
-overrides.
-
-## ✨ What you get
-
-**Eloquent that actually type checks.** Model properties are resolved from your migrations
-and schema dumps, so `$user->emial` is an error rather than a mystery `mixed`. Relations,
-custom builders, model factories, custom collections, and `$appends` are all understood.
-See [features](docs/features.md).
-
-**Sane return types across the framework.** Facades, helpers, the container, HTTP client,
-and console commands return what they really return — including array shapes for `config()`
-based on your own config files.
-
-**Laravel-aware custom types.** `view-string` verifies a Blade view exists, and
-`model-property<Model>` verifies a column exists. Both are applied throughout the core stubs,
-so they work without any annotations of your own. See [custom types](docs/custom-types.md).
-
-**Rules for Laravel-specific mistakes.** Detailed below.
-
-Some parts of the framework remain genuinely too dynamic to analyse. Those cases, and how to
-silence them, are documented in [errors to ignore](docs/errors-to-ignore.md).
-
-## 📏 Rules
-
-These rules are always active:
-
-| Identifier | Catches |
-| --- | --- |
-| `laravel.relationExistence` | References to relations that do not exist |
-| `laravel.jobs.noConstructor`, `laravel.events.noConstructor` | `dispatch()` calls whose arguments do not match the job or event constructor |
-| `laravel.deferrableServiceProvider.missingProvides` | Deferrable providers that forget to implement `provides()` |
-| `laravel.console.undefinedArgument`, `laravel.console.undefinedOption` | Console commands reading arguments or options they never defined |
-| `laravel.uselessConstructs.value` | Pointless `value()` calls |
-| `laravel.uselessConstructs.with` | Pointless `with()` calls |
-
-These are toggled under `laravel.rules`:
-
-| Option | Identifier | Default |
-| --- | --- | --- |
-| `modelMake` | `laravel.modelMake` | ✅ on |
-| `unnecessaryCollectionCall` | `laravel.unnecessaryCollectionCall` | ✅ on |
-| `unnecessaryEnumerableToArrayCall` | `laravel.unnecessaryEnumerableToArrayCall` | ✅ on |
-| `modelAppends` | `laravel.modelAppends` | ✅ on |
-| `configAccessor` | `laravel.configAccessor` | ✅ on |
-| `envCallOutsideConfig` | `laravel.envCallOutsideConfig` | ✅ on |
-| `octaneCompatibility` | `laravel.octaneCompatibility` | ❌ off |
-| `unusedView` | `laravel.unusedView` | ❌ off |
-| `missingTranslation` | `laravel.missingTranslation` | ❌ off |
-| `modelMethodVisibility` | `laravel.modelMethodVisibility.scope`, `….accessor` | ❌ off |
-| `authInRequestScope` | `laravel.authInRequestScope.facade`, `….helper` | ❌ off |
-| `modelForwardingToBuilder` | `laravel.modelForwardingToBuilder` | ❌ off |
-| `modelStaticForwardingToBuilder` | `laravel.modelStaticForwardingToBuilder` | ❌ off |
-
-Column checking is the one other thing worth switching on, and it is not a rule — see
-below. Each rule is documented with examples in [rules](docs/rules.md).
-
-### Worth turning on
-
-`checkModelProperties` is the option most worth your attention, and the one
-people most often never notice. It sits directly under `laravel:` rather than
-under `rules:`, because it is not a rule — it activates the
-`model-property<Model>` type, after which PHPStan's own argument checks do the
-reporting. It checks every argument
-typed `model-property<Model>` against the columns resolved from your migrations
-and schema dumps, which catches mistakes like this one throughout Laravel's own
-methods, with no annotations of your own:
-
-```php
-User::create(['name' => 'John', 'emaiil' => 'john@example.test']);
-// Property 'emaiil' does not exist in App\User model.
-```
-
-It is off by default only because it depends on that resolved column list being
-complete. If migrations live somewhere unusual, or a table is built in a way the
-scanner cannot follow, the result is false positives rather than silence. Point
-`migrationDirectories` and `schemaDirectories` at the right directories, then
-enable it:
-
-```neon
-parameters:
-    laravel:
-        checkModelProperties: true
-```
-
-Every error carries a `laravel.` prefixed [identifier][identifiers], so you can ignore a
-whole class of error precisely:
-
-```neon
-parameters:
-    ignoreErrors:
-        - identifier: laravel.modelMake
-```
-
-## 📚 Documentation
-
-- [Features](docs/features.md) — what the extension understands about your application
-- [Rules](docs/rules.md) — every rule, with examples and configuration
-- [Custom config parameters](docs/custom-config-parameters.md) — the full option reference
-- [Custom types](docs/custom-types.md) — `view-string` and `model-property`
-- [Errors to ignore](docs/errors-to-ignore.md) — known limits and how to handle them
-- [Differences from Larastan](docs/differences-from-larastan.md) — what this fork adds and why you might switch
-- [Backward compatibility](docs/backward-compatibility.md) — what counts as a breaking change, and what does not
-- [Migrating from Larastan](docs/migrating-from-larastan.md)
-
-## 👊 Contributing
-
-Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
-
-## 🤖 Laravel Boost
+## Laravel Boost
 
 If you use [Laravel Boost][boost], this package ships an AI guideline and a
 `phpstan-laravel-analysis` skill covering how to run the analysis, how to read
@@ -228,22 +98,35 @@ property is reported as missing. Boost picks both up automatically:
 php artisan boost:update
 ```
 
-## 🙏 Credits
+## Contributing
+
+Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md) to get
+started.
+
+## Credits
 
 This package began as a fork of [larastan/larastan][larastan], created by
-[Can Vural][can] and [Nuno Maduro][nuno] and improved by many contributors over the years.
-It would not exist without their work.
+[Can Vural][can] and [Nuno Maduro][nuno] and improved by many contributors over
+the years. It would not exist without their work.
 
-## 📄 License
+## License
 
 Open-sourced software licensed under the [MIT license](LICENSE).
 
 <!-- links -->
 [phpstan]: https://phpstan.org
-[composer]: https://getcomposer.org
 [extension-installer]: https://phpstan.org/user-guide/extension-library#installing-extensions
-[identifiers]: https://phpstan.org/user-guide/ignoring-errors#ignoring-by-identifier
 [boost]: https://github.com/laravel/boost
 [larastan]: https://github.com/larastan/larastan
 [can]: https://github.com/canvural
 [nuno]: https://github.com/nunomaduro
+[docs]: https://calebdw.github.io/phpstan-laravel/
+[docs-install]: https://calebdw.github.io/phpstan-laravel/getting-started/installation/
+[docs-packages]: https://calebdw.github.io/phpstan-laravel/getting-started/packages/
+[docs-guide]: https://calebdw.github.io/phpstan-laravel/guide/model-properties/
+[docs-rules]: https://calebdw.github.io/phpstan-laravel/rules/
+[docs-reference]: https://calebdw.github.io/phpstan-laravel/reference/configuration/
+[docs-faq]: https://calebdw.github.io/phpstan-laravel/about/faq/
+[docs-trouble]: https://calebdw.github.io/phpstan-laravel/about/troubleshooting/
+[docs-diff]: https://calebdw.github.io/phpstan-laravel/about/differences-from-larastan/
+[docs-migrate]: https://calebdw.github.io/phpstan-laravel/migrating-from-larastan/

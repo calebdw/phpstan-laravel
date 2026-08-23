@@ -70,7 +70,7 @@ The supported surface is:
 
 - the options under `parameters.laravel` in your PHPStan configuration
 - the error identifiers reported, which you may ignore against
-- the custom PHPDoc types documented in [custom types](custom-types.md)
+- the custom PHPDoc types documented in [custom types](../guide/custom-types.md)
 
 If you need something from the internals, open an issue describing the goal
 rather than reaching into a class.

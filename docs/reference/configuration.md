@@ -11,13 +11,13 @@ parameters:
             unusedView: true
 ```
 
-PHPStan's own parameters — `level`, `paths`, `bootstrapFiles`, `ignoreErrors`
-and so on — stay at the top level. The nesting is validated, so a misspelled or
+PHPStan's own parameters---`level`, `paths`, `bootstrapFiles`, `ignoreErrors`
+and so on---stay at the top level. The nesting is validated, so a misspelled or
 misplaced option fails with an "Unexpected item" error rather than being
 silently ignored.
 
 There are two groups. **Rule toggles** live under `laravel.rules` and are
-documented with the rule they switch on, in [rules](rules.md). Everything else
+documented with the rule they switch on, in [rules](../rules/index.md). Everything else
 is on this page: where to look for your schema, and how types are inferred.
 
 ## Rule toggles
@@ -27,19 +27,19 @@ reports, its error identifier, and its own options.
 
 | Option under `laravel.rules` | Default | Rule |
 | --- | --- | --- |
-| `authInRequestScope` | `false` | [Auth in request scope](rules.md#auth-in-request-scope) |
-| `configAccessor` | `true` | [Config accessor](rules.md#config-accessor) |
-| `envCallOutsideConfig` | `true` | [Env call outside config](rules.md#env-call-outside-config) |
-| `missingTranslation` | `false` | [Missing translation](rules.md#missing-translation) |
-| `modelAppends` | `true` | [Model appends](rules.md#model-appends) |
-| `modelForwardingToBuilder` | `false` | [Model forwarding to builder](rules.md#model-forwarding-to-builder) |
-| `modelMake` | `true` | [Model make](rules.md#model-make) |
-| `modelMethodVisibility` | `false` | [Model method visibility](rules.md#model-method-visibility) |
-| `modelStaticForwardingToBuilder` | `false` | [Model static forwarding to builder](rules.md#model-static-forwarding-to-builder) |
-| `octaneCompatibility` | `false` | [Octane compatibility](rules.md#octane-compatibility) |
-| `unnecessaryCollectionCall` | `true` | [Unnecessary collection call](rules.md#unnecessary-collection-call) |
-| `unnecessaryEnumerableToArrayCall` | `true` | [Unnecessary enumerable toArray call](rules.md#unnecessary-enumerable-toarray-call) |
-| `unusedView` | `false` | [Unused view](rules.md#unused-view) |
+| `authInRequestScope` | `false` | [Auth in request scope](../rules/framework.md#auth-in-request-scope) |
+| `configAccessor` | `true` | [Config accessor](../rules/config.md#config-accessor) |
+| `envCallOutsideConfig` | `true` | [Env call outside config](../rules/config.md#env-call-outside-config) |
+| `missingTranslation` | `false` | [Missing translation](../rules/views-and-translations.md#missing-translation) |
+| `modelAppends` | `true` | [Model appends](../rules/eloquent.md#model-appends) |
+| `modelForwardingToBuilder` | `false` | [Model forwarding to builder](../rules/eloquent.md#model-forwarding-to-builder) |
+| `modelMake` | `true` | [Model make](../rules/eloquent.md#model-make) |
+| `modelMethodVisibility` | `false` | [Model method visibility](../rules/eloquent.md#model-method-visibility) |
+| `modelStaticForwardingToBuilder` | `false` | [Model static forwarding to builder](../rules/eloquent.md#model-static-forwarding-to-builder) |
+| `octaneCompatibility` | `false` | [Octane compatibility](../rules/framework.md#octane-compatibility) |
+| `unnecessaryCollectionCall` | `true` | [Unnecessary collection call](../rules/collections.md#unnecessary-collection-call) |
+| `unnecessaryEnumerableToArrayCall` | `true` | [Unnecessary enumerable toArray call](../rules/collections.md#unnecessary-enumerable-toarray-call) |
+| `unusedView` | `false` | [Unused view](../rules/views-and-translations.md#unused-view) |
 
 `unnecessaryCollectionCall` is the one toggle that is a structure rather than a
 plain boolean, because it takes method filters as well:
@@ -54,8 +54,8 @@ parameters:
                 except: []
 ```
 
-Rules that are not configurable at all — they report unconditionally — are
-listed in [rules](rules.md) alongside the rest.
+Rules that are not configurable at all---they report unconditionally---are
+listed in [rules](../rules/index.md) alongside the rest.
 
 ## `migrationDirectories`
 
@@ -130,8 +130,7 @@ The viable options for PostgreSQL at the moment are:
 **default**: `auto`
 
 Selects which SQL parser reads your squashed schema dumps. Neither parser is a
-hard requirement of this package, so you choose which one — and which license —
-enters your dependency tree:
+hard requirement of this package, so you choose which one---and which license---enters your dependency tree:
 
 ```bash
 composer require --dev iamcal/sql-parser      # MIT
@@ -161,7 +160,7 @@ is not installed the analysis fails rather than quietly falling back to the
 other one, so a project that has deliberately chosen a parser cannot silently
 end up using a different one.
 
-If you do not use squashed schema dumps at all, you need neither package — the
+If you do not use squashed schema dumps at all, you need neither package: the
 parser is only resolved when there is a dump to read. You can also set
 [`scanSchema`](#scanschema) to `false` to skip them entirely.
 
@@ -173,8 +172,7 @@ should. It is worth being precise about what that license actually requires.
 The GPL's copyleft obligations are triggered by **distributing** the licensed
 code, or a derivative work of it. A development-only static analysis dependency
 is neither. It is not linked into your application, it is not shipped with it,
-and `composer install --no-dev` — what you run to build a production install —
-leaves it out of the dependency tree entirely. Nothing you deploy contains any
+and `composer install --no-dev`---what you run to build a production install---leaves it out of the dependency tree entirely. Nothing you deploy contains any
 of it.
 
 So installing it does not place your application under the GPL. This is the same
@@ -189,7 +187,7 @@ image that includes your dev dependencies.
 
 Both drivers exist so that projects with a blanket internal ban on GPL code can
 still use this extension. That is a policy constraint rather than a legal one,
-and it is a perfectly good reason to pick `iamcal` — but it is not the same as
+and it is a perfectly good reason to pick `iamcal`, but it is not the same as
 the GPL requiring anything of you.
 
 This is not legal advice. If your organisation has counsel, they are the right
@@ -224,8 +222,8 @@ This extension already knows the types of your configuration values without any
 setup. It boots the application to analyse your code, and booting registers every
 service provider, which means the config repository in the container holds the
 merged configuration of the app and all of its packages. Calls to `config()`, to
-the facade — `Config::get()`, `Config::array()`, `Config::collection()`,
-`Config::getMany()` — and to the same methods on an injected
+the facade---`Config::get()`, `Config::array()`, `Config::collection()`,
+`Config::getMany()`---and to the same methods on an injected
 `Illuminate\Config\Repository` or its contract are all answered from that live
 repository, so **if you are analysing an application there is nothing to
 configure here.**
@@ -252,7 +250,7 @@ segment of a config key is matched against, wherever the file sits in the tree �
 files share a name, the first one found wins, in the order the directories are
 listed.
 
-The same parameter tells [the env-call rule](rules.md#env-call-outside-config)
+The same parameter tells [the env-call rule](../rules/config.md#env-call-outside-config)
 where `env()` calls are allowed to live, so if you already set it for that rule
 you get the type inference for free.
 
@@ -260,7 +258,7 @@ you get the type inference for free.
 
 The container is always asked first, and the parsed files only answer keys it
 does not have. Setting this option therefore never changes the types you get for
-an application's own config — it can only fill in keys that were missing.
+an application's own config: it can only fill in keys that were missing.
 
 ### Example
 
@@ -279,7 +277,7 @@ return [
 \PHPStan\dumpType(config('pennant.missing'));            // mixed
 ```
 
-Scalar values are widened to their general type — `'database'` becomes `string`
+Scalar values are widened to their general type: `'database'` becomes `string`
 — for the same reason the container path does it: the value in the file is only
 the default, and the deployed value can be anything of that type. Array shapes
 are kept, since the set of keys is a property of the file rather than of the
@@ -319,8 +317,8 @@ all.
 
 `config()->all()` and `Config::all()` are answered from the container only, as
 returning them would mean parsing every config file and defeat the laziness
-described above. Keys whose value is built at runtime — a function call, a match
-on the environment — are typed as whatever PHPStan infers for that expression,
+described above. Keys whose value is built at runtime---a function call, a match
+on the environment---are typed as whatever PHPStan infers for that expression,
 which may be `mixed`.
 
 ## `viewDirectories`
@@ -343,7 +341,7 @@ parameters:
 Setting it replaces the finder's list rather than adding to it, so include every
 directory you want searched.
 
-This is the list the [unused view](rules.md#unused-view) rule searches, and
+This is the list the [unused view](../rules/views-and-translations.md#unused-view) rule searches, and
 where views referenced from inside another view are looked up.
 
 Paths may be absolute or relative to the PHPStan config file that declares
@@ -368,7 +366,7 @@ parameters:
 Setting it replaces `lang_path()` rather than adding to it, so list every
 directory including the default one if you still want it searched.
 
-Used by the [missing translation](rules.md#missing-translation) rule. A
+Used by the [missing translation](../rules/views-and-translations.md#missing-translation) rule. A
 directory it cannot see is indistinguishable from a translation that was never
 written, so register all of them or leave that rule off.
 
@@ -390,18 +388,18 @@ parameters:
 ```
 
 This is not a rule and has no identifier of its own. It activates the
-[`model-property`](custom-types.md) type, after which the mismatches are
-reported by PHPStan's ordinary argument checks — so they carry core identifiers
+[`model-property`](../guide/custom-types.md) type, after which the mismatches are
+reported by PHPStan's ordinary argument checks, so they carry core identifiers
 such as `argument.type`. Laravel's own methods that expect a column are
 annotated for you; you can annotate your own the same way.
 
 Whether it is accurate depends on how completely your columns were resolved.
 Where migrations or schema dumps are missing, or a table is built in a way the
 scanner cannot follow, the gap surfaces as a false positive rather than as
-silence — which is why it is off by default. Point
+silence, which is why it is off by default. Point
 [`migrationDirectories`](#migrationdirectories) and
 [`schemaDirectories`](#schemadirectories) at the right places before enabling
-it. [Rules](rules.md#model-properties) has a worked example.
+it. [Rules](../guide/model-properties.md#checking-property-names) has a worked example.
 
 ## `strictContracts`
 
@@ -414,7 +412,7 @@ identifier is bound to and infers the concrete class that would be returned at
 runtime.
 
 That is convenient, but it can hide a real problem: if the binding differs
-between environments — production versus testing, or per-tenant — code that
+between environments---production versus testing, or per-tenant---code that
 type-hinted an interface can come to rely on methods that only exist on one
 particular implementation, and the analysis will happily agree.
 
@@ -432,7 +430,7 @@ $repository = resolve(Repository::class);
 \PHPStan\dumpType($repository);
 ```
 
-Disabled (the default), this dumps `Illuminate\Config\Repository` — the concrete
+Disabled (the default), this dumps `Illuminate\Config\Repository`: the concrete
 class bound in the container. Enabled, it dumps
 `Illuminate\Contracts\Config\Repository`, the interface that was requested.
 

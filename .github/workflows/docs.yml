@@ -1,0 +1,88 @@
+name: Docs
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'docs/**'
+      - 'zensical.toml'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/docs.yml'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Both jobs push to the shared gh-pages branch via mike. Serialize runs so a
+# second deploy never builds on a gh-pages tip the first has already moved
+# past, which mike's push would then reject as non-fast-forward.
+concurrency:
+  group: docs-deploy
+  cancel-in-progress: false
+
+jobs:
+  # Unreleased docs, published under `dev` so they never displace `latest`.
+  # Only from the upstream repo: a fork has no write access to gh-pages.
+  deploy-dev:
+    if: github.repository_owner == 'calebdw' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy dev docs
+        run: |
+          uv run -- mike deploy --push --update-aliases dev
+
+          # Until the first release exists there is no `latest`, and with no
+          # default the site root 404s. Point it at `dev` in the meantime; the
+          # release job takes the default back as soon as there is one.
+          # `mike list <identifier>` exits non-zero when the alias is absent,
+          # which also covers gh-pages not existing yet.
+          if ! uv run -- mike list latest >/dev/null 2>&1; then
+            uv run -- mike set-default --push dev
+          fi
+
+  # Released docs, published under the major line (1.x, 2.x) and aliased
+  # `latest`. Minor and patch releases update the same line in place, which is
+  # why the switcher stays short.
+  deploy-release:
+    if: github.repository_owner == 'calebdw' && github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy versioned docs
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          major="${tag%%.*}"
+
+          if [[ ! "$major" =~ ^[0-9]+$ ]]; then
+            echo "::error::Cannot derive a major version from tag '${GITHUB_REF_NAME}'" >&2
+            exit 1
+          fi
+
+          uv run -- mike deploy --push --update-aliases "${major}.x" latest
+          uv run -- mike set-default --push latest
