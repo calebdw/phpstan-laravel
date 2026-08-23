@@ -2,11 +2,38 @@
 
 All features that are specific to Laravel applications are listed here.
 
-## Laravel 9 Attributes
+## Model Properties
 
-In order for [Laravel 9 Attributes](https://laravel.com/docs/9.x/eloquent-mutators#accessors-and-mutators) to be recognized as model properties, they must be `protected` methods annotated with the `Attribute` Generic Types.
+Your migrations and schema dumps are scanned to work out each table's columns,
+which is how the magic properties on an Eloquent model get their types. Columns
+are tracked per connection, so a model on a second connection resolves against
+that connection's tables.
 
-The first generic type is the getter return type, and the second is the setter argument type.
+```php
+$user->email;      // string
+$user->created_at; // Illuminate\Support\Carbon
+$user->emial;      // error: property does not exist
+```
+
+The rest of a model's metadata — casts, appends, dates, key type, incrementing,
+fillable, table name — is read from an instantiated model rather than from the
+class, so Laravel's own boot sequence runs and anything a trait contributes is
+visible. A cast registered by a trait in a third-party package is understood for
+the same reason `HasUlids` is.
+
+Where migrations live somewhere unconventional, or a table is built in a way the
+scanner cannot follow, point the
+[path options](custom-config-parameters.md#databasemigrationspath) at the right
+directories. Enabling
+[`checkModelProperties`](custom-config-parameters.md#checkmodelproperties) then
+checks property *names* passed to methods, catching typos in things like
+`User::create([...])`.
+
+## Accessors and Mutators
+
+Both styles are recognized. An [`Attribute`][attributes] accessor must be a
+`protected` method annotated with the `Attribute` generic types: the first is
+the getter's return type, the second the setter's argument type.
 
 #### Examples
 
@@ -36,6 +63,20 @@ protected function isTrue(): Attribute
     );
 }
 ```
+
+The older `getFooAttribute()` style is supported as well, and its return type is
+used directly. It is still found when a method of the same camel case name
+exists alongside it:
+
+```php
+<?php
+public function getFullNameAttribute(): string
+{
+    return $this->first_name . ' ' . $this->last_name;
+}
+```
+
+[attributes]: https://laravel.com/docs/eloquent-mutators#accessors-and-mutators
 
 ## Custom Model Builders
 
@@ -225,13 +266,11 @@ class User extends Model
 
 ## Model Relationships
 
-In order for this extension to recognize Model relationships:
-
-- the return type must be defined
-- the method must be `public`
-- the relationship method argument must be a literal string (not a variable)
-
-If the above conditions are not met, then adding the `@return` docblock can help
+Relationship types are read from the relation method's declared return type, so
+that type has to carry its generic parameters. The class the relation points at
+is taken from there rather than from the `hasMany(Post::class)` argument, which
+means an undocumented relation resolves to the base relation class and the
+related model is lost.
 
 ```php
 /** @return BelongsTo<User, $this> */
@@ -245,4 +284,46 @@ public function posts(): HasMany
 {
     return $this->hasMany(Post::class);
 }
+```
+
+## Collections
+
+`pluck` and `keyBy` resolve their column against the collection's value type,
+including nested paths and callbacks:
+
+```php
+$users->pluck('name', 'id');       // Collection<int, string>
+$users->keyBy('name');             // EloquentCollection<string, App\User>
+$posts->pluck('user.name');        // Collection<int, string>
+$users->keyBy(fn ($u) => $u->id);  // EloquentCollection<int, App\User>
+```
+
+`pluck` rewrites both halves, so plucking a column off a collection of models
+gives a support collection of whatever that column holds. `keyBy` rewrites only
+the keys, so the value type and the collection class carry over.
+
+`groupBy` nests one level per grouper, and an array argument means successive
+levels rather than a nested path:
+
+```php
+$users->groupBy('name');
+// Collection<string, Collection<int, App\User>>
+
+$users->groupBy(['name', 'id']);
+// Collection<string, Collection<int, Collection<int, App\User>>>
+```
+
+`preserveKeys` decides the innermost keys:
+
+```php
+/** @var Collection<string, App\User> $keyed */
+$keyed->groupBy('id');       // Collection<int, Collection<int, App\User>>
+$keyed->groupBy('id', true); // Collection<int, Collection<string, App\User>>
+```
+
+The higher order proxy forms resolve the same way as the argument forms:
+
+```php
+$users->groupBy->email; // Collection<string, Collection<int, App\User>>
+$users->keyBy->email;   // Collection<string, App\User>
 ```
