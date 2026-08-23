@@ -100,11 +100,11 @@ function rescue(callable $callback, $rescue = null, $report = true) {}
  * @template TValue
  * @param int|array<int, int> $times
  * @param callable(int): TValue $callback
- * @param int|callable(int, \Exception): int $sleepMilliseconds
- * @param null|callable(\Exception): bool $when
+ * @param int|callable(int, \Throwable): int $sleepMilliseconds
+ * @param null|callable(\Throwable): bool $when
  * @phpstan-return TValue
  *
- * @throws \Exception
+ * @throws \Throwable
  */
 function retry($times, callable $callback, $sleepMilliseconds = 0, $when = null) {}
 
