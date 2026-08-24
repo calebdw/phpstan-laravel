@@ -115,13 +115,58 @@ and instance calls on the builder agree about what comes back.
 
 ### Relation closures get typed parameters
 
-The closure passed to a relation constraint receives the related model's
-builder, so what you write inside it is checked rather than being `mixed`:
+Laravel's relation constraints take a closure and hand it a query builder, but
+the signature promises only a `Closure`. Everything inside is `mixed`, so
+nothing you write there is checked. This is where a great deal of query code
+lives, and it is the largest single gain over Larastan, which does not type
+these at all.
 
 ```php
-User::whereHas('accounts', function ($query) {
+User::query()->whereHas('accounts', function ($query) {
     // Illuminate\Database\Eloquent\Builder<App\Account>
     $query->where('active', true);
+});
+```
+
+The relation is resolved from the model the query is on, so the closure needs
+no parameter type of its own.
+
+**Dotted paths are walked.** Each segment resolves against the model the
+previous one pointed at, and the closure is typed for the last:
+
+```php
+Product::query()->whereHas('stocks.warehouse', function ($query) {
+    // App\WarehouseBuilder
+    $query->active();
+});
+```
+
+That example is worth reading twice. The parameter is `WarehouseBuilder`, not
+`Builder<Warehouse>`, because `Warehouse` declares a custom builder, so a scope
+that exists only on your builder is callable inside the closure.
+
+**The whole family is covered**, not `whereHas` alone: `has`, `doesntHave`,
+`whereHas`, `withWhereHas`, `orWhereHas`, `whereDoesntHave`,
+`orWhereDoesntHave`, `whereRelation`, `orWhereRelation`, and the eight `*Morph`
+variants. Position does not matter either, so the closure in
+`has('stocks', '>=', 1, 'and', fn ($q) => ...)` is typed as well.
+
+**`withWhereHas` receives both**, because Laravel uses the argument as a
+constraint and as an eager load:
+
+```php
+Product::query()->withWhereHas('stocks', function ($query) {
+    // Builder<App\Stock>|HasMany<App\Stock, App\Product>
+});
+```
+
+**Morph methods give a union, and a typed `$type`.** The second argument names
+the models it may be, so the closure is typed for all of them:
+
+```php
+Product::query()->whereHasMorph('stocks', [Warehouse::class, Stock::class], function ($query, $type) {
+    // $query: App\WarehouseBuilder|Builder<App\Stock>
+    // $type:  string
 });
 ```
 
@@ -134,6 +179,34 @@ $user->through('mechanic');
 
 and `when()` / `unless()` on a relation keep the relation's type instead of
 widening to the base class.
+
+#### Where it stops
+
+This is not finished work, and it is worth knowing the edges.
+
+The relation name has to be a literal the analyser can see. Passed a variable
+it cannot fold to a string, there is nothing to resolve, and the parameter
+stays `Builder<Model>`. The relation method also has to declare its generics:
+a `@return HasMany<Stock, $this>` is what names the related model, and an
+undocumented relation gives `Builder<Model>` as well. Neither of those is a
+false positive, only a return to what you would have had anyway.
+
+The real gap is eager loading. Closures passed to `with()` are **not** typed,
+and a closure that narrows its own parameter is reported, because Laravel
+documents that argument as `Closure(Relation<*, *, *>): mixed` and a narrower
+parameter is not a subtype of a wider one:
+
+```php
+Product::query()->with([
+    'stocks' => function (MorphTo $morphTo) {   // argument.type
+        $morphTo->morphWith([Warehouse::class => ['stocks']]);
+    },
+]);
+```
+
+Fixing that properly needs a change further down, in PHPStan itself. Until
+then, widen the parameter or ignore `argument.type` at that call. Limitations
+like this one are tracked in the [issue tracker][issues].
 
 ### Factories stay on your factory
 
@@ -156,20 +229,6 @@ the `Date` facade returns it too:
 ```php
 $user->created_at;   // Illuminate\Support\Carbon
 Date::create();      // Illuminate\Support\Carbon
-```
-
-### Accessors
-
-Both styles are understood, the `Attribute` form and the legacy
-`getFooAttribute()` methods, and a legacy accessor is still found when a method
-of the same camel case name sits beside it:
-
-```php
-// before
-$user->full_name;  // Access to an undefined property
-
-// now
-$user->full_name;  // string
 ```
 
 ## Collections
@@ -288,7 +347,29 @@ $users->keyBy->email;    // Collection<string, User>
 
 Collection template parameters are no longer overwritten when chaining through
 methods that should preserve them, and a collection typed as an intersection
-keeps both halves rather than collapsing to one.
+keeps both halves rather than collapsing to one. That second one matters if you
+return a collection that both extends `Collection` and implements an interface
+of your own:
+
+```php
+class User extends Model
+{
+    /** @return Collection<int, static>&TreeLikeCollection<static> */
+    public function newCollection(array $models = []): Collection&TreeLikeCollection
+    {
+        return new TreeCollection($models);
+    }
+}
+
+User::all();
+// Collection<int, User>&TreeLikeCollection<User>
+
+User::all()->getTree();
+// Collection<int, User>&TreeLikeCollection<User>
+```
+
+Calling `getTree()`, which comes from the interface half, does not cost you the
+collection half.
 
 ### Paginators
 
@@ -301,10 +382,15 @@ User::paginate()->getCollection();
 
 ## Configuration
 
-### Config values have shapes
+Typed configuration is not new: Larastan reads your config files too, behind
+its `checkConfigTypes` option. Two things differ.
 
-`config()` resolves against your actual configuration rather than returning
-`mixed`:
+### It is on, and it asks the container first
+
+There is no option to enable, because a `config()` call that returns `mixed` is
+not useful to anybody. Where the application boots, the container answers, and
+file parsing fills in only what the container could not, which is what makes it
+work for packages that have no application to boot.
 
 ```php
 config('auth.defaults');
@@ -312,27 +398,7 @@ config('auth.defaults');
 
 config('auth.defaults.guard');
 // string|null
-
-Config::array('auth.defaults');
-// array{guard: string, passwords: string}
 ```
-
-### Packages get config typing too
-
-Analysing a package boots no application, so there is no container to ask.
-Point `configDirectories` at your config files and keys are resolved by parsing
-them instead, with no Testbench workbench required:
-
-```neon
-parameters:
-    laravel:
-        configDirectories:
-            - config
-```
-
-Parsing is lazy and cached, so only the files actually referenced are read, and
-each is read once. Where an application *is* bootable the container answers
-first, so this can only fill in keys that were previously `mixed`.
 
 ### The typed accessors are checked
 
@@ -430,6 +496,7 @@ If you use [Laravel Boost][boost], this package ships an AI guideline and a
 to run the analysis and how to read what comes back.
 
 <!-- links -->
+[issues]: https://github.com/calebdw/phpstan-laravel/issues
 [larastan]: https://github.com/larastan/larastan
 [boost]: https://github.com/laravel/boost
 

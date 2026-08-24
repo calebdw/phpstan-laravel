@@ -92,7 +92,6 @@ under more than one name is checked against each of them. Only literal string
 arguments can be checked; a name built at runtime is left alone.
 
 <!-- links -->
-[identifiers]: https://phpstan.org/user-guide/ignoring-errors#ignoring-by-identifier
 
 ## Deferrable service provider without provides()
 
