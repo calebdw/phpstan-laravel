@@ -87,7 +87,7 @@ application to boot, and set
 package ships config files. See [analysing a
 package](../getting-started/packages.md).
 
-## My grouped collection annotation is rejected
+## My grouped or keyed collection annotation is rejected
 
 `groupBy`, `keyBy` and `pluck` resolve keys precisely, so grouping by an enum's
 value gives `Collection<10|20, ...>` rather than `Collection<int, ...>`. Since
@@ -97,6 +97,30 @@ annotation:
 ```php
 /** @return Collection<covariant int, Collection<int, Item>> */
 ```
+
+The same applies when `keyBy` preserves enum case names:
+
+```php
+/** @return Collection<covariant string, covariant Status> */
+public static function collectInstances(): Collection
+{
+    return collect(self::cases())->keyBy(fn (self $case) => $case->name);
+}
+```
+
+For a backed enum keyed by its value, `value-of` can retain the exact finite set
+without spelling out every case:
+
+```php
+/** @return Collection<value-of<Status>, covariant Status> */
+public static function collectInstances(): Collection
+{
+    return collect(self::cases())->keyBy(fn (self $case) => $case->value);
+}
+```
+
+`value-of<Status>` means the enum's backed values, not its case names. Use
+`covariant string` for `$case->name`.
 
 `array-key` works too, being a benevolent union. A plain `int|string` does not,
 because it is matched invariantly and accepts neither side. See [precision, and
