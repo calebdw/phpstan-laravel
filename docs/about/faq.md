@@ -135,9 +135,8 @@ stubs. It has since diverged: see [differences from
 Larastan](../about/differences-from-larastan.md) for what changed and
 [the migration guide](../migrating-from-larastan.md) for how to switch.
 
-Do not install both. This package does not declare `replace` for
-`larastan/larastan`, so with both installed the extension is registered twice
-and every error is reported twice.
+Remove Larastan when you switch. With both installed the extension is
+registered twice and every error is reported twice.
 
 ## Why is analysis slow?
 

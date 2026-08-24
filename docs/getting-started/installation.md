@@ -37,10 +37,9 @@ vendor/bin/phpstan analyse
 
 !!! tip "Coming from Larastan?"
 
-    Do not install both. See [the migration
-    guide](../migrating-from-larastan.md); this package does not declare
-    `replace` for `larastan/larastan`, so if the old package is still installed
-    the extension is registered twice and every error is reported twice.
+    Remove Larastan first, then see [the migration
+    guide](../migrating-from-larastan.md). With both installed the extension is
+    registered twice and every error is reported twice.
 
 ## Squashed schema dumps
 

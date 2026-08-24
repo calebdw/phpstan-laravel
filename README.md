@@ -65,9 +65,8 @@ includes:
 
 > [!TIP]
 > Coming from Larastan? There is a migration guide in the
-> [documentation][docs]. Do not install both: this package does not declare
-> `replace` for `larastan/larastan`, so with both installed every error is
-> reported twice.
+> [documentation][docs]. Remove Larastan first: with both installed the
+> extension is registered twice and every error is reported twice.
 
 ## Documentation
 

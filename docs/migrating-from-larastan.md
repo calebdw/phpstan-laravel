@@ -31,9 +31,9 @@ composer require --dev calebdw/phpstan-laravel
 
 !!! important
 
-    Unlike `calebdw/larastan`, this package does **not** declare `replace` for
-    `larastan/larastan`. Make sure the old package is actually removed: if both are
-    installed the extension is registered twice and you will get duplicate errors.
+    Make sure the old package is actually removed rather than just added
+    alongside. With both installed the extension is registered twice and every
+    error is reported twice.
 
 ## 2. Update the include path
 
