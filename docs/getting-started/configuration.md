@@ -115,14 +115,23 @@ paths relative to the PHPStan config file that declares them:
 | [`translationDirectories`](../reference/configuration.md#translationdirectories) | `lang_path()` |
 
 Migration and schema paths expand `glob` wildcards, which modular applications
-need:
+need. Setting either option replaces its conventional default directory, so
+include that directory explicitly when you want to add to it:
 
 ```neon
 parameters:
     laravel:
         migrationDirectories:
+            - database/migrations
             - modules/*/database/migrations
+        schemaDirectories:
+            - database/schema
+            - modules/*/database/schema
 ```
+
+Migration scanning follows Laravel and reads only files directly inside each
+matched directory. It does not descend into directories such as `archive`
+unless another path, for example `database/migrations/*`, matches them.
 
 ## Next
 

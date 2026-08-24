@@ -39,7 +39,7 @@ class MigrationHelper
         }
 
         $schemaAggregator = new SchemaAggregator($modelDatabaseHelper, $this->modelHelper, $this->reflectionProvider);
-        $filesArray       = $this->fileHelper->getFiles($this->databaseMigrationPath, '/\.php$/i');
+        $filesArray       = $this->fileHelper->getFiles($this->databaseMigrationPath, '/\.php$/i', recursive: false);
 
         if (empty($filesArray)) {
             return;

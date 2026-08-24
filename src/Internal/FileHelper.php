@@ -32,11 +32,11 @@ final class FileHelper
      *
      * @return array<string, SplFileInfo>
      */
-    public function getFiles(array $directories, string|null $filter = null): array
+    public function getFiles(array $directories, string|null $filter = null, bool $recursive = true): array
     {
         return array_reduce(
             $directories,
-            function (array $carry, string $path) use ($filter): array {
+            function (array $carry, string $path) use ($filter, $recursive): array {
                 $absolutePath = $this->fileHelper->absolutizePath($path);
 
                 if ($this->isGlobPattern($absolutePath)) {
@@ -59,6 +59,10 @@ final class FileHelper
                     $iterator = new RecursiveIteratorIterator(
                         new RecursiveDirectoryIterator($directory),
                     );
+
+                    if (! $recursive) {
+                        $iterator->setMaxDepth(0);
+                    }
 
                     if (is_string($filter)) {
                         $iterator = new RegexIterator($iterator, $filter);

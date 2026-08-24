@@ -59,16 +59,22 @@ listed in [rules](../rules/index.md) alongside the rest.
 
 ## `migrationDirectories`
 
-**default**: `[]`
+**default**: `database/migrations`
 
 Migration files are scanned to work out your table structure, which is where
-model properties come from. `database/migrations` is scanned by default; set
-this to point at migrations that live elsewhere, or in more than one place.
+model properties come from. When this option is empty, the extension scans
+Laravel's `database_path('migrations')` directory.
+
+A non-empty list replaces that default; it does not append to it. This lets a
+project scan only migrations kept elsewhere. To scan additional directories
+while retaining `database/migrations`, include the default path in the list.
 
 Paths may be absolute or relative to the PHPStan config file that declares
-them, and `glob` wildcards are supported.
+them, and `glob` wildcards are supported. As with Laravel's migrator, only PHP
+files directly inside each matched directory are scanned. Nested directories
+are not scanned implicitly.
 
-### Example
+### Replace the default
 
 ```neon
 parameters:
@@ -76,6 +82,38 @@ parameters:
         migrationDirectories:
             - app/Domain/*/migrations
 ```
+
+Only the matching domain migration directories are scanned in this example.
+
+### Add to the default
+
+```neon
+parameters:
+    laravel:
+        migrationDirectories:
+            - database/migrations
+            - app/Domain/*/migrations
+```
+
+Both the conventional application migrations and the matching domain
+migrations are scanned in this example.
+
+### Scan nested directories
+
+Add a wildcard directory path when migrations are intentionally grouped into
+subdirectories:
+
+```neon
+parameters:
+    laravel:
+        migrationDirectories:
+            - database/migrations
+            - database/migrations/*
+```
+
+The first path scans migrations directly in `database/migrations`; the second
+scans migrations directly inside each of its immediate subdirectories. Without
+the second path, directories such as `database/migrations/archive` are ignored.
 
 **Note:** If your migrations are using `if` statements to conditionally alter database structure (ex: create table only if it's not there, add column only if table exists and column does not etc...) this extension will assume those if statements evaluate to true and will consider everything from the `if` body.
 
@@ -98,15 +136,20 @@ parameters:
 
 ## `schemaDirectories`
 
-**default**: `[]`
+**default**: `database/schema`
 
-Squashed schema dumps are read for the same reason migrations are. `database/schema`
-is checked by default; set this to add other locations.
+Squashed schema dumps are read for the same reason migrations are. When this
+option is empty, the extension scans Laravel's `database_path('schema')`
+directory.
+
+A non-empty list replaces that default; it does not append to it. To scan
+additional directories while retaining `database/schema`, include the default
+path in the list.
 
 Paths may be absolute or relative to the PHPStan config file that declares
 them, and `glob` wildcards are supported.
 
-### Example
+### Replace the default
 
 ```neon
 parameters:
@@ -114,6 +157,21 @@ parameters:
         schemaDirectories:
             - app/Domain/*/schema
 ```
+
+Only the matching domain schema directories are scanned in this example.
+
+### Add to the default
+
+```neon
+parameters:
+    laravel:
+        schemaDirectories:
+            - database/schema
+            - app/Domain/*/schema
+```
+
+Both the conventional schema directory and the matching domain schema
+directories are scanned in this example.
 
 ### PostgreSQL
 

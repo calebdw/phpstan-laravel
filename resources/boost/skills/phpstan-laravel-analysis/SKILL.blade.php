@@ -96,7 +96,10 @@ Options worth knowing:
 - `configDirectories` lets config values be typed by parsing files, which is
   what a package without a bootable application needs.
 - `migrationDirectories` and `schemaDirectories` point at migrations and schema
-  dumps kept outside the default locations.
+  dumps kept outside the default locations. A configured list replaces the
+  default, so include `database/migrations` or `database/schema` in it to retain
+  the conventional directory. Migration paths scan direct files only; nested
+  directories require their own path or wildcard.
 - `scanMigrations` and `scanSchema` (both on) turn that scanning off.
 
 Rule toggles under `rules` are named after what the rule reports and match the

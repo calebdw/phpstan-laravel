@@ -98,6 +98,32 @@ class MigrationHelperTest extends PHPStanTestCase
     }
 
     #[Test]
+    public function it_does_not_scan_nested_migration_directories_by_default(): void
+    {
+        $this->getMigrationHelper([__DIR__ . '/data/migrations_with_nested_directory'])
+            ->parseMigrations($this->modelDatabaseHelper);
+
+        $tables = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables;
+
+        self::assertArrayHasKey('users', $tables);
+        self::assertArrayNotHasKey('archived_users', $tables);
+    }
+
+    #[Test]
+    public function it_can_scan_nested_migration_directories_explicitly(): void
+    {
+        $path = __DIR__ . '/data/migrations_with_nested_directory';
+
+        $this->getMigrationHelper([$path, $path . '/*'])
+            ->parseMigrations($this->modelDatabaseHelper);
+
+        $tables = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables;
+
+        self::assertArrayHasKey('users', $tables);
+        self::assertArrayHasKey('archived_users', $tables);
+    }
+
+    #[Test]
     public function it_can_handle_use_of_after_method_in_migration(): void
     {
         $this->getMigrationHelper([__DIR__ . '/data/migrations_using_after_method'])

@@ -432,8 +432,17 @@ Migration and schema paths accept wildcards, which modular applications need:
 parameters:
     laravel:
         migrationDirectories:
+            - database/migrations
             - modules/*/database/migrations
 ```
+
+A configured list replaces the conventional directory. Including
+`database/migrations` above retains application migrations while adding the
+module migrations; omit it when the modules are the only source.
+
+Like Laravel's migrator, each matched migration directory is scanned directly
+rather than recursively. Nested directories are only included when another
+configured path explicitly matches them.
 
 Relative directory options resolve against the PHPStan config file that
 declares them, rather than against whatever directory you happened to run from.
