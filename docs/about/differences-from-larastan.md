@@ -14,10 +14,16 @@ whether you want to.
 This one is worth explaining first, because a lot of the rest follows from it.
 
 Model metadata is read from an actual instantiated model rather than by reading
-the class. Constructing the model runs Laravel's own boot sequence, which means
+the class. Constructing the model runs Laravel's own boot sequence, so
 `bootTraits()` and `initializeTraits()` run, which means **anything a trait
 contributes is visible**: casts, appends, dates, key type, incrementing,
 fillable, table name.
+
+If a model cannot be constructed, because its constructor needs something the
+analysis environment does not have, it is built without running the
+constructor instead. Everything the class itself declares is still read, so
+analysis degrades rather than stopping; what is lost is only what the boot
+sequence would have added.
 
 That generalises well beyond the framework's own traits. A cast registered by a
 trait in a third-party package is understood, because the model was built the
@@ -154,10 +160,17 @@ Date::create();      // Illuminate\Support\Carbon
 
 ### Accessors
 
-`Attribute`'s `TGet` is covariant, which matters anywhere an accessor's type
-flows into a narrower position. Both accessor styles are supported---the
-`Attribute` form and the legacy `getFooAttribute()` methods---including when a
-same-named method shadows the legacy one.
+Both styles are understood, the `Attribute` form and the legacy
+`getFooAttribute()` methods, and a legacy accessor is still found when a method
+of the same camel case name sits beside it:
+
+```php
+// before
+$user->full_name;  // Access to an undefined property
+
+// now
+$user->full_name;  // string
+```
 
 ## Collections
 

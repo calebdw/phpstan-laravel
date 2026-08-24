@@ -114,6 +114,14 @@ permalink = true
 anchor_linenums = true
 line_spans = "__span"
 pygments_lang_class = true
+
+# Pygments' PHP lexer emits no tokens without a <?php tag, which left almost
+# every snippet here unhighlighted. Override the `php` language to open in code
+# mode, so a bare expression highlights and a block with <?php still does too.
+[[project.markdown_extensions.pymdownx.highlight.extend_pygments_lang]]
+name = "php"
+lang = "php"
+options = { startinline = true }
 [project.markdown_extensions.pymdownx.inlinehilite]
 [project.markdown_extensions.pymdownx.snippets]
 [project.markdown_extensions.pymdownx.superfences]

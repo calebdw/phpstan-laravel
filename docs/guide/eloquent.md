@@ -6,15 +6,12 @@ generic, is what makes the chain type check.
 
 ## Custom model builders
 
-Custom builders offer a better static analysis experience than using model scopes, and they help slim down the model class.
-
-Here's an example of how to create a custom builder class:
+A custom builder gives better analysis than model scopes do, and keeps the model
+class smaller. Point the model at it with Laravel's attribute:
 
 ```php
-<?php
-
+use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\HasBuilder;
 use Illuminate\Database\Eloquent\Model;
 
 /** @extends Builder<User> */
@@ -29,6 +26,24 @@ class UserBuilder extends Builder
     }
 }
 
+#[UseEloquentBuilder(UserBuilder::class)]
+class User extends Model
+{
+}
+```
+
+```php
+User::query()->active()->get();  // EloquentCollection<int, User>
+```
+
+The `@extends Builder<User>` on the builder is what ties it to the model, and it
+is the one annotation you do need. The attribute carries the rest, so there is no
+trait to add and no generic to repeat.
+
+The `HasBuilder` trait works too, if you prefer it or are already using it. It
+needs its generic documented, since that is where the builder type comes from:
+
+```php
 class User extends Model
 {
     /** @use HasBuilder<UserBuilder> */
@@ -36,31 +51,29 @@ class User extends Model
 
     protected static string $builder = UserBuilder::class;
 }
-
-// Usage
-$users = User::query()
-        ->active()
-        ->get();
 ```
 
 ## Model factories
 
-Because the `Factory` class is generic, you need to specify the template type in your model factories.
-And while Laravel has magic to automatically associate a factory with a model, you'll have a much better static analysis experience if you specify the factory class in the model.
-
-So for example, here's how the classes can look:
+Factories are the exception: `#[UseFactory]` is **not** resolved, so a factory
+needs the `HasFactory` trait with its generic documented. That generic is where
+the factory type comes from.
 
 ```php
-<?php
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /** @extends Factory<User> */
 class UserFactory extends Factory
 {
     protected $model = User::class;
+
+    /** @return array<string, mixed> */
+    public function definition(): array
+    {
+        return [];
+    }
 }
 
 class User extends Model
@@ -72,17 +85,20 @@ class User extends Model
 }
 ```
 
+```php
+User::factory()->create();  // App\User
+```
+
+Laravel can associate a factory with a model by naming convention, but naming it
+explicitly is what makes the chain resolve.
+
 ## Custom model collections
 
-Custom collections can be created to extend the functionality of the default collection class.
-
-So for example, here's how the classes can look:
+Same shape. `#[CollectedBy]` is resolved, so a custom collection needs no trait:
 
 ```php
-<?php
-
+use Illuminate\Database\Eloquent\Attributes\CollectedBy;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\HasCollection;
 use Illuminate\Database\Eloquent\Model;
 
 /** @extends Collection<array-key, User> */
@@ -90,25 +106,20 @@ final class UserCollection extends Collection
 {
 }
 
+#[CollectedBy(UserCollection::class)]
 class User extends Model
 {
-    /** @use HasCollection<UserCollection> */
-    use HasCollection;
-
-    protected static string $collectionClass = UserCollection::class;
 }
 ```
 
-Or if the collection is used for multiple models then you need to create a generic collection class
-and then specify the template type in the model.
+```php
+User::all();  // App\UserCollection
+```
+
+The `HasCollection` trait is equally understood, and is what you want when one
+collection serves several models, since the generic can then say which:
 
 ```php
-<?php
-
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\HasCollection;
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * @template TKey of array-key
  * @template TModel of \Illuminate\Database\Eloquent\Model
@@ -126,4 +137,3 @@ class User extends Model
     protected static string $collectionClass = GeneralCollection::class;
 }
 ```
-
