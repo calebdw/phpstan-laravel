@@ -649,6 +649,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#precision-and-widening-it-where-you-want-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Precision, and widening it where you want it
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#higher-order-proxies" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1330,6 +1341,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#precision-and-widening-it-where-you-want-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Precision, and widening it where you want it
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#higher-order-proxies" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1400,10 +1422,38 @@ levels rather than a nested path:</p>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="x">$keyed-&gt;groupBy('id');       // Collection&lt;int, Collection&lt;int, App\User&gt;&gt;</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="x">$keyed-&gt;groupBy('id', true); // Collection&lt;int, Collection&lt;string, App\User&gt;&gt;</span>
 </span></code></pre></div>
+<h2 id="precision-and-widening-it-where-you-want-it">Precision, and widening it where you want it<a class="headerlink" href="#precision-and-widening-it-where-you-want-it" title="Permanent link">&para;</a></h2>
+<p>Keys and values are resolved as precisely as the input allows. A grouper
+returning a backed enum's value gives the literal union, and an interpolated key
+gives the product of its parts:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="x">$items-&gt;groupBy(fn ($i) =&gt; $i-&gt;priority-&gt;value);          // Collection&lt;10|20, ...&gt;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="x">$items-&gt;keyBy(fn ($i) =&gt; "{$i-&gt;a-&gt;value}|{$i-&gt;b-&gt;value}"); // Collection&lt;'10|x'|'10|y'|..., ...&gt;</span>
+</span></code></pre></div>
+<p>That precision is not decoration. It survives to wherever you consume the
+collection, so a refined key still reads as refined:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="x">foreach ($items-&gt;keyBy(fn ($i) =&gt; "row-{$i-&gt;id}") as $key =&gt; $item) {</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="x">    // $key is non-falsy-string, not string</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="x">}</span>
+</span></code></pre></div>
+<p><code>Collection</code> declares <code>TKey</code> and <code>TValue</code> invariantly, so an exact type is what
+an annotation has to match. Where you would rather accept the general type, ask
+for it at the annotation with <code>covariant</code>:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="x">/** @return Collection&lt;covariant string, Item&gt; */</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="x">public function keyed(): Collection</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="x">{</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="x">    return $this-&gt;items-&gt;keyBy(fn ($i) =&gt; "{$i-&gt;a-&gt;value}|{$i-&gt;b-&gt;value}");</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="x">}</span>
+</span></code></pre></div>
+<p>That is use-site variance, and it applies to values the same way:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="x">/** @return Collection&lt;int, covariant string&gt; */</span>
+</span></code></pre></div>
+<p><code>array-key</code> also works for a key, being a benevolent union. A plain
+<code>int|string</code> does not, despite reading like the safer choice: it is matched
+invariantly and accepts neither <code>int</code> nor <code>string</code>.</p>
 <h2 id="higher-order-proxies">Higher order proxies<a class="headerlink" href="#higher-order-proxies" title="Permanent link">&para;</a></h2>
 <p>The proxy forms resolve the same way as the argument forms:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="x">$users-&gt;groupBy-&gt;email; // Collection&lt;string, Collection&lt;int, App\User&gt;&gt;</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="x">$users-&gt;keyBy-&gt;email;   // Collection&lt;string, App\User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="x">$users-&gt;groupBy-&gt;email; // Collection&lt;string, Collection&lt;int, App\User&gt;&gt;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="x">$users-&gt;keyBy-&gt;email;   // Collection&lt;string, App\User&gt;</span>
 </span></code></pre></div>
 
 

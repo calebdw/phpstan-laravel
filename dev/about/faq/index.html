@@ -1170,6 +1170,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#my-grouped-collection-annotation-is-rejected" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        My grouped collection annotation is rejected
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-did-a-new-release-start-reporting-errors" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1439,6 +1450,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#my-grouped-collection-annotation-is-rejected" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        My grouped collection annotation is rejected
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-did-a-new-release-start-reporting-errors" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1578,6 +1600,17 @@ application to boot, and set
 <a href="../../reference/configuration/#configdirectories"><code>configDirectories</code></a> if your
 package ships config files. See <a href="../../getting-started/packages/">analysing a
 package</a>.</p>
+<h2 id="my-grouped-collection-annotation-is-rejected">My grouped collection annotation is rejected<a class="headerlink" href="#my-grouped-collection-annotation-is-rejected" title="Permanent link">&para;</a></h2>
+<p><code>groupBy</code>, <code>keyBy</code> and <code>pluck</code> resolve keys precisely, so grouping by an enum's
+value gives <code>Collection&lt;10|20, ...&gt;</code> rather than <code>Collection&lt;int, ...&gt;</code>. Since
+<code>Collection</code> declares its templates invariantly, ask for the general type at the
+annotation:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="x">/** @return Collection&lt;covariant int, Collection&lt;int, Item&gt;&gt; */</span>
+</span></code></pre></div>
+<p><code>array-key</code> works too, being a benevolent union. A plain <code>int|string</code> does not,
+because it is matched invariantly and accepts neither side. See <a href="../../guide/collections/#precision-and-widening-it-where-you-want-it">precision, and
+widening it where you want
+it</a>.</p>
 <h2 id="why-did-a-new-release-start-reporting-errors">Why did a new release start reporting errors?<a class="headerlink" href="#why-did-a-new-release-start-reporting-errors" title="Permanent link">&para;</a></h2>
 <p>Because inference improved. That is not treated as a breaking change here, for
 reasons set out in <a href="../../about/backward-compatibility/">backward compatibility</a>: a
