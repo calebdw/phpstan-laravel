@@ -1,7 +1,7 @@
 The MIT License (MIT)
 
-Copyright © 2023-2026 Can Vural <can9119@gmail.com>, Nuno Maduro <enunomaduro@gmail.com>, and contributors (https://github.com/larastan/larastan)
-Copyright © 2024-2026 Caleb White <cdwhite3@pm.me> (https://github.com/calebdw/phpstan-laravel)
+Copyright © 2023-2026 Can Vural, Nuno Maduro (https://github.com/larastan/larastan)
+Copyright © 2024-2026 Caleb White (https://github.com/calebdw/phpstan-laravel)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
