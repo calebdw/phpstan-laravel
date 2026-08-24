@@ -205,8 +205,7 @@ Product::query()->with([
 ```
 
 Fixing that properly needs a change further down, in PHPStan itself. Until
-then, widen the parameter or ignore `argument.type` at that call. Limitations
-like this one are tracked in the [issue tracker][issues].
+then, widen the parameter to `Relation` or ignore `argument.type` at that call.
 
 ### Factories stay on your factory
 
@@ -496,7 +495,6 @@ If you use [Laravel Boost][boost], this package ships an AI guideline and a
 to run the analysis and how to read what comes back.
 
 <!-- links -->
-[issues]: https://github.com/calebdw/phpstan-laravel/issues
 [larastan]: https://github.com/larastan/larastan
 [boost]: https://github.com/laravel/boost
 
