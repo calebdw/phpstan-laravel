@@ -46,6 +46,8 @@ nav = [
 ]
 
 [project.theme]
+logo = "assets/logo.webp"
+favicon = "assets/favicon.png"
 features = [
   "content.action.edit",
   "content.code.annotate",

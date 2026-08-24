@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="art/phpstan-laravel.webp" alt="phpstan-laravel" width="320">
+</p>
+
 <h1 align="center">phpstan-laravel</h1>
 
 <p align="center">

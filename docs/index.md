@@ -1,3 +1,7 @@
+<p align="center" markdown>
+  ![phpstan-laravel](assets/phpstan-laravel.webp){ width="280" }
+</p>
+
 # phpstan-laravel
 
 <p class="hero-tagline" markdown>

@@ -3,6 +3,7 @@
 # This will also make them unavailable when using Composer with `--prefer-dist`.
 # https://git-scm.com/docs/gitattributes
 #
+/art                  export-ignore
 /.github              export-ignore
 /docs                 export-ignore
 /e2e                  export-ignore
