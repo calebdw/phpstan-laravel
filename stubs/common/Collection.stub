@@ -7,6 +7,12 @@ use Illuminate\Contracts\Support\CanBeEscapedWhenCastToString;
 use Illuminate\Support\Traits\EnumeratesValues;
 
 /**
+ * ArrayAccess is invariant in its value, and PHPStan requires type arguments for
+ * it, so TValue cannot go there while it stays covariant and the line cannot be
+ * dropped either. `mixed` parks the interface and the two members carry the real
+ * types: offsetGet() below returns TValue, and the @method tag keeps a write
+ * checked against it.
+ *
  * @template TKey of array-key
  * @template-covariant TValue
  *
