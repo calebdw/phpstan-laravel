@@ -1696,9 +1696,8 @@ internals, open an issue describing the goal.</p>
 stubs. It has since diverged: see <a href="../../about/differences-from-larastan/">differences from
 Larastan</a> for what changed and
 <a href="../../migrating-from-larastan/">the migration guide</a> for how to switch.</p>
-<p>Do not install both. This package does not declare <code>replace</code> for
-<code>larastan/larastan</code>, so with both installed the extension is registered twice
-and every error is reported twice.</p>
+<p>Remove Larastan when you switch. With both installed the extension is
+registered twice and every error is reported twice.</p>
 <h2 id="why-is-analysis-slow">Why is analysis slow?<a class="headerlink" href="#why-is-analysis-slow" title="Permanent link">&para;</a></h2>
 <p>The two scanning rules, <a href="../../rules/views-and-translations/#unused-view">unused view</a>
 and <a href="../../rules/views-and-translations/#missing-translation">missing translation</a>,
