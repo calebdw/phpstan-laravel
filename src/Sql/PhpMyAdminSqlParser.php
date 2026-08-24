@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Sql;
 
 use PhpMyAdmin\SqlParser\Components\CreateDefinition;
 use PhpMyAdmin\SqlParser\Components\OptionsArray;
+use PhpMyAdmin\SqlParser\Exceptions\LexerException;
 use PhpMyAdmin\SqlParser\Exceptions\ParserException;
 use PhpMyAdmin\SqlParser\Parser;
 use PhpMyAdmin\SqlParser\Statements\CreateStatement;
@@ -21,8 +22,12 @@ final class PhpMyAdminSqlParser implements SqlParser
     public function parseTables(string $sql): array
     {
         try {
+            // LexerException and ParserException are unrelated - both extend
+            // Exception directly - so a dump that fails to tokenise at all, such
+            // as one using a character the MySQL lexer does not know, escapes a
+            // catch of ParserException alone.
             $parser = new Parser($sql, true);
-        } catch (ParserException $exception) {
+        } catch (LexerException | ParserException $exception) {
             throw SqlParserFailure::create('Failed to parse SQL schema with phpmyadmin/sql-parser.', $exception);
         }
 
