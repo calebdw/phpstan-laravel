@@ -1211,6 +1211,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Relation closures get typed parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-it-stops" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Where it stops
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1229,17 +1246,6 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         Dates
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#accessors" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Accessors
       </span>
     </span>
   </a>
@@ -1347,21 +1353,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#config-values-have-shapes" class="md-nav__link">
+  <a href="#it-is-on-and-it-asks-the-container-first" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Config values have shapes
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#packages-get-config-typing-too" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Packages get config typing too
+        It is on, and it asks the container first
       </span>
     </span>
   </a>
@@ -1587,6 +1582,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Relation closures get typed parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-it-stops" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Where it stops
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1605,17 +1617,6 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         Dates
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#accessors" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Accessors
       </span>
     </span>
   </a>
@@ -1723,21 +1724,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#config-values-have-shapes" class="md-nav__link">
+  <a href="#it-is-on-and-it-asks-the-container-first" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Config values have shapes
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#packages-get-config-typing-too" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Packages get config typing too
+        It is on, and it asks the container first
       </span>
     </span>
   </a>
@@ -1941,73 +1931,116 @@ rather than degrading to <code>Builder&lt;Model&gt;</code> at the first <code>wh
 broadly, along with the builder stubs themselves, so static calls on the model
 and instance calls on the builder agree about what comes back.</p>
 <h3 id="relation-closures-get-typed-parameters">Relation closures get typed parameters<a class="headerlink" href="#relation-closures-get-typed-parameters" title="Permanent link">&para;</a></h3>
-<p>The closure passed to a relation constraint receives the related model's
-builder, so what you write inside it is checked rather than being <code>mixed</code>:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">whereHas</span><span class="p">(</span><span class="s1">'accounts'</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$query</span><span class="p">)</span> <span class="p">{</span>
+<p>Laravel's relation constraints take a closure and hand it a query builder, but
+the signature promises only a <code>Closure</code>. Everything inside is <code>mixed</code>, so
+nothing you write there is checked. This is where a great deal of query code
+lives, and it is the largest single gain over Larastan, which does not type
+these at all.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">query</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">whereHas</span><span class="p">(</span><span class="s1">'accounts'</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$query</span><span class="p">)</span> <span class="p">{</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="c1">// Illuminate\Database\Eloquent\Builder&lt;App\Account&gt;</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">'active'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">});</span>
 </span></code></pre></div>
+<p>The relation is resolved from the model the query is on, so the closure needs
+no parameter type of its own.</p>
+<p><strong>Dotted paths are walked.</strong> Each segment resolves against the model the
+previous one pointed at, and the closure is typed for the last:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nx">Product</span><span class="o">::</span><span class="na">query</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">whereHas</span><span class="p">(</span><span class="s1">'stocks.warehouse'</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$query</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="c1">// App\WarehouseBuilder</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">active</span><span class="p">();</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">});</span>
+</span></code></pre></div>
+<p>That example is worth reading twice. The parameter is <code>WarehouseBuilder</code>, not
+<code>Builder&lt;Warehouse&gt;</code>, because <code>Warehouse</code> declares a custom builder, so a scope
+that exists only on your builder is callable inside the closure.</p>
+<p><strong>The whole family is covered</strong>, not <code>whereHas</code> alone: <code>has</code>, <code>doesntHave</code>,
+<code>whereHas</code>, <code>withWhereHas</code>, <code>orWhereHas</code>, <code>whereDoesntHave</code>,
+<code>orWhereDoesntHave</code>, <code>whereRelation</code>, <code>orWhereRelation</code>, and the eight <code>*Morph</code>
+variants. Position does not matter either, so the closure in
+<code>has('stocks', '&gt;=', 1, 'and', fn ($q) =&gt; ...)</code> is typed as well.</p>
+<p><strong><code>withWhereHas</code> receives both</strong>, because Laravel uses the argument as a
+constraint and as an eager load:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nx">Product</span><span class="o">::</span><span class="na">query</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">withWhereHas</span><span class="p">(</span><span class="s1">'stocks'</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$query</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="c1">// Builder&lt;App\Stock&gt;|HasMany&lt;App\Stock, App\Product&gt;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">});</span>
+</span></code></pre></div>
+<p><strong>Morph methods give a union, and a typed <code>$type</code>.</strong> The second argument names
+the models it may be, so the closure is typed for all of them:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nx">Product</span><span class="o">::</span><span class="na">query</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">whereHasMorph</span><span class="p">(</span><span class="s1">'stocks'</span><span class="p">,</span> <span class="p">[</span><span class="nx">Warehouse</span><span class="o">::</span><span class="na">class</span><span class="p">,</span> <span class="nx">Stock</span><span class="o">::</span><span class="na">class</span><span class="p">],</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$query</span><span class="p">,</span> <span class="nv">$type</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="c1">// $query: App\WarehouseBuilder|Builder&lt;App\Stock&gt;</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="c1">// $type:  string</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">});</span>
+</span></code></pre></div>
 <p><code>through()</code> carries its generics as well:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">through</span><span class="p">(</span><span class="s1">'mechanic'</span><span class="p">);</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">// Illuminate\Database\Eloquent\PendingHasThroughRelationship&lt;..., App\User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">through</span><span class="p">(</span><span class="s1">'mechanic'</span><span class="p">);</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">// Illuminate\Database\Eloquent\PendingHasThroughRelationship&lt;..., App\User&gt;</span>
 </span></code></pre></div>
 <p>and <code>when()</code> / <code>unless()</code> on a relation keep the relation's type instead of
 widening to the base class.</p>
+<h4 id="where-it-stops">Where it stops<a class="headerlink" href="#where-it-stops" title="Permanent link">&para;</a></h4>
+<p>This is not finished work, and it is worth knowing the edges.</p>
+<p>The relation name has to be a literal the analyser can see. Passed a variable
+it cannot fold to a string, there is nothing to resolve, and the parameter
+stays <code>Builder&lt;Model&gt;</code>. The relation method also has to declare its generics:
+a <code>@return HasMany&lt;Stock, $this&gt;</code> is what names the related model, and an
+undocumented relation gives <code>Builder&lt;Model&gt;</code> as well. Neither of those is a
+false positive, only a return to what you would have had anyway.</p>
+<p>The real gap is eager loading. Closures passed to <code>with()</code> are <strong>not</strong> typed,
+and a closure that narrows its own parameter is reported, because Laravel
+documents that argument as <code>Closure(Relation&lt;*, *, *&gt;): mixed</code> and a narrower
+parameter is not a subtype of a wider one:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nx">Product</span><span class="o">::</span><span class="na">query</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">with</span><span class="p">([</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="s1">'stocks'</span> <span class="o">=&gt;</span> <span class="k">function</span> <span class="p">(</span><span class="nx">MorphTo</span> <span class="nv">$morphTo</span><span class="p">)</span> <span class="p">{</span>   <span class="c1">// argument.type</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>        <span class="nv">$morphTo</span><span class="o">-&gt;</span><span class="na">morphWith</span><span class="p">([</span><span class="nx">Warehouse</span><span class="o">::</span><span class="na">class</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">'stocks'</span><span class="p">]]);</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="p">},</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="p">]);</span>
+</span></code></pre></div>
+<p>Fixing that properly needs a change further down, in PHPStan itself. Until
+then, widen the parameter to <code>Relation</code> or ignore <code>argument.type</code> at that call.</p>
 <h3 id="factories-stay-on-your-factory">Factories stay on your factory<a class="headerlink" href="#factories-stay-on-your-factory" title="Permanent link">&para;</a></h3>
 <p><code>has*</code> and <code>for*</code> return <code>static</code>, so a chain off a custom factory does not
 fall back to the base factory:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">hasAccounts</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">// Database\Factories\UserFactory, not Illuminate\...\Factory</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">createOne</span><span class="p">();</span>  <span class="c1">// App\User</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">createMany</span><span class="p">([]);</span> <span class="c1">// Collection&lt;int, App\User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">hasAccounts</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">// Database\Factories\UserFactory, not Illuminate\...\Factory</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">createOne</span><span class="p">();</span>  <span class="c1">// App\User</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">createMany</span><span class="p">([]);</span> <span class="c1">// Collection&lt;int, App\User&gt;</span>
 </span></code></pre></div>
 <h3 id="dates">Dates<a class="headerlink" href="#dates" title="Permanent link">&para;</a></h3>
 <p>Date casts resolve to the configured date class rather than a bare string, and
 the <code>Date</code> facade returns it too:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">created_at</span><span class="p">;</span>   <span class="c1">// Illuminate\Support\Carbon</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nx">Date</span><span class="o">::</span><span class="na">create</span><span class="p">();</span>      <span class="c1">// Illuminate\Support\Carbon</span>
-</span></code></pre></div>
-<h3 id="accessors">Accessors<a class="headerlink" href="#accessors" title="Permanent link">&para;</a></h3>
-<p>Both styles are understood, the <code>Attribute</code> form and the legacy
-<code>getFooAttribute()</code> methods, and a legacy accessor is still found when a method
-of the same camel case name sits beside it:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// before</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">full_name</span><span class="p">;</span>  <span class="c1">// Access to an undefined property</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1">// now</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">full_name</span><span class="p">;</span>  <span class="c1">// string</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">created_at</span><span class="p">;</span>   <span class="c1">// Illuminate\Support\Carbon</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nx">Date</span><span class="o">::</span><span class="na">create</span><span class="p">();</span>      <span class="c1">// Illuminate\Support\Carbon</span>
 </span></code></pre></div>
 <h2 id="collections">Collections<a class="headerlink" href="#collections" title="Permanent link">&para;</a></h2>
 <h3 id="pluck">pluck<a class="headerlink" href="#pluck" title="Permanent link">&para;</a></h3>
 <p>Resolved from the column rather than left as <code>mixed</code>:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// before</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nx">User</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span>        <span class="c1">// Collection&lt;(int|string), mixed&gt;</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nx">Arr</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="nv">$users</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span> <span class="c1">// array&lt;int, User&gt;   (wrong)</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1">// now</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="nx">User</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span>        <span class="c1">// Collection&lt;int, string&gt;</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span> <span class="c1">// Collection&lt;int, string&gt;</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="nx">Arr</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="nv">$users</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span> <span class="c1">// array&lt;string, string&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1">// before</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nx">User</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span>        <span class="c1">// Collection&lt;(int|string), mixed&gt;</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nx">Arr</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="nv">$users</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span> <span class="c1">// array&lt;int, User&gt;   (wrong)</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1">// now</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="nx">User</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span>        <span class="c1">// Collection&lt;int, string&gt;</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span> <span class="c1">// Collection&lt;int, string&gt;</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="nx">Arr</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="nv">$users</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">);</span> <span class="c1">// array&lt;string, string&gt;</span>
 </span></code></pre></div>
 <p>Dotted nesting, arrays of segments, and closures all work, including closures
 that declare no types at all, because the parameter is typed from the
 collection's value type:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'user.name'</span><span class="p">);</span>        <span class="c1">// Collection&lt;int, string&gt;</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">([</span><span class="s1">'user'</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">]);</span>   <span class="c1">// Collection&lt;int, string&gt;</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>  <span class="c1">// Collection&lt;int, int&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'user.name'</span><span class="p">);</span>        <span class="c1">// Collection&lt;int, string&gt;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">([</span><span class="s1">'user'</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">]);</span>   <span class="c1">// Collection&lt;int, string&gt;</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>  <span class="c1">// Collection&lt;int, int&gt;</span>
 </span></code></pre></div>
 <p><code>Arr::pluck</code> without a key is a <code>list</code>, because that is what it returns:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nx">Arr</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="nv">$users</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">);</span>  <span class="c1">// list&lt;string&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nx">Arr</span><span class="o">::</span><span class="na">pluck</span><span class="p">(</span><span class="nv">$users</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">);</span>  <span class="c1">// list&lt;string&gt;</span>
 </span></code></pre></div>
 <h3 id="keyby">keyBy<a class="headerlink" href="#keyby" title="Permanent link">&para;</a></h3>
 <p>Resolved the same way. Unlike <code>pluck</code> it rewrites only the keys, so the value
 type and the collection class both carry over:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>            <span class="c1">// EloquentCollection&lt;string, App\User&gt;</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span> <span class="c1">// EloquentCollection&lt;int, App\User&gt;</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="s1">'user.name'</span><span class="p">);</span>       <span class="c1">// EloquentCollection&lt;string, App\Post&gt;</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="nx">Arr</span><span class="o">::</span><span class="na">keyBy</span><span class="p">(</span><span class="nv">$users</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">);</span>       <span class="c1">// array&lt;string, App\User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>            <span class="c1">// EloquentCollection&lt;string, App\User&gt;</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span> <span class="c1">// EloquentCollection&lt;int, App\User&gt;</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="s1">'user.name'</span><span class="p">);</span>       <span class="c1">// EloquentCollection&lt;string, App\Post&gt;</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nx">Arr</span><span class="o">::</span><span class="na">keyBy</span><span class="p">(</span><span class="nv">$users</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">);</span>       <span class="c1">// array&lt;string, App\User&gt;</span>
 </span></code></pre></div>
 <h3 id="groupby">groupBy<a class="headerlink" href="#groupby" title="Permanent link">&para;</a></h3>
 <p><code>groupBy</code> returns a collection of collections, and an array argument groups
@@ -2018,33 +2051,33 @@ involved.</p>
 <p>Here the nesting follows the argument, one level per grouper. Every level is the
 receiver's own class, since <code>groupBy</code> builds each group with <code>newInstance()</code> —
 abbreviated to <code>Collection</code> below to keep the nesting readable:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">]);</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="c1">// Collection&lt;string, Collection&lt;int, Collection&lt;int, User&gt;&gt;&gt;</span>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'email'</span><span class="p">]);</span>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="c1">// Collection&lt;string, Collection&lt;int, Collection&lt;string, Collection&lt;int, User&gt;&gt;&gt;&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">]);</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="c1">// Collection&lt;string, Collection&lt;int, Collection&lt;int, User&gt;&gt;&gt;</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">,</span> <span class="s1">'email'</span><span class="p">]);</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="c1">// Collection&lt;string, Collection&lt;int, Collection&lt;string, Collection&lt;int, User&gt;&gt;&gt;&gt;</span>
 </span></code></pre></div>
 <p>Group keys are resolved rather than widened to <code>array-key</code>, through the same
 lookup <code>pluck</code> and <code>keyBy</code> use, so dotted paths and callbacks work at every
 level, including callbacks that declare no types:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>                        <span class="c1">// Collection&lt;int, ...&gt;</span>
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'user.name'</span><span class="p">);</span>                 <span class="c1">// Collection&lt;string, ...&gt;</span>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>           <span class="c1">// Collection&lt;int, ...&gt;</span>
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">]);</span> <span class="c1">// a column and a callback</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>                        <span class="c1">// Collection&lt;int, ...&gt;</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'user.name'</span><span class="p">);</span>                 <span class="c1">// Collection&lt;string, ...&gt;</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>           <span class="c1">// Collection&lt;int, ...&gt;</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">]);</span> <span class="c1">// a column and a callback</span>
 </span></code></pre></div>
 <p><code>groupBy</code> normalizes each key before using it, and so does this:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">);</span>        <span class="c1">// bool becomes int</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span><span class="o">:</span> <span class="nx">Stringable</span> <span class="o">=&gt;</span> <span class="o">...</span><span class="p">);</span>   <span class="c1">// Stringable becomes string</span>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span><span class="o">:</span> <span class="k">array</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="nv">$u</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">]);</span> <span class="c1">// several groups per item</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">);</span>        <span class="c1">// bool becomes int</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span><span class="o">:</span> <span class="nx">Stringable</span> <span class="o">=&gt;</span> <span class="o">...</span><span class="p">);</span>   <span class="c1">// Stringable becomes string</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span><span class="o">:</span> <span class="k">array</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="nv">$u</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">]);</span> <span class="c1">// several groups per item</span>
 </span></code></pre></div>
 <p><code>preserveKeys</code> affects only the innermost collection, which is why it shows up
 only where the collection's own keys are not already <code>int</code>:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="sd">/** @var Collection&lt;string, User&gt; $keyed */</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="nv">$keyed</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>        <span class="c1">// Collection&lt;int, Collection&lt;int, User&gt;&gt;</span>
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nv">$keyed</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>  <span class="c1">// Collection&lt;int, Collection&lt;string, User&gt;&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="sd">/** @var Collection&lt;string, User&gt; $keyed */</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nv">$keyed</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>        <span class="c1">// Collection&lt;int, Collection&lt;int, User&gt;&gt;</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="nv">$keyed</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>  <span class="c1">// Collection&lt;int, Collection&lt;string, User&gt;&gt;</span>
 </span></code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2055,58 +2088,66 @@ and <code>keyBy</code> it is the segments of a single key, so <code>['user', 'na
 <h3 id="higher-order-proxies-agree-with-the-argument-forms">Higher order proxies agree with the argument forms<a class="headerlink" href="#higher-order-proxies-agree-with-the-argument-forms" title="Permanent link">&para;</a></h3>
 <p><code>$users-&gt;groupBy-&gt;email</code> and <code>$users-&gt;groupBy('email')</code> resolve the same key
 type, rather than the proxy form falling back to <code>array-key</code>:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>  <span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>    <span class="c1">// Collection&lt;string, User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>  <span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>    <span class="c1">// Collection&lt;string, User&gt;</span>
 </span></code></pre></div>
 <h3 id="template-types">Template types<a class="headerlink" href="#template-types" title="Permanent link">&para;</a></h3>
 <p>Collection template parameters are no longer overwritten when chaining through
 methods that should preserve them, and a collection typed as an intersection
-keeps both halves rather than collapsing to one.</p>
+keeps both halves rather than collapsing to one. That second one matters if you
+return a collection that both extends <code>Collection</code> and implements an interface
+of your own:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="p">{</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>    <span class="sd">/** @return Collection&lt;int, static&gt;&amp;TreeLikeCollection&lt;static&gt; */</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">newCollection</span><span class="p">(</span><span class="k">array</span> <span class="nv">$models</span> <span class="o">=</span> <span class="p">[])</span><span class="o">:</span> <span class="nx">Collection</span><span class="o">&amp;</span><span class="nx">TreeLikeCollection</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="p">{</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>        <span class="k">return</span> <span class="k">new</span> <span class="nx">TreeCollection</span><span class="p">(</span><span class="nv">$models</span><span class="p">);</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>    <span class="p">}</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="p">}</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="c1">// Collection&lt;int, User&gt;&amp;TreeLikeCollection&lt;User&gt;</span>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getTree</span><span class="p">();</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="c1">// Collection&lt;int, User&gt;&amp;TreeLikeCollection&lt;User&gt;</span>
+</span></code></pre></div>
+<p>Calling <code>getTree()</code>, which comes from the interface half, does not cost you the
+collection half.</p>
 <h3 id="paginators">Paginators<a class="headerlink" href="#paginators" title="Permanent link">&para;</a></h3>
 <p>A paginator over models hands back an Eloquent collection:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">paginate</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getCollection</span><span class="p">();</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="c1">// Illuminate\Database\Eloquent\Collection&lt;int, App\User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">paginate</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getCollection</span><span class="p">();</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="c1">// Illuminate\Database\Eloquent\Collection&lt;int, App\User&gt;</span>
 </span></code></pre></div>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
-<h3 id="config-values-have-shapes">Config values have shapes<a class="headerlink" href="#config-values-have-shapes" title="Permanent link">&para;</a></h3>
-<p><code>config()</code> resolves against your actual configuration rather than returning
-<code>mixed</code>:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="c1">// array{guard: string, passwords: string}</span>
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
-</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="c1">// string|null</span>
-</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
-</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="c1">// array{guard: string, passwords: string}</span>
+<p>Typed configuration is not new: Larastan reads your config files too, behind
+its <code>checkConfigTypes</code> option. Two things differ.</p>
+<h3 id="it-is-on-and-it-asks-the-container-first">It is on, and it asks the container first<a class="headerlink" href="#it-is-on-and-it-asks-the-container-first" title="Permanent link">&para;</a></h3>
+<p>There is no option to enable, because a <code>config()</code> call that returns <code>mixed</code> is
+not useful to anybody. Where the application boots, the container answers, and
+file parsing fills in only what the container could not, which is what makes it
+work for packages that have no application to boot.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="c1">// array{guard: string, passwords: string}</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="c1">// string|null</span>
 </span></code></pre></div>
-<h3 id="packages-get-config-typing-too">Packages get config typing too<a class="headerlink" href="#packages-get-config-typing-too" title="Permanent link">&para;</a></h3>
-<p>Analysing a package boots no application, so there is no container to ask.
-Point <code>configDirectories</code> at your config files and keys are resolved by parsing
-them instead, with no Testbench workbench required:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>parameters:
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>    laravel:
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>        configDirectories:
-</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>            - config
-</span></code></pre></div>
-<p>Parsing is lazy and cached, so only the files actually referenced are read, and
-each is read once. Where an application <em>is</em> bootable the container answers
-first, so this can only fill in keys that were previously <code>mixed</code>.</p>
 <h3 id="the-typed-accessors-are-checked">The typed accessors are checked<a class="headerlink" href="#the-typed-accessors-are-checked" title="Permanent link">&para;</a></h3>
 <p><code>string()</code>, <code>integer()</code>, <code>float()</code>, <code>boolean()</code>, <code>array()</code> and <code>collection()</code>
 each throw when the value is not already of that type: none of them coerce.
 Reading a key of the wrong type is a guaranteed runtime failure, and is now
 reported:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// fine</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>  <span class="c1">// error: is string, requires an array</span>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">float</span><span class="p">(</span><span class="s1">'auth.password_timeout'</span><span class="p">);</span> <span class="c1">// error: is int, requires a float</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// fine</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>  <span class="c1">// error: is string, requires an array</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">float</span><span class="p">(</span><span class="s1">'auth.password_timeout'</span><span class="p">);</span> <span class="c1">// error: is int, requires a float</span>
 </span></code></pre></div>
 <h2 id="paths-and-scanning">Paths and scanning<a class="headerlink" href="#paths-and-scanning" title="Permanent link">&para;</a></h2>
 <p>Migration and schema paths accept wildcards, which modular applications need:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>parameters:
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>    laravel:
-</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>        migrationDirectories:
-</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>            - modules/*/database/migrations
+<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>parameters:
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>    laravel:
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>        migrationDirectories:
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>            - modules/*/database/migrations
 </span></code></pre></div>
 <p>Relative directory options resolve against the PHPStan config file that
 declares them, rather than against whatever directory you happened to run from.</p>
@@ -2127,9 +2168,9 @@ prefixed identifier, so you can ignore a category precisely. See
   lets code drift onto methods only one implementation happens to have. Enable
   it to take the contract at face value:</li>
 </ul>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="c1">// off: Illuminate\Config\Repository</span>
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="c1">// on:  Illuminate\Contracts\Config\Repository</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="c1">// off: Illuminate\Config\Repository</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="c1">// on:  Illuminate\Contracts\Config\Repository</span>
 </span></code></pre></div>
 <h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
 <ul>
