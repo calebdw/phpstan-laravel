@@ -1850,7 +1850,7 @@ they are simply how the extension behaves. Turning <code>checkConfigTypes</code>
 the one that can surface new errors: config values now have real types, so code that was
 handed <code>mixed</code> is now checked.</p>
 <h3 id="sqlparser-only-accepts-the-built-in-drivers"><code>sqlParser</code> only accepts the built-in drivers<a class="headerlink" href="#sqlparser-only-accepts-the-built-in-drivers" title="Permanent link">&para;</a></h3>
-<p><code>sqlParser</code> is validated against <code>auto</code>, <code>iamcal</code> and <code>phpmyadmin</code>, so a typo fails
+<p><code>sqlParser</code> is validated against <code>auto</code>, <code>iamcal</code>, <code>phpmyadmin</code> and <code>postgres</code>, so a typo fails
 configuration validation with the valid values listed instead of failing later, mid-parse.
 Registering a parser of your own is no longer supported.</p>
 <h3 id="one-rule-is-now-on-by-default">One rule is now on by default<a class="headerlink" href="#one-rule-is-now-on-by-default" title="Permanent link">&para;</a></h3>
@@ -1984,13 +1984,13 @@ ignoring nothing.</p>
 </div>
 <h2 id="5-install-an-sql-parser-if-you-use-schema-dumps">5. Install an SQL parser if you use schema dumps<a class="headerlink" href="#5-install-an-sql-parser-if-you-use-schema-dumps" title="Permanent link">&para;</a></h2>
 <p>Larastan required a parser for squashed schema dumps outright: <code>phpmyadmin/sql-parser</code>
-in the <code>calebdw/larastan</code> fork, <code>iamcal/sql-parser</code> upstream. Neither is a hard
-requirement here, so that the license entering your dependency tree is your
-choice rather than this package's:</p>
+in the <code>calebdw/larastan</code> fork, <code>iamcal/sql-parser</code> upstream. Parsers are optional
+dependencies here, so the license entering your dependency tree is your choice:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>iamcal/sql-parser<span class="w">      </span><span class="c1"># MIT</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>phpmyadmin/sql-parser<span class="w">  </span><span class="c1"># GPL-2.0-or-later</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>calebdw/pg-schema-parser<span class="w"> </span><span class="c1"># MIT, PostgreSQL</span>
 </span></code></pre></div>
-<p>If you have no dumps under <code>database/schema</code>, you need neither: the parser is
+<p>If you have no dumps under <code>database/schema</code>, you do not need one: the parser is
 only resolved when there is a dump to read. Otherwise analysis fails with
 instructions telling you to install one. Use
 <a href="../reference/configuration/#sqlparser"><code>sqlParser</code></a> to name a driver explicitly

@@ -1483,14 +1483,15 @@ registered twice and every error is reported twice.</p>
 </div>
 <h2 id="squashed-schema-dumps">Squashed schema dumps<a class="headerlink" href="#squashed-schema-dumps" title="Permanent link">&para;</a></h2>
 <p>If your project has schema dumps under <code>database/schema</code>, you also need an SQL
-parser. Neither is a hard requirement of this package, so the license that
-enters your dependency tree is your choice rather than ours:</p>
+parser. None is a hard requirement of this package:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>iamcal/sql-parser<span class="w">      </span><span class="c1"># MIT</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>phpmyadmin/sql-parser<span class="w">  </span><span class="c1"># GPL-2.0-or-later</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>calebdw/pg-schema-parser<span class="w"> </span><span class="c1"># MIT, PostgreSQL</span>
 </span></code></pre></div>
-<p>Either works. <code>phpmyadmin/sql-parser</code> understands more of the MySQL dialect and
-is preferred when both are installed. See
-<a href="../../reference/configuration/#sqlparser"><code>sqlParser</code></a> to name one explicitly.</p>
+<p>The first two parse MySQL dumps; <code>phpmyadmin/sql-parser</code> is preferred when both
+are installed. PostgreSQL dumps require <code>calebdw/pg-schema-parser</code>, which
+<code>auto</code> selects when no MySQL parser is installed. See
+<a href="../../reference/configuration/#sqlparser"><code>sqlParser</code></a> for details.</p>
 <p>If you have no dumps you need neither: the parser is only resolved when there
 is a dump to read.</p>
 <div class="admonition note">

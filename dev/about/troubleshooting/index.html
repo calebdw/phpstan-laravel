@@ -1556,11 +1556,9 @@ it defines would otherwise go missing from your model properties with nothing
 to say so. Options, in order of preference: fix the dump, choose the other
 parser with <a href="../../reference/configuration/#sqlparser"><code>sqlParser</code></a>, or set
 <code>scanSchema: false</code> to opt out of dumps entirely.</p>
-<p>Both parsers focus on the MySQL dialect. PostgreSQL dumps parse only in plain
-text format, and even then problems have been reported with timestamp columns
-and long parse times. For PostgreSQL, generating migrations with
-<a href="https://github.com/kitloong/laravel-migrations-generator">laravel-migrations-generator</a> or writing <code>@property</code> annotations with
-<a href="https://github.com/barryvdh/laravel-ide-helper">laravel-ide-helper</a> are the more reliable routes.</p>
+<p>The <code>iamcal</code> and <code>phpmyadmin</code> drivers parse MySQL dumps. PostgreSQL plain-text
+dumps require <code>calebdw/pg-schema-parser</code>; use <code>sqlParser: postgres</code> when a MySQL
+parser is also installed. Custom and directory-format dumps cannot be scanned.</p>
 <!-- links -->
 
 

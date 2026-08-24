@@ -2048,19 +2048,15 @@ them, and <code>glob</code> wildcards are supported.</p>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>            - app/Domain/*/schema
 </span></code></pre></div>
 <h3 id="postgresql">PostgreSQL<a class="headerlink" href="#postgresql" title="Permanent link">&para;</a></h3>
-<p>Both supported parsers are primarily focused on the MySQL dialect.
-It can read (or rather, try to read) PostgreSQL dumps provided they are in the <em>plain text (and not the 'custom') format</em>, but the mileage may vary as problems have been noted with timestamp columns and lengthy parse time on more complicated dumps.</p>
-<p>The viable options for PostgreSQL at the moment are:</p>
-<ol>
-<li>Use the <a href="https://github.com/barryvdh/laravel-ide-helper">laravel-ide-helper</a> package to write PHPDocs directly to the Models.</li>
-<li>Use the <a href="https://github.com/kitloong/laravel-migrations-generator">laravel-migrations-generator</a> to generate migration files (or a singular squashed migration file) for this extension to scan with the <code>migrationDirectories</code> setting.</li>
-</ol>
+<p>PostgreSQL plain-text dumps are supported by the <code>postgres</code> driver. Custom and
+directory-format dumps are not SQL text and cannot be scanned.</p>
 <h2 id="sqlparser"><code>sqlParser</code><a class="headerlink" href="#sqlparser" title="Permanent link">&para;</a></h2>
 <p><strong>default</strong>: <code>auto</code></p>
-<p>Selects which SQL parser reads your squashed schema dumps. Neither parser is a
-hard requirement of this package, so you choose which one&mdash;and which license&mdash;enters your dependency tree:</p>
+<p>Selects which SQL parser reads your squashed schema dumps. The parsers are
+optional dependencies:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>iamcal/sql-parser<span class="w">      </span><span class="c1"># MIT</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>phpmyadmin/sql-parser<span class="w">  </span><span class="c1"># GPL-2.0-or-later</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>calebdw/pg-schema-parser<span class="w"> </span><span class="c1"># MIT, PostgreSQL</span>
 </span></code></pre></div>
 <table>
 <thead>
@@ -2074,7 +2070,7 @@ hard requirement of this package, so you choose which one&mdash;and which licens
 <tr>
 <td><code>auto</code></td>
 <td>whichever is installed</td>
-<td>Prefers <code>phpmyadmin</code> when both are present</td>
+<td>Prefers <code>phpmyadmin</code>, then <code>iamcal</code>, then <code>postgres</code></td>
 </tr>
 <tr>
 <td><code>iamcal</code></td>
@@ -2086,9 +2082,14 @@ hard requirement of this package, so you choose which one&mdash;and which licens
 <td><code>phpmyadmin/sql-parser</code></td>
 <td>GPL-2.0-or-later, understands more of the MySQL dialect</td>
 </tr>
+<tr>
+<td><code>postgres</code></td>
+<td><code>calebdw/pg-schema-parser</code></td>
+<td>MIT, parses PostgreSQL plain-text dumps</td>
+</tr>
 </tbody>
 </table>
-<p>These three are the only accepted values; anything else fails configuration
+<p>These four are the only accepted values; anything else fails configuration
 validation with the valid ones listed.</p>
 <h3 id="example_3">Example<a class="headerlink" href="#example_3" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>parameters:
@@ -2100,6 +2101,9 @@ neither is. Naming a driver explicitly is a stronger statement: if that parser
 is not installed the analysis fails rather than quietly falling back to the
 other one, so a project that has deliberately chosen a parser cannot silently
 end up using a different one.</p>
+<p><code>auto</code> selects <code>postgres</code> when it is the only installed parser. If both a MySQL
+parser and the PostgreSQL parser are installed, set the driver explicitly
+because the dump does not identify its dialect before parsing.</p>
 <p>If you do not use squashed schema dumps at all, you need neither package: the
 parser is only resolved when there is a dump to read. You can also set
 <a href="#scanschema"><code>scanSchema</code></a> to <code>false</code> to skip them entirely.</p>
