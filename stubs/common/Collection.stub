@@ -8,10 +8,12 @@ use Illuminate\Support\Traits\EnumeratesValues;
 
 /**
  * @template TKey of array-key
- * @template TValue
+ * @template-covariant TValue
  *
- * @implements \ArrayAccess<TKey, TValue>
+ * @implements \ArrayAccess<TKey, mixed>
  * @implements \Illuminate\Support\Enumerable<TKey, TValue>
+ *
+ * @method void offsetSet(TKey|null $offset, TValue $value)
  */
 class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerable
 {
@@ -19,6 +21,12 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @use \Illuminate\Support\Traits\EnumeratesValues<TKey, TValue>
      */
     use EnumeratesValues;
+
+    /**
+     * @param  TKey  $offset
+     * @return TValue
+     */
+    public function offsetGet($offset);
 
    /**
     * Get one or a specified number of items randomly from the collection.
@@ -93,7 +101,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
 
 /**
  * @template TKey of array-key
- * @template TValue
+ * @template-covariant TValue
  *
  * @implements \Illuminate\Support\Enumerable<TKey, TValue>
  */

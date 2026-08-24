@@ -24,6 +24,17 @@ class IntegrationTest extends PHPStanTestCase
 
         yield [__DIR__ . '/data/http-client-multipart.php'];
         yield [__DIR__ . '/data/test-case-extension.php', [34 => ['Call to function method_exists() with $this(TestTestCase) and \'partialMock\' will always evaluate to true.']]];
+        yield [__DIR__ . '/data/collection-covariance.php'];
+        yield [
+            __DIR__ . '/data/collection-writes.php',
+            [
+                16 => ['Parameter #1 ...$values of method Illuminate\\Support\\Collection<int,string>::push() expects string, int given.'],
+                17 => ['Parameter #2 $value of method Illuminate\\Support\\Collection<int,string>::put() expects string, int given.'],
+                18 => ['Parameter #1 $value of method Illuminate\\Support\\Collection<int,string>::prepend() expects string, int given.'],
+                19 => ['Illuminate\\Support\\Collection<int, string> does not accept int.'],
+            ],
+        ];
+
         yield [__DIR__ . '/data/model-builder.php'];
         yield [__DIR__ . '/data/model-properties.php'];
         yield [__DIR__ . '/data/model-factories.php'];

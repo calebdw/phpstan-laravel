@@ -118,9 +118,9 @@ foreach ($items->keyBy(fn ($i) => "row-{$i->id}") as $key => $item) {
 }
 ```
 
-`Collection` declares `TKey` and `TValue` invariantly, so an exact type is what
-an annotation has to match. Where you would rather accept the general type, ask
-for it at the annotation with `covariant`:
+`Collection` declares `TKey` invariantly, so an exact key type is what an
+annotation has to match. Where you would rather accept the general type, ask for
+it at the annotation with `covariant`:
 
 ```php
 /** @return Collection<covariant string, Item> */
@@ -130,11 +130,10 @@ public function keyed(): Collection
 }
 ```
 
-That is use-site variance, and it applies to values the same way:
-
-```php
-/** @return Collection<int, covariant string> */
-```
+That is use-site variance. Values need it far less often, since `TValue` is
+covariant in the stubs as it is in the framework, so a
+`Collection<int, non-falsy-string>` already satisfies a
+`Collection<int, string>` annotation.
 
 `array-key` also works for a key, being a benevolent union. A plain
 `int|string` does not, despite reading like the safer choice: it is matched

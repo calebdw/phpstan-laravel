@@ -36,6 +36,16 @@ function test(
     assertType('App\User|null', $collection->find(1));
     assertType('App\User|false', $collection->find(1, false));
 
+    // The Collection stub implements ArrayAccess<TKey, mixed> so that TValue can stay
+    // covariant, and redeclares offsetGet to keep the element type.
+    assertType('App\\User', $collectionOfUsers[0]);
+    assertType('int', $items['key']);
+
+    // search() takes its needle on a method-level template for the same reason.
+    assertType('int|false', $collectionOfUsers->search($user));
+    assertType('string|false', $items->search(1));
+    assertType('string|false', $items->search(fn (int $item, string $key): bool => $item > 1));
+
     assertType('Illuminate\Support\Collection<int, int>', $collection->pluck('id'));
     assertType('Illuminate\Support\Collection<int, non-falsy-string>', User::get()->pluck(fn (User $user) => "$user->id - $user->email", 'id'));
     assertType('Illuminate\Support\Collection<non-falsy-string, int>', User::get()->pluck('id', fn (User $user) => "$user->id - $user->email"));

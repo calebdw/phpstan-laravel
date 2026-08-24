@@ -126,22 +126,20 @@ That is sound in a way that changing the collection is not: `covariant` at a
 parameter promises only that you will read from it, and the parameter is the one
 place that can keep the promise.
 
-## Why is a collection's value type invariant?
+## Why is a collection's key type invariant?
 
-Because a collection is not covariant, and the stubs say so. `Collection` has
-`push()`, `put()`, `prepend()`, `add()` and `offsetSet()`, all of which *take* a
-`TValue`, and `offsetSet()` comes from `ArrayAccess`, a PHP core interface. A
-container you can write into cannot be covariant in what it holds.
+Because `TKey` is invariant in the framework, and the stubs keep it that way.
+`Collection` has `put()`, `offsetSet()` and `keyBy()`, all of which *take* a key,
+so a collection cannot promise to be covariant in what it is keyed by.
 
-The framework does declare `@template-covariant TValue`, which is why this reads
-like something the extension took away. Nothing enforces that annotation against
-the framework's own source, so it ships as an unverified claim rather than a
-working one. Stub files *are* validated, so the same annotation fails the moment
-it moves into a stub---and it fails as `generics.variance`, which cannot be
-ignored or baselined. The stubs are not stricter by choice; a stub is simply the
-first place the claim gets checked.
+`TValue` is a different story. The framework declares it covariant, the stubs
+match that, and a `Collection<int, string>` is accepted where a
+`Collection<int, string|null>` is annotated. Writes such as `push()` are still
+checked against the value type, which is not strictly sound for a covariant
+template, but it is what the framework promises and what every codebase relies
+on.
 
-Use `covariant` at your annotations, as above.
+For keys, use `covariant` at your annotations, as above.
 
 ## Why did a new release start reporting errors?
 

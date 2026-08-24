@@ -4,7 +4,7 @@ namespace Illuminate\Support;
 
 /**
  * @template TKey of array-key
- * @template TValue
+ * @template-covariant TValue
  *
  * @extends \IteratorAggregate<TKey, TValue>
  * @extends \Illuminate\Contracts\Support\Arrayable<TKey, TValue>
@@ -14,7 +14,9 @@ interface Enumerable extends \Countable, \IteratorAggregate, \JsonSerializable, 
     /**
      * Search the collection for a given value and return the corresponding key if successful.
      *
-     * @param  TValue|callable(TValue,TKey): bool  $value
+     * @template TSearch
+     *
+     * @param  TSearch|callable(TValue,TKey): bool  $value
      * @param  bool  $strict
      * @return (TKey is int ? int|false : string|false)
      */

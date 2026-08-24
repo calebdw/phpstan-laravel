@@ -46,40 +46,40 @@ properly rather than hiding it:
 $users->groupBy->email; // Collection<string, Collection<int, User>>
 ```
 
-## Collection value types are invariant
+## Collection keys are invariant
 
-`Collection` declares `TValue` invariantly, so a collection of a narrower value
-type is not accepted where a wider one is annotated, even though reading from it
-would be perfectly safe:
+`Collection` declares `TKey` invariantly, so a collection whose keys resolve to
+constants is not accepted where a wider key type is annotated, even though
+reading from it would be perfectly safe:
 
 ```php
-/** @param Collection<int, string|null> $values */
-public function accept(Collection $values): void {}
+/** @return Collection<string, self> */
+public static function all(): Collection
+{
+    return collect(self::cases())->keyBy(fn (self $case): string => $case->name);
+}
 ```
 
-The error is easy to misread, because PHPStan prints the widened description on
-both sides and the two types look identical. The `Tip` about `TValue` not being
-covariant is the only part that tells you what happened. If you find yourself
-suspecting a broken return type extension, check for that line first.
+The keys resolve to `'Draft'|'Published'`, which is not `string` for an
+invariant template.
 
 The fix is use-site variance, not an ignore:
 
 ```php
-/** @param Collection<int, covariant string|null> $values */
+/** @return Collection<covariant string, self> */
 ```
 
-`covariant` on a parameter says you only read from the collection. Prefer it to
-suppressing `argument.type`, which would hide real mismatches in the same
-signature. For keys, `array-key` does the same job, being a benevolent union;
+`covariant` says the caller only reads from the collection. Prefer it to
+suppressing `return.type`, which would hide real mismatches in the same
+signature. `array-key` does the same job for free, being a benevolent union;
 a plain `int|string` does not, since it is matched invariantly.
 
-This is a genuine limit rather than a missing feature. `Collection::push()`,
-`put()`, `prepend()`, `add()` and `offsetSet()` all take a `TValue`, so the
-collection consumes its own value type and cannot be covariant in it. The
-framework annotates it as covariant anyway, but nothing enforces that annotation
-against the framework's own source---see
-[the FAQ](faq.md#why-is-a-collections-value-type-invariant) for why the stubs
-cannot repeat it.
+Put the annotation on the interface too, if the method is declared in one.
+Otherwise every implementation reports `method.childReturnType` instead, and the
+error moves rather than going away.
+
+`TValue` needs none of this: the stubs declare it covariant, the same as the
+framework.
 
 ## Macros
 
