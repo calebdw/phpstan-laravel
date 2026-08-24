@@ -44,7 +44,9 @@ final class ArrKeyByExtension implements DynamicStaticMethodReturnTypeExtension
         $valueType = $scope->getType($arrayArg->value)->getIterableValueType();
 
         return new ArrayType(
-            $this->columnHelper->getKeyType($valueType, $keyByArg, $scope),
+            $this->columnHelper->normalizeKey(
+                $this->columnHelper->getKeyType($valueType, $keyByArg, $scope),
+            ),
             $valueType,
         );
     }

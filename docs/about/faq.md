@@ -67,6 +67,22 @@ application to boot, and set
 package ships config files. See [analysing a
 package](../getting-started/packages.md).
 
+## My grouped collection annotation is rejected
+
+`groupBy`, `keyBy` and `pluck` resolve keys precisely, so grouping by an enum's
+value gives `Collection<10|20, ...>` rather than `Collection<int, ...>`. Since
+`Collection` declares its templates invariantly, ask for the general type at the
+annotation:
+
+```php
+/** @return Collection<covariant int, Collection<int, Item>> */
+```
+
+`array-key` works too, being a benevolent union. A plain `int|string` does not,
+because it is matched invariantly and accepts neither side. See [precision, and
+widening it where you want
+it](../guide/collections.md#precision-and-widening-it-where-you-want-it).
+
 ## Why did a new release start reporting errors?
 
 Because inference improved. That is not treated as a breaking change here, for

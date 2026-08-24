@@ -23,8 +23,8 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\UnionType;
 use PHPStan\Type\TypeCombinator;
-use Stringable;
 use Throwable;
 use UnitEnum;
 
@@ -48,7 +48,7 @@ final class ColumnHelper
         $keyType   ??= new BenevolentUnionType([new IntegerType(), new StringType()]);
         $valueType ??= new MixedType();
 
-        return new ArrayType($keyType, $valueType);
+        return new ArrayType($this->normalizeKey($keyType), $valueType);
     }
 
     public function getCollectionType(
@@ -77,10 +77,8 @@ final class ColumnHelper
     }
 
     /**
-     * groupBy() casts a group key before using it as an array key: a bool
-     * becomes an int, an enum goes through enum_value(), and a Stringable or
-     * null is stringified. A grouper returning an array files its item under
-     * each of that array's values.
+     * groupBy() needs one extra step: a grouper returning an array files its
+     * item under each of that array's values.
      */
     public function normalizeGroupKey(Type $type): Type
     {
@@ -88,28 +86,47 @@ final class ColumnHelper
             $type = $type->getIterableValueType();
         }
 
-        return match (true) {
-            $type->isBoolean()->yes() => new IntegerType(),
-            (new ObjectType(UnitEnum::class))->isSuperTypeOf($type)->yes()
-                => new BenevolentUnionType([new IntegerType(), new StringType()]),
-            $type->isNull()->yes() => new StringType(),
-            (new ObjectType(Stringable::class))->isSuperTypeOf($type)->yes() => new StringType(),
-            default => $type,
-        };
+        return $this->normalizeKey($type);
     }
 
     /**
-     * keyBy() casts differently to groupBy(): every object is stringified
-     * rather than only Stringable ones. A bool is left alone there, but PHP
-     * turns it into an int on the way into the array either way.
+     * Casts a resolved key the way PHP does on the way into the array.
+     *
+     * A union is cast member by member, because a nullable column contributes
+     * an empty string rather than a null, and null is not a key at all: left
+     * alone it produces a TKey outside the array-key bound, which PHPStan
+     * then reports as a type not matching itself.
+     *
+     * groupBy() and keyBy() differ in the framework only in that groupBy()
+     * stringifies a Stringable and leaves any other object alone. That branch
+     * is unreachable in code that is not already broken, since the stubs
+     * restrict a grouper to int|string|Stringable|UnitEnum and a keyBy
+     * callback to int|string, so keyBy()'s rule serves for both and avoids
+     * propagating an object as a key type.
      */
     public function normalizeKey(Type $type): Type
+    {
+        if ($type instanceof BenevolentUnionType) {
+            return $type;
+        }
+
+        if ($type instanceof UnionType) {
+            return TypeCombinator::union(...array_map(
+                fn (Type $member): Type => $this->castKey($member),
+                $type->getTypes(),
+            ));
+        }
+
+        return $this->castKey($type);
+    }
+
+    private function castKey(Type $type): Type
     {
         return match (true) {
             $type->isBoolean()->yes() => new IntegerType(),
             (new ObjectType(UnitEnum::class))->isSuperTypeOf($type)->yes()
                 => new BenevolentUnionType([new IntegerType(), new StringType()]),
-            $type->isNull()->yes() => new StringType(),
+            $type->isNull()->yes() => new ConstantStringType(''),
             $type->isObject()->yes() => new StringType(),
             default => $type,
         };

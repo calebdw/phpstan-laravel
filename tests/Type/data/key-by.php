@@ -52,3 +52,32 @@ function test(
     assertType('array<int, App\User>', Arr::keyBy($userArray, fn ($u) => $u->id));
     assertType('array<string, array{user: array{id: int, name: string}}>', Arr::keyBy($list, 'user.name'));
 }
+
+/**
+ * PHP casts a null key to an empty string on the way into the array, so a
+ * nullable column contributes '' rather than null. Leaving the null in place
+ * produces a TKey outside the array-key bound, which PHPStan then reports as
+ * a type not matching itself.
+ *
+ * @param  Collection<int, array{id: int, parent_id: int|null}>  $rows
+ */
+function testNullableKey(Collection $rows): void
+{
+    assertType("Illuminate\\Support\\Collection<''|int, array{id: int, parent_id: int|null}>", $rows->keyBy('parent_id'));
+    assertType('Illuminate\\Support\\Collection<int, array{id: int, parent_id: int|null}>', $rows->keyBy('id'));
+
+    // Grouping casts the same way.
+    assertType("Illuminate\\Support\\Collection<''|int, Illuminate\\Support\\Collection<int, array{id: int, parent_id: int|null}>>", $rows->groupBy('parent_id'));
+}
+
+/**
+ * The array helpers cast identically, since the reason is PHP's array keys
+ * rather than anything Collection does.
+ *
+ * @param  list<array{id: int, parent_id: int|null}>  $rows
+ */
+function testNullableKeyOnArrays(array $rows): void
+{
+    assertType("array<''|int, array{id: int, parent_id: int|null}>", Arr::keyBy($rows, 'parent_id'));
+    assertType("array<''|int, int>", Arr::pluck($rows, 'id', 'parent_id'));
+}
