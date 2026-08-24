@@ -12,6 +12,7 @@ nav = [
   { "Home" = "index.md" },
   { "Getting started" = [
     { "Installation" = "getting-started/installation.md" },
+    { "Migrating from Larastan" = "migrating-from-larastan.md" },
     { "Configuration" = "getting-started/configuration.md" },
     { "Analysing a package" = "getting-started/packages.md" },
   ]},
@@ -36,7 +37,6 @@ nav = [
     { "Configuration options" = "reference/configuration.md" },
     { "Error identifiers" = "reference/identifiers.md" },
   ]},
-  { "Migrating from Larastan" = "migrating-from-larastan.md" },
   { "About" = [
     { "FAQ" = "about/faq.md" },
     { "Troubleshooting" = "about/troubleshooting.md" },

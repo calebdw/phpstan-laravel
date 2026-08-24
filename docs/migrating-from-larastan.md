@@ -4,6 +4,12 @@ This package started life as a fork of [larastan/larastan][larastan] and carries
 analysis features, rules, and stubs. It has since been renamed and split off as its own
 package, so migrating takes a handful of mechanical changes.
 
+!!! tip "Looking for what you gain by it?"
+
+    This page is the mechanics: what to rename and what to remove. [Differences
+    from Larastan](about/differences-from-larastan.md) is the other half, what
+    the analysis actually understands that it did not before.
+
 ## Requirements
 
 | | Larastan 3.x | This package |
