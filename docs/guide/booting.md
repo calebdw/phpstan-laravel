@@ -16,24 +16,47 @@ Booting is the same sequence `php artisan` performs before it runs a command:
 - package discovery, so providers from your dependencies are registered too
 - the alias loader, config repository, view finder and container bindings
 
-That is where the analysis gets its answers, and it is the whole of what runs.
+It does not stop at the providers, and that is the part worth knowing. Anything
+a provider resolves from the container is **constructed**, and so is everything
+that class asks for in its own constructor, and so on down. A provider that
+resolves one service can run a dozen constructors it never names.
+
+Console commands are constructed as well, all of them, along with whatever they
+inject. This extension builds the console application so it can check
+`$this->argument()` and `$this->option()` against the signature each command is
+registered with, and building it instantiates every command:
+
+```php
+final class ImportCommand extends Command
+{
+    protected $signature = 'import:run {file}';
+
+    // Runs during analysis, and so does Importer's constructor.
+    public function __construct(private Importer $importer)
+    {
+        parent::__construct();
+    }
+}
+```
 
 ## What does not
 
-Your own code is read, not executed. Controllers, jobs, listeners, commands,
-queries and views are parsed as source. No route is dispatched, no query is
-sent, nothing is queued.
+Controllers are **not** constructed. A route stores the class name and the
+method to call, so registering one touches nothing. The same holds for jobs,
+listeners, form requests and middleware: none are built until something
+dispatches to them, and nothing dispatches during analysis.
 
-The database is never contacted either. Columns come from reading migration
-files and schema dumps as text, so analysis works with no database available.
+No route is handled, no query is sent, nothing is queued. The database is never
+contacted either, since columns come from reading migration files and schema
+dumps as text, so analysis works with no database available.
 
 ## What to watch out for
 
 The consequence is that **anything your providers do on boot, they do on every
 analysis run**. Usually that is nothing of consequence. Occasionally it is not.
 
-Things worth keeping out of `register()` and `boot()`, and out of the
-constructor of anything resolved during boot:
+Things worth keeping out of `register()` and `boot()`, out of a command's
+constructor, and out of the constructor of anything either of those resolves:
 
 - **Writing.** Creating files or directories, touching a cache, writing a log
   that ends up in your repository, running migrations.
@@ -46,9 +69,9 @@ constructor of anything resolved during boot:
 - **Anything that assumes a request.** There is no request, no session and no
   authenticated user during analysis.
 
-A constructor is the easy one to miss. If a class is resolved from the
-container while a provider boots, its constructor runs, and a constructor that
-opens a connection or reads a file is doing that on every analysis:
+The constructor is the easy one to miss, because nothing in the provider or the
+command mentions the class doing the work. It only has to be reachable through a
+constructor argument:
 
 ```php
 final class ReportBuilder

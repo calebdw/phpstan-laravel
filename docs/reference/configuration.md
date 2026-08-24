@@ -399,7 +399,7 @@ scanner cannot follow, the gap surfaces as a false positive rather than as
 silence, which is why it is off by default. Point
 [`migrationDirectories`](#migrationdirectories) and
 [`schemaDirectories`](#schemadirectories) at the right places before enabling
-it. [Rules](../guide/model-properties.md#checking-property-names) has a worked example.
+it. [Checking column names](../guide/model-properties.md#checking-column-names) has a worked example.
 
 ## `strictContracts`
 

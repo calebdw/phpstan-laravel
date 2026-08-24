@@ -28,17 +28,11 @@ directories. Enabling
 checks property *names* passed to methods, catching typos in things like
 `User::create([...])`.
 
-## Checking property names
+## Checking column names
 
-This one is not a rule. Enabling the option activates the
-[`model-property`](../guide/custom-types.md) type, and the mismatches are then reported
-by PHPStan's ordinary argument checks, which is why the errors carry core
-identifiers rather than a `laravel.*` one.
-
-Every argument typed `model-property` is checked against the model's columns,
-and an argument naming a column the model does not have is reported.
-
-### Configuration
+Resolving the columns tells you the *type* of `$user->email`. Turning on
+`modelPropertyType` also checks the column *names* you pass to methods, so a
+typo is caught where it is written:
 
 ```neon
 parameters:
@@ -46,48 +40,39 @@ parameters:
         modelPropertyType: true
 ```
 
-Whether it is accurate depends on how completely your columns were resolved.
-Where migrations or schema dumps are missing, or a table is built in a way the
-scanner cannot follow, the gap surfaces as a false positive rather than as
-silence, which is why it is off by default. Point
-[`migrationDirectories`](../reference/configuration.md#migrationdirectories) and
-[`schemaDirectories`](../reference/configuration.md#schemadirectories) at the
-right places before enabling it.
-
-### Basic example
-
 ```php
 User::create([
     'name' => 'John Doe',
-    'emaiil' => 'john@example.test'
+    'emaiil' => 'john@example.test',
 ]);
+// Property 'emaiil' does not exist in App\User model.
 ```
 
-Here we have a typo in `email` column. So if we run analysis on this file this extension will generate the following error:
+Laravel's own methods that expect a column are annotated for you, so this
+applies across the query builder, relations and mass assignment without any
+work. You can annotate your own the same way:
 
-```
-Property 'emaiil' does not exist in App\User model.
-```
-
-This check will be done automatically on Laravel's core methods where a property is expected. But you can also typehint the `model-property` in your own code to take advantage of this analysis.
-
-You can define a function like this:
 ```php
-/**
- * @phpstan-param model-property<\App\User> $property
- */
-function takesOnlyUserModelProperties(string $property)
+/** @param model-property<\App\User> $column */
+function sortBy(string $column): void
 {
     // ...
 }
+
+sortBy('emaiil');  // Property 'emaiil' does not exist in App\User model.
 ```
 
-And if you call the function above with a property that does not exist in User model, this extension will warn you about it.
+It is a type rather than a rule, which is why it has no `laravel.` identifier:
+the option activates [`model-property`](custom-types.md), and PHPStan's ordinary
+argument checks do the reporting, under identifiers like `argument.type`.
 
-```php
-// Property 'emaiil' does not exist in App\User model.
-takesOnlyUserModelProperties('emaiil');
-```
+How accurate it is depends on how completely your columns resolved. Where
+migrations or schema dumps are missing, or a table is built in a way the scanner
+cannot follow, the gap surfaces as a false positive rather than as silence,
+which is why it is off by default. Confirm `$user->email` already resolves, and
+point [`migrationDirectories`](../reference/configuration.md#migrationdirectories)
+and [`schemaDirectories`](../reference/configuration.md#schemadirectories) at the
+right places, before turning it on.
 
 ## Accessors and mutators
 

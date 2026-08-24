@@ -46,15 +46,24 @@ Config::string('auth.defaults.guard');  // string
 User::create(['emial' => '...']);       // Property 'emial' does not exist
 ```
 
-It also ships a set of Laravel-specific rules for mistakes the framework will
-happily let you make at runtime.
+None of that comes from annotations you write. Columns are read from your
+migrations and schema dumps, per connection. Relation types come from the return
+types you already declare. Config shapes come from your own config files. Casts,
+appends and dates are read from a real model instance, so whatever a trait
+contributes is understood too, including traits from packages you did not write.
 
-## Installation & Documentation
+On top of the inference it ships rules for the mistakes Laravel will happily let
+you make at runtime: dispatching a job with arguments its constructor will not
+accept, reading a console option the command never defined, `Model::make()`,
+`env()` outside your config, a deferrable provider missing `provides()`, a
+`$appends` entry that resolves to nothing. Each has its own error identifier, so
+you can adopt them one at a time.
 
-Everything is at **[phpstan-laravel.dev][docs]**: installation and
-configuration, what the extension understands about your code, every rule with
-its examples and defaults, every option and error identifier, how to analyse a
-package, and why you might switch from Larastan and how to do it.
+It works at every PHPStan level, on applications and on packages.
+
+Everything else is at **[phpstan-laravel.dev][docs]**: installation,
+configuration, every rule, every option and identifier, and the guide for moving
+over from Larastan.
 
 ## Contributing
 

@@ -7,11 +7,13 @@ way to know what your container is bound to, what your config actually contains
 and where your views live. It is the same thing `php artisan` does before it
 runs a command.
 
-It does not execute your controllers, jobs or queries. Nothing is analysed by
-running it.
+It does not handle a request or run a query. Controllers, jobs and listeners are
+never constructed.
 
-What that means for your service providers, and how to guard work that must not
-repeat, is in [booting your application](../guide/booting.md).
+Some of your code does run, though: every service provider, anything those
+providers resolve, and every console command, each with its constructor
+dependencies. [Booting your application](../guide/booting.md) covers what that
+means and how to guard work that must not repeat.
 
 ## Can I stop something running during analysis?
 

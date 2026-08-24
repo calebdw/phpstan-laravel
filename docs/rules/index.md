@@ -58,16 +58,6 @@ the gap shows up as a false positive rather than as silence.
 | [Unused view](views-and-translations.md#unused-view) | `laravel.unusedView` | scan can be incomplete |
 | [Missing translation](views-and-translations.md#missing-translation) | `laravel.missingTranslation` | scan can be incomplete |
 
-## Not a rule
-
-[Checking column names](../guide/model-properties.md#checking-property-names)
-looks like a rule and is often described as one, but it is a type. Enabling
-[`modelPropertyType`](../reference/configuration.md#modelpropertytype)
-activates `model-property<Model>`, after which PHPStan's ordinary argument
-checks do the reporting, so the errors carry core identifiers such as
-`argument.type` rather than a `laravel.` one.
-
-
 ## Ignoring
 
 Prefer ignoring [by identifier][identifiers] over ignoring by message or by
