@@ -510,6 +510,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guide/macros/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Macros
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guide/model-properties/" class="md-nav__link">
         
   
@@ -1500,12 +1527,10 @@ against the framework's own source&mdash;see
 <a href="../faq/#why-is-a-collections-value-type-invariant">the FAQ</a> for why the stubs
 cannot repeat it.</p>
 <h2 id="macros">Macros<a class="headerlink" href="#macros" title="Permanent link">&para;</a></h2>
-<p>Macros registered at runtime are found by booting the application, so a macro
-registered in a service provider is understood. One registered somewhere that
-does not run during boot, such as inside a test helper or behind a conditional,
-is not, and calls to it are reported as undefined methods.</p>
-<p>Declaring the macro on the class with <code>@method</code> is the fix, since it documents
-the API for humans and editors at the same time.</p>
+<p>Macros registered while the application boots are discovered automatically. A
+registration that does not run during analysis needs an <code>@method</code> annotation.
+The <a href="../../guide/macros/">macros guide</a> covers discovery, static and instance
+macros, and classes whose macros have a static-facing API.</p>
 <h2 id="models-without-resolvable-columns">Models without resolvable columns<a class="headerlink" href="#models-without-resolvable-columns" title="Permanent link">&para;</a></h2>
 <p>A model whose table this extension cannot see, because the table belongs to
 another service or is created outside migrations, will have every column
