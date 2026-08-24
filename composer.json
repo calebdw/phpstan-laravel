@@ -2,7 +2,12 @@
   "name": "calebdw/phpstan-laravel",
   "type": "phpstan-extension",
   "description": "A PHPStan extension for analysis of Laravel applications and packages.",
-  "homepage": "https://github.com/calebdw/phpstan-laravel",
+  "homepage": "https://phpstan-laravel.dev",
+  "support": {
+    "docs": "https://phpstan-laravel.dev",
+    "issues": "https://github.com/calebdw/phpstan-laravel/issues",
+    "source": "https://github.com/calebdw/phpstan-laravel"
+  },
   "keywords": [
     "laravel",
     "phpstan",
