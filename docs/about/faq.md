@@ -57,8 +57,9 @@ shows up as a false positive rather than as silence. Turning it on for a project
 whose migrations are not fully visible produces a wall of errors about columns
 that exist.
 
-It is still the option most worth turning on. Point the path options at the
-right places, confirm your properties resolve, then enable it.
+Point the path options at the right places and confirm your properties resolve
+first. If `$user->email` already gives `string`, the scan found your table and
+the check has something accurate to work from.
 
 ## Do I have to annotate my relations?
 

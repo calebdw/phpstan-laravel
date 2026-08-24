@@ -31,12 +31,11 @@ Unexpected item 'parameters › laravel › rules › modelMakeTypo',
 did you mean 'modelMake'?
 ```
 
-## The one option worth turning on
+## Checking column names
 
-`modelPropertyType` is the highest-value option and the one people most
-often never notice. It checks arguments that name a column against the columns
-resolved from your migrations, which catches this throughout Laravel's own
-methods with no annotations of your own:
+`modelPropertyType` checks arguments that name a column against the columns
+resolved from your migrations, throughout Laravel's own methods and with no
+annotations of your own:
 
 ```php
 User::create(['name' => 'John', 'emaiil' => 'john@example.test']);
@@ -49,12 +48,18 @@ parameters:
         modelPropertyType: true
 ```
 
-It is off by default for one reason: it is only as accurate as that resolved
-column list. If migrations live somewhere unusual, or a table is built in a way
-the scanner cannot follow, the result is false positives rather than silence.
-Point [`migrationDirectories`](../reference/configuration.md#migrationdirectories)
-and [`schemaDirectories`](../reference/configuration.md#schemadirectories) at
-the right places first.
+It is off by default because it is only as accurate as that resolved column
+list. Where migrations live somewhere unusual, or a table is built in a way the
+scanner cannot follow, the gap surfaces as a false positive rather than as
+silence, and on an established codebase that can be a lot of them at once.
+
+So confirm your columns resolve before switching it on. If `$user->email` gives
+`string` rather than an undefined-property error, the scan found your table; if
+it did not, point
+[`migrationDirectories`](../reference/configuration.md#migrationdirectories) and
+[`schemaDirectories`](../reference/configuration.md#schemadirectories) at the
+right places first. Turning it on before that is the fastest way to a baseline
+you did not need.
 
 It is not a rule, which is why it sits directly under `laravel:`. It activates
 the [`model-property`](../guide/custom-types.md) type, and the mismatches are

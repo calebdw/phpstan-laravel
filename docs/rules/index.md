@@ -67,7 +67,6 @@ activates `model-property<Model>`, after which PHPStan's ordinary argument
 checks do the reporting, so the errors carry core identifiers such as
 `argument.type` rather than a `laravel.` one.
 
-It is worth turning on anyway. It is the single highest-value option here.
 
 ## Ignoring
 

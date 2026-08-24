@@ -91,10 +91,9 @@ include and for projects that use squashed schema dumps.
 
     ---
 
-    [Installation](getting-started/installation.md) then
-    [configuration](getting-started/configuration.md). If you only turn on one
-    thing, make it
-    [`modelPropertyType`](reference/configuration.md#modelpropertytype).
+    [Installation](getting-started/installation.md), then
+    [configuration](getting-started/configuration.md). Start at level 0 and
+    work up; most of what this extension knows needs no configuration at all.
 
 - **Coming from Larastan**
 
