@@ -94,7 +94,7 @@ include and for projects that use squashed schema dumps.
     [Installation](getting-started/installation.md) then
     [configuration](getting-started/configuration.md). If you only turn on one
     thing, make it
-    [`checkModelProperties`](reference/configuration.md#checkmodelproperties).
+    [`modelPropertyType`](reference/configuration.md#modelpropertytype).
 
 -   **Coming from Larastan**
 

@@ -50,7 +50,7 @@ Adding a `@property` annotation is the correct fix for cases the scanner
 genuinely cannot reach, such as a view or a table owned by another service.
 Reach for it after ruling out the first item, not before.
 
-## Why is `checkModelProperties` off by default?
+## Why is `modelPropertyType` off by default?
 
 Because it is only as good as the resolved column list, and a gap in that list
 shows up as a false positive rather than as silence. Turning it on for a project

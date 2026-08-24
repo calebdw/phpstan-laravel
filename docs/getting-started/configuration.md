@@ -11,7 +11,7 @@ parameters:
         - app
 
     laravel:
-        checkModelProperties: true
+        modelPropertyType: true
         viewDirectories:
             - resources/views
         rules:
@@ -33,7 +33,7 @@ did you mean 'modelMake'?
 
 ## The one option worth turning on
 
-`checkModelProperties` is the highest-value option and the one people most
+`modelPropertyType` is the highest-value option and the one people most
 often never notice. It checks arguments that name a column against the columns
 resolved from your migrations, which catches this throughout Laravel's own
 methods with no annotations of your own:
@@ -46,7 +46,7 @@ User::create(['name' => 'John', 'emaiil' => 'john@example.test']);
 ```neon
 parameters:
     laravel:
-        checkModelProperties: true
+        modelPropertyType: true
 ```
 
 It is off by default for one reason: it is only as accurate as that resolved

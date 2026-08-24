@@ -6,7 +6,7 @@ PHPStan configuration:
 ```neon
 parameters:
     laravel:
-        checkModelProperties: true
+        modelPropertyType: true
         rules:
             unusedView: true
 ```
@@ -374,7 +374,7 @@ Paths may be absolute or relative to the PHPStan config file that declares
 them. Unlike the migration and schema options, these are plain directories —
 `glob` wildcards are not expanded.
 
-## `checkModelProperties`
+## `modelPropertyType`
 
 **default**: `false`
 
@@ -384,7 +384,7 @@ actual columns, so a typo is caught where it is written rather than at runtime.
 ```neon
 parameters:
     laravel:
-        checkModelProperties: true
+        modelPropertyType: true
 ```
 
 This is not a rule and has no identifier of its own. It activates the

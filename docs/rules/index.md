@@ -62,7 +62,7 @@ the gap shows up as a false positive rather than as silence.
 
 [Checking column names](../guide/model-properties.md#checking-property-names)
 looks like a rule and is often described as one, but it is a type. Enabling
-[`checkModelProperties`](../reference/configuration.md#checkmodelproperties)
+[`modelPropertyType`](../reference/configuration.md#modelpropertytype)
 activates `model-property<Model>`, after which PHPStan's ordinary argument
 checks do the reporting, so the errors carry core identifiers such as
 `argument.type` rather than a `laravel.` one.

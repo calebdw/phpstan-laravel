@@ -61,7 +61,7 @@ the API for humans and editors at the same time.
 A model whose table this extension cannot see, because the table belongs to
 another service or is created outside migrations, will have every column
 reported as missing once
-[`checkModelProperties`](../reference/configuration.md#checkmodelproperties) is
+[`modelPropertyType`](../reference/configuration.md#modelpropertytype) is
 on. Annotate those models with `@property` and they behave normally.
 
 ## Analysis is quiet on a package

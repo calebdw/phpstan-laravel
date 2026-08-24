@@ -117,7 +117,7 @@ parameters:
 If your package defines models against tables owned by the host application,
 there is nothing to scan and no way for the extension to know those columns.
 Annotate those models with `@property` and leave
-[`checkModelProperties`](../reference/configuration.md#checkmodelproperties)
+[`modelPropertyType`](../reference/configuration.md#modelpropertytype)
 off, since every column would otherwise be reported as missing.
 
 <!-- links -->

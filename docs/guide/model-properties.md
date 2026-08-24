@@ -24,7 +24,7 @@ Where migrations live somewhere unconventional, or a table is built in a way the
 scanner cannot follow, point the
 [path options](../reference/configuration.md#migrationdirectories) at the right
 directories. Enabling
-[`checkModelProperties`](../reference/configuration.md#checkmodelproperties) then
+[`modelPropertyType`](../reference/configuration.md#modelpropertytype) then
 checks property *names* passed to methods, catching typos in things like
 `User::create([...])`.
 
@@ -43,7 +43,7 @@ and an argument naming a column the model does not have is reported.
 ```neon
 parameters:
     laravel:
-        checkModelProperties: true
+        modelPropertyType: true
 ```
 
 Whether it is accurate depends on how completely your columns were resolved.

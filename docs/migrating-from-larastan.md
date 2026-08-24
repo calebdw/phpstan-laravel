@@ -57,12 +57,12 @@ sit one level deeper again, under `laravel.rules:`.
      level: 8
      paths:
          - app
--    checkModelProperties: true
+-    modelPropertyType: true
 -    checkUnusedViews: true
 -    viewDirectories:
 -        - resources/views
 +    laravel:
-+        checkModelProperties: true
++        modelPropertyType: true
 +        viewDirectories:
 +            - resources/views
 +        rules:
@@ -122,9 +122,19 @@ are now one structure:
 +                except: ['contains']
 ```
 
-`checkModelProperties` stays where it is, directly under `laravel:`. It is not a rule: it
-activates the `model-property` type, and the mismatches are then reported by PHPStan's own
-argument checks.
+`checkModelProperties` is renamed to `modelPropertyType`, and stays directly under
+`laravel:` rather than moving under `rules:`:
+
+```diff
+ parameters:
+     laravel:
+-        checkModelProperties: true
++        modelPropertyType: true
+```
+
+It is not a rule, which the old name implied and the new one does not. It switches on the
+[`model-property`](guide/custom-types.md) type, and the mismatches are then reported by
+PHPStan's own argument checks, so they carry core identifiers rather than a `laravel.` one.
 
 ### Directory and scanning options
 

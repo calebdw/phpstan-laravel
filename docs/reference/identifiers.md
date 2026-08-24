@@ -55,7 +55,7 @@ separately from the same check elsewhere in your code:
 
 | What | Identifier |
 | --- | --- |
-| A column name that does not exist, via [`checkModelProperties`](configuration.md#checkmodelproperties) | `argument.type` |
+| A column name that does not exist, via [`modelPropertyType`](configuration.md#modelpropertytype) | `argument.type` |
 | A Blade view that does not exist, via `view-string` | `argument.type` |
 | A property that is not a resolved column or accessor | `property.notFound` |
 | Too few or too many arguments to a dispatched job or event | `arguments.count` |

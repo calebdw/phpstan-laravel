@@ -80,14 +80,14 @@ parameters:
     paths:
         - app
     laravel:
-        checkModelProperties: true
+        modelPropertyType: true
         rules:
             unusedView: true
 ```
 
 Options worth knowing:
 
-- `checkModelProperties` (off) verifies property names against the columns
+- `modelPropertyType` (off) verifies property names against the columns
   resolved from migrations. The highest-value option, off by default only
   because it depends on that column list being complete. It is not a rule, so
   it does not live under `rules`.

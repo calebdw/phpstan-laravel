@@ -181,7 +181,7 @@ class IntegrationTest extends PHPStanTestCase
     public static function getAdditionalConfigFiles(): array
     {
         return [
-            __DIR__ . '/../Type/data/config-check-model-properties.neon',
+            __DIR__ . '/../Type/data/config-model-property-type.neon',
         ];
     }
 }
