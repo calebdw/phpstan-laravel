@@ -1,19 +1,5 @@
-/* Typographic hero on the landing page, in place of a logo. */
-.md-typeset .hero-tagline {
-  font-size: 1.35rem;
-  font-weight: 300;
-  line-height: 1.4;
-  margin: -0.4rem 0 1.4rem;
-  color: var(--md-default-fg-color--light);
-}
-
-.md-typeset .hero-tagline strong {
-  font-weight: 500;
-  color: var(--md-default-fg-color);
-}
-
-/* The landing page leads with the project name; a second H1-sized heading
-   above the fold competes with it. */
+/* The landing page heading is the tagline, so it wants to read as a line of
+   prose rather than as a title. */
 .md-typeset h1 {
   font-weight: 300;
   letter-spacing: -0.02em;

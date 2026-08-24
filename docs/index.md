@@ -2,11 +2,7 @@
   ![phpstan-laravel](assets/phpstan-laravel.webp){ width="280" }
 </p>
 
-# phpstan-laravel
-
-<p class="hero-tagline" markdown>
-**Teaching PHPStan about Laravel's magic.**
-</p>
+# Teaching PHPStan about Laravel's magic
 
 Laravel leans on magic: facades, container bindings, dynamic Eloquent
 properties, method forwarding, macros. A static analyser sees almost none of it

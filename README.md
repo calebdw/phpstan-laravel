@@ -2,8 +2,6 @@
   <img src="art/phpstan-laravel.webp" alt="phpstan-laravel" width="320">
 </p>
 
-<h1 align="center">phpstan-laravel</h1>
-
 <p align="center">
   <strong>Teaches PHPStan about Laravel's magic</strong>
 </p>
@@ -20,8 +18,6 @@
 <p align="center">
   <a href="https://phpstan-laravel.dev"><strong>phpstan-laravel.dev</strong></a>
 </p>
-
-------
 
 Laravel leans on magic: facades, container bindings, dynamic Eloquent
 properties, method forwarding, macros. A static analyser sees almost none of it
