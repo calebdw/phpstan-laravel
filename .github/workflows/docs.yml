@@ -44,15 +44,19 @@ jobs:
 
       - name: Deploy dev docs
         run: |
-          uv run -- mike deploy --push --update-aliases dev
+          # Until a release exists there is nothing for `latest` to point at,
+          # so the site root 404s and no deep link is stable enough to publish.
+          # Carry `latest` on dev in the meantime. The release job takes the
+          # alias and the default as soon as there is a version to hold them,
+          # and the check is for a released line rather than for `latest`
+          # itself, which dev would otherwise keep reclaiming.
+          released="$(uv run -- mike list --json 2>/dev/null | grep -oE '"version"[[:space:]]*:[[:space:]]*"[0-9]+\.x"' || true)"
 
-          # Until the first release exists there is no `latest`, and with no
-          # default the site root 404s. Point it at `dev` in the meantime; the
-          # release job takes the default back as soon as there is one.
-          # `mike list <identifier>` exits non-zero when the alias is absent,
-          # which also covers gh-pages not existing yet.
-          if ! uv run -- mike list latest >/dev/null 2>&1; then
-            uv run -- mike set-default --push dev
+          if [ -n "$released" ]; then
+            uv run -- mike deploy --push --update-aliases dev
+          else
+            uv run -- mike deploy --push --update-aliases dev latest
+            uv run -- mike set-default --push latest
           fi
 
   # Released docs, published under the major line (1.x, 2.x) and aliased

@@ -46,7 +46,7 @@ Config::string('auth.defaults.guard');  // string
 User::create(['emial' => '...']);       // Property 'emial' does not exist
 ```
 
-It also ships nineteen Laravel-specific rules for mistakes the framework will
+It also ships a set of Laravel-specific rules for mistakes the framework will
 happily let you make at runtime.
 
 ## Install
@@ -56,10 +56,7 @@ composer require --dev calebdw/phpstan-laravel
 ```
 
 With the [PHPStan extension installer][extension-installer] that is the whole
-setup. Requires PHP 8.3+, Laravel 12.67+ or 13.26+, and PHPStan 2.2.2+.
-
-The [documentation][docs] covers the manual include, squashed schema dumps, and
-analysing a package when there is no application to boot.
+setup.
 
 > [!TIP]
 > Coming from Larastan? There is a migration guide in the
@@ -69,9 +66,10 @@ analysing a package when there is no application to boot.
 
 ## Documentation
 
-Everything is at **[phpstan-laravel.dev][docs]**: what the extension
-understands about your code, every rule with its examples and defaults, every
-option and error identifier, and why you might switch from Larastan.
+Everything is at **[phpstan-laravel.dev][docs]**: installation and
+configuration, what the extension understands about your code, every rule with
+its examples and defaults, every option and error identifier, how to analyse a
+package, and why you might switch from Larastan.
 
 ## Contributing
 

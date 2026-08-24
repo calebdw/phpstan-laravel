@@ -57,8 +57,8 @@ Every type above is what the analyser actually reports, not an aspiration.
 
     ---
 
-    Nineteen rules for mistakes the framework will happily let you make at
-    runtime, each behind its own error identifier.
+    Rules for mistakes the framework will happily let you make at runtime,
+    each behind its own error identifier.
 
     [:octicons-arrow-right-24: Rules](rules/index.md)
 

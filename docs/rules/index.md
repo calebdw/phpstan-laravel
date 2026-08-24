@@ -1,7 +1,7 @@
 # Rules
 
-Nineteen rules for mistakes that Laravel will happily let you make at runtime.
-Six are on by default, seven are off, and six always run.
+Rules for mistakes that Laravel will happily let you make at runtime, grouped
+below by what they cover and listed by default at the end.
 
 Each rule is documented with its error identifier, the option that switches it
 on or off, and its default. Toggles live under `laravel.rules` and are named

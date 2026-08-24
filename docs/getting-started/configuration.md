@@ -73,8 +73,7 @@ parameters:
             unusedView: true
 ```
 
-Six rules are on by default, seven are off, and six always run. [Rules](../rules/index.md)
-lists all of them with their defaults.
+[Rules](../rules/index.md) lists every rule with its default.
 
 ## Ignoring errors
 
