@@ -13,10 +13,10 @@
         <link rel="canonical" href="https://phpstan-laravel.dev/dev/migrating-from-larastan/">
       
       
-        <link rel="prev" href="../reference/identifiers/">
+        <link rel="prev" href="../getting-started/installation/">
       
       
-        <link rel="next" href="../about/faq/">
+        <link rel="next" href="../getting-started/configuration/">
       
       
         
@@ -275,18 +275,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -306,7 +308,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -338,6 +340,229 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migrating from Larastan
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Migrating from Larastan
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Requirements
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-swap-the-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        1. Swap the package
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-update-the-include-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        2. Update the include path
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-move-configuration-under-laravel" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3. Move configuration under <code>laravel:</code>
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Move configuration under laravel:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rule-toggles" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Rule toggles
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#directory-and-scanning-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Directory and scanning options
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#four-options-no-longer-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Four options no longer exist
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlparser-only-accepts-the-built-in-drivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <code>sqlParser</code> only accepts the built-in drivers
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one-rule-is-now-on-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        One rule is now on by default
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-error-identifiers-renamed" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        4. Error identifiers renamed
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-install-an-sql-parser-if-you-use-schema-dumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        5. Install an SQL parser if you use schema dumps
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-relative-directory-options-resolve-differently" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        6. Relative directory options resolve differently
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-namespace-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        7. Namespace change
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -969,228 +1194,6 @@
       
   
   
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Migrating from Larastan
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Migrating from Larastan
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Requirements
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1-swap-the-package" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        1. Swap the package
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-update-the-include-path" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        2. Update the include path
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-move-configuration-under-laravel" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        3. Move configuration under <code>laravel:</code>
-      </span>
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Move configuration under laravel:">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#rule-toggles" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Rule toggles
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#directory-and-scanning-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Directory and scanning options
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#four-options-no-longer-exist" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Four options no longer exist
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sqlparser-only-accepts-the-built-in-drivers" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        <code>sqlParser</code> only accepts the built-in drivers
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#one-rule-is-now-on-by-default" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        One rule is now on by default
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-error-identifiers-renamed" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        4. Error identifiers renamed
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-install-an-sql-parser-if-you-use-schema-dumps" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        5. Install an SQL parser if you use schema dumps
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-relative-directory-options-resolve-differently" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        6. Relative directory options resolve differently
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-namespace-change" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        7. Namespace change
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
   
   
     
@@ -1202,10 +1205,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1222,8 +1225,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1563,6 +1566,12 @@
 <p>This package started life as a fork of <a href="https://github.com/larastan/larastan">larastan/larastan</a> and carries the same
 analysis features, rules, and stubs. It has since been renamed and split off as its own
 package, so migrating takes a handful of mechanical changes.</p>
+<div class="admonition tip">
+<p class="admonition-title">Looking for what you gain by it?</p>
+<p>This page is the mechanics: what to rename and what to remove. <a href="../about/differences-from-larastan/">Differences
+from Larastan</a> is the other half, what
+the analysis actually understands that it did not before.</p>
+</div>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
