@@ -7,6 +7,9 @@
         <loc>https://phpstan-laravel.dev/1.x/getting-started/installation/</loc>
       </url>
       <url>
+        <loc>https://phpstan-laravel.dev/1.x/migrating-from-larastan/</loc>
+      </url>
+      <url>
         <loc>https://phpstan-laravel.dev/1.x/getting-started/configuration/</loc>
       </url>
       <url>
@@ -56,9 +59,6 @@
       </url>
       <url>
         <loc>https://phpstan-laravel.dev/1.x/reference/identifiers/</loc>
-      </url>
-      <url>
-        <loc>https://phpstan-laravel.dev/1.x/migrating-from-larastan/</loc>
       </url>
       <url>
         <loc>https://phpstan-laravel.dev/1.x/about/faq/</loc>
