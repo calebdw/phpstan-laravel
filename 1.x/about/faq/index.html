@@ -510,6 +510,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guide/macros/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Macros
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guide/model-properties/" class="md-nav__link">
         
   
@@ -1193,6 +1220,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-collection-is-rejected-when-both-sides-read-the-same" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A collection is rejected when both sides read the same
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-is-a-collections-value-type-invariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Why is a collection's value type invariant?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-did-a-new-release-start-reporting-errors" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1484,6 +1533,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-collection-is-rejected-when-both-sides-read-the-same" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A collection is rejected when both sides read the same
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-is-a-collections-value-type-invariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Why is a collection's value type invariant?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-did-a-new-release-start-reporting-errors" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1648,6 +1719,34 @@ annotation:</p>
 because it is matched invariantly and accepts neither side. See <a href="../../guide/collections/#precision-and-widening-it-where-you-want-it">precision, and
 widening it where you want
 it</a>.</p>
+<h2 id="a-collection-is-rejected-when-both-sides-read-the-same">A collection is rejected when both sides read the same<a class="headerlink" href="#a-collection-is-rejected-when-both-sides-read-the-same" title="Permanent link">&para;</a></h2>
+<p>Something like this, where the expected and the given type print identically:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Parameter #1 $values of method App\Repro::accept() expects
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Illuminate\Support\Collection&lt;int, string|null&gt;,
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>Illuminate\Support\Collection&lt;int, string|null&gt; given.
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    Tip: Template type TValue on class Illuminate\Support\Collection is not covariant.
+</span></code></pre></div>
+<p>The <code>Tip</code> is the whole message. The two types differ in a way the description
+does not show, and because <code>TValue</code> is invariant, differing is enough to fail.
+Ask for the general type at the annotation:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="sd">/** @param Collection&lt;int, covariant string|null&gt; $values */</span>
+</span></code></pre></div>
+<p>That is sound in a way that changing the collection is not: <code>covariant</code> at a
+parameter promises only that you will read from it, and the parameter is the one
+place that can keep the promise.</p>
+<h2 id="why-is-a-collections-value-type-invariant">Why is a collection's value type invariant?<a class="headerlink" href="#why-is-a-collections-value-type-invariant" title="Permanent link">&para;</a></h2>
+<p>Because a collection is not covariant, and the stubs say so. <code>Collection</code> has
+<code>push()</code>, <code>put()</code>, <code>prepend()</code>, <code>add()</code> and <code>offsetSet()</code>, all of which <em>take</em> a
+<code>TValue</code>, and <code>offsetSet()</code> comes from <code>ArrayAccess</code>, a PHP core interface. A
+container you can write into cannot be covariant in what it holds.</p>
+<p>The framework does declare <code>@template-covariant TValue</code>, which is why this reads
+like something the extension took away. Nothing enforces that annotation against
+the framework's own source, so it ships as an unverified claim rather than a
+working one. Stub files <em>are</em> validated, so the same annotation fails the moment
+it moves into a stub&mdash;and it fails as <code>generics.variance</code>, which cannot be
+ignored or baselined. The stubs are not stricter by choice; a stub is simply the
+first place the claim gets checked.</p>
+<p>Use <code>covariant</code> at your annotations, as above.</p>
 <h2 id="why-did-a-new-release-start-reporting-errors">Why did a new release start reporting errors?<a class="headerlink" href="#why-did-a-new-release-start-reporting-errors" title="Permanent link">&para;</a></h2>
 <p>Because inference improved. That is not treated as a breaking change here, for
 reasons set out in <a href="../../about/backward-compatibility/">backward compatibility</a>: a

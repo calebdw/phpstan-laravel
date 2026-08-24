@@ -19,6 +19,9 @@
         <loc>https://phpstan-laravel.dev/1.x/guide/booting/</loc>
       </url>
       <url>
+        <loc>https://phpstan-laravel.dev/1.x/guide/macros/</loc>
+      </url>
+      <url>
         <loc>https://phpstan-laravel.dev/1.x/guide/model-properties/</loc>
       </url>
       <url>

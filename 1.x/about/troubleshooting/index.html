@@ -510,6 +510,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guide/macros/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Macros
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guide/model-properties/" class="md-nav__link">
         
   
@@ -1154,6 +1181,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#collection-value-types-are-invariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Collection value types are invariant
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#macros" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1341,6 +1379,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#collection-value-types-are-invariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Collection value types are invariant
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#macros" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1452,13 +1501,36 @@ properly rather than hiding it:</p>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="sd">/** @var Collection&lt;int, User&gt; $users */</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span> <span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
 </span></code></pre></div>
+<h2 id="collection-value-types-are-invariant">Collection value types are invariant<a class="headerlink" href="#collection-value-types-are-invariant" title="Permanent link">&para;</a></h2>
+<p><code>Collection</code> declares <code>TValue</code> invariantly, so a collection of a narrower value
+type is not accepted where a wider one is annotated, even though reading from it
+would be perfectly safe:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">/** @param Collection&lt;int, string|null&gt; $values */</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">accept</span><span class="p">(</span><span class="nx">Collection</span> <span class="nv">$values</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span> <span class="p">{}</span>
+</span></code></pre></div>
+<p>The error is easy to misread, because PHPStan prints the widened description on
+both sides and the two types look identical. The <code>Tip</code> about <code>TValue</code> not being
+covariant is the only part that tells you what happened. If you find yourself
+suspecting a broken return type extension, check for that line first.</p>
+<p>The fix is use-site variance, not an ignore:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="sd">/** @param Collection&lt;int, covariant string|null&gt; $values */</span>
+</span></code></pre></div>
+<p><code>covariant</code> on a parameter says you only read from the collection. Prefer it to
+suppressing <code>argument.type</code>, which would hide real mismatches in the same
+signature. For keys, <code>array-key</code> does the same job, being a benevolent union;
+a plain <code>int|string</code> does not, since it is matched invariantly.</p>
+<p>This is a genuine limit rather than a missing feature. <code>Collection::push()</code>,
+<code>put()</code>, <code>prepend()</code>, <code>add()</code> and <code>offsetSet()</code> all take a <code>TValue</code>, so the
+collection consumes its own value type and cannot be covariant in it. The
+framework annotates it as covariant anyway, but nothing enforces that annotation
+against the framework's own source&mdash;see
+<a href="../faq/#why-is-a-collections-value-type-invariant">the FAQ</a> for why the stubs
+cannot repeat it.</p>
 <h2 id="macros">Macros<a class="headerlink" href="#macros" title="Permanent link">&para;</a></h2>
-<p>Macros registered at runtime are found by booting the application, so a macro
-registered in a service provider is understood. One registered somewhere that
-does not run during boot, such as inside a test helper or behind a conditional,
-is not, and calls to it are reported as undefined methods.</p>
-<p>Declaring the macro on the class with <code>@method</code> is the fix, since it documents
-the API for humans and editors at the same time.</p>
+<p>Macros registered while the application boots are discovered automatically. A
+registration that does not run during analysis needs an <code>@method</code> annotation.
+The <a href="../../guide/macros/">macros guide</a> covers discovery, static and instance
+macros, and classes whose macros have a static-facing API.</p>
 <h2 id="models-without-resolvable-columns">Models without resolvable columns<a class="headerlink" href="#models-without-resolvable-columns" title="Permanent link">&para;</a></h2>
 <p>A model whose table this extension cannot see, because the table belongs to
 another service or is created outside migrations, will have every column

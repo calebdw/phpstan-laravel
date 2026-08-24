@@ -510,6 +510,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guide/macros/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Macros
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guide/model-properties/" class="md-nav__link">
         
   
@@ -1255,6 +1282,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#staticmacroclasses" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <code>staticMacroClasses</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#modelpropertytype" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1793,6 +1831,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#staticmacroclasses" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <code>staticMacroClasses</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#modelpropertytype" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2210,13 +2259,29 @@ written, so register all of them or leave that rule off.</p>
 <p>Paths may be absolute or relative to the PHPStan config file that declares
 them. Unlike the migration and schema options, these are plain directories —
 <code>glob</code> wildcards are not expanded.</p>
+<h2 id="staticmacroclasses"><code>staticMacroClasses</code><a class="headerlink" href="#staticmacroclasses" title="Permanent link">&para;</a></h2>
+<p><strong>default</strong>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>- Illuminate\Support\Arr
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>- Illuminate\Support\Str
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>- Illuminate\Support\Number
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>- Illuminate\Support\Benchmark
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>- Illuminate\Validation\Rule
+</span></code></pre></div>
+<p>Macros on these classes may be called statically even when registered with a
+non-static closure. Entries apply to subclasses and only affect dynamically
+discovered macros; native instance methods retain normal PHP static-call checks.</p>
+<p>Lists are merged across included NEON files, so adding a class retains these
+defaults. Use <code>staticMacroClasses!</code> to replace the list, or
+<code>staticMacroClasses!: []</code> to remove every default. Facades remain static-facing
+regardless of this option. See the <a href="../../guide/macros/">macros guide</a> for examples
+and the tradeoff involved in adding Eloquent models.</p>
 <h2 id="modelpropertytype"><code>modelPropertyType</code><a class="headerlink" href="#modelpropertytype" title="Permanent link">&para;</a></h2>
 <p><strong>default</strong>: <code>false</code></p>
 <p>Checks string arguments that are meant to name a column against the model's
 actual columns, so a typo is caught where it is written rather than at runtime.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>parameters:
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    laravel:
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>        modelPropertyType: true
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>parameters:
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>    laravel:
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>        modelPropertyType: true
 </span></code></pre></div>
 <p>This is not a rule and has no identifier of its own. It activates the
 <a href="../../guide/custom-types/"><code>model-property</code></a> type, after which the mismatches are
@@ -2246,17 +2311,17 @@ interface FQCN is inferred as itself, so you only get the API you actually asked
 for. Aliases such as <code>resolve('cache')</code> are unaffected and still resolve to their
 concrete implementation, since they are not class strings.</p>
 <h3 id="example_6">Example<a class="headerlink" href="#example_6" title="Permanent link">&para;</a></h3>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">use</span> <span class="nx">Illuminate\Contracts\Config\Repository</span><span class="p">;</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nv">$repository</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
-</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nx">\PHPStan\dumpType</span><span class="p">(</span><span class="nv">$repository</span><span class="p">);</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">use</span> <span class="nx">Illuminate\Contracts\Config\Repository</span><span class="p">;</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nv">$repository</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="nx">\PHPStan\dumpType</span><span class="p">(</span><span class="nv">$repository</span><span class="p">);</span>
 </span></code></pre></div>
 <p>Disabled (the default), this dumps <code>Illuminate\Config\Repository</code>: the concrete
 class bound in the container. Enabled, it dumps
 <code>Illuminate\Contracts\Config\Repository</code>, the interface that was requested.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>parameters:
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>    laravel:
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>        strictContracts: true
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>parameters:
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>    laravel:
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>        strictContracts: true
 </span></code></pre></div>
 
 

@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://phpstan-laravel.dev/1.x/getting-started/packages/">
+        <link rel="canonical" href="https://phpstan-laravel.dev/1.x/guide/macros/">
       
       
-        <link rel="prev" href="../configuration/">
+        <link rel="prev" href="../booting/">
       
       
-        <link rel="next" href="../../guide/booting/">
+        <link rel="next" href="../model-properties/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Analysing a package - phpstan-laravel</title>
+        <title>Macros - phpstan-laravel</title>
       
     
     
@@ -85,7 +85,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#analysing-a-package" class="md-skip">
+        <a href="#macros" class="md-skip">
           Skip to content
         </a>
       
@@ -124,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Analysing a package
+              Macros
             
           </span>
         </div>
@@ -275,20 +275,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -308,7 +306,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -325,7 +323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../../getting-started/installation/" class="md-nav__link">
         
   
   
@@ -379,7 +377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuration/" class="md-nav__link">
+      <a href="../../getting-started/configuration/" class="md-nav__link">
         
   
   
@@ -387,6 +385,114 @@
     
   
   Configuration
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/packages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Analysing a package
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Guide
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Guide
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../booting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Booting your application
 
     
   </span>
@@ -422,7 +528,7 @@
   <span class="md-ellipsis">
     
   
-  Analysing a package
+  Macros
 
     
   </span>
@@ -439,7 +545,7 @@
   <span class="md-ellipsis">
     
   
-  Analysing a package
+  Macros
 
     
   </span>
@@ -465,10 +571,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-the-application-is-found" class="md-nav__link">
+  <a href="#static-and-instance-macros" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        How the application is found
+        Static and instance macros
       </span>
     </span>
   </a>
@@ -476,10 +582,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#registering-your-providers" class="md-nav__link">
+  <a href="#static-facing-classes" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Registering your providers
+        Static-facing classes
       </span>
     </span>
   </a>
@@ -487,21 +593,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-types" class="md-nav__link">
+  <a href="#configuring-exceptions" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Configuration types
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#columns" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Columns
+        Configuring exceptions
       </span>
     </span>
   </a>
@@ -517,58 +612,6 @@
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Guide
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-  Guide
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
               
                 
   
@@ -576,61 +619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/booting/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Booting your application
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../guide/macros/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Macros
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../guide/model-properties/" class="md-nav__link">
+      <a href="../model-properties/" class="md-nav__link">
         
   
   
@@ -657,7 +646,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/eloquent/" class="md-nav__link">
+      <a href="../eloquent/" class="md-nav__link">
         
   
   
@@ -684,7 +673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/relations/" class="md-nav__link">
+      <a href="../relations/" class="md-nav__link">
         
   
   
@@ -711,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/collections/" class="md-nav__link">
+      <a href="../collections/" class="md-nav__link">
         
   
   
@@ -738,7 +727,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/config-types/" class="md-nav__link">
+      <a href="../config-types/" class="md-nav__link">
         
   
   
@@ -765,7 +754,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guide/custom-types/" class="md-nav__link">
+      <a href="../custom-types/" class="md-nav__link">
         
   
   
@@ -1313,10 +1302,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-the-application-is-found" class="md-nav__link">
+  <a href="#static-and-instance-macros" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        How the application is found
+        Static and instance macros
       </span>
     </span>
   </a>
@@ -1324,10 +1313,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#registering-your-providers" class="md-nav__link">
+  <a href="#static-facing-classes" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Registering your providers
+        Static-facing classes
       </span>
     </span>
   </a>
@@ -1335,21 +1324,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-types" class="md-nav__link">
+  <a href="#configuring-exceptions" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Configuration types
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#columns" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Columns
+        Configuring exceptions
       </span>
     </span>
   </a>
@@ -1371,7 +1349,7 @@
                 
                   
   
-    <a href="https://github.com/calebdw/phpstan-laravel/edit/master/docs/getting-started/packages.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/calebdw/phpstan-laravel/edit/master/docs/guide/macros.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
     </a>
@@ -1379,101 +1357,89 @@
   
 
 
-<h1 id="analysing-a-package">Analysing a package<a class="headerlink" href="#analysing-a-package" title="Permanent link">&para;</a></h1>
-<p>Most of what this extension knows comes from booting your application: booting
-registers every service provider, which is how the container, the config
-repository and the view finder come to hold real values. A package has no
-application to boot, so that has to be supplied.</p>
-<h2 id="how-the-application-is-found">How the application is found<a class="headerlink" href="#how-the-application-is-found" title="Permanent link">&para;</a></h2>
-<p>At startup the extension looks for an application in this order:</p>
-<ol>
-<li><code>bootstrap/app.php</code> in the current working directory, which is the normal
-   case when you run PHPStan from an application root.</li>
-<li><code>bootstrap/app.php</code> three directories up, which covers being installed into
-   an application's <code>vendor</code> directory.</li>
-<li>Failing both, a <a href="https://packages.tools/testbench">Testbench</a> application, if Testbench is
-   installed.</li>
-</ol>
-<p>So for a package the requirement is simply:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>orchestra/testbench
+<h1 id="macros">Macros<a class="headerlink" href="#macros" title="Permanent link">&para;</a></h1>
+<p>Laravel stores macros in static properties at runtime. This extension boots the
+application before analysis and reads those properties, so macros registered by
+a service provider are available without a stub or <code>@method</code> annotation:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">final</span> <span class="k">class</span> <span class="nc">AppServiceProvider</span> <span class="k">extends</span> <span class="nx">ServiceProvider</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">{</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">boot</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="p">{</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="nx">Collection</span><span class="o">::</span><span class="na">macro</span><span class="p">(</span><span class="s1">'active'</span><span class="p">,</span> <span class="k">function</span> <span class="p">()</span><span class="o">:</span> <span class="k">static</span> <span class="p">{</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>            <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter</span><span class="o">-&gt;</span><span class="na">active</span><span class="p">;</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="p">});</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="p">}</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">}</span>
 </span></code></pre></div>
-<p>Testbench is a development dependency of your package, not of anything that
-installs it.</p>
-<div class="admonition warning">
-<p class="admonition-title">Without it, inference degrades quietly</p>
-<p>If no application is found and Testbench is not installed, analysis still
-runs. Nothing errors, but every lookup that would have gone to the
-container returns nothing, so <code>config()</code> calls, <code>app()</code> and <code>resolve()</code>
-calls, view names and model metadata all fall back to their widest types.
-The result looks like the extension is doing very little rather than like
-something is wrong. If a package's analysis seems strangely uninformative,
-check that Testbench is installed first.</p>
-</div>
-<h2 id="registering-your-providers">Registering your providers<a class="headerlink" href="#registering-your-providers" title="Permanent link">&para;</a></h2>
-<p>The Testbench application is created with package discovery enabled, so a
-provider declared in your <code>composer.json</code> is registered the same way it would
-be in a real application:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nt">"extra"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">        </span><span class="nt">"laravel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">            </span><span class="nt">"providers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">                </span><span class="s2">"Acme\\Billing\\BillingServiceProvider"</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">            </span><span class="p">]</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="p">}</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">}</span>
+<p>The closure supplies the parameters and return type. In this example PHPStan
+understands <code>$collection-&gt;active()</code> as returning a <code>Collection</code>.</p>
+<p>Registration has to run while the application boots. A macro registered inside
+a test helper, controller action, queued job or conditional that is false during
+analysis cannot be discovered. Add an <code>@method</code> annotation to the class in that
+case; it documents the same API for PHPStan, editors and readers.</p>
+<h2 id="static-and-instance-macros">Static and instance macros<a class="headerlink" href="#static-and-instance-macros" title="Permanent link">&para;</a></h2>
+<p>The closure declaration determines the call form by default. A normal closure
+defines an instance macro and can use the instance Laravel binds to <code>$this</code>:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nx">Collection</span><span class="o">::</span><span class="na">macro</span><span class="p">(</span><span class="s1">'active'</span><span class="p">,</span> <span class="k">function</span> <span class="p">()</span><span class="o">:</span> <span class="k">static</span> <span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter</span><span class="o">-&gt;</span><span class="na">active</span><span class="p">;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="p">});</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">active</span><span class="p">();</span>
 </span></code></pre></div>
-<p>For anything discovery cannot infer, add a <code>testbench.yaml</code> at your package
-root. It is read if present, and Testbench's own documentation covers the full
-schema:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">providers</span><span class="p">:</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Acme\Billing\BillingServiceProvider</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nt">env</span><span class="p">:</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">DB_CONNECTION</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">testing</span>
+<p>A <code>static</code> closure defines a static macro:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">Collection</span><span class="o">::</span><span class="na">macro</span><span class="p">(</span><span class="s1">'fromCsv'</span><span class="p">,</span> <span class="k">static</span> <span class="k">function</span> <span class="p">(</span><span class="nx">string</span> <span class="nv">$csv</span><span class="p">)</span><span class="o">:</span> <span class="nx">Collection</span> <span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="k">return</span> <span class="nx">collect</span><span class="p">(</span><span class="nb">str_getcsv</span><span class="p">(</span><span class="nv">$csv</span><span class="p">));</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">});</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nx">Collection</span><span class="o">::</span><span class="na">fromCsv</span><span class="p">(</span><span class="nv">$csv</span><span class="p">);</span>
 </span></code></pre></div>
-<p>If a provider fails to boot, the failure is reported with the underlying
-exception rather than as a wall of unrelated errors, because nothing useful can
-be analysed once booting has failed.</p>
-<h2 id="configuration-types">Configuration types<a class="headerlink" href="#configuration-types" title="Permanent link">&para;</a></h2>
-<p>This is the one place where a package genuinely behaves differently. In an
-application, <code>config()</code> calls are answered from the booted container, which
-holds the merged configuration of the app and every package. In a package
-nothing publishes or merges your own config files, so the repository knows
-nothing about them.</p>
-<p>Rather than making you stand up a full Testbench workbench just to get config
-types, point <a href="../../reference/configuration/#configdirectories"><code>configDirectories</code></a>
-at your config files and they are parsed statically instead:</p>
+<p>Keeping that distinction lets PHPStan report a static call to an instance macro.
+When <code>phpstan-strict-rules</code> is installed, it can report the inverse as well: an
+instance call to a static macro.</p>
+<h2 id="static-facing-classes">Static-facing classes<a class="headerlink" href="#static-facing-classes" title="Permanent link">&para;</a></h2>
+<p>Some Laravel classes have a public API that is conventionally static even when
+a macro was registered with a normal closure. Calls on these classes are allowed
+by default:</p>
+<ul>
+<li><code>Illuminate\Support\Arr</code></li>
+<li><code>Illuminate\Support\Str</code></li>
+<li><code>Illuminate\Support\Number</code></li>
+<li><code>Illuminate\Support\Benchmark</code></li>
+<li><code>Illuminate\Validation\Rule</code></li>
+</ul>
+<p>Only dynamically discovered macros receive this exception. A native instance
+method on a listed class is still an error when called statically.</p>
+<p>Facades are handled separately. Their entire purpose is to expose the instance
+behind a facade accessor through static calls, so dynamically forwarded facade
+methods and facade macros are always accepted. A native instance method declared
+directly on the facade class is not.</p>
+<h2 id="configuring-exceptions">Configuring exceptions<a class="headerlink" href="#configuring-exceptions" title="Permanent link">&para;</a></h2>
+<p><a href="../../reference/configuration/#staticmacroclasses"><code>staticMacroClasses</code></a> adds
+classes whose macros may be called statically. Entries also apply to subclasses.
+For example, a project that deliberately uses Eloquent's static forwarding for
+builder macros can add every model:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>parameters:
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    laravel:
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        configDirectories:
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>            - config
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        staticMacroClasses:
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>            - Illuminate\Database\Eloquent\Model
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// config/billing.php</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">return</span> <span class="p">[</span><span class="s1">'default'</span> <span class="o">=&gt;</span> <span class="s1">'stripe'</span><span class="p">,</span> <span class="s1">'currency'</span> <span class="o">=&gt;</span> <span class="s1">'usd'</span><span class="p">];</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1">// src/Billing.php</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'billing.default'</span><span class="p">);</span> <span class="c1">// string, not mixed</span>
+<p>Models are not included by default. Models have meaningful instances, builder
+macros commonly use <code>$this</code>, and retaining the distinction catches a static call
+where an instance call better expresses the code. Laravel permits the forwarding,
+so projects that prefer it can opt in once rather than ignoring each call.</p>
+<p>NEON merges lists from included configuration files. The example above appends
+<code>Model</code> to the defaults. Add <code>!</code> to replace the defaults instead:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>parameters:
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    laravel:
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        staticMacroClasses!:
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>            - App\Models\BaseModel
 </span></code></pre></div>
-<p>The container is always asked first, so this can only fill in keys the
-container does not have. It never changes the types an application gets.</p>
-<h2 id="columns">Columns<a class="headerlink" href="#columns" title="Permanent link">&para;</a></h2>
-<p>A package usually has no migrations of its own, and the Testbench application
-has no database. If your package ships migrations and you want model properties
-resolved from them, point
-<a href="../../reference/configuration/#migrationdirectories"><code>migrationDirectories</code></a> at
-them:</p>
+<p>An empty replacement enables strict call-form checking for every non-facade
+macro:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>parameters:
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    laravel:
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>        migrationDirectories:
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>            - database/migrations
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>        staticMacroClasses!: []
 </span></code></pre></div>
-<p>If your package defines models against tables owned by the host application,
-there is nothing to scan and no way for the extension to know those columns.
-Annotate those models with <code>@property</code> and leave
-<a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a>
-off, since every column would otherwise be reported as missing.</p>
-<!-- links -->
 
 
 
