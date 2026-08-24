@@ -1250,10 +1250,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#checkmodelproperties" class="md-nav__link">
+  <a href="#modelpropertytype" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        <code>checkModelProperties</code>
+        <code>modelPropertyType</code>
       </span>
     </span>
   </a>
@@ -1819,10 +1819,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#checkmodelproperties" class="md-nav__link">
+  <a href="#modelpropertytype" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        <code>checkModelProperties</code>
+        <code>modelPropertyType</code>
       </span>
     </span>
   </a>
@@ -1885,7 +1885,7 @@
 PHPStan configuration:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>parameters:
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    laravel:
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        checkModelProperties: true
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        modelPropertyType: true
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        rules:
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>            unusedView: true
 </span></code></pre></div>
@@ -2153,18 +2153,18 @@ you get the type inference for free.</p>
 does not have. Setting this option therefore never changes the types you get for
 an application's own config: it can only fill in keys that were missing.</p>
 <h3 id="example_5">Example<a class="headerlink" href="#example_5" title="Permanent link">&para;</a></h3>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="x">// config/pennant.php</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="x">return [</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="x">    'default' =&gt; 'database',</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="x">    'stores' =&gt; [</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="x">        'database' =&gt; ['connection' =&gt; null],</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="x">    ],</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="x">];</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// config/pennant.php</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">return</span> <span class="p">[</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="s1">'default'</span> <span class="o">=&gt;</span> <span class="s1">'database'</span><span class="p">,</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="s1">'stores'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>        <span class="s1">'database'</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">'connection'</span> <span class="o">=&gt;</span> <span class="k">null</span><span class="p">],</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="p">],</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="p">];</span>
 </span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="x">// src/Feature.php</span>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="x">\PHPStan\dumpType(config('pennant.default'));           // string|null</span>
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="x">\PHPStan\dumpType(config('pennant.stores.database'));    // array{connection: null}|null</span>
-</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="x">\PHPStan\dumpType(config('pennant.missing'));            // mixed</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="c1">// src/Feature.php</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="nx">\PHPStan\dumpType</span><span class="p">(</span><span class="nx">config</span><span class="p">(</span><span class="s1">'pennant.default'</span><span class="p">));</span>           <span class="c1">// string|null</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="nx">\PHPStan\dumpType</span><span class="p">(</span><span class="nx">config</span><span class="p">(</span><span class="s1">'pennant.stores.database'</span><span class="p">));</span>    <span class="c1">// array{connection: null}|null</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="nx">\PHPStan\dumpType</span><span class="p">(</span><span class="nx">config</span><span class="p">(</span><span class="s1">'pennant.missing'</span><span class="p">));</span>            <span class="c1">// mixed</span>
 </span></code></pre></div>
 <p>Scalar values are widened to their general type: <code>'database'</code> becomes <code>string</code>
 — for the same reason the container path does it: the value in the file is only
@@ -2173,17 +2173,17 @@ are kept, since the set of keys is a property of the file rather than of the
 environment.</p>
 <p>When that is too lossy, annotate the returned array and the declared type is used
 verbatim:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="x">// config/pennant.php</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// config/pennant.php</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="x">/** @return array{default: 'array'|'database', stores: array&lt;string, array{connection: string|null}&gt;} */</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="x">return [</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="x">    'default' =&gt; 'database',</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="x">    'stores' =&gt; [</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="x">        'database' =&gt; ['connection' =&gt; null],</span>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="x">    ],</span>
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="x">];</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="sd">/** @return array{default: 'array'|'database', stores: array&lt;string, array{connection: string|null}&gt;} */</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="k">return</span> <span class="p">[</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="s1">'default'</span> <span class="o">=&gt;</span> <span class="s1">'database'</span><span class="p">,</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="s1">'stores'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>        <span class="s1">'database'</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">'connection'</span> <span class="o">=&gt;</span> <span class="k">null</span><span class="p">],</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="p">],</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="p">];</span>
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="x">\PHPStan\dumpType(config('pennant.default')); // 'array'|'database'|null</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nx">\PHPStan\dumpType</span><span class="p">(</span><span class="nx">config</span><span class="p">(</span><span class="s1">'pennant.default'</span><span class="p">));</span> <span class="c1">// 'array'|'database'|null</span>
 </span></code></pre></div>
 <p>Docblocks are only trusted while PHPStan's own
 <a href="https://phpstan.org/config-reference#treatphpdoctypesascertain"><code>treatPhpDocTypesAsCertain</code></a>
@@ -2236,13 +2236,13 @@ written, so register all of them or leave that rule off.</p>
 <p>Paths may be absolute or relative to the PHPStan config file that declares
 them. Unlike the migration and schema options, these are plain directories —
 <code>glob</code> wildcards are not expanded.</p>
-<h2 id="checkmodelproperties"><code>checkModelProperties</code><a class="headerlink" href="#checkmodelproperties" title="Permanent link">&para;</a></h2>
+<h2 id="modelpropertytype"><code>modelPropertyType</code><a class="headerlink" href="#modelpropertytype" title="Permanent link">&para;</a></h2>
 <p><strong>default</strong>: <code>false</code></p>
 <p>Checks string arguments that are meant to name a column against the model's
 actual columns, so a typo is caught where it is written rather than at runtime.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>parameters:
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    laravel:
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>        checkModelProperties: true
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>        modelPropertyType: true
 </span></code></pre></div>
 <p>This is not a rule and has no identifier of its own. It activates the
 <a href="../../guide/custom-types/"><code>model-property</code></a> type, after which the mismatches are
@@ -2272,10 +2272,10 @@ interface FQCN is inferred as itself, so you only get the API you actually asked
 for. Aliases such as <code>resolve('cache')</code> are unaffected and still resolve to their
 concrete implementation, since they are not class strings.</p>
 <h3 id="example_6">Example<a class="headerlink" href="#example_6" title="Permanent link">&para;</a></h3>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="x">use Illuminate\Contracts\Config\Repository;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">use</span> <span class="nx">Illuminate\Contracts\Config\Repository</span><span class="p">;</span>
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="x">$repository = resolve(Repository::class);</span>
-</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="x">\PHPStan\dumpType($repository);</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nv">$repository</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nx">\PHPStan\dumpType</span><span class="p">(</span><span class="nv">$repository</span><span class="p">);</span>
 </span></code></pre></div>
 <p>Disabled (the default), this dumps <code>Illuminate\Config\Repository</code>: the concrete
 class bound in the container. Enabled, it dumps

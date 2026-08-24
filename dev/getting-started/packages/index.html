@@ -1448,11 +1448,11 @@ at your config files and they are parsed statically instead:</p>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        configDirectories:
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>            - config
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="x">// config/billing.php</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="x">return ['default' =&gt; 'stripe', 'currency' =&gt; 'usd'];</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// config/billing.php</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">return</span> <span class="p">[</span><span class="s1">'default'</span> <span class="o">=&gt;</span> <span class="s1">'stripe'</span><span class="p">,</span> <span class="s1">'currency'</span> <span class="o">=&gt;</span> <span class="s1">'usd'</span><span class="p">];</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="x">// src/Billing.php</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="x">config('billing.default'); // string, not mixed</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1">// src/Billing.php</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'billing.default'</span><span class="p">);</span> <span class="c1">// string, not mixed</span>
 </span></code></pre></div>
 <p>The container is always asked first, so this can only fill in keys the
 container does not have. It never changes the types an application gets.</p>
@@ -1470,7 +1470,7 @@ them:</p>
 <p>If your package defines models against tables owned by the host application,
 there is nothing to scan and no way for the extension to know those columns.
 Annotate those models with <code>@property</code> and leave
-<a href="../../reference/configuration/#checkmodelproperties"><code>checkModelProperties</code></a>
+<a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a>
 off, since every column would otherwise be reported as missing.</p>
 <!-- links -->
 

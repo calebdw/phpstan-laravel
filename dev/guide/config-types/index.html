@@ -1430,21 +1430,21 @@ run of your application, and yet the signature can only promise <code>mixed</cod
 container. Because booting registers every service provider, that repository
 holds the merged configuration of your application and all of its packages, so
 in an application there is nothing to configure:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="x">config('auth.defaults');       // array{guard: string, passwords: string}|null</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="x">config('auth.defaults.guard'); // string|null</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="x">config('nope.missing');        // mixed</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>       <span class="c1">// array{guard: string, passwords: string}|null</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// string|null</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'nope.missing'</span><span class="p">);</span>        <span class="c1">// mixed</span>
 </span></code></pre></div>
 <p>The facade, the helper and an injected repository are all covered, as are the
 contract and the concrete class:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="x">use Illuminate\Contracts\Config\Repository;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">use</span> <span class="nx">Illuminate\Contracts\Config\Repository</span><span class="p">;</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="x">Config::get('auth.defaults');                  // array{...}|null</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="x">config()-&gt;get('auth.defaults');                // array{...}|null</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="x">app(Repository::class)-&gt;get('auth.defaults');  // array{...}|null</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>                  <span class="c1">// array{...}|null</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nx">config</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>                <span class="c1">// array{...}|null</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nx">app</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>  <span class="c1">// array{...}|null</span>
 </span></code></pre></div>
 <p>Passing a default replaces the <code>null</code>, since a default is what you get when the
 key is absent:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="x">config('auth.defaults', 'bar'); // 'bar'|array{guard: string, passwords: string}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">);</span> <span class="c1">// 'bar'|array{guard: string, passwords: string}</span>
 </span></code></pre></div>
 <h2 id="why-the-results-are-nullable">Why the results are nullable<a class="headerlink" href="#why-the-results-are-nullable" title="Permanent link">&para;</a></h2>
 <p><code>config()</code> returns <code>null</code> for a key that does not exist, so a resolved key is
@@ -1453,8 +1453,8 @@ accurate rather than pedantic: nothing guarantees a deployed config file still
 has the key your local one does.</p>
 <p>The typed accessors are not nullable, because they throw instead of returning
 <code>null</code>:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="x">config('auth.defaults');       // array{guard: string, passwords: string}|null</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="x">Config::array('auth.defaults'); // array{guard: string, passwords: string}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>       <span class="c1">// array{guard: string, passwords: string}|null</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span> <span class="c1">// array{guard: string, passwords: string}</span>
 </span></code></pre></div>
 <p>That makes <code>Config::array()</code>, <code>Config::string()</code> and friends the better choice
 for a key you require, and it is worth reaching for them where you would
@@ -1466,17 +1466,17 @@ anything of that type, so treating it as a literal would let code depend on a
 value that changes between environments.</p>
 <p>Array shapes are kept, because the <em>set of keys</em> is a property of the file
 rather than of the environment, and nesting is followed all the way down:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="x">config('auth.defaults');       // array{guard: string, passwords: string}|null</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="x">config('auth.defaults.guard'); // string|null</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>       <span class="c1">// array{guard: string, passwords: string}|null</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// string|null</span>
 </span></code></pre></div>
 <h2 id="typed-accessors-are-checked">Typed accessors are checked<a class="headerlink" href="#typed-accessors-are-checked" title="Permanent link">&para;</a></h2>
 <p>Laravel's typed accessors do not coerce. Each throws an
 <code>InvalidArgumentException</code> when the value is not already of the required type,
 which makes reading a key of the wrong type a guaranteed runtime failure rather
 than a style issue. Since the types are known, that can be caught:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="x">Config::string('auth.defaults.guard'); // fine, the value is a string</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="x">Config::array('auth.defaults');        // fine, the value is an array</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="x">Config::array('auth.defaults.guard');  // always throws</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// fine, the value is a string</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>        <span class="c1">// fine, the value is an array</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>  <span class="c1">// always throws</span>
 </span></code></pre></div>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Config key 'auth.defaults.guard' is string, but 'array' requires an array.
 </span></code></pre></div>
@@ -1500,17 +1500,17 @@ container does not already have. It can never change the types an application
 gets for its own configuration.</p>
 <p>When the inferred shape is too lossy, annotate the returned array and the
 declared type is used verbatim:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="x">// config/pennant.php</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// config/pennant.php</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="x">/** @return array{default: 'array'|'database', stores: array&lt;string, array{connection: string|null}&gt;} */</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="x">return [</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="x">    'default' =&gt; 'database',</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="x">    'stores' =&gt; [</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="x">        'database' =&gt; ['connection' =&gt; null],</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="x">    ],</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="x">];</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="sd">/** @return array{default: 'array'|'database', stores: array&lt;string, array{connection: string|null}&gt;} */</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="k">return</span> <span class="p">[</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="s1">'default'</span> <span class="o">=&gt;</span> <span class="s1">'database'</span><span class="p">,</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="s1">'stores'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>        <span class="s1">'database'</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">'connection'</span> <span class="o">=&gt;</span> <span class="k">null</span><span class="p">],</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="p">],</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">];</span>
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="x">config('pennant.default'); // 'array'|'database'|null</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'pennant.default'</span><span class="p">);</span> <span class="c1">// 'array'|'database'|null</span>
 </span></code></pre></div>
 <h2 id="where-env-fits">Where env() fits<a class="headerlink" href="#where-env-fits" title="Permanent link">&para;</a></h2>
 <p><code>env()</code> returns <code>bool|string|null</code>, unioned with whatever default you pass,

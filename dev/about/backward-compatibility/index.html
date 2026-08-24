@@ -1448,7 +1448,9 @@ gives applies here:</p>
   do.</li>
 <li>Set <a href="https://phpstan.org/user-guide/ignoring-errors#reporting-unused-ignores"><code>reportUnmatchedIgnoredErrors</code></a> to <code>false</code> if you do not want
   a release that <em>fixes</em> a false positive to fail your build over a now-unused
-  ignore.</li>
+  ignore. It defaults to <code>true</code>, which is the better trade in most projects
+  because it stops stale ignores accumulating; turning it off buys quieter
+  upgrades at that cost.</li>
 <li>If you value stability above all, pin an exact version and let Dependabot or
   similar propose upgrades on its own schedule.</li>
 </ul>

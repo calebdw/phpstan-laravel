@@ -1429,8 +1429,8 @@
 which is how the magic properties on an Eloquent model get their types. Columns
 are tracked per connection, so a model on a second connection resolves against
 that connection's tables.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="x">$user-&gt;email;      // string</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="x">$user-&gt;emial;      // Access to an undefined property App\User::$emial</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>      <span class="c1">// string</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">emial</span><span class="p">;</span>      <span class="c1">// Access to an undefined property App\User::$emial</span>
 </span></code></pre></div>
 <p>A nullable column produces a nullable type, and a date column resolves to
 whichever Carbon class your application is configured to use, so a nullable
@@ -1444,7 +1444,7 @@ the same reason <code>HasUlids</code> is.</p>
 scanner cannot follow, point the
 <a href="../../reference/configuration/#migrationdirectories">path options</a> at the right
 directories. Enabling
-<a href="../../reference/configuration/#checkmodelproperties"><code>checkModelProperties</code></a> then
+<a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a> then
 checks property <em>names</em> passed to methods, catching typos in things like
 <code>User::create([...])</code>.</p>
 <h2 id="checking-property-names">Checking property names<a class="headerlink" href="#checking-property-names" title="Permanent link">&para;</a></h2>
@@ -1457,7 +1457,7 @@ and an argument naming a column the model does not have is reported.</p>
 <h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>parameters:
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    laravel:
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        checkModelProperties: true
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        modelPropertyType: true
 </span></code></pre></div>
 <p>Whether it is accurate depends on how completely your columns were resolved.
 Where migrations or schema dumps are missing, or a table is built in a way the
@@ -1467,34 +1467,34 @@ silence, which is why it is off by default. Point
 <a href="../../reference/configuration/#schemadirectories"><code>schemaDirectories</code></a> at the
 right places before enabling it.</p>
 <h3 id="basic-example">Basic example<a class="headerlink" href="#basic-example" title="Permanent link">&para;</a></h3>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="x">User::create([</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="x">    'name' =&gt; 'John Doe',</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="x">    'emaiil' =&gt; 'john@example.test'</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="x">]);</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">create</span><span class="p">([</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'John Doe'</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="s1">'emaiil'</span> <span class="o">=&gt;</span> <span class="s1">'john@example.test'</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">]);</span>
 </span></code></pre></div>
 <p>Here we have a typo in <code>email</code> column. So if we run analysis on this file this extension will generate the following error:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Property 'emaiil' does not exist in App\User model.
 </span></code></pre></div>
 <p>This check will be done automatically on Laravel's core methods where a property is expected. But you can also typehint the <code>model-property</code> in your own code to take advantage of this analysis.</p>
 <p>You can define a function like this:
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="x">/**</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="x"> * @phpstan-param model-property&lt;\App\User&gt; $property</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="x"> */</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="x">function takesOnlyUserModelProperties(string $property)</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="x">{</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="x">    // ...</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="x">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="sd">/**</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="sd"> * @phpstan-param model-property&lt;\App\User&gt; $property</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="sd"> */</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">function</span> <span class="nf">takesOnlyUserModelProperties</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$property</span><span class="p">)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">{</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="c1">// ...</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">}</span>
 </span></code></pre></div></p>
 <p>And if you call the function above with a property that does not exist in User model, this extension will warn you about it.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="x">// Property 'emaiil' does not exist in App\User model.</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="x">takesOnlyUserModelProperties('emaiil');</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nx">takesOnlyUserModelProperties</span><span class="p">(</span><span class="s1">'emaiil'</span><span class="p">);</span>
 </span></code></pre></div>
 <h2 id="accessors-and-mutators">Accessors and mutators<a class="headerlink" href="#accessors-and-mutators" title="Permanent link">&para;</a></h2>
 <p>Both styles are recognized. An <a href="https://laravel.com/docs/eloquent-mutators#accessors-and-mutators"><code>Attribute</code></a> accessor must be a
 <code>protected</code> method annotated with the <code>Attribute</code> generic types: the first is
 the getter's return type, the second the setter's argument type.</p>
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="cp">&lt;?php</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="sd">/** @return Attribute&lt;string[], string[]&gt; */</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">scopes</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="p">{</span>
@@ -1508,7 +1508,7 @@ the getter's return type, the second the setter's argument type.</p>
 </span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="p">);</span>
 </span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cp">&lt;?php</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="sd">/** @return Attribute&lt;bool, never&gt; */</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">isTrue</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">{</span>
@@ -1520,7 +1520,7 @@ the getter's return type, the second the setter's argument type.</p>
 <p>The older <code>getFooAttribute()</code> style is supported as well, and its return type is
 used directly. It is still found when a method of the same camel case name
 exists alongside it:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="cp">&lt;?php</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">getFullNameAttribute</span><span class="p">()</span><span class="o">:</span> <span class="nx">string</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="p">{</span>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_name</span> <span class="o">.</span> <span class="s1">' '</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_name</span><span class="p">;</span>

@@ -1457,16 +1457,16 @@ directly with a query then this rule will produce an error.
 This rule exists to reduce unnecessarily heavy queries on the database 
 and to prevent unneeded loops over Collections.</p>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="x">User::all()-&gt;count();</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="x">$user-&gt;roles()-&gt;pluck('name')-&gt;contains('a role name');</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">count</span><span class="p">();</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">roles</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">pluck</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">contains</span><span class="p">(</span><span class="s1">'a role name'</span><span class="p">);</span>
 </span></code></pre></div>
 <p>Will result in the following errors:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Called 'count' on Laravel collection, but could have been retrieved as a query.
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Called 'contains' on Laravel collection, but could have been retrieved as a query.
 </span></code></pre></div></p>
 <p>To fix the errors, the code in the previous example could be changed to:
-<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="x">User::count();</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="x">$user-&gt;roles()-&gt;where('name', 'a role name')-&gt;exists();</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">count</span><span class="p">();</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">roles</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'a role name'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">exists</span><span class="p">();</span>
 </span></code></pre></div></p>
 <h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>parameters:
@@ -1497,13 +1497,13 @@ specific set:</p>
 so on a collection that cannot contain one it does strictly more work than
 <code>all()</code> for an identical result.</p>
 <h3 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h3>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="x">collect([1, 2, 3])-&gt;toArray();</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nx">collect</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">-&gt;</span><span class="na">toArray</span><span class="p">();</span>
 </span></code></pre></div>
 <p>Will result in the following error:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Called [toArray()] on an Enumerable which does not contain any Arrayables.
 </span></code></pre></div>
 <p>Use <code>all()</code> instead:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="x">collect([1, 2, 3])-&gt;all();</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nx">collect</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">-&gt;</span><span class="na">all</span><span class="p">();</span>
 </span></code></pre></div>
 <p>The rule fires only when the value type is known <em>not</em> to be <code>Arrayable</code>. A
 collection of models, or one whose value type cannot be resolved, is left

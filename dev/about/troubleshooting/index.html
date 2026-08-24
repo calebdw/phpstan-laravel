@@ -1458,10 +1458,11 @@ failing your build.</p>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    ignoreErrors:
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        - identifier: laravel.modelMake
 </span></code></pre></div>
-<p>Set <a href="https://phpstan.org/user-guide/ignoring-errors#reporting-unused-ignores"><code>reportUnmatchedIgnoredErrors</code></a> to <code>true</code> so that an ignore
-which no longer matches is reported rather than left to rot. The cost is that a
-release which <em>fixes</em> a false positive fails your build until you delete the
-now-unused entry, which is the right trade in most projects.</p>
+<p>Leave <a href="https://phpstan.org/user-guide/ignoring-errors#reporting-unused-ignores"><code>reportUnmatchedIgnoredErrors</code></a> at its default of <code>true</code>, so
+that an ignore which no longer matches is reported rather than left to rot. The
+cost is that a release which <em>fixes</em> a false positive fails your build until you
+delete the now-unused entry, which is the right trade in most projects.
+<a href="../backward-compatibility/">Backward compatibility</a> covers when to turn it off.</p>
 <h2 id="higher-order-messages-on-a-support-collection">Higher order messages on a support collection<a class="headerlink" href="#higher-order-messages-on-a-support-collection" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://laravel.com/docs/collections#higher-order-messages">higher order proxy</a>
 is understood, but only as far as the collection's value type is known. On an
@@ -1474,8 +1475,8 @@ method up on:</p>
 </span></code></pre></div>
 <p>The better fix is to give the collection a value type, which resolves it
 properly rather than hiding it:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="x">/** @var Collection&lt;int, User&gt; $users */</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="x">$users-&gt;groupBy-&gt;email; // Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="sd">/** @var Collection&lt;int, User&gt; $users */</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span> <span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
 </span></code></pre></div>
 <h2 id="macros">Macros<a class="headerlink" href="#macros" title="Permanent link">&para;</a></h2>
 <p>Macros registered at runtime are found by booting the application, so a macro
@@ -1488,7 +1489,7 @@ the API for humans and editors at the same time.</p>
 <p>A model whose table this extension cannot see, because the table belongs to
 another service or is created outside migrations, will have every column
 reported as missing once
-<a href="../../reference/configuration/#checkmodelproperties"><code>checkModelProperties</code></a> is
+<a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a> is
 on. Annotate those models with <code>@property</code> and they behave normally.</p>
 <h2 id="analysis-is-quiet-on-a-package">Analysis is quiet on a package<a class="headerlink" href="#analysis-is-quiet-on-a-package" title="Permanent link">&para;</a></h2>
 <p>If no application is found and Testbench is not installed, analysis runs but

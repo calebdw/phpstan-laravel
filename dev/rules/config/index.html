@@ -1458,24 +1458,24 @@ is not already of the required type, and <code>collection()</code> delegates to 
 Reading a key of the wrong type is therefore a guaranteed runtime failure
 rather than a style issue.</p>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="x">// config/auth.php</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="x">return [</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="x">    'defaults' =&gt; [</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="x">        'guard' =&gt; 'web',</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="x">    ],</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="x">    'password_timeout' =&gt; 10800,</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="x">];</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// config/auth.php</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">return</span> <span class="p">[</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s1">'defaults'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="s1">'guard'</span> <span class="o">=&gt;</span> <span class="s1">'web'</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="p">],</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="s1">'password_timeout'</span> <span class="o">=&gt;</span> <span class="mi">10800</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">];</span>
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="x">Config::string('auth.defaults.guard'); // fine, the value is a string</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="x">Config::array('auth.defaults');        // fine, the value is an array</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="x">Config::array('auth.defaults.guard');  // always throws</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// fine, the value is a string</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>        <span class="c1">// fine, the value is an array</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>  <span class="c1">// always throws</span>
 </span></code></pre></div>
 <p>The last call reports:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Config key 'auth.defaults.guard' is string, but 'array' requires an array.
 </span></code></pre></div>
 <p>Because the checks are strict, an integer is not accepted where a float is
 required:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="x">Config::float('auth.password_timeout'); // always throws, the value is an int</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">float</span><span class="p">(</span><span class="s1">'auth.password_timeout'</span><span class="p">);</span> <span class="c1">// always throws, the value is an int</span>
 </span></code></pre></div>
 <p>Both call styles are covered, so <code>Config::string(...)</code>, <code>config()-&gt;string(...)</code>
 and a repository injected as either the concrete class or the contract are all
@@ -1488,7 +1488,7 @@ so it is left alone; an unrecognised key cannot produce a false positive.</p>
 <p>Passing a default does not suppress the error, because a default only applies
 when the key is <em>absent</em>. A key that exists holding the wrong type is returned
 and rejected either way:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="x">Config::string('auth.password_timeout', 'fallback'); // still throws</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.password_timeout'</span><span class="p">,</span> <span class="s1">'fallback'</span><span class="p">);</span> <span class="c1">// still throws</span>
 </span></code></pre></div>
 <p>One case is deliberately not reported: a key explicitly set to <code>null</code> is
 indistinguishable from a missing key once resolved, so it is skipped even
@@ -1508,13 +1508,13 @@ differs between environments is checked against the local one.</p>
 once the config is cached.</p>
 <h3 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h3>
 <p>Suppose this calls happens somewhere in your code outside the <code>config</code> directory:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="x">env('APP_ENV')</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nx">env</span><span class="p">(</span><span class="s1">'APP_ENV'</span><span class="p">)</span>
 </span></code></pre></div>
 <p>It will result in the following error:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.")
 </span></code></pre></div>
 <p>Use the corresponding configuration option instead:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="x">config('app.env')</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'app.env'</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="configuration_1">Configuration<a class="headerlink" href="#configuration_1" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>parameters:
