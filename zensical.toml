@@ -18,6 +18,7 @@ nav = [
   ]},
   { "Guide" = [
     { "Booting your application" = "guide/booting.md" },
+    { "Macros" = "guide/macros.md" },
     { "Model properties" = "guide/model-properties.md" },
     { "Builders, factories and collections" = "guide/eloquent.md" },
     { "Relations" = "guide/relations.md" },

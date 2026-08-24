@@ -83,13 +83,10 @@ cannot repeat it.
 
 ## Macros
 
-Macros registered at runtime are found by booting the application, so a macro
-registered in a service provider is understood. One registered somewhere that
-does not run during boot, such as inside a test helper or behind a conditional,
-is not, and calls to it are reported as undefined methods.
-
-Declaring the macro on the class with `@method` is the fix, since it documents
-the API for humans and editors at the same time.
+Macros registered while the application boots are discovered automatically. A
+registration that does not run during analysis needs an `@method` annotation.
+The [macros guide](../guide/macros.md) covers discovery, static and instance
+macros, and classes whose macros have a static-facing API.
 
 ## Models without resolvable columns
 

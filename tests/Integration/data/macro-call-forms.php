@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Data;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Benchmark;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Number;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+
+use function PHPStan\Testing\assertType;
 
 /**
  * A macro's staticness is taken from its closure, because that is how the
@@ -42,4 +49,13 @@ function facadeMacros(): void
 {
     Route::facadeMacro();
     Route::facadePlainClosureMacro();
+}
+
+function staticMacros(): void
+{
+    assertType('string', Arr::plainClosureMacro());
+    assertType('string', Str::plainClosureMacro());
+    assertType('string', Number::plainClosureMacro());
+    assertType('string', Benchmark::plainClosureMacro());
+    assertType('string', Rule::plainClosureMacro());
 }

@@ -35,6 +35,12 @@ parameters:
     configDirectories: []
     translationDirectories: []
     viewDirectories: []
+    staticMacroClasses:
+      - Illuminate\Support\Arr
+      - Illuminate\Support\Str
+      - Illuminate\Support\Number
+      - Illuminate\Support\Benchmark
+      - Illuminate\Validation\Rule
     modelPropertyType: false
     strictContracts: false
 
@@ -67,6 +73,7 @@ parametersSchema:
     configDirectories: listOf(string())
     translationDirectories: listOf(string())
     viewDirectories: listOf(string())
+    staticMacroClasses: listOf(string())
     modelPropertyType: bool()
     strictContracts: bool()
   ])
@@ -370,6 +377,9 @@ services:
   - class: Illuminate\Filesystem\Filesystem
     autowired: self
   - class: CalebDW\PhpstanLaravel\Ignore\FacadeStaticCallIgnoreExtension
+    tags: [phpstan.ignoreErrorExtension]
+  - class: CalebDW\PhpstanLaravel\Ignore\MacroStaticCallIgnoreExtension
+    arguments: {staticMacroClasses: %laravel.staticMacroClasses%}
     tags: [phpstan.ignoreErrorExtension]
 
 rules:

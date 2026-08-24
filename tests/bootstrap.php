@@ -6,13 +6,21 @@ use App\Importer;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Benchmark;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Number;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 Builder::macro('globalCustomMacro', static function (string $arg = 'foobar', int $b = 5): string {
     return $arg;
+});
+
+Builder::macro('modelBoundMacro', function (): string {
+    return $this->getModel()::class;
 });
 
 \Illuminate\Database\Query\Builder::macro('globalCustomDatabaseQueryMacro', static function (string $arg = 'foobar', int $b = 5): string {
@@ -37,6 +45,12 @@ RequestGuard::macro('requestGuardMacro', static function (): int {
 
 Str::macro('trimMacro', 'trim');
 Str::macro('asciiAliasMacro', Str::class . '::ascii');
+
+foreach ([Arr::class, Str::class, Number::class, Benchmark::class, Rule::class] as $staticMacroClass) {
+    $staticMacroClass::macro('plainClosureMacro', function (): string {
+        return 'x';
+    });
+}
 
 // Both closure styles on one class, so each call form can be exercised against
 // each. The closure style is how a macro declares which form it is for.

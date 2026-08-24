@@ -7,22 +7,10 @@ parameters:
 			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/Repeater.php
 
 		-
-			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:sanitizeHtml\(\)\.$#'
-			identifier: method.staticCall
-			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/RichEditor/RichContentRenderer.php
-
-		-
 			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
 			identifier: laravel.unnecessaryEnumerableToArrayCall
 			count: 2
 			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/Select.php
-
-		-
-			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:sanitizeHtml\(\)\.$#'
-			identifier: method.staticCall
-			count: 2
-			path: ../build/e2e/filamentphp-filament/packages/infolists/src/Components/TextEntry.php
 
 		-
 			message: '#^Method Filament\\Infolists\\Components\\SpatieTagsEntry\:\:getState\(\) should return array\<string\> but returns mixed\.$#'
@@ -41,15 +29,3 @@ parameters:
 			identifier: laravel.unnecessaryEnumerableToArrayCall
 			count: 2
 			path: ../build/e2e/filamentphp-filament/packages/support/src/Commands/CheckTranslationsCommand.php
-
-		-
-			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:sanitizeHtml\(\)\.$#'
-			identifier: method.staticCall
-			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/tables/src/Columns/Summarizers/Summarizer.php
-
-		-
-			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:sanitizeHtml\(\)\.$#'
-			identifier: method.staticCall
-			count: 2
-			path: ../build/e2e/filamentphp-filament/packages/tables/src/Columns/TextColumn.php

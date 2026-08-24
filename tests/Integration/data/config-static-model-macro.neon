@@ -1,0 +1,7 @@
+includes:
+    - ../../phpstan-tests.neon
+
+parameters:
+    laravel:
+        staticMacroClasses:
+            - Illuminate\Database\Eloquent\Model

@@ -133,12 +133,6 @@ parameters:
 			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageVaultSettings/Services/GrantVaultAccessToUser.php
 
 		-
-			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:markdownExternalLink\(\)\.$#'
-			identifier: method.staticCall
-			count: 1
-			path: ../build/e2e/monicahq-monica/app/Http/Middleware/HandleInertiaRequests.php
-
-		-
 			message: '#^PHPDoc type array of property App\\Models\\File\:\:\$dispatchesEvents is not covariant with PHPDoc type array\<string, class\-string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$dispatchesEvents\.$#'
 			identifier: property.phpDocType
 			count: 1

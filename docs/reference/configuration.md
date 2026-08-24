@@ -374,6 +374,28 @@ Paths may be absolute or relative to the PHPStan config file that declares
 them. Unlike the migration and schema options, these are plain directories —
 `glob` wildcards are not expanded.
 
+## `staticMacroClasses`
+
+**default**:
+
+```neon
+- Illuminate\Support\Arr
+- Illuminate\Support\Str
+- Illuminate\Support\Number
+- Illuminate\Support\Benchmark
+- Illuminate\Validation\Rule
+```
+
+Macros on these classes may be called statically even when registered with a
+non-static closure. Entries apply to subclasses and only affect dynamically
+discovered macros; native instance methods retain normal PHP static-call checks.
+
+Lists are merged across included NEON files, so adding a class retains these
+defaults. Use `staticMacroClasses!` to replace the list, or
+`staticMacroClasses!: []` to remove every default. Facades remain static-facing
+regardless of this option. See the [macros guide](../guide/macros.md) for examples
+and the tradeoff involved in adding Eloquent models.
+
 ## `modelPropertyType`
 
 **default**: `false`
