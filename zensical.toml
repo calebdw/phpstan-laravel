@@ -1,6 +1,6 @@
 [project]
 site_name = "phpstan-laravel"
-site_description = "A PHPStan extension for static analysis of Laravel applications."
+site_description = "A PHPStan extension for analysis of Laravel applications and packages."
 site_url = "https://phpstan-laravel.dev/"
 repo_url = "https://github.com/calebdw/phpstan-laravel"
 repo_name = "calebdw/phpstan-laravel"
