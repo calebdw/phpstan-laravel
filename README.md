@@ -46,20 +46,9 @@ Config::string('auth.defaults.guard');  // string
 User::create(['emial' => '...']);       // Property 'emial' does not exist
 ```
 
-None of that comes from annotations you write. Columns are read from your
-migrations and schema dumps, per connection. Relation types come from the return
-types you already declare. Config shapes come from your own config files. Casts,
-appends and dates are read from a real model instance, so whatever a trait
-contributes is understood too, including traits from packages you did not write.
-
-On top of the inference it ships rules for the mistakes Laravel will happily let
-you make at runtime: dispatching a job with arguments its constructor will not
-accept, reading a console option the command never defined, `Model::make()`,
-`env()` outside your config, a deferrable provider missing `provides()`, a
-`$appends` entry that resolves to nothing. Each has its own error identifier, so
-you can adopt them one at a time.
-
-It works at every PHPStan level, on applications and on packages.
+None of it comes from annotations you write, and it ships rules for the mistakes
+Laravel will happily let you make at runtime. It works at every PHPStan level,
+on applications and on packages.
 
 Everything else is at **[phpstan-laravel.dev][docs]**: installation,
 configuration, every rule, every option and identifier, and the guide for moving
