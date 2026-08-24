@@ -2155,12 +2155,14 @@ prefixed identifier, so you can ignore a category precisely. See
 <h2 id="release-policy">Release policy<a class="headerlink" href="#release-policy" title="Permanent link">&para;</a></h2>
 <p>This will not show up in a feature list, but it may matter most.</p>
 <p>New errors appearing because the analysis got better are <strong>not</strong> treated as a
-breaking change here, and neither is adding a rule. A red build is not a broken
-application, which is the entire reason to run static analysis in CI behind a
-lock file.</p>
-<p>The practical consequence is that improvements ship, rather than waiting for a
-major version because someone's pipeline might go red. The full policy is in
-<a href="../../about/backward-compatibility/">backward compatibility</a>.</p>
+breaking change here. A red build is not a broken application, which is the
+entire reason to run static analysis in CI behind a lock file.</p>
+<p>New rules are a separate case, and they ship off by default in minor releases,
+so adding one reports nothing until you enable it. Turning a rule on by default
+waits for a major version.</p>
+<p>The practical consequence is that improvements ship rather than waiting on a
+major version, while what your build reports stays under your control. The full
+policy is in <a href="../../about/backward-compatibility/">backward compatibility</a>.</p>
 <h2 id="tooling">Tooling<a class="headerlink" href="#tooling" title="Permanent link">&para;</a></h2>
 <p>If you use <a href="https://github.com/laravel/boost">Laravel Boost</a>, this package ships an AI guideline and a
 <code>phpstan-laravel-analysis</code> skill, so an agent working in your project knows how

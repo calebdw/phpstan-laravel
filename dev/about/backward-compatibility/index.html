@@ -1194,6 +1194,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#new-rules-arrive-switched-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        New rules arrive switched off
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-is-a-breaking-change" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1294,6 +1305,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#new-rules-arrive-switched-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        New rules arrive switched off
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-is-a-breaking-change" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1355,9 +1377,9 @@ type inference that <a href="https://phpstan.org/user-guide/backward-compatibili
 smarter its output changes, and that is not a breaking change. That view is
 worth stating plainly, because static analysis does not fit the usual shape of
 a library.</p>
-<p>This package goes one step further than PHPStan on one point. PHPStan adds new
-rules only in major versions or behind <a href="https://phpstan.org/blog/what-is-bleeding-edge">bleeding edge</a>; here a
-new rule may land in a minor release. The reasoning is in the next section.</p>
+<p>Where a release can change what your build reports, the line drawn here is
+between inference and rules. Better inference ships in any release. New rules
+ship switched off, so adding one changes nothing until you enable it.</p>
 <h2 id="new-errors-are-not-a-breaking-change">New errors are not a breaking change<a class="headerlink" href="#new-errors-are-not-a-breaking-change" title="Permanent link">&para;</a></h2>
 <p>As bugs are fixed and inference improves, this extension understands your code
 more precisely. More precision means errors that were previously missed start
@@ -1367,20 +1389,26 @@ Either direction can fail a build that passed yesterday.</p>
 <p>A failing analysis is not a broken application. Nothing here runs in
 production; it runs in CI, behind a lock file you control, against code you
 have not shipped yet. The worst case is a build that asks you to look at
-something. That is the job. An analyser that may never report anything new is
-an analyser that may never improve, and refusing better inference because a
-pipeline might go red trades the entire point of the tool for the appearance of
-stability.</p>
+something, which is what you installed it for. An analyser held to never
+reporting anything new is one that can never improve.</p>
 <p>So a minor or patch release may:</p>
 <ul>
 <li>report errors it previously missed, because inference got better</li>
 <li>stop reporting errors that were false positives</li>
 <li>infer a narrower or wider type than it did before</li>
-<li><strong>add a new rule</strong>, including one that is enabled by default</li>
 </ul>
-<p>A new rule finds real problems in code that already had them. Withholding it
-until a major version does not make anyone's application safer; it just delays
-the news.</p>
+<h2 id="new-rules-arrive-switched-off">New rules arrive switched off<a class="headerlink" href="#new-rules-arrive-switched-off" title="Permanent link">&para;</a></h2>
+<p>PHPStan adds new rules only in major versions or behind <a href="https://phpstan.org/blog/what-is-bleeding-edge">bleeding
+edge</a>. Here a new rule may land in a minor release, but it
+arrives off by default, behind an option under <code>laravel.rules</code> like every other
+rule. Your build reports what it reported before until you choose to turn it
+on.</p>
+<p>Changing an existing rule's default from off to on is a different matter, since
+that does change what an untouched configuration reports. It waits for a major
+version, as does adding a rule to the small set that
+<a href="../../rules/#always-enabled">reports unconditionally</a>.</p>
+<p>The effect is that rules ship when they are ready and are adopted on your
+schedule rather than on the release schedule.</p>
 <h2 id="what-is-a-breaking-change">What is a breaking change<a class="headerlink" href="#what-is-a-breaking-change" title="Permanent link">&para;</a></h2>
 <p>Breaking changes are reserved for major versions, and mean changes that require
 you to edit something for this package to keep working the way you configured
@@ -1392,13 +1420,11 @@ it:</p>
 <li><strong>Renaming or removing an error identifier</strong>, since identifiers are what you
   ignore against.</li>
 <li><strong>Raising the minimum PHP or Laravel version.</strong></li>
+<li><strong>Enabling by default a rule that was previously off</strong>, since a configuration
+  you have not touched then reports more.</li>
 </ul>
-<p>Note what is not on that list: how many errors you get. A release that reports
-more is doing what you installed it to do.</p>
-<p>Enabling a check that was previously off does change what a build reports
-without you touching anything, so it is called out prominently in the release
-notes and avoided in patch releases. It is still not a breaking change by the
-definition above, because nothing you wrote has stopped working.</p>
+<p>Note what is not on that list: the errors better inference finds. A release
+that understands your code more precisely is doing what you installed it to do.</p>
 <h2 id="the-php-classes-are-not-a-public-api">The PHP classes are not a public API<a class="headerlink" href="#the-php-classes-are-not-a-public-api" title="Permanent link">&para;</a></h2>
 <p>The classes in <code>src/</code> are implementation. They are not intended to be extended,
 implemented, or instantiated from your own code, and they change freely in any

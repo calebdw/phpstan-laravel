@@ -1651,7 +1651,8 @@ it</a>.</p>
 <p>Because inference improved. That is not treated as a breaking change here, for
 reasons set out in <a href="../../about/backward-compatibility/">backward compatibility</a>: a
 static analyser that may never report anything new is one that may never
-improve. Commit your <code>composer.lock</code> and you control when it happens.</p>
+improve. It will not be a new rule, since those ship off by default. Commit
+your <code>composer.lock</code> and you control when the improvements arrive.</p>
 <h2 id="do-i-need-an-sql-parser">Do I need an SQL parser?<a class="headerlink" href="#do-i-need-an-sql-parser" title="Permanent link">&para;</a></h2>
 <p>Only if you have squashed schema dumps under <code>database/schema</code>. Neither parser
 is a hard dependency, so the license that enters your tree is your choice. See
