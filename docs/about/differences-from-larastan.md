@@ -255,10 +255,11 @@ $keyed->groupBy('id');        // Collection<int, Collection<int, User>>
 $keyed->groupBy('id', true);  // Collection<int, Collection<string, User>>
 ```
 
-> [!NOTE]
-> An array argument means different things across these methods. For `pluck`
-> and `keyBy` it is the segments of a single key, so `['user', 'name']` reads
-> `user.name`. For `groupBy` it is successive grouping levels.
+!!! note
+
+    An array argument means different things across these methods. For `pluck`
+    and `keyBy` it is the segments of a single key, so `['user', 'name']` reads
+    `user.name`. For `groupBy` it is successive grouping levels.
 
 ### Higher order proxies agree with the argument forms
 
@@ -415,3 +416,9 @@ to run the analysis and how to read what comes back.
 <!-- links -->
 [larastan]: https://github.com/larastan/larastan
 [boost]: https://github.com/laravel/boost
+
+## Acknowledgments
+
+Larastan was created by [Can Vural](https://github.com/canvural) and [Nuno
+Maduro](https://github.com/nunomaduro), and improved by many contributors over
+the years. This package builds directly on that work and remains MIT licensed.

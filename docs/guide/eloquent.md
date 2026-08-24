@@ -43,26 +43,6 @@ $users = User::query()
         ->get();
 ```
 
-> [!NOTE]
-> The `HasBuilder` trait was introduced in Laravel 11, if you are using an older version of Laravel you can use the following:
->
-> ```php
-> <?php
-> class User extends Model
-> {
->    public static function query(): UserBuilder
->    {
->        return parent::query();
->    }
->
->    /** @param  \Illuminate\Database\Query\Builder  $query */
->    public function newEloquentBuilder($query): UserBuilder
->    {
->        return new UserBuilder($query);
->    }
-> }
-> ```
-
 ## Model factories
 
 Because the `Factory` class is generic, you need to specify the template type in your model factories.
@@ -91,29 +71,6 @@ class User extends Model
     protected static string $factory = UserFactory::class;
 }
 ```
-
-> [!NOTE]
-> The `HasFactory` generics was introduced in Laravel 11, if you are using an older version of Laravel you can use the following:
->
-> ```php
-> <?php
-> class User extends Model
-> {
->    /**
->     * @param  (callable(array<string, mixed>, static|null): array<string, mixed>)|array<string, mixed>|int|null  $count
->     * @param  (callable(array<string, mixed>, static|null): array<string, mixed>)|array<string, mixed>  $state
->     */
->    public static function factory($count = null, $state = []): UserFactory
->    {
->        return parent::factory();
->    }
->
->    protected static function newFactory(): UserFactory
->    {
->        return UserFactory::new();
->    }
-> }
-> ```
 
 ## Custom model collections
 
@@ -170,22 +127,3 @@ class User extends Model
 }
 ```
 
-> [!NOTE]
-> The `HasCollection` trait was introduced in Laravel 11, if you are using an older version of Laravel you can use the `newCollection` method to override the collection class:
->
-> ```php
-> <?php
-> class User extends Model
-> {
->     /**
->      * Create a new Eloquent Collection instance.
->      *
->      * @param  array<array-key, \Illuminate\Database\Eloquent\Model>  $models
->      * @return GeneralCollection<int, static>
->      */
->     public function newCollection(array $models = []): GeneralCollection
->     {
->         return new GeneralCollection($models);
->     }
-> }
-> ```

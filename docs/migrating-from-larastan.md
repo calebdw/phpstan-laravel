@@ -29,10 +29,11 @@ composer remove --dev calebdw/larastan
 composer require --dev calebdw/phpstan-laravel
 ```
 
-> [!IMPORTANT]
-> Unlike `calebdw/larastan`, this package does **not** declare `replace` for
-> `larastan/larastan`. Make sure the old package is actually removed: if both are
-> installed the extension is registered twice and you will get duplicate errors.
+!!! important
+
+    Unlike `calebdw/larastan`, this package does **not** declare `replace` for
+    `larastan/larastan`. Make sure the old package is actually removed: if both are
+    installed the extension is registered twice and you will get duplicate errors.
 
 ## 2. Update the include path
 
@@ -97,9 +98,15 @@ and the name of a rule is not the place to restate whether you want it.
 | `noUnnecessaryCollectionCallExcept` | `unnecessaryCollectionCall.except` |
 | `noUnnecessaryEnumerableToArrayCalls` | `unnecessaryEnumerableToArrayCall` |
 
-Two rules have no Larastan equivalent and so are not in the table:
-`modelForwardingToBuilder` and `modelStaticForwardingToBuilder`, both off by
-default. See [rules](rules/eloquent.md#model-forwarding-to-builder).
+Two more came from the `calebdw/larastan` fork rather than from Larastan itself,
+so they only apply if that is where you are coming from:
+
+| `calebdw/larastan` | Here, under `laravel.rules` |
+| --- | --- |
+| `noModelForwardingToBuilder` | `modelForwardingToBuilder` |
+| `noModelStaticForwardingToBuilder` | `modelStaticForwardingToBuilder` |
+
+Both stay off by default. See [rules](rules/eloquent.md#model-forwarding-to-builder).
 
 The three `noUnnecessaryCollectionCall*` options are one rule with two filters, so they
 are now one structure:
@@ -208,6 +215,15 @@ The rest are a plain prefix swap: `larastan.octaneCompatibility` becomes
 Two plurals became singular---`unusedViews` and `missingTranslations`---because each
 error is about one view or one translation.
 
+Two identifiers came from the `calebdw/larastan` fork rather than from upstream.
+The script below rewrites them along with the rest, since they follow the same
+shape:
+
+| `calebdw/larastan` | Here |
+| --- | --- |
+| `larastan.noModelForwardingToBuilder` | `laravel.modelForwardingToBuilder` |
+| `larastan.noModelStaticForwardingToBuilder` | `laravel.modelStaticForwardingToBuilder` |
+
 One identifier has no counterpart. `larastan.configCollection` reported
 `Config::collection()` on a key that is not an array; that check is now part of a rule
 covering every typed accessor, and reports under `laravel.configAccessor`. An
@@ -247,10 +263,11 @@ on them, with the file list swapped:
 grep -rl '@phpstan-ignore' app src tests | xargs sed -i -E ...
 ```
 
-> [!TIP]
-> Set [`reportUnmatchedIgnoredErrors`][unmatched] to `true` while you migrate. An
-> identifier you missed then shows up as an unmatched ignore rather than silently
-> ignoring nothing.
+!!! tip
+
+    Set [`reportUnmatchedIgnoredErrors`][unmatched] to `true` while you migrate. An
+    identifier you missed then shows up as an unmatched ignore rather than silently
+    ignoring nothing.
 
 ## 5. Install an SQL parser if you use schema dumps
 
@@ -309,15 +326,7 @@ extends one of them, or your own service definitions:
 +        class: CalebDW\PhpstanLaravel\Methods\BuilderHelper
 ```
 
-## Credits
-
-Larastan was created by [Can Vural][can] and [Nuno Maduro][nuno], and improved by many
-contributors over the years. This package builds directly on that work and remains
-MIT licensed.
-
 <!-- links -->
 [larastan]: https://github.com/larastan/larastan
 [unmatched]: https://phpstan.org/user-guide/ignoring-errors#reporting-unused-ignores
 [extension-installer]: https://phpstan.org/user-guide/extension-library#installing-extensions
-[can]: https://github.com/canvural
-[nuno]: https://github.com/nunomaduro
