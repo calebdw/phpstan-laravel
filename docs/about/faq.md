@@ -108,7 +108,8 @@ it](../guide/collections.md#precision-and-widening-it-where-you-want-it).
 Because inference improved. That is not treated as a breaking change here, for
 reasons set out in [backward compatibility](../about/backward-compatibility.md): a
 static analyser that may never report anything new is one that may never
-improve. Commit your `composer.lock` and you control when it happens.
+improve. It will not be a new rule, since those ship off by default. Commit
+your `composer.lock` and you control when the improvements arrive.
 
 ## Do I need an SQL parser?
 

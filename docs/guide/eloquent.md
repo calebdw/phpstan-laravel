@@ -20,9 +20,7 @@ class UserBuilder extends Builder
     /** @return $this */
     public function active(): static
     {
-        $this->where('active', true);
-
-        return $this;
+        return $this->where('active', true);
     }
 }
 
@@ -64,11 +62,12 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Override;
 
 /** @extends Factory<User> */
 class UserFactory extends Factory
 {
-    /** @return array<string, mixed> */
+    #[Override]
     public function definition(): array
     {
         return [];

@@ -6,9 +6,9 @@ smarter its output changes, and that is not a breaking change. That view is
 worth stating plainly, because static analysis does not fit the usual shape of
 a library.
 
-This package goes one step further than PHPStan on one point. PHPStan adds new
-rules only in major versions or behind [bleeding edge][bleeding-edge]; here a
-new rule may land in a minor release. The reasoning is in the next section.
+Where a release can change what your build reports, the line drawn here is
+between inference and rules. Better inference ships in any release. New rules
+ship switched off, so adding one changes nothing until you enable it.
 
 ## New errors are not a breaking change
 
@@ -22,21 +22,30 @@ That is the nature of a static analyser, and it is not a breaking change.
 A failing analysis is not a broken application. Nothing here runs in
 production; it runs in CI, behind a lock file you control, against code you
 have not shipped yet. The worst case is a build that asks you to look at
-something. That is the job. An analyser that may never report anything new is
-an analyser that may never improve, and refusing better inference because a
-pipeline might go red trades the entire point of the tool for the appearance of
-stability.
+something, which is what you installed it for. An analyser held to never
+reporting anything new is one that can never improve.
 
 So a minor or patch release may:
 
 - report errors it previously missed, because inference got better
 - stop reporting errors that were false positives
 - infer a narrower or wider type than it did before
-- **add a new rule**, including one that is enabled by default
 
-A new rule finds real problems in code that already had them. Withholding it
-until a major version does not make anyone's application safer; it just delays
-the news.
+## New rules arrive switched off
+
+PHPStan adds new rules only in major versions or behind [bleeding
+edge][bleeding-edge]. Here a new rule may land in a minor release, but it
+arrives off by default, behind an option under `laravel.rules` like every other
+rule. Your build reports what it reported before until you choose to turn it
+on.
+
+Changing an existing rule's default from off to on is a different matter, since
+that does change what an untouched configuration reports. It waits for a major
+version, as does adding a rule to the small set that
+[reports unconditionally](../rules/index.md#always-enabled).
+
+The effect is that rules ship when they are ready and are adopted on your
+schedule rather than on the release schedule.
 
 ## What is a breaking change
 
@@ -50,14 +59,11 @@ it:
 - **Renaming or removing an error identifier**, since identifiers are what you
   ignore against.
 - **Raising the minimum PHP or Laravel version.**
+- **Enabling by default a rule that was previously off**, since a configuration
+  you have not touched then reports more.
 
-Note what is not on that list: how many errors you get. A release that reports
-more is doing what you installed it to do.
-
-Enabling a check that was previously off does change what a build reports
-without you touching anything, so it is called out prominently in the release
-notes and avoided in patch releases. It is still not a breaking change by the
-definition above, because nothing you wrote has stopped working.
+Note what is not on that list: the errors better inference finds. A release
+that understands your code more precisely is doing what you installed it to do.
 
 ## The PHP classes are not a public API
 

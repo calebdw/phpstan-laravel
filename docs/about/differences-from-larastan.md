@@ -412,13 +412,16 @@ prefixed identifier, so you can ignore a category precisely. See
 This will not show up in a feature list, but it may matter most.
 
 New errors appearing because the analysis got better are **not** treated as a
-breaking change here, and neither is adding a rule. A red build is not a broken
-application, which is the entire reason to run static analysis in CI behind a
-lock file.
+breaking change here. A red build is not a broken application, which is the
+entire reason to run static analysis in CI behind a lock file.
 
-The practical consequence is that improvements ship, rather than waiting for a
-major version because someone's pipeline might go red. The full policy is in
-[backward compatibility](../about/backward-compatibility.md).
+New rules are a separate case, and they ship off by default in minor releases,
+so adding one reports nothing until you enable it. Turning a rule on by default
+waits for a major version.
+
+The practical consequence is that improvements ship rather than waiting on a
+major version, while what your build reports stays under your control. The full
+policy is in [backward compatibility](../about/backward-compatibility.md).
 
 ## Tooling
 
