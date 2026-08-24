@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A PHPStan extension for static analysis of Laravel applications.">
+        <meta name="description" content="A PHPStan extension for analysis of Laravel applications and packages.">
       
       
       
@@ -1400,73 +1400,82 @@ needs its generic documented, since that is where the builder type comes from:</
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">}</span>
 </span></code></pre></div>
 <h2 id="model-factories">Model factories<a class="headerlink" href="#model-factories" title="Permanent link">&para;</a></h2>
-<p>Factories are the exception: <code>#[UseFactory]</code> is <strong>not</strong> resolved, so a factory
-needs the <code>HasFactory</code> trait with its generic documented. That generic is where
-the factory type comes from.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Factories\Factory</span><span class="p">;</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Factories\HasFactory</span><span class="p">;</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Model</span><span class="p">;</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="sd">/** @extends Factory&lt;User&gt; */</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="k">class</span> <span class="nc">UserFactory</span> <span class="k">extends</span> <span class="nx">Factory</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">{</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="k">protected</span> <span class="nv">$model</span> <span class="o">=</span> <span class="nx">User</span><span class="o">::</span><span class="na">class</span><span class="p">;</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="sd">/** @return array&lt;string, mixed&gt; */</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">definition</span><span class="p">()</span><span class="o">:</span> <span class="k">array</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="p">{</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        <span class="k">return</span> <span class="p">[];</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="p">}</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="p">}</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+<p><code>#[UseFactory]</code> is resolved the same way, so a factory needs no repeated
+generic either. The <code>HasFactory</code> trait is still required, since that is what
+puts <code>factory()</code> on the model:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Attributes\UseFactory</span><span class="p">;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Factories\Factory</span><span class="p">;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Factories\HasFactory</span><span class="p">;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Model</span><span class="p">;</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="sd">/** @extends Factory&lt;User&gt; */</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="k">class</span> <span class="nc">UserFactory</span> <span class="k">extends</span> <span class="nx">Factory</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">{</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="sd">/** @return array&lt;string, mixed&gt; */</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">definition</span><span class="p">()</span><span class="o">:</span> <span class="k">array</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="p">{</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        <span class="k">return</span> <span class="p">[];</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="p">}</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="p">}</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="p">#[</span><span class="nd">UseFactory</span><span class="p">(</span><span class="nx">UserFactory</span><span class="o">::</span><span class="na">class</span><span class="p">)]</span>
 </span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
 </span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="p">{</span>
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    <span class="sd">/** @use HasFactory&lt;UserFactory&gt; */</span>
-</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>    <span class="k">use</span> <span class="nx">HasFactory</span><span class="p">;</span>
-</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
-</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>    <span class="k">protected</span> <span class="k">static</span> <span class="nx">string</span> <span class="nv">$factory</span> <span class="o">=</span> <span class="nx">UserFactory</span><span class="o">::</span><span class="na">class</span><span class="p">;</span>
-</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="p">}</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    <span class="k">use</span> <span class="nx">HasFactory</span><span class="p">;</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">create</span><span class="p">();</span>  <span class="c1">// App\User</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">();</span>           <span class="c1">// App\UserFactory</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nx">User</span><span class="o">::</span><span class="na">factory</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">create</span><span class="p">();</span> <span class="c1">// App\User</span>
 </span></code></pre></div>
-<p>Laravel can associate a factory with a model by naming convention, but naming it
-explicitly is what makes the chain resolve.</p>
+<p>The <code>@extends Factory&lt;User&gt;</code> on the factory is what says which model it builds,
+so a factory pointed at the wrong model is caught rather than assumed.</p>
+<div class="admonition note">
+<p class="admonition-title">At level 6 and above, document the trait's generic too</p>
+<p><code>HasFactory</code> is generic, so <code>missingType.generics</code> asks for its type
+parameter whether or not the attribute is present. Adding it costs one line
+and silences that:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="sd">/** @use HasFactory&lt;UserFactory&gt; */</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">use</span> <span class="nx">HasFactory</span><span class="p">;</span>
+</span></code></pre></div>
+<p>The <code>$factory</code> property and a <code>newFactory()</code> override are both understood as
+well, and take precedence in that order.</p>
+</div>
 <h2 id="custom-model-collections">Custom model collections<a class="headerlink" href="#custom-model-collections" title="Permanent link">&para;</a></h2>
 <p>Same shape. <code>#[CollectedBy]</code> is resolved, so a custom collection needs no trait:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Attributes\CollectedBy</span><span class="p">;</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Collection</span><span class="p">;</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Model</span><span class="p">;</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="sd">/** @extends Collection&lt;array-key, User&gt; */</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">final</span> <span class="k">class</span> <span class="nc">UserCollection</span> <span class="k">extends</span> <span class="nx">Collection</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">{</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="p">}</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="p">#[</span><span class="nd">CollectedBy</span><span class="p">(</span><span class="nx">UserCollection</span><span class="o">::</span><span class="na">class</span><span class="p">)]</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="p">{</span>
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Attributes\CollectedBy</span><span class="p">;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Collection</span><span class="p">;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Model</span><span class="p">;</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="sd">/** @extends Collection&lt;array-key, User&gt; */</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="k">final</span> <span class="k">class</span> <span class="nc">UserCollection</span> <span class="k">extends</span> <span class="nx">Collection</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">{</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">}</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="p">#[</span><span class="nd">CollectedBy</span><span class="p">(</span><span class="nx">UserCollection</span><span class="o">::</span><span class="na">class</span><span class="p">)]</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="p">{</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>  <span class="c1">// App\UserCollection</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>  <span class="c1">// App\UserCollection</span>
 </span></code></pre></div>
 <p>The <code>HasCollection</code> trait is equally understood, and is what you want when one
 collection serves several models, since the generic can then say which:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="sd">/**</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="sd"> * @template TKey of array-key</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="sd"> * @template TModel of \Illuminate\Database\Eloquent\Model</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="sd"> * @extends Collection&lt;TKey, TModel&gt;</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="sd"> */</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">class</span> <span class="nc">GeneralCollection</span> <span class="k">extends</span> <span class="nx">Collection</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="p">{</span>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">}</span>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="p">{</span>
-</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    <span class="sd">/** @use HasCollection&lt;GeneralCollection&lt;int, static&gt;&gt; */</span>
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    <span class="k">use</span> <span class="nx">HasCollection</span><span class="p">;</span>
-</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>    <span class="k">protected</span> <span class="k">static</span> <span class="nx">string</span> <span class="nv">$collectionClass</span> <span class="o">=</span> <span class="nx">GeneralCollection</span><span class="o">::</span><span class="na">class</span><span class="p">;</span>
-</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="sd">/**</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="sd"> * @template TKey of array-key</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="sd"> * @template TModel of \Illuminate\Database\Eloquent\Model</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="sd"> * @extends Collection&lt;TKey, TModel&gt;</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="sd"> */</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="k">class</span> <span class="nc">GeneralCollection</span> <span class="k">extends</span> <span class="nx">Collection</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="p">{</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="p">}</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="p">{</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>    <span class="sd">/** @use HasCollection&lt;GeneralCollection&lt;int, static&gt;&gt; */</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>    <span class="k">use</span> <span class="nx">HasCollection</span><span class="p">;</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>    <span class="k">protected</span> <span class="k">static</span> <span class="nx">string</span> <span class="nv">$collectionClass</span> <span class="o">=</span> <span class="nx">GeneralCollection</span><span class="o">::</span><span class="na">class</span><span class="p">;</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="p">}</span>
 </span></code></pre></div>
 
 
