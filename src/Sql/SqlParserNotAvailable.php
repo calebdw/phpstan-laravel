@@ -24,6 +24,7 @@ final class SqlParserNotAvailable extends RuntimeException
             . ' Install one of the following as a development dependency:' . "\n"
             . '  composer require --dev iamcal/sql-parser      (MIT)' . "\n"
             . '  composer require --dev phpmyadmin/sql-parser  (GPL-2.0-or-later)' . "\n"
+            . '  composer require --dev calebdw/pg-schema-parser (MIT, PostgreSQL)' . "\n"
             . 'Alternatively, set laravel.scanSchema to false to skip schema dumps entirely.',
         );
     }

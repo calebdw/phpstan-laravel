@@ -117,33 +117,30 @@ parameters:
 
 ### PostgreSQL
 
-Both supported parsers are primarily focused on the MySQL dialect.
-It can read (or rather, try to read) PostgreSQL dumps provided they are in the *plain text (and not the 'custom') format*, but the mileage may vary as problems have been noted with timestamp columns and lengthy parse time on more complicated dumps.
-
-The viable options for PostgreSQL at the moment are:
-
-1. Use the [laravel-ide-helper](https://github.com/barryvdh/laravel-ide-helper) package to write PHPDocs directly to the Models.
-2. Use the [laravel-migrations-generator](https://github.com/kitloong/laravel-migrations-generator) to generate migration files (or a singular squashed migration file) for this extension to scan with the `migrationDirectories` setting.
+PostgreSQL plain-text dumps are supported by the `postgres` driver. Custom and
+directory-format dumps are not SQL text and cannot be scanned.
 
 ## `sqlParser`
 
 **default**: `auto`
 
-Selects which SQL parser reads your squashed schema dumps. Neither parser is a
-hard requirement of this package, so you choose which one---and which license---enters your dependency tree:
+Selects which SQL parser reads your squashed schema dumps. The parsers are
+optional dependencies:
 
 ```bash
 composer require --dev iamcal/sql-parser      # MIT
 composer require --dev phpmyadmin/sql-parser  # GPL-2.0-or-later
+composer require --dev calebdw/pg-schema-parser # MIT, PostgreSQL
 ```
 
 | Driver | Uses | Notes |
 | --- | --- | --- |
-| `auto` | whichever is installed | Prefers `phpmyadmin` when both are present |
+| `auto` | whichever is installed | Prefers `phpmyadmin`, then `iamcal`, then `postgres` |
 | `iamcal` | `iamcal/sql-parser` | MIT, no dependencies of its own |
 | `phpmyadmin` | `phpmyadmin/sql-parser` | GPL-2.0-or-later, understands more of the MySQL dialect |
+| `postgres` | `calebdw/pg-schema-parser` | MIT, parses PostgreSQL plain-text dumps |
 
-These three are the only accepted values; anything else fails configuration
+These four are the only accepted values; anything else fails configuration
 validation with the valid ones listed.
 
 ### Example
@@ -159,6 +156,10 @@ neither is. Naming a driver explicitly is a stronger statement: if that parser
 is not installed the analysis fails rather than quietly falling back to the
 other one, so a project that has deliberately chosen a parser cannot silently
 end up using a different one.
+
+`auto` selects `postgres` when it is the only installed parser. If both a MySQL
+parser and the PostgreSQL parser are installed, set the driver explicitly
+because the dump does not identify its dialect before parsing.
 
 If you do not use squashed schema dumps at all, you need neither package: the
 parser is only resolved when there is a dump to read. You can also set

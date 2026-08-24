@@ -19,3 +19,5 @@ parameters:
           path: src/Sql/IamcalSqlParser.php
         - identifier: class.notFound
           path: src/Sql/PhpMyAdminSqlParser.php
+        - identifier: class.notFound
+          path: src/Sql/PostgresSqlParser.php

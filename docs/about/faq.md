@@ -177,8 +177,8 @@ your `composer.lock` and you control when the improvements arrive.
 
 ## Do I need an SQL parser?
 
-Only if you have squashed schema dumps under `database/schema`. Neither parser
-is a hard dependency, so the license that enters your tree is your choice. See
+Only if you have squashed schema dumps under `database/schema`. The parsers are
+optional dependencies, so the license that enters your tree is your choice. See
 [installation](../getting-started/installation.md#squashed-schema-dumps).
 
 ## Does a GPL parser affect my application's license?

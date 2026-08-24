@@ -44,17 +44,18 @@ vendor/bin/phpstan analyse
 ## Squashed schema dumps
 
 If your project has schema dumps under `database/schema`, you also need an SQL
-parser. Neither is a hard requirement of this package, so the license that
-enters your dependency tree is your choice rather than ours:
+parser. None is a hard requirement of this package:
 
 ```bash
 composer require --dev iamcal/sql-parser      # MIT
 composer require --dev phpmyadmin/sql-parser  # GPL-2.0-or-later
+composer require --dev calebdw/pg-schema-parser # MIT, PostgreSQL
 ```
 
-Either works. `phpmyadmin/sql-parser` understands more of the MySQL dialect and
-is preferred when both are installed. See
-[`sqlParser`](../reference/configuration.md#sqlparser) to name one explicitly.
+The first two parse MySQL dumps; `phpmyadmin/sql-parser` is preferred when both
+are installed. PostgreSQL dumps require `calebdw/pg-schema-parser`, which
+`auto` selects when no MySQL parser is installed. See
+[`sqlParser`](../reference/configuration.md#sqlparser) for details.
 
 If you have no dumps you need neither: the parser is only resolved when there
 is a dump to read.

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Properties;
 
 use CalebDW\PhpstanLaravel\Internal\FileHelper;
+use CalebDW\PhpstanLaravel\Properties\Schema\DataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Sql\SqlDialect;
 use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 
@@ -22,9 +25,18 @@ final class SquashedMigrationHelper
         private array $schemaPaths,
         private FileHelper $fileHelper,
         private SqlDataTypeToPhpTypeConverter $converter,
+        private PostgresDataTypeToPhpTypeConverter $postgresConverter,
         private SqlParserManager $parserManager,
         private bool $scanSchema,
     ) {
+    }
+
+    private function converterFor(SqlDialect $dialect): DataTypeToPhpTypeConverter
+    {
+        return match ($dialect) {
+            SqlDialect::MySql => $this->converter,
+            SqlDialect::Postgres => $this->postgresConverter,
+        };
     }
 
     public function parseSchemaDumps(ModelDatabaseHelper &$modelDatabaseHelper): void
@@ -79,7 +91,8 @@ final class SquashedMigrationHelper
                 foreach ($definition->columns as $column) {
                     $table->setColumn(new SchemaColumn(
                         $column->name,
-                        $this->converter->convert($column->type, $column->typeOptions, $column->values),
+                        $this->converterFor($column->dialect)
+                            ->convert($column->type, $column->typeOptions, $column->values),
                         $column->nullable,
                     ));
                 }

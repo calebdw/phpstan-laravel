@@ -17,6 +17,7 @@ final class ColumnDefinition
         public array $typeOptions,
         public bool $nullable,
         public array $values = [],
+        public SqlDialect $dialect = SqlDialect::MySql,
     ) {
     }
 }

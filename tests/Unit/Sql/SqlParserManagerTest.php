@@ -6,6 +6,7 @@ namespace Tests\Unit\Sql;
 
 use CalebDW\PhpstanLaravel\Sql\IamcalSqlParser;
 use CalebDW\PhpstanLaravel\Sql\PhpMyAdminSqlParser;
+use CalebDW\PhpstanLaravel\Sql\PostgresSqlParser;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Sql\SqlParserNotAvailable;
 use PHPUnit\Framework\Attributes\Test;
@@ -40,12 +41,17 @@ class SqlParserManagerTest extends TestCase
     #[Test]
     public function it_resolves_each_driver_explicitly(): void
     {
-        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_IAMCAL, SqlParserManager::DRIVER_PHPMYADMIN);
+        $this->skipUnlessParserInstalled(
+            SqlParserManager::DRIVER_IAMCAL,
+            SqlParserManager::DRIVER_PHPMYADMIN,
+            SqlParserManager::DRIVER_POSTGRES,
+        );
 
         $manager = $this->manager();
 
         $this->assertInstanceOf(IamcalSqlParser::class, $manager->driver('iamcal'));
         $this->assertInstanceOf(PhpMyAdminSqlParser::class, $manager->driver('phpmyadmin'));
+        $this->assertInstanceOf(PostgresSqlParser::class, $manager->driver('postgres'));
     }
 
     #[Test]
@@ -65,6 +71,14 @@ class SqlParserManagerTest extends TestCase
     }
 
     #[Test]
+    public function it_uses_postgres_when_it_is_the_only_installed_parser(): void
+    {
+        $manager = $this->manager(installed: ['CalebDW\PgSchemaParser\PgDumpParser']);
+
+        $this->assertInstanceOf(PostgresSqlParser::class, $manager->driver());
+    }
+
+    #[Test]
     public function it_fails_with_installation_instructions_when_no_parser_is_installed(): void
     {
         $manager = $this->manager(installed: []);
@@ -73,6 +87,7 @@ class SqlParserManagerTest extends TestCase
         $this->expectExceptionMessageMatches('/requires an SQL parser, but none is installed/');
         $this->expectExceptionMessageMatches('/iamcal\/sql-parser/');
         $this->expectExceptionMessageMatches('/phpmyadmin\/sql-parser/');
+        $this->expectExceptionMessageMatches('/calebdw\/pg-schema-parser/');
 
         $manager->driver();
     }
@@ -123,10 +138,18 @@ class SqlParserManagerTest extends TestCase
     #[Test]
     public function it_lists_the_installed_drivers(): void
     {
-        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_IAMCAL, SqlParserManager::DRIVER_PHPMYADMIN);
+        $this->skipUnlessParserInstalled(
+            SqlParserManager::DRIVER_IAMCAL,
+            SqlParserManager::DRIVER_PHPMYADMIN,
+            SqlParserManager::DRIVER_POSTGRES,
+        );
 
-        $this->assertSame(['iamcal', 'phpmyadmin'], $this->manager()->availableDrivers());
+        $this->assertSame(['iamcal', 'phpmyadmin', 'postgres'], $this->manager()->availableDrivers());
         $this->assertSame([], $this->manager(installed: [])->availableDrivers());
         $this->assertSame(['phpmyadmin'], $this->manager(installed: ['PhpMyAdmin\SqlParser\Parser'])->availableDrivers());
+        $this->assertSame(
+            ['postgres'],
+            $this->manager(installed: ['CalebDW\PgSchemaParser\PgDumpParser'])->availableDrivers(),
+        );
     }
 }

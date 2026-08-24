@@ -7,6 +7,7 @@ namespace Tests\Unit\Concerns;
 use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use CalebDW\PhpstanLaravel\Properties\MigrationHelper;
 use CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper;
+use CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
@@ -57,6 +58,7 @@ trait HasDatabaseHelper
                 self::getContainer()->getByType(PHPStanFileHelper::class),
             ),
             new SqlDataTypeToPhpTypeConverter(),
+            new PostgresDataTypeToPhpTypeConverter(),
             new SqlParserManager($driver),
             $scan,
         );

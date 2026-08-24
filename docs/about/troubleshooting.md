@@ -121,14 +121,10 @@ to say so. Options, in order of preference: fix the dump, choose the other
 parser with [`sqlParser`](../reference/configuration.md#sqlparser), or set
 `scanSchema: false` to opt out of dumps entirely.
 
-Both parsers focus on the MySQL dialect. PostgreSQL dumps parse only in plain
-text format, and even then problems have been reported with timestamp columns
-and long parse times. For PostgreSQL, generating migrations with
-[laravel-migrations-generator][gen] or writing `@property` annotations with
-[laravel-ide-helper][ide] are the more reliable routes.
+The `iamcal` and `phpmyadmin` drivers parse MySQL dumps. PostgreSQL plain-text
+dumps require `calebdw/pg-schema-parser`; use `sqlParser: postgres` when a MySQL
+parser is also installed. Custom and directory-format dumps cannot be scanned.
 
 <!-- links -->
 [identifiers]: https://phpstan.org/user-guide/ignoring-errors#ignoring-by-identifier
 [unmatched]: https://phpstan.org/user-guide/ignoring-errors#reporting-unused-ignores
-[gen]: https://github.com/kitloong/laravel-migrations-generator
-[ide]: https://github.com/barryvdh/laravel-ide-helper

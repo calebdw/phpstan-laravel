@@ -69,7 +69,7 @@ parametersSchema:
     schemaDirectories: listOf(string())
     scanMigrations: bool()
     scanSchema: bool()
-    sqlParser: anyOf('auto', 'iamcal', 'phpmyadmin')
+    sqlParser: anyOf('auto', 'iamcal', 'phpmyadmin', 'postgres')
     configDirectories: listOf(string())
     translationDirectories: listOf(string())
     viewDirectories: listOf(string())
@@ -288,6 +288,7 @@ services:
     arguments: {dispatchableClass: Illuminate\Foundation\Events\Dispatchable}
     tags: [phpstan.rules.rule]
   - class: CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter
+  - class: CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter
   - class: CalebDW\PhpstanLaravel\StubFilesExtension
     tags: [phpstan.stubFilesExtension]
   - class: CalebDW\PhpstanLaravel\Rules\UnusedViewsRule

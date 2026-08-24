@@ -11,12 +11,9 @@ use PHPStan\Type\VerbosityLevel;
 use function array_map;
 use function in_array;
 
-final class SqlDataTypeToPhpTypeConverter
+final class SqlDataTypeToPhpTypeConverter implements DataTypeToPhpTypeConverter
 {
-    /**
-     * @param list<lowercase-string> $options
-     * @param list<string>           $values
-     */
+    /** @inheritDoc */
     public function convert(string $type, array $options = [], array $values = []): string
     {
         return match ($type) {

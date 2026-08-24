@@ -88,6 +88,18 @@ $reportingUser->email; // error: property does not exist
 Schema dumps are matched per connection too, by the
 `{connection}-schema.sql` filename Laravel writes.
 
+### PostgreSQL schema dumps
+
+PostgreSQL plain-text schema dumps are supported directly through
+`calebdw/pg-schema-parser`. PostgreSQL enums retain their labels as literal
+string unions, domains resolve to their underlying types, arrays reflect the
+string values returned by PDO, and tables outside `public` keep their
+schema-qualified names.
+
+Larastan's schema parsing is built around MySQL parsers, which do not reliably
+handle PostgreSQL dumps. Set `sqlParser: postgres`, or let `auto` select it when
+it is the only installed parser.
+
 ### Custom builders survive the chain
 
 A model declaring its own builder keeps that builder through inherited methods,
@@ -453,10 +465,10 @@ prefixed identifier, so you can ignore a category precisely. See
 
 ## Packaging
 
-- **The SQL parser is optional.** Squashed schema dumps need one, but neither is
-  a hard dependency, so the license entering your dependency tree is your
-  choice: `iamcal/sql-parser` (MIT) or `phpmyadmin/sql-parser`
-  (GPL-2.0-or-later). Name one with
+- **The SQL parser is optional.** Squashed schema dumps need one, but it is not
+  a hard dependency. MySQL dumps support `iamcal/sql-parser` (MIT) and
+  `phpmyadmin/sql-parser` (GPL-2.0-or-later); PostgreSQL dumps support
+  `calebdw/pg-schema-parser` (MIT). Name one with
   [`sqlParser`](../reference/configuration.md#sqlparser) or let it pick.
 - **Options nest under `laravel:`** rather than being mixed into PHPStan's own
   `parameters`, with rule toggles a level deeper under `laravel.rules`. The

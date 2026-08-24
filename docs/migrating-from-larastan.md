@@ -190,7 +190,7 @@ handed `mixed` is now checked.
 
 ### `sqlParser` only accepts the built-in drivers
 
-`sqlParser` is validated against `auto`, `iamcal` and `phpmyadmin`, so a typo fails
+`sqlParser` is validated against `auto`, `iamcal`, `phpmyadmin` and `postgres`, so a typo fails
 configuration validation with the valid values listed instead of failing later, mid-parse.
 Registering a parser of your own is no longer supported.
 
@@ -288,16 +288,16 @@ grep -rl '@phpstan-ignore' app src tests | xargs sed -i -E ...
 ## 5. Install an SQL parser if you use schema dumps
 
 Larastan required a parser for squashed schema dumps outright: `phpmyadmin/sql-parser`
-in the `calebdw/larastan` fork, `iamcal/sql-parser` upstream. Neither is a hard
-requirement here, so that the license entering your dependency tree is your
-choice rather than this package's:
+in the `calebdw/larastan` fork, `iamcal/sql-parser` upstream. Parsers are optional
+dependencies here, so the license entering your dependency tree is your choice:
 
 ```bash
 composer require --dev iamcal/sql-parser      # MIT
 composer require --dev phpmyadmin/sql-parser  # GPL-2.0-or-later
+composer require --dev calebdw/pg-schema-parser # MIT, PostgreSQL
 ```
 
-If you have no dumps under `database/schema`, you need neither: the parser is
+If you have no dumps under `database/schema`, you do not need one: the parser is
 only resolved when there is a dump to read. Otherwise analysis fails with
 instructions telling you to install one. Use
 [`sqlParser`](reference/configuration.md#sqlparser) to name a driver explicitly

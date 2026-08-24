@@ -21,6 +21,7 @@ final class SqlParserManager
     public const string DRIVER_AUTO       = 'auto';
     public const string DRIVER_IAMCAL     = 'iamcal';
     public const string DRIVER_PHPMYADMIN = 'phpmyadmin';
+    public const string DRIVER_POSTGRES   = 'postgres';
 
     private const array REQUIREMENTS = [
         self::DRIVER_IAMCAL => [
@@ -33,15 +34,25 @@ final class SqlParserManager
             'license' => 'GPL-2.0-or-later',
             'class' => 'PhpMyAdmin\SqlParser\Parser',
         ],
+        self::DRIVER_POSTGRES => [
+            'package' => 'calebdw/pg-schema-parser',
+            'license' => 'MIT',
+            'class' => 'CalebDW\PgSchemaParser\PgDumpParser',
+        ],
     ];
 
     /**
      * Order in which the `auto` driver prefers the available parsers.
      *
      * phpMyAdmin understands more of the MySQL dialect, so it wins when both
-     * are installed.
+     * MySQL parsers are installed. PostgreSQL is last because its presence
+     * cannot disambiguate the dump dialect when another parser is installed.
      */
-    private const array AUTO_PREFERENCE = [self::DRIVER_PHPMYADMIN, self::DRIVER_IAMCAL];
+    private const array AUTO_PREFERENCE = [
+        self::DRIVER_PHPMYADMIN,
+        self::DRIVER_IAMCAL,
+        self::DRIVER_POSTGRES,
+    ];
 
     /** @var array<string, SqlParser> */
     private array $resolved = [];
@@ -99,6 +110,7 @@ final class SqlParserManager
             self::DRIVER_AUTO => $this->createAutoDriver(),
             self::DRIVER_IAMCAL => $this->createIamcalDriver(),
             self::DRIVER_PHPMYADMIN => $this->createPhpMyAdminDriver(),
+            self::DRIVER_POSTGRES => $this->createPostgresDriver(),
             default => throw SqlParserNotAvailable::unknownDriver($driver, $this->knownDrivers()),
         };
     }
@@ -134,6 +146,14 @@ final class SqlParserManager
     }
 
     /** @throws SqlParserNotAvailable */
+    private function createPostgresDriver(): SqlParser
+    {
+        $this->ensureInstalled(self::DRIVER_POSTGRES);
+
+        return new PostgresSqlParser();
+    }
+
+    /** @throws SqlParserNotAvailable */
     private function ensureInstalled(string $driver): void
     {
         $requirement = self::REQUIREMENTS[$driver];
@@ -156,6 +176,7 @@ final class SqlParserManager
             self::DRIVER_AUTO,
             self::DRIVER_IAMCAL,
             self::DRIVER_PHPMYADMIN,
+            self::DRIVER_POSTGRES,
         ];
     }
 }

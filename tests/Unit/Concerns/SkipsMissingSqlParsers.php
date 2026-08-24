@@ -18,6 +18,7 @@ trait SkipsMissingSqlParsers
     private const array PARSER_CLASSES = [
         SqlParserManager::DRIVER_IAMCAL => 'iamcal\SQLParser',
         SqlParserManager::DRIVER_PHPMYADMIN => 'PhpMyAdmin\SqlParser\Parser',
+        SqlParserManager::DRIVER_POSTGRES => 'CalebDW\PgSchemaParser\PgDumpParser',
     ];
 
     private function skipUnlessParserInstalled(string ...$drivers): void

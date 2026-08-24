@@ -144,6 +144,61 @@ class SquashedMigrationHelperTest extends PHPStanTestCase
         $this->assertSame('string', $tables['users']->columns['updated_at']->readableType);
     }
 
+    /**
+     * The fixture is genuine `pg_dump --schema-only` output, which is what
+     * `php artisan schema:dump` writes for a PostgreSQL connection.
+     */
+    #[Test]
+    public function it_can_parse_a_postgres_schema_dump(): void
+    {
+        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_POSTGRES);
+
+        $this->getSquashedMigrationHelper(
+            [__DIR__ . '/data/schema/postgres_schema'],
+            driver: SqlParserManager::DRIVER_POSTGRES,
+        )->parseSchemaDumps($this->modelDatabaseHelper);
+
+        $this->assertCount(1, $this->modelDatabaseHelper->connections);
+        $this->assertArrayHasKey('pgsql', $this->modelDatabaseHelper->connections);
+
+        $tables = $this->modelDatabaseHelper->connections['pgsql']->tables;
+
+        // A table outside the default schema keeps its qualification, since
+        // that is how a model addresses it.
+        $this->assertSame(['posts', 'users', 'reporting.summaries'], array_keys($tables));
+
+        $users = $tables['users']->columns;
+
+        // bigserial becomes a bigint column plus a sequence, so the type left in
+        // the dump is the integer.
+        $this->assertSame('int', $users['id']->readableType);
+        $this->assertFalse($users['id']->nullable);
+
+        $this->assertSame('string', $users['name']->readableType);
+        $this->assertSame('bool', $users['active']->readableType);
+        $this->assertSame('int', $users['login_count']->readableType);
+        $this->assertSame('float', $users['balance']->readableType);
+        $this->assertSame('float', $users['rating']->readableType);
+
+        // A PostgreSQL enum is a type rather than a column constraint, so its
+        // labels come from the CREATE TYPE statement.
+        $this->assertSame("'active'|'closed'|'suspended'", $users['status']->readableType);
+
+        // A domain resolves to whatever it is built on.
+        $this->assertSame('int', $users['quota']->readableType);
+
+        // PDO returns an array column as its literal rather than a PHP array.
+        $this->assertSame('string', $users['tags']->readableType);
+
+        $this->assertSame('string', $users['meta']->readableType);
+        $this->assertSame('string', $users['uuid']->readableType);
+        $this->assertSame('string', $users['ip']->readableType);
+        $this->assertSame('string', $users['created_at']->readableType);
+        $this->assertTrue($users['created_at']->nullable);
+
+        $this->assertSame('string', $tables['posts']->columns['published_at']->readableType);
+    }
+
     #[Test]
     public function it_can_disable_schema_scanning(): void
     {
