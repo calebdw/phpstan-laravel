@@ -49,31 +49,12 @@ User::create(['emial' => '...']);       // Property 'emial' does not exist
 It also ships a set of Laravel-specific rules for mistakes the framework will
 happily let you make at runtime.
 
-## Install
-
-```bash
-composer require --dev calebdw/phpstan-laravel
-```
-
-With the [PHPStan extension installer][extension-installer] that is the whole
-setup. Otherwise add the extension to your `phpstan.neon(.dist)`:
-
-```neon
-includes:
-    - vendor/calebdw/phpstan-laravel/extension.neon
-```
-
-> [!TIP]
-> Coming from Larastan? There is a migration guide in the
-> [documentation][docs]. Remove Larastan first: with both installed the
-> extension is registered twice and every error is reported twice.
-
-## Documentation
+## Installation & Documentation
 
 Everything is at **[phpstan-laravel.dev][docs]**: installation and
 configuration, what the extension understands about your code, every rule with
 its examples and defaults, every option and error identifier, how to analyse a
-package, and why you might switch from Larastan.
+package, and why you might switch from Larastan and how to do it.
 
 ## Contributing
 
@@ -92,7 +73,6 @@ Open-sourced software licensed under the [MIT license](LICENSE).
 
 <!-- links -->
 [phpstan]: https://phpstan.org
-[extension-installer]: https://phpstan.org/user-guide/extension-library#installing-extensions
 [larastan]: https://github.com/larastan/larastan
 [can]: https://github.com/canvural
 [nuno]: https://github.com/nunomaduro
