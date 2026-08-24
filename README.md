@@ -56,7 +56,12 @@ composer require --dev calebdw/phpstan-laravel
 ```
 
 With the [PHPStan extension installer][extension-installer] that is the whole
-setup.
+setup. Otherwise add the extension to your `phpstan.neon(.dist)`:
+
+```neon
+includes:
+    - vendor/calebdw/phpstan-laravel/extension.neon
+```
 
 > [!TIP]
 > Coming from Larastan? There is a migration guide in the
