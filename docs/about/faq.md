@@ -10,6 +10,23 @@ runs a command.
 It does not execute your controllers, jobs or queries. Nothing is analysed by
 running it.
 
+What that means for your service providers, and how to guard work that must not
+repeat, is in [booting your application](../guide/booting.md).
+
+## Can I stop something running during analysis?
+
+Yes. PHPStan defines `__PHPSTAN_RUNNING__`, so a provider can skip work that
+cannot safely happen on every run:
+
+```php
+if (defined('__PHPSTAN_RUNNING__')) {
+    return;
+}
+```
+
+The constant is PHPStan's, not this package's. See [when something really must
+not run](../guide/booting.md#when-something-really-must-not-run).
+
 ## Why does it need a database connection?
 
 It does not. Columns come from reading your migration files and schema dumps as

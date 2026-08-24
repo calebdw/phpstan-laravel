@@ -28,6 +28,18 @@ The extension boots the application in order to answer questions about the
 container and config. A failure can therefore be a real bootstrap problem
 rather than a type error. Read the message before assuming which.
 
+Booting runs every service provider's `register()` and `boot()`, so anything a
+provider does there happens on every analysis run. Do not add side effects to a
+provider, or to the constructor of anything resolved during boot: no writing
+files, no network calls, no sending mail, nothing slow. When work genuinely
+cannot be skipped or deferred, guard it with the constant PHPStan defines:
+
+```php
+if (defined('__PHPSTAN_RUNNING__')) {
+    return;
+}
+```
+
 ## Resolving what it reports
 
 Fix the code. Reach for a suppression only when the report is genuinely wrong,

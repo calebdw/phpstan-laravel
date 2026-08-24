@@ -16,6 +16,7 @@ nav = [
     { "Analysing a package" = "getting-started/packages.md" },
   ]},
   { "Guide" = [
+    { "Booting your application" = "guide/booting.md" },
     { "Model properties" = "guide/model-properties.md" },
     { "Builders, factories and collections" = "guide/eloquent.md" },
     { "Relations" = "guide/relations.md" },

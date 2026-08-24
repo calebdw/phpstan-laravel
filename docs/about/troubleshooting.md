@@ -77,7 +77,8 @@ Booting is fatal by design: nothing useful can be analysed once a service
 provider has failed, so the underlying exception is reported rather than a wall
 of unrelated errors. The message points at the real failure, which is usually a
 missing environment variable or a provider that expects a service the analysis
-environment does not have.
+environment does not have. [Booting your
+application](../guide/booting.md) covers what runs and what to keep out of it.
 
 ## A schema dump cannot be parsed
 
