@@ -73,16 +73,44 @@ is a dump to read.
 
 ## Level
 
-The extension works at every PHPStan level. Level 5 or 6 is a reasonable
-starting point for an existing application; the checks that depend on knowing
-your columns pay off most from level 5 upward, where argument types are
-verified.
+The extension works at every PHPStan level. Start at `0`, get to zero errors,
+then raise the level by one and repeat:
 
-If the first run is overwhelming, generate a baseline and work down from there:
+```neon
+parameters:
+    level: 0
+```
+
+That is slower than jumping straight to a high level, and it is the reason it
+works. The errors at the low levels are the ones your whole codebase rests on:
+a base model, a service that returns `mixed`, an abstraction whose types were
+never quite right. Fixing those first makes each later level cheaper, because
+the types they introduce flow outward into everything built on top.
+
+Skipping ahead inverts that. A first run at level 5 on an established
+application can produce thousands of errors, and the only practical way to see
+green is to baseline them. Now the structural problems are still there, just
+recorded, and every pull request that touches those files has to regenerate the
+baseline to get past CI. The team ends up maintaining a ledger of known
+breakage instead of fixing the thing the ledger describes.
+
+The checks that depend on knowing your columns pay off most from level 5 upward,
+where argument types are verified. That is a reason to keep climbing, not a
+reason to start there.
+
+### On the baseline
+
+A [baseline][baseline] is for the errors at your current level that are
+genuinely not worth fixing right now, so that the level can be locked in and CI
+stays honest about anything new:
 
 ```bash
 vendor/bin/phpstan analyse --generate-baseline
 ```
+
+It is a holding position for a specific, understood set of errors, not a way to
+adopt a level you have not actually reached. If generating one is the only way
+to pass, the level is too high rather than the baseline too small.
 
 ## Next
 
@@ -90,5 +118,6 @@ vendor/bin/phpstan analyse --generate-baseline
 - [Analysing a package](packages.md) if there is no application to boot.
 
 <!-- links -->
+[baseline]: https://phpstan.org/user-guide/baseline
 [composer]: https://getcomposer.org
 [extension-installer]: https://phpstan.org/user-guide/extension-library#installing-extensions

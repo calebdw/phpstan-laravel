@@ -85,7 +85,9 @@ gives applies here:
   do.
 - Set [`reportUnmatchedIgnoredErrors`][unmatched] to `false` if you do not want
   a release that *fixes* a false positive to fail your build over a now-unused
-  ignore.
+  ignore. It defaults to `true`, which is the better trade in most projects
+  because it stops stale ignores accumulating; turning it off buys quieter
+  upgrades at that cost.
 - If you value stability above all, pin an exact version and let Dependabot or
   similar propose upgrades on its own schedule.
 

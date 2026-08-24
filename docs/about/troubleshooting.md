@@ -18,10 +18,11 @@ parameters:
         - identifier: laravel.modelMake
 ```
 
-Set [`reportUnmatchedIgnoredErrors`][unmatched] to `true` so that an ignore
-which no longer matches is reported rather than left to rot. The cost is that a
-release which *fixes* a false positive fails your build until you delete the
-now-unused entry, which is the right trade in most projects.
+Leave [`reportUnmatchedIgnoredErrors`][unmatched] at its default of `true`, so
+that an ignore which no longer matches is reported rather than left to rot. The
+cost is that a release which *fixes* a false positive fails your build until you
+delete the now-unused entry, which is the right trade in most projects.
+[Backward compatibility](backward-compatibility.md) covers when to turn it off.
 
 ## Higher order messages on a support collection
 
