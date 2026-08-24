@@ -53,7 +53,6 @@ features = [
   "content.tabs.link",
   "navigation.instant",
   "navigation.instant.progress",
-  "navigation.sections",
   "navigation.top",
   "navigation.tracking",
   "search.highlight",
