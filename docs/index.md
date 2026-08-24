@@ -1,7 +1,7 @@
 # phpstan-laravel
 
 <p class="hero-tagline" markdown>
-**Static analysis that understands Laravel.**
+**Teaching PHPStan about Laravel's magic.**
 </p>
 
 Laravel leans on magic: facades, container bindings, dynamic Eloquent
@@ -34,7 +34,7 @@ Every type above is what the analyser actually reports, not an aspiration.
 
 <div class="grid cards" markdown>
 
--   :material-table-column:{ .lg .middle } **Eloquent that type checks**
+- :material-table-column:{ .lg .middle } **Eloquent that type checks**
 
     ---
 
@@ -44,7 +44,7 @@ Every type above is what the analyser actually reports, not an aspiration.
 
     [:octicons-arrow-right-24: Model properties](guide/model-properties.md)
 
--   :material-cog:{ .lg .middle } **Typed configuration**
+- :material-cog:{ .lg .middle } **Typed configuration**
 
     ---
 
@@ -53,7 +53,7 @@ Every type above is what the analyser actually reports, not an aspiration.
 
     [:octicons-arrow-right-24: Configuration types](guide/config-types.md)
 
--   :material-ruler-square:{ .lg .middle } **Laravel-specific rules**
+- :material-ruler-square:{ .lg .middle } **Laravel-specific rules**
 
     ---
 
@@ -62,7 +62,7 @@ Every type above is what the analyser actually reports, not an aspiration.
 
     [:octicons-arrow-right-24: Rules](rules/index.md)
 
--   :material-tag-text:{ .lg .middle } **Laravel-aware types**
+- :material-tag-text:{ .lg .middle } **Laravel-aware types**
 
     ---
 
@@ -87,7 +87,7 @@ include and for projects that use squashed schema dumps.
 
 <div class="grid cards" markdown>
 
--   **New here**
+- **New here**
 
     ---
 
@@ -96,7 +96,7 @@ include and for projects that use squashed schema dumps.
     thing, make it
     [`modelPropertyType`](reference/configuration.md#modelpropertytype).
 
--   **Coming from Larastan**
+- **Coming from Larastan**
 
     ---
 
@@ -104,7 +104,7 @@ include and for projects that use squashed schema dumps.
     [differences from Larastan](about/differences-from-larastan.md) covers why
     you might bother.
 
--   **Chasing an error**
+- **Chasing an error**
 
     ---
 
@@ -112,7 +112,7 @@ include and for projects that use squashed schema dumps.
     [the identifier reference](reference/identifiers.md), or read
     [troubleshooting](about/troubleshooting.md) for the known limits.
 
--   **Analysing a package**
+- **Analysing a package**
 
     ---
 
