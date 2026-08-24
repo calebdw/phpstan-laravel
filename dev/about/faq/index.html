@@ -468,6 +468,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guide/booting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Booting your application
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guide/model-properties/" class="md-nav__link">
         
   
@@ -1115,6 +1142,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#can-i-stop-something-running-during-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Can I stop something running during analysis?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-does-it-need-a-database-connection" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1395,6 +1433,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#can-i-stop-something-running-during-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Can I stop something running during analysis?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why-does-it-need-a-database-connection" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1557,6 +1606,17 @@ and where your views live. It is the same thing <code>php artisan</code> does be
 runs a command.</p>
 <p>It does not execute your controllers, jobs or queries. Nothing is analysed by
 running it.</p>
+<p>What that means for your service providers, and how to guard work that must not
+repeat, is in <a href="../../guide/booting/">booting your application</a>.</p>
+<h2 id="can-i-stop-something-running-during-analysis">Can I stop something running during analysis?<a class="headerlink" href="#can-i-stop-something-running-during-analysis" title="Permanent link">&para;</a></h2>
+<p>Yes. PHPStan defines <code>__PHPSTAN_RUNNING__</code>, so a provider can skip work that
+cannot safely happen on every run:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="x">if (defined('__PHPSTAN_RUNNING__')) {</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="x">    return;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="x">}</span>
+</span></code></pre></div>
+<p>The constant is PHPStan's, not this package's. See <a href="../../guide/booting/#when-something-really-must-not-run">when something really must
+not run</a>.</p>
 <h2 id="why-does-it-need-a-database-connection">Why does it need a database connection?<a class="headerlink" href="#why-does-it-need-a-database-connection" title="Permanent link">&para;</a></h2>
 <p>It does not. Columns come from reading your migration files and schema dumps as
 source code, never from connecting to a database. You can analyse a project
@@ -1586,11 +1646,11 @@ right places, confirm your properties resolve, then enable it.</p>
 <h2 id="do-i-have-to-annotate-my-relations">Do I have to annotate my relations?<a class="headerlink" href="#do-i-have-to-annotate-my-relations" title="Permanent link">&para;</a></h2>
 <p>Yes, with generics. The related model is read from the relation method's
 declared return type, not from the <code>hasMany(Post::class)</code> argument:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="x">/** @return HasMany&lt;Post, $this&gt; */</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="x">public function posts(): HasMany</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="x">{</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="x">    return $this-&gt;hasMany(Post::class);</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="x">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="x">/** @return HasMany&lt;Post, $this&gt; */</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="x">public function posts(): HasMany</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="x">{</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="x">    return $this-&gt;hasMany(Post::class);</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="x">}</span>
 </span></code></pre></div>
 <p>An undocumented relation resolves to the base relation class and the related
 model is lost. See <a href="../../guide/relations/">relations</a>.</p>
@@ -1605,7 +1665,7 @@ package</a>.</p>
 value gives <code>Collection&lt;10|20, ...&gt;</code> rather than <code>Collection&lt;int, ...&gt;</code>. Since
 <code>Collection</code> declares its templates invariantly, ask for the general type at the
 annotation:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="x">/** @return Collection&lt;covariant int, Collection&lt;int, Item&gt;&gt; */</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="x">/** @return Collection&lt;covariant int, Collection&lt;int, Item&gt;&gt; */</span>
 </span></code></pre></div>
 <p><code>array-key</code> works too, being a benevolent union. A plain <code>int|string</code> does not,
 because it is matched invariantly and accepts neither side. See <a href="../../guide/collections/#precision-and-widening-it-where-you-want-it">precision, and

@@ -13,6 +13,9 @@
         <loc>https://phpstan-laravel.dev/dev/getting-started/packages/</loc>
       </url>
       <url>
+        <loc>https://phpstan-laravel.dev/dev/guide/booting/</loc>
+      </url>
+      <url>
         <loc>https://phpstan-laravel.dev/dev/guide/model-properties/</loc>
       </url>
       <url>
