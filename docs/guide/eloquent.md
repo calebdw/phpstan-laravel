@@ -55,11 +55,12 @@ class User extends Model
 
 ## Model factories
 
-Factories are the exception: `#[UseFactory]` is **not** resolved, so a factory
-needs the `HasFactory` trait with its generic documented. That generic is where
-the factory type comes from.
+`#[UseFactory]` is resolved the same way, so a factory needs no repeated
+generic either. The `HasFactory` trait is still required, since that is what
+puts `factory()` on the model:
 
 ```php
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -67,8 +68,6 @@ use Illuminate\Database\Eloquent\Model;
 /** @extends Factory<User> */
 class UserFactory extends Factory
 {
-    protected $model = User::class;
-
     /** @return array<string, mixed> */
     public function definition(): array
     {
@@ -76,21 +75,34 @@ class UserFactory extends Factory
     }
 }
 
+#[UseFactory(UserFactory::class)]
 class User extends Model
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory;
-
-    protected static string $factory = UserFactory::class;
 }
 ```
 
 ```php
-User::factory()->create();  // App\User
+User::factory();           // App\UserFactory
+User::factory()->create(); // App\User
 ```
 
-Laravel can associate a factory with a model by naming convention, but naming it
-explicitly is what makes the chain resolve.
+The `@extends Factory<User>` on the factory is what says which model it builds,
+so a factory pointed at the wrong model is caught rather than assumed.
+
+!!! note "At level 6 and above, document the trait's generic too"
+
+    `HasFactory` is generic, so `missingType.generics` asks for its type
+    parameter whether or not the attribute is present. Adding it costs one line
+    and silences that:
+
+    ```php
+    /** @use HasFactory<UserFactory> */
+    use HasFactory;
+    ```
+
+    The `$factory` property and a `newFactory()` override are both understood as
+    well, and take precedence in that order.
 
 ## Custom model collections
 
