@@ -324,6 +324,8 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrKeyByExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrOnlyExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrPluckExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentPluckExtension

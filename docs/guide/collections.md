@@ -32,6 +32,51 @@ The column is read from the *related* model, so `$post->user()->pluck('name')`
 resolves `name` on `User` rather than on `Post`. Builder methods in the middle
 of the chain do not break it, since they return the relation.
 
+## only
+
+`Arr::only` narrows an array shape to the keys you ask for. A key the array does
+not have is dropped, since the call is a key intersection:
+
+```php
+/** @var array{id: int, name: string, email: string} $row */
+Arr::only($row, ['id', 'name']);  // array{id: int, name: string}
+Arr::only($row, 'id');            // array{id: int}
+Arr::only($row, ['id', 'nope']);  // array{id: int}
+```
+
+Keys that are not known while analysing cannot be intersected. Since the call
+can only ever drop entries, the result keeps the shape with every entry optional
+rather than falling back to `array<string, mixed>`:
+
+```php
+Arr::only($row, $keys);  // array{id?: int, name?: string, email?: string}
+```
+
+Where there is no shape to intersect, the keys still narrow the key type:
+
+```php
+/** @var array<string, int> $map */
+Arr::only($map, ['a', 'b']);  // array<'a'|'b', int>
+```
+
+!!! warning "No dot notation"
+
+    `Arr::only` is an `array_intersect_key` over the top-level keys, so a dotted
+    key matches a literal key that happens to contain a dot, and never a nested
+    one. `Collection::only` behaves the same way:
+
+    ```php
+    Arr::only($nested, ['user.name']);  // array{}
+    ```
+
+    That is what the framework returns at runtime, so the inferred type is
+    reporting the bug rather than causing it. Reach for `Arr::get` or `data_get`
+    when you want a path, or `pluck`, which does resolve one.
+
+`Model::only` builds a shape too, but out of a model's attributes, and answers
+differently for a key that is not there. See
+[reading a subset of attributes](model-properties.md#reading-a-subset-of-attributes).
+
 ## groupBy
 
 `groupBy` nests one level per grouper, and an array argument means successive

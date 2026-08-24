@@ -74,6 +74,45 @@ point [`migrationDirectories`](../reference/configuration.md#migrationdirectorie
 and [`schemaDirectories`](../reference/configuration.md#schemadirectories) at the
 right places, before turning it on.
 
+## Reading a subset of attributes
+
+`only` builds a shape out of the attributes you name, resolved exactly the way
+`$user->email` is. Columns, casts, both accessor styles and `@property`
+annotations all carry their types through it:
+
+```php
+$user->only('name', 'email');                   // array{name: string, email: string}
+$user->only(['blocked']);                       // array{blocked: bool}
+$user->only(['only_available_with_accessor']);  // array{only_available_with_accessor: string}
+```
+
+An attribute the model does not have comes back as null rather than being
+dropped, which is what `getAttribute()` does at runtime:
+
+```php
+$user->only(['name', 'nope']);  // array{name: string, nope: null}
+```
+
+A key that is not known while analysing leaves no shape to build, so the result
+widens:
+
+```php
+$user->only(['name', $key]);  // array<string, mixed>
+```
+
+!!! warning "No dot notation"
+
+    `getAttribute()` does not split on dots, so a dotted key is looked up whole
+    and misses:
+
+    ```php
+    $user->only(['meta.a']);  // array{'meta.a': null}
+    ```
+
+    That is what the framework returns at runtime.
+    [`Arr::only`](collections.md#only) has the same limitation, for its own
+    reasons.
+
 ## Accessors and mutators
 
 Both styles are recognized. An [`Attribute`][attributes] accessor must be a
