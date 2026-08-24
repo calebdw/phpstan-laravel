@@ -93,6 +93,15 @@ function test(
     assertType('int<0, max>', count($user->properties));
     assertType('mixed', $user->properties->first());
     assertType('non-falsy-string|null', $user->deleted_at?->format('d/m/Y'));
+
+    assertType('string|null', $user->remember_token);
+    assertType('int', $user->birth_year);
+    assertType('string', $user->tz_stamp);
+    assertType('string', $user->tz_time);
+    assertType('int|null', $user->nullable_year);
+    assertType('string', $user->spatially_indexed);
+    assertType('string|null', $user->deleted_datetime_at);
+    assertType('string|null', $user->deleted_tz_at);
     assertType('int', $address->user_id);
     assertType('int', $address->custom_foreign_id_for_name);
     assertType('string', $address->address_id);

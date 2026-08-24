@@ -320,7 +320,7 @@ final class SchemaAggregator
                         continue 2;
 
                     case 'remembertoken':
-                        $table->setColumn(new SchemaColumn('remember_token', 'string', $nullable));
+                        $table->setColumn(new SchemaColumn('remember_token', 'string', true));
                         continue 2;
 
                     case 'dropremembertoken':
@@ -533,6 +533,7 @@ final class SchemaAggregator
             case 'unsignedtinyinteger':
             case 'bigincrements':
             case 'foreignid':
+            case 'year':
                 $table->setColumn(new SchemaColumn($columnName, 'int', $nullable));
 
                 return;
@@ -553,6 +554,8 @@ final class SchemaAggregator
             case 'text':
             case 'time':
             case 'timestamp':
+            case 'timestamptz':
+            case 'timetz':
             case 'ulid':
             case 'uuid':
             case 'binary':
@@ -615,7 +618,7 @@ final class SchemaAggregator
             case 'index':
             case 'primary':
             case 'renameindex':
-            case 'spatialIndex':
+            case 'spatialindex':
             case 'unique':
             case 'dropspatialindex':
                 return;
@@ -668,11 +671,9 @@ final class SchemaAggregator
 
                 return;
 
-            case 'softdeletestz':
-            case 'timestamptz':
-            case 'timetz':
-            case 'year':
             case 'softdeletes':
+            case 'softdeletesdatetime':
+            case 'softdeletestz':
                 $table->setColumn(new SchemaColumn($columnName, 'string', true));
 
                 return;

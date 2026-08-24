@@ -57,6 +57,15 @@ class CreateUsersTable extends Migration
             $table->dateTime('immutable_datetime');
             $table->timestamp('timestamp');
 
+            $table->year('birth_year');
+            $table->timestampTz('tz_stamp');
+            $table->timeTz('tz_time');
+            $table->year('nullable_year')->nullable();
+            $table->string('spatially_indexed');
+            $table->spatialIndex('spatially_indexed');
+            $table->softDeletesDatetime('deleted_datetime_at');
+            $table->softDeletesTz('deleted_tz_at');
+
             $table->timestamps();
             $table->softDeletes();
         });
