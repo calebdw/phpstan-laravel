@@ -544,41 +544,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#checking-property-names" class="md-nav__link">
+  <a href="#checking-column-names" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Checking property names
+        Checking column names
       </span>
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Checking property names">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Configuration
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#basic-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic example
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1308,41 +1280,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#checking-property-names" class="md-nav__link">
+  <a href="#checking-column-names" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Checking property names
+        Checking column names
       </span>
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Checking property names">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Configuration
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#basic-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic example
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1420,84 +1364,77 @@ directories. Enabling
 <a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a> then
 checks property <em>names</em> passed to methods, catching typos in things like
 <code>User::create([...])</code>.</p>
-<h2 id="checking-property-names">Checking property names<a class="headerlink" href="#checking-property-names" title="Permanent link">&para;</a></h2>
-<p>This one is not a rule. Enabling the option activates the
-<a href="../../guide/custom-types/"><code>model-property</code></a> type, and the mismatches are then reported
-by PHPStan's ordinary argument checks, which is why the errors carry core
-identifiers rather than a <code>laravel.*</code> one.</p>
-<p>Every argument typed <code>model-property</code> is checked against the model's columns,
-and an argument naming a column the model does not have is reported.</p>
-<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<h2 id="checking-column-names">Checking column names<a class="headerlink" href="#checking-column-names" title="Permanent link">&para;</a></h2>
+<p>Resolving the columns tells you the <em>type</em> of <code>$user-&gt;email</code>. Turning on
+<code>modelPropertyType</code> also checks the column <em>names</em> you pass to methods, so a
+typo is caught where it is written:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>parameters:
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    laravel:
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        modelPropertyType: true
 </span></code></pre></div>
-<p>Whether it is accurate depends on how completely your columns were resolved.
-Where migrations or schema dumps are missing, or a table is built in a way the
-scanner cannot follow, the gap surfaces as a false positive rather than as
-silence, which is why it is off by default. Point
-<a href="../../reference/configuration/#migrationdirectories"><code>migrationDirectories</code></a> and
-<a href="../../reference/configuration/#schemadirectories"><code>schemaDirectories</code></a> at the
-right places before enabling it.</p>
-<h3 id="basic-example">Basic example<a class="headerlink" href="#basic-example" title="Permanent link">&para;</a></h3>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">create</span><span class="p">([</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'John Doe'</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="s1">'emaiil'</span> <span class="o">=&gt;</span> <span class="s1">'john@example.test'</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="s1">'emaiil'</span> <span class="o">=&gt;</span> <span class="s1">'john@example.test'</span><span class="p">,</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">]);</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
 </span></code></pre></div>
-<p>Here we have a typo in <code>email</code> column. So if we run analysis on this file this extension will generate the following error:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Property 'emaiil' does not exist in App\User model.
+<p>Laravel's own methods that expect a column are annotated for you, so this
+applies across the query builder, relations and mass assignment without any
+work. You can annotate your own the same way:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">/** @param model-property&lt;\App\User&gt; $column */</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">function</span> <span class="nf">sortBy</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$column</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="p">{</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="c1">// ...</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nx">sortBy</span><span class="p">(</span><span class="s1">'emaiil'</span><span class="p">);</span>  <span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
 </span></code></pre></div>
-<p>This check will be done automatically on Laravel's core methods where a property is expected. But you can also typehint the <code>model-property</code> in your own code to take advantage of this analysis.</p>
-<p>You can define a function like this:
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="sd">/**</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="sd"> * @phpstan-param model-property&lt;\App\User&gt; $property</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="sd"> */</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">function</span> <span class="nf">takesOnlyUserModelProperties</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$property</span><span class="p">)</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">{</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="c1">// ...</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">}</span>
-</span></code></pre></div></p>
-<p>And if you call the function above with a property that does not exist in User model, this extension will warn you about it.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nx">takesOnlyUserModelProperties</span><span class="p">(</span><span class="s1">'emaiil'</span><span class="p">);</span>
-</span></code></pre></div>
+<p>It is a type rather than a rule, which is why it has no <code>laravel.</code> identifier:
+the option activates <a href="../custom-types/"><code>model-property</code></a>, and PHPStan's ordinary
+argument checks do the reporting, under identifiers like <code>argument.type</code>.</p>
+<p>How accurate it is depends on how completely your columns resolved. Where
+migrations or schema dumps are missing, or a table is built in a way the scanner
+cannot follow, the gap surfaces as a false positive rather than as silence,
+which is why it is off by default. Confirm <code>$user-&gt;email</code> already resolves, and
+point <a href="../../reference/configuration/#migrationdirectories"><code>migrationDirectories</code></a>
+and <a href="../../reference/configuration/#schemadirectories"><code>schemaDirectories</code></a> at the
+right places, before turning it on.</p>
 <h2 id="accessors-and-mutators">Accessors and mutators<a class="headerlink" href="#accessors-and-mutators" title="Permanent link">&para;</a></h2>
 <p>Both styles are recognized. An <a href="https://laravel.com/docs/eloquent-mutators#accessors-and-mutators"><code>Attribute</code></a> accessor must be a
 <code>protected</code> method annotated with the <code>Attribute</code> generic types: the first is
 the getter's return type, the second the setter's argument type.</p>
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="sd">/** @return Attribute&lt;string[], string[]&gt; */</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">scopes</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="p">{</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="k">return</span> <span class="nx">Attribute</span><span class="o">::</span><span class="na">make</span><span class="p">(</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>        <span class="nx">get</span><span class="o">:</span> <span class="nx">fn</span> <span class="p">(</span><span class="o">?</span><span class="nx">string</span> <span class="nv">$value</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">is_null</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span> <span class="o">?</span> <span class="p">[]</span> <span class="o">:</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="nv">$value</span><span class="p">),</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>        <span class="nx">set</span><span class="o">:</span> <span class="k">function</span><span class="p">(</span><span class="k">array</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>            <span class="nv">$set</span> <span class="o">=</span> <span class="nb">array_unique</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>            <span class="nb">sort</span><span class="p">(</span><span class="nv">$set</span><span class="p">);</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>            <span class="k">return</span> <span class="p">[</span><span class="s1">'scopes'</span> <span class="o">=&gt;</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="nv">$set</span><span class="p">)];</span>
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>        <span class="p">}</span>
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="p">);</span>
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="sd">/** @return Attribute&lt;string[], string[]&gt; */</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">scopes</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">{</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="k">return</span> <span class="nx">Attribute</span><span class="o">::</span><span class="na">make</span><span class="p">(</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        <span class="nx">get</span><span class="o">:</span> <span class="nx">fn</span> <span class="p">(</span><span class="o">?</span><span class="nx">string</span> <span class="nv">$value</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">is_null</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span> <span class="o">?</span> <span class="p">[]</span> <span class="o">:</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="nv">$value</span><span class="p">),</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        <span class="nx">set</span><span class="o">:</span> <span class="k">function</span><span class="p">(</span><span class="k">array</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>            <span class="nv">$set</span> <span class="o">=</span> <span class="nb">array_unique</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>            <span class="nb">sort</span><span class="p">(</span><span class="nv">$set</span><span class="p">);</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>            <span class="k">return</span> <span class="p">[</span><span class="s1">'scopes'</span> <span class="o">=&gt;</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="nv">$set</span><span class="p">)];</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>        <span class="p">}</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="p">);</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="sd">/** @return Attribute&lt;bool, never&gt; */</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">isTrue</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">{</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="k">return</span> <span class="nx">Attribute</span><span class="o">::</span><span class="na">make</span><span class="p">(</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="nx">get</span><span class="o">:</span> <span class="nx">fn</span> <span class="p">(</span><span class="o">?</span><span class="nx">string</span> <span class="nv">$value</span><span class="p">)</span><span class="o">:</span> <span class="nx">bool</span> <span class="o">=&gt;</span> <span class="nv">$value</span> <span class="o">===</span> <span class="k">null</span><span class="p">,</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="p">);</span>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="sd">/** @return Attribute&lt;bool, never&gt; */</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">isTrue</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">{</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="k">return</span> <span class="nx">Attribute</span><span class="o">::</span><span class="na">make</span><span class="p">(</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="nx">get</span><span class="o">:</span> <span class="nx">fn</span> <span class="p">(</span><span class="o">?</span><span class="nx">string</span> <span class="nv">$value</span><span class="p">)</span><span class="o">:</span> <span class="nx">bool</span> <span class="o">=&gt;</span> <span class="nv">$value</span> <span class="o">===</span> <span class="k">null</span><span class="p">,</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="p">);</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>The older <code>getFooAttribute()</code> style is supported as well, and its return type is
 used directly. It is still found when a method of the same camel case name
 exists alongside it:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">getFullNameAttribute</span><span class="p">()</span><span class="o">:</span> <span class="nx">string</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="p">{</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_name</span> <span class="o">.</span> <span class="s1">' '</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_name</span><span class="p">;</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">getFullNameAttribute</span><span class="p">()</span><span class="o">:</span> <span class="nx">string</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">{</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_name</span> <span class="o">.</span> <span class="s1">' '</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_name</span><span class="p">;</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="p">}</span>
 </span></code></pre></div>
 
 

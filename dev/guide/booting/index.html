@@ -1387,18 +1387,38 @@ of that at runtime. Booting is what turns those from <code>mixed</code> into rea
 <li>package discovery, so providers from your dependencies are registered too</li>
 <li>the alias loader, config repository, view finder and container bindings</li>
 </ul>
-<p>That is where the analysis gets its answers, and it is the whole of what runs.</p>
+<p>It does not stop at the providers, and that is the part worth knowing. Anything
+a provider resolves from the container is <strong>constructed</strong>, and so is everything
+that class asks for in its own constructor, and so on down. A provider that
+resolves one service can run a dozen constructors it never names.</p>
+<p>Console commands are constructed as well, all of them, along with whatever they
+inject. This extension builds the console application so it can check
+<code>$this-&gt;argument()</code> and <code>$this-&gt;option()</code> against the signature each command is
+registered with, and building it instantiates every command:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">final</span> <span class="k">class</span> <span class="nc">ImportCommand</span> <span class="k">extends</span> <span class="nx">Command</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">{</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="k">protected</span> <span class="nv">$signature</span> <span class="o">=</span> <span class="s1">'import:run {file}'</span><span class="p">;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="c1">// Runs during analysis, and so does Importer's constructor.</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="k">private</span> <span class="nx">Importer</span> <span class="nv">$importer</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="p">{</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="k">parent</span><span class="o">::</span><span class="na">__construct</span><span class="p">();</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="p">}</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
+</span></code></pre></div>
 <h2 id="what-does-not">What does not<a class="headerlink" href="#what-does-not" title="Permanent link">&para;</a></h2>
-<p>Your own code is read, not executed. Controllers, jobs, listeners, commands,
-queries and views are parsed as source. No route is dispatched, no query is
-sent, nothing is queued.</p>
-<p>The database is never contacted either. Columns come from reading migration
-files and schema dumps as text, so analysis works with no database available.</p>
+<p>Controllers are <strong>not</strong> constructed. A route stores the class name and the
+method to call, so registering one touches nothing. The same holds for jobs,
+listeners, form requests and middleware: none are built until something
+dispatches to them, and nothing dispatches during analysis.</p>
+<p>No route is handled, no query is sent, nothing is queued. The database is never
+contacted either, since columns come from reading migration files and schema
+dumps as text, so analysis works with no database available.</p>
 <h2 id="what-to-watch-out-for">What to watch out for<a class="headerlink" href="#what-to-watch-out-for" title="Permanent link">&para;</a></h2>
 <p>The consequence is that <strong>anything your providers do on boot, they do on every
 analysis run</strong>. Usually that is nothing of consequence. Occasionally it is not.</p>
-<p>Things worth keeping out of <code>register()</code> and <code>boot()</code>, and out of the
-constructor of anything resolved during boot:</p>
+<p>Things worth keeping out of <code>register()</code> and <code>boot()</code>, out of a command's
+constructor, and out of the constructor of anything either of those resolves:</p>
 <ul>
 <li><strong>Writing.</strong> Creating files or directories, touching a cache, writing a log
   that ends up in your repository, running migrations.</li>
@@ -1411,17 +1431,17 @@ constructor of anything resolved during boot:</p>
 <li><strong>Anything that assumes a request.</strong> There is no request, no session and no
   authenticated user during analysis.</li>
 </ul>
-<p>A constructor is the easy one to miss. If a class is resolved from the
-container while a provider boots, its constructor runs, and a constructor that
-opens a connection or reads a file is doing that on every analysis:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">final</span> <span class="k">class</span> <span class="nc">ReportBuilder</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">{</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="k">private</span> <span class="nx">Filesystem</span> <span class="nv">$files</span><span class="p">)</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="p">{</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="c1">// Runs during analysis too.</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">files</span><span class="o">-&gt;</span><span class="na">makeDirectory</span><span class="p">(</span><span class="nx">storage_path</span><span class="p">(</span><span class="s1">'reports'</span><span class="p">));</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="p">}</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">}</span>
+<p>The constructor is the easy one to miss, because nothing in the provider or the
+command mentions the class doing the work. It only has to be reachable through a
+constructor argument:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">final</span> <span class="k">class</span> <span class="nc">ReportBuilder</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p">{</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="k">private</span> <span class="nx">Filesystem</span> <span class="nv">$files</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="p">{</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        <span class="c1">// Runs during analysis too.</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">files</span><span class="o">-&gt;</span><span class="na">makeDirectory</span><span class="p">(</span><span class="nx">storage_path</span><span class="p">(</span><span class="s1">'reports'</span><span class="p">));</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="p">}</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>Doing the work lazily, when something actually asks for it, fixes this and is
 usually better design anyway.</p>
@@ -1444,14 +1464,14 @@ whatever the local bindings happen to be.</p>
 <p>PHPStan defines the constant <code>__PHPSTAN_RUNNING__</code> before anything else
 happens, so you can guard the rare piece of work that genuinely cannot happen
 during analysis:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">boot</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p">{</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="k">if</span> <span class="p">(</span><span class="nb">defined</span><span class="p">(</span><span class="s1">'__PHPSTAN_RUNNING__'</span><span class="p">))</span> <span class="p">{</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        <span class="k">return</span><span class="p">;</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="p">}</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">warmCacheFromRemoteApi</span><span class="p">();</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">boot</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="p">{</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="k">if</span> <span class="p">(</span><span class="nb">defined</span><span class="p">(</span><span class="s1">'__PHPSTAN_RUNNING__'</span><span class="p">))</span> <span class="p">{</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="k">return</span><span class="p">;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="p">}</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">warmCacheFromRemoteApi</span><span class="p">();</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>The constant comes from PHPStan itself rather than from this package, so the
 guard costs you no dependency and keeps working if you swap the extension out.</p>

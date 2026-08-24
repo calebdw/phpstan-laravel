@@ -1577,10 +1577,12 @@
 way to know what your container is bound to, what your config actually contains
 and where your views live. It is the same thing <code>php artisan</code> does before it
 runs a command.</p>
-<p>It does not execute your controllers, jobs or queries. Nothing is analysed by
-running it.</p>
-<p>What that means for your service providers, and how to guard work that must not
-repeat, is in <a href="../../guide/booting/">booting your application</a>.</p>
+<p>It does not handle a request or run a query. Controllers, jobs and listeners are
+never constructed.</p>
+<p>Some of your code does run, though: every service provider, anything those
+providers resolve, and every console command, each with its constructor
+dependencies. <a href="../../guide/booting/">Booting your application</a> covers what that
+means and how to guard work that must not repeat.</p>
 <h2 id="can-i-stop-something-running-during-analysis">Can I stop something running during analysis?<a class="headerlink" href="#can-i-stop-something-running-during-analysis" title="Permanent link">&para;</a></h2>
 <p>Yes. PHPStan defines <code>__PHPSTAN_RUNNING__</code>, so a provider can skip work that
 cannot safely happen on every run:</p>
