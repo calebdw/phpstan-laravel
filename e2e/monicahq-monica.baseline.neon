@@ -1,6 +1,42 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Actions/Jetstream/UserProfile.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 2
+			path: ../build/e2e/monicahq-monica/app/Console/Commands/Local/MonicaLocalize.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 3
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CalDAV/AbstractCalDAVBackend.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 2
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CalDAV/CalDAVBackend.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/AddressBookHome.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 5
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/CardDAVBackend.php
+
+		-
 			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CardDAV\\CardDAVBackend\:\:getDeletedObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<TKey of \(int\|string\), TValue\>\.$#'
 			identifier: return.type
 			count: 1
@@ -11,6 +47,24 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/CardDAVBackend.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/ManageContact/Dav/ExportLabels.php
+
+		-
+			message: '#^Call to static method route\(\) on an unknown class Redirect\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/ManageContact/Web/Controllers/ContactMoveController.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/ManageRelationships/Web/ViewHelpers/ContactRelationshipsCreateViewHelper.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\<App\\Models\\ContactTask, App\\Models\\Contact\>\:\:completed\(\)\.$#'
@@ -25,10 +79,64 @@ parameters:
 			path: ../build/e2e/monicahq-monica/app/Domains/Contact/ManageTasks/Web/ViewHelpers/ModuleContactTasksViewHelper.php
 
 		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Settings/ManageNotificationChannels/Services/ScheduleAllContactRemindersForNotificationChannel.php
+
+		-
 			message: '#^Method App\\Domains\\Settings\\ManageNotificationChannels\\Web\\Controllers\\TelegramWebhookController\:\:store\(\) should return Illuminate\\Http\\Response but returns Illuminate\\Http\\JsonResponse\.$#'
 			identifier: return.type
 			count: 1
 			path: ../build/e2e/monicahq-monica/app/Domains/Settings/ManageNotificationChannels/Web/Controllers/TelegramWebhookController.php
+
+		-
+			message: '#^Call to static method route\(\) on an unknown class Redirect\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageJournals/Web/Controllers/JournalController.php
+
+		-
+			message: '#^Call to static method route\(\) on an unknown class Redirect\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageJournals/Web/Controllers/PostController.php
+
+		-
+			message: '#^Call to static method route\(\) on an unknown class Redirect\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageJournals/Web/Controllers/SliceOfLifeController.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageJournals/Web/ViewHelpers/JournalShowViewHelper.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageReports/Web/ViewHelpers/ReportImportantDateSummaryIndexViewHelper.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageVault/Web/ViewHelpers/VaultReminderIndexViewHelper.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageVaultSettings/Services/GrantVaultAccessToUser.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:markdownExternalLink\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Http/Middleware/HandleInertiaRequests.php
 
 		-
 			message: '#^PHPDoc type array of property App\\Models\\File\:\:\$dispatchesEvents is not covariant with PHPDoc type array\<string, class\-string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$dispatchesEvents\.$#'

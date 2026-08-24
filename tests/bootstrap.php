@@ -23,6 +23,10 @@ Route::macro('facadeMacro', static function (): int {
     return 5;
 });
 
+Route::macro('facadePlainClosureMacro', function (): int {
+    return 5;
+});
+
 SessionGuard::macro('sessionGuardMacro', static function (): int {
     return 5;
 });
@@ -33,6 +37,15 @@ RequestGuard::macro('requestGuardMacro', static function (): int {
 
 Str::macro('trimMacro', 'trim');
 Str::macro('asciiAliasMacro', Str::class . '::ascii');
+
+// Both closure styles on one class, so each call form can be exercised against
+// each. The closure style is how a macro declares which form it is for.
+Collection::macro('staticClosureMacro', static function (): string {
+    return 'x';
+});
+Collection::macro('plainClosureMacro', function (): string {
+    return 'x';
+});
 
 
 Cache::macro('rememberIf', static fn ($cond, $key, $ttl, $callback): mixed => $cond ? Cache::remember($key, $ttl, $callback) : $callback());

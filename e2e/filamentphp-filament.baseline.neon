@@ -1,49 +1,55 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to static method fromString\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
-			identifier: class.notFound
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
 			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/panels/src/AvatarProviders/UiAvatarsProvider.php
+			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/Repeater.php
 
 		-
-			message: '#^Call to method blue\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
-			identifier: class.notFound
-			count: 3
-			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
-
-		-
-			message: '#^Call to method green\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
-			identifier: class.notFound
-			count: 3
-			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
-
-		-
-			message: '#^Call to method red\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
-			identifier: class.notFound
-			count: 3
-			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
-
-		-
-			message: '#^Call to static method fromString\(\) on an unknown class Spatie\\Color\\Hex\.$#'
-			identifier: class.notFound
+			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:sanitizeHtml\(\)\.$#'
+			identifier: method.staticCall
 			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/RichEditor/RichContentRenderer.php
 
 		-
-			message: '#^Call to static method fromString\(\) on an unknown class Spatie\\Color\\Rgb\.$#'
-			identifier: class.notFound
-			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 2
+			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/Select.php
 
 		-
-			message: '#^Parameter \$color of method Filament\\Support\\Colors\\Color\:\:generateShades\(\) has invalid type Spatie\\Color\\Rgb\.$#'
-			identifier: class.notFound
-			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/Color.php
+			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:sanitizeHtml\(\)\.$#'
+			identifier: method.staticCall
+			count: 2
+			path: ../build/e2e/filamentphp-filament/packages/infolists/src/Components/TextEntry.php
 
 		-
-			message: '#^Call to static method fromString\(\) on an unknown class Spatie\\Color\\Hex\.$#'
-			identifier: class.notFound
+			message: '#^Method Filament\\Infolists\\Components\\SpatieTagsEntry\:\:getState\(\) should return array\<string\> but returns mixed\.$#'
+			identifier: return.type
 			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/ColorManager.php
+			path: ../build/e2e/filamentphp-filament/packages/spatie-laravel-tags-plugin/src/Infolists/Components/SpatieTagsEntry.php
+
+		-
+			message: '#^Anonymous function should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/spatie-laravel-tags-plugin/src/Tables/Columns/SpatieTagsColumn.php
+
+		-
+			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
+			identifier: laravel.unnecessaryEnumerableToArrayCall
+			count: 2
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Commands/CheckTranslationsCommand.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:sanitizeHtml\(\)\.$#'
+			identifier: method.staticCall
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/tables/src/Columns/Summarizers/Summarizer.php
+
+		-
+			message: '#^Static call to instance method Illuminate\\Support\\Str\:\:sanitizeHtml\(\)\.$#'
+			identifier: method.staticCall
+			count: 2
+			path: ../build/e2e/filamentphp-filament/packages/tables/src/Columns/TextColumn.php
