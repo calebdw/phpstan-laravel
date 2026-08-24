@@ -285,20 +285,15 @@
     
     
     
-      
-        
-        
-      
     
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
   
@@ -418,10 +413,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-one-option-worth-turning-on" class="md-nav__link">
+  <a href="#checking-column-names" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        The one option worth turning on
+        Checking column names
       </span>
     </span>
   </a>
@@ -525,20 +520,15 @@
     
     
     
-      
-        
-        
-      
     
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   
@@ -771,20 +761,15 @@
     
     
     
-      
-        
-        
-      
     
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -990,20 +975,15 @@
     
     
     
-      
-        
-        
-      
     
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -1127,20 +1107,15 @@
     
     
     
-      
-        
-        
-      
     
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -1323,10 +1298,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-one-option-worth-turning-on" class="md-nav__link">
+  <a href="#checking-column-names" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        The one option worth turning on
+        Checking column names
       </span>
     </span>
   </a>
@@ -1425,11 +1400,10 @@ the run rather than being quietly ignored:</p>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Unexpected item 'parameters › laravel › rules › modelMakeTypo',
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>did you mean 'modelMake'?
 </span></code></pre></div>
-<h2 id="the-one-option-worth-turning-on">The one option worth turning on<a class="headerlink" href="#the-one-option-worth-turning-on" title="Permanent link">&para;</a></h2>
-<p><code>modelPropertyType</code> is the highest-value option and the one people most
-often never notice. It checks arguments that name a column against the columns
-resolved from your migrations, which catches this throughout Laravel's own
-methods with no annotations of your own:</p>
+<h2 id="checking-column-names">Checking column names<a class="headerlink" href="#checking-column-names" title="Permanent link">&para;</a></h2>
+<p><code>modelPropertyType</code> checks arguments that name a column against the columns
+resolved from your migrations, throughout Laravel's own methods and with no
+annotations of your own:</p>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">create</span><span class="p">([</span><span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'John'</span><span class="p">,</span> <span class="s1">'emaiil'</span> <span class="o">=&gt;</span> <span class="s1">'john@example.test'</span><span class="p">]);</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
 </span></code></pre></div>
@@ -1437,12 +1411,17 @@ methods with no annotations of your own:</p>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    laravel:
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        modelPropertyType: true
 </span></code></pre></div>
-<p>It is off by default for one reason: it is only as accurate as that resolved
-column list. If migrations live somewhere unusual, or a table is built in a way
-the scanner cannot follow, the result is false positives rather than silence.
-Point <a href="../../reference/configuration/#migrationdirectories"><code>migrationDirectories</code></a>
-and <a href="../../reference/configuration/#schemadirectories"><code>schemaDirectories</code></a> at
-the right places first.</p>
+<p>It is off by default because it is only as accurate as that resolved column
+list. Where migrations live somewhere unusual, or a table is built in a way the
+scanner cannot follow, the gap surfaces as a false positive rather than as
+silence, and on an established codebase that can be a lot of them at once.</p>
+<p>So confirm your columns resolve before switching it on. If <code>$user-&gt;email</code> gives
+<code>string</code> rather than an undefined-property error, the scan found your table; if
+it did not, point
+<a href="../../reference/configuration/#migrationdirectories"><code>migrationDirectories</code></a> and
+<a href="../../reference/configuration/#schemadirectories"><code>schemaDirectories</code></a> at the
+right places first. Turning it on before that is the fastest way to a baseline
+you did not need.</p>
 <p>It is not a rule, which is why it sits directly under <code>laravel:</code>. It activates
 the <a href="../../guide/custom-types/"><code>model-property</code></a> type, and the mismatches are
 then reported by PHPStan's ordinary argument checks.</p>
@@ -1603,7 +1582,7 @@ need:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.action.edit","content.code.annotate","content.code.copy","content.tabs.link","navigation.instant","navigation.instant.progress","navigation.sections","navigation.top","navigation.tracking","search.highlight","search.suggest","toc.follow"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"alias":true,"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.action.edit","content.code.annotate","content.code.copy","content.tabs.link","navigation.instant","navigation.instant.progress","navigation.top","navigation.tracking","search.highlight","search.suggest","toc.follow"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"alias":true,"provider":"mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
