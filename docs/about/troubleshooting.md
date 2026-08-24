@@ -46,6 +46,41 @@ properly rather than hiding it:
 $users->groupBy->email; // Collection<string, Collection<int, User>>
 ```
 
+## Collection value types are invariant
+
+`Collection` declares `TValue` invariantly, so a collection of a narrower value
+type is not accepted where a wider one is annotated, even though reading from it
+would be perfectly safe:
+
+```php
+/** @param Collection<int, string|null> $values */
+public function accept(Collection $values): void {}
+```
+
+The error is easy to misread, because PHPStan prints the widened description on
+both sides and the two types look identical. The `Tip` about `TValue` not being
+covariant is the only part that tells you what happened. If you find yourself
+suspecting a broken return type extension, check for that line first.
+
+The fix is use-site variance, not an ignore:
+
+```php
+/** @param Collection<int, covariant string|null> $values */
+```
+
+`covariant` on a parameter says you only read from the collection. Prefer it to
+suppressing `argument.type`, which would hide real mismatches in the same
+signature. For keys, `array-key` does the same job, being a benevolent union;
+a plain `int|string` does not, since it is matched invariantly.
+
+This is a genuine limit rather than a missing feature. `Collection::push()`,
+`put()`, `prepend()`, `add()` and `offsetSet()` all take a `TValue`, so the
+collection consumes its own value type and cannot be covariant in it. The
+framework annotates it as covariant anyway, but nothing enforces that annotation
+against the framework's own source---see
+[the FAQ](faq.md#why-is-a-collections-value-type-invariant) for why the stubs
+cannot repeat it.
+
 ## Macros
 
 Macros registered at runtime are found by booting the application, so a macro

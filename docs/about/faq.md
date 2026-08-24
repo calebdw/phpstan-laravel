@@ -103,6 +103,46 @@ because it is matched invariantly and accepts neither side. See [precision, and
 widening it where you want
 it](../guide/collections.md#precision-and-widening-it-where-you-want-it).
 
+## A collection is rejected when both sides read the same
+
+Something like this, where the expected and the given type print identically:
+
+```
+Parameter #1 $values of method App\Repro::accept() expects
+Illuminate\Support\Collection<int, string|null>,
+Illuminate\Support\Collection<int, string|null> given.
+    Tip: Template type TValue on class Illuminate\Support\Collection is not covariant.
+```
+
+The `Tip` is the whole message. The two types differ in a way the description
+does not show, and because `TValue` is invariant, differing is enough to fail.
+Ask for the general type at the annotation:
+
+```php
+/** @param Collection<int, covariant string|null> $values */
+```
+
+That is sound in a way that changing the collection is not: `covariant` at a
+parameter promises only that you will read from it, and the parameter is the one
+place that can keep the promise.
+
+## Why is a collection's value type invariant?
+
+Because a collection is not covariant, and the stubs say so. `Collection` has
+`push()`, `put()`, `prepend()`, `add()` and `offsetSet()`, all of which *take* a
+`TValue`, and `offsetSet()` comes from `ArrayAccess`, a PHP core interface. A
+container you can write into cannot be covariant in what it holds.
+
+The framework does declare `@template-covariant TValue`, which is why this reads
+like something the extension took away. Nothing enforces that annotation against
+the framework's own source, so it ships as an unverified claim rather than a
+working one. Stub files *are* validated, so the same annotation fails the moment
+it moves into a stub---and it fails as `generics.variance`, which cannot be
+ignored or baselined. The stubs are not stricter by choice; a stub is simply the
+first place the claim gets checked.
+
+Use `covariant` at your annotations, as above.
+
 ## Why did a new release start reporting errors?
 
 Because inference improved. That is not treated as a breaking change here, for
