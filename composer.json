@@ -36,7 +36,7 @@
     "phpstan/phpstan": "^2.2.9"
   },
   "require-dev": {
-    "calebdw/pg-schema-parser": "dev-master",
+    "calebdw/pg-schema-parser": "^1.0",
     "doctrine/coding-standard": "^14.0",
     "iamcal/sql-parser": "^0.7.0",
     "laravel/framework": "^12.67.0 || ^13.26.1",
