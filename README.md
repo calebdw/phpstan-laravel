@@ -51,14 +51,13 @@ None of it comes from annotations you write, and it ships rules for the mistakes
 Laravel will happily let you make at runtime. It works at every PHPStan level,
 on applications and on packages.
 
-Everything else is at **[phpstan-laravel.dev][docs]**: installation,
+To get started, take a look at the [official documentation][docs]: installation,
 configuration, every rule, every option and identifier, and the guide for moving
 over from Larastan.
 
 ## Contributing
 
-Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md) to get
-started.
+Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Acknowledgments
 
@@ -70,7 +69,6 @@ the years. It would not exist without their work.
 
 Open-sourced software licensed under the [MIT license](LICENSE).
 
-<!-- links -->
 [phpstan]: https://phpstan.org
 [larastan]: https://github.com/larastan/larastan
 [can]: https://github.com/canvural
