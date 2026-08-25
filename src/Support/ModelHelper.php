@@ -34,7 +34,7 @@ final class ModelHelper
             $model = $this->reflectionProvider->getClass($model);
         }
 
-        if ($model->isAbstract()) {
+        if (! $model->is(Model::class) || $model->isAbstract()) {
             return null;
         }
 
