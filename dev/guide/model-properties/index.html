@@ -598,6 +598,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#laravel-ide-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Laravel IDE Helper
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checking-column-names" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1319,6 +1330,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#laravel-ide-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Laravel IDE Helper
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checking-column-names" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1407,6 +1429,24 @@ fillable, table name&mdash;is read from an instantiated model rather than from t
 class, so Laravel's own boot sequence runs and anything a trait contributes is
 visible. A cast registered by a trait in a third-party package is understood for
 the same reason <code>HasUlids</code> is.</p>
+<h2 id="laravel-ide-helper">Laravel IDE Helper<a class="headerlink" href="#laravel-ide-helper" title="Permanent link">&para;</a></h2>
+<p>phpstan-laravel already derives model properties from your schema, casts and
+accessors. Do not use <a href="https://github.com/barryvdh/laravel-ide-helper#automatic-phpdocs-for-models">Laravel IDE Helper</a> to write generated
+<code>@property</code> annotations onto your models, such as with
+<code>ide-helper:models --write</code>. An explicit property annotation takes precedence
+over the extension's inference, even when it was generated rather than written
+by hand. The extension cannot distinguish between the two or know which parts
+of the declared type were intended to override Laravel.</p>
+<p>You can still use IDE Helper for facade completion and PhpStorm metadata with
+<code>ide-helper:generate</code> and <code>ide-helper:meta</code>. If you generate model metadata with
+<code>ide-helper:models --nowrite</code>, keep <code>_ide_helper_models.php</code> available to your
+IDE but outside PHPStan's analysed paths, bootstrap files and autoloading. Avoid
+<code>--write-mixin</code> as well when its generated model helper is visible to PHPStan,
+because properties supplied through a mixin are also treated as explicit
+overrides.</p>
+<p>Add model <code>@property</code> annotations only where you deliberately want to replace
+the inferred type, for example when a model is backed by a view or external
+table the schema scanner cannot see.</p>
 <p>Where migrations live somewhere unconventional, or a table is built in a way the
 scanner cannot follow, point the
 <a href="../../reference/configuration/#migrationdirectories">path options</a> at the right
