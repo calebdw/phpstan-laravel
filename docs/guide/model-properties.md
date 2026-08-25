@@ -20,6 +20,28 @@ class, so Laravel's own boot sequence runs and anything a trait contributes is
 visible. A cast registered by a trait in a third-party package is understood for
 the same reason `HasUlids` is.
 
+## Laravel IDE Helper
+
+phpstan-laravel already derives model properties from your schema, casts and
+accessors. Do not use [Laravel IDE Helper][ide-helper] to write generated
+`@property` annotations onto your models, such as with
+`ide-helper:models --write`. An explicit property annotation takes precedence
+over the extension's inference, even when it was generated rather than written
+by hand. The extension cannot distinguish between the two or know which parts
+of the declared type were intended to override Laravel.
+
+You can still use IDE Helper for facade completion and PhpStorm metadata with
+`ide-helper:generate` and `ide-helper:meta`. If you generate model metadata with
+`ide-helper:models --nowrite`, keep `_ide_helper_models.php` available to your
+IDE but outside PHPStan's analysed paths, bootstrap files and autoloading. Avoid
+`--write-mixin` as well when its generated model helper is visible to PHPStan,
+because properties supplied through a mixin are also treated as explicit
+overrides.
+
+Add model `@property` annotations only where you deliberately want to replace
+the inferred type, for example when a model is backed by a view or external
+table the schema scanner cannot see.
+
 Where migrations live somewhere unconventional, or a table is built in a way the
 scanner cannot follow, point the
 [path options](../reference/configuration.md#migrationdirectories) at the right
@@ -161,3 +183,4 @@ public function getFullNameAttribute(): string
 ```
 
 [attributes]: https://laravel.com/docs/eloquent-mutators#accessors-and-mutators
+[ide-helper]: https://github.com/barryvdh/laravel-ide-helper#automatic-phpdocs-for-models
