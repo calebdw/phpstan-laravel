@@ -2206,8 +2206,15 @@ reported:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>parameters:
 </span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>    laravel:
 </span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>        migrationDirectories:
-</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>            - modules/*/database/migrations
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>            - database/migrations
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>            - modules/*/database/migrations
 </span></code></pre></div>
+<p>A configured list replaces the conventional directory. Including
+<code>database/migrations</code> above retains application migrations while adding the
+module migrations; omit it when the modules are the only source.</p>
+<p>Like Laravel's migrator, each matched migration directory is scanned directly
+rather than recursively. Nested directories are only included when another
+configured path explicitly matches them.</p>
 <p>Relative directory options resolve against the PHPStan config file that
 declares them, rather than against whatever directory you happened to run from.</p>
 <p>A schema dump the parser cannot read fails the run rather than being skipped
