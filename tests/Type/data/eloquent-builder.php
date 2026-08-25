@@ -362,6 +362,17 @@ function test(
         User::with('accounts')
         ->value(\Illuminate\Support\Facades\DB::raw('name'))
     );
+
+    assertType('string|null', User::query()->value('name'));
+    assertType('int|null', User::query()->value('id'));
+    assertType('bool|null', User::query()->value('blocked'));
+    assertType('string|null', User::query()->value('propertyDefinedOnlyInAnnotation'));
+    assertType('string', User::query()->soleValue('name'));
+    assertType('int', User::query()->soleValue('id'));
+    assertType('string', User::query()->valueOrFail('name'));
+    assertType('int', User::query()->valueOrFail('id'));
+    assertType('Carbon\Carbon|null', User::query()->valueOrFail('email_verified_at'));
+
     assertType('int', User::query()->restore());
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', User::query()->joinSub(
         Post::query()->whereIn('id', [1, 2, 3]),

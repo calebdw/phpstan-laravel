@@ -346,6 +346,8 @@ services:
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentPluckExtension
     arguments: {class: Illuminate\Database\Eloquent\Relations\Relation, templateType: TRelatedModel}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentValueExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableGroupByExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableKeyByExtension

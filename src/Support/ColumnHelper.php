@@ -132,7 +132,7 @@ final class ColumnHelper
         };
     }
 
-    private function getTypeFromArg(Type $from, Arg $arg, Scope $scope): Type|null
+    public function getTypeFromArg(Type $from, Arg $arg, Scope $scope): Type|null
     {
         $type = $scope->getType($arg->value);
 
