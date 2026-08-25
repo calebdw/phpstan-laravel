@@ -51,7 +51,13 @@ final class HigherOrderCollectionProxyExtension implements MethodsClassReflectio
 
         $modelMethodReturnType = $modelMethodReflection->getVariants()[0]->getReturnType();
 
-        $returnType = $this->higherOrderCollectionProxyHelper->determineReturnType($methodType->getValue(), $valueType, $modelMethodReturnType, $collectionClassName);
+        $returnType = $this->higherOrderCollectionProxyHelper->determineReturnType(
+            $methodType->getValue(),
+            $valueType,
+            $modelMethodReturnType,
+            $collectionClassName,
+            $collectionType->getIterableKeyType(),
+        );
 
         return new class ($classReflection, $methodName, $modelMethodReflection, $returnType) implements MethodReflection
         {

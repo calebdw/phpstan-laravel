@@ -38,6 +38,11 @@ final class ModelOnlyDynamicMethodReturnTypeExtension implements DynamicMethodRe
         MethodCall $methodCall,
         Scope $scope,
     ): Type {
+        return $this->getTypeForModel($methodCall, $scope->getType($methodCall->var), $scope);
+    }
+
+    public function getTypeForModel(MethodCall $methodCall, Type $model, Scope $scope): Type
+    {
         $args = $methodCall->getArgs();
 
         if (count($args) < 1) {
@@ -66,8 +71,6 @@ final class ModelOnlyDynamicMethodReturnTypeExtension implements DynamicMethodRe
             // encountered an argument that does not resolve to a constant string
             return new ArrayType(new StringType(), new MixedType());
         }
-
-        $model = $scope->getType($methodCall->var);
 
         $array = array_reduce($keys, static function ($array, $key) use ($model, $scope) {
             $name = $key->getValue();

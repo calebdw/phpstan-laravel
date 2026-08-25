@@ -47,7 +47,13 @@ final class HigherOrderCollectionProxyPropertyExtension implements PropertiesCla
             $collectionClassName = Collection::class;
         }
 
-        $returnType = $this->higherOrderCollectionProxyHelper->determineReturnType($methodType->getValue(), $modelType, $propertyType, $collectionClassName);
+        $returnType = $this->higherOrderCollectionProxyHelper->determineReturnType(
+            $methodType->getValue(),
+            $modelType,
+            $propertyType,
+            $collectionClassName,
+            $collectionType->getIterableKeyType(),
+        );
 
         return new class ($classReflection, $returnType) implements PropertyReflection
         {

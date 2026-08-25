@@ -39,10 +39,12 @@ function test(
     assertType('Illuminate\Support\Collection<int, mixed>', $users->flatMap->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->keyBy->isActive());
-    assertType('Illuminate\Support\Collection<(int|string), bool>', $users->map->isActive());
-    assertType('Illuminate\Support\Collection<(int|string), Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>>', $users->map->accounts());
-    assertType('Illuminate\Support\Collection<(int|string), int>', $users->map->id());
-    assertType('array<array<string, mixed>>', $user->accounts->map->getAttributes()->all());
+    assertType('Illuminate\Support\Collection<int, bool>', $users->map->isActive());
+    assertType('Illuminate\Support\Collection<int, Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>>', $users->map->accounts());
+    assertType('Illuminate\Support\Collection<int, int>', $users->map->id());
+    assertType('Illuminate\Support\Collection<int, array{name: string, email: string}>', $users->map->only(['name', 'email']));
+    assertType('Illuminate\Support\Collection<int, array{name: string, nonexistent: null}>', $users->map->only(['name', 'nonexistent']));
+    assertType('array<int, array<string, mixed>>', $user->accounts->map->getAttributes()->all());
     assertType('int', $users->max->id());
     assertType('int', $users->min->id());
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->partition->isActive());
@@ -53,7 +55,7 @@ function test(
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->takeUntil->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->takeWhile->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->unique->isActive());
-    assertType('Illuminate\Support\Collection<(int|string), bool>', $collection->map->import());
+    assertType('Illuminate\Support\Collection<int, bool>', $collection->map->import());
     assertType('Illuminate\Support\Collection<int, App\Importer>', $collection->each->import());
     assertType('Illuminate\Support\Collection<int, App\Importer>', $collection->filter->isImported());
 
@@ -66,10 +68,10 @@ function test(
     assertType('App\User|null', $users->first->email);
     assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy->email);
     assertType('Illuminate\Database\Eloquent\Collection<string, App\User>', $users->keyBy->email);
-    assertType('Illuminate\Support\Collection<(int|string), string>', $users->map->email);
-    assertType('Illuminate\Support\Collection<(int|string), int>', $users->map->id);
+    assertType('Illuminate\Support\Collection<int, string>', $users->map->email);
+    assertType('Illuminate\Support\Collection<int, int>', $users->map->id);
     assertType('Illuminate\Support\Collection<(int|string), int<0, max>>', $users->groupBy('status')->map->count());
-    assertType('Illuminate\Support\Collection<(int|string), Carbon\Carbon|null>', $users->map->created_at);
+    assertType('Illuminate\Support\Collection<int, Carbon\Carbon|null>', $users->map->created_at);
     assertType('string', $users->max->email);
     assertType('int', $users->max->id);
     assertType('string', $users->min->email);

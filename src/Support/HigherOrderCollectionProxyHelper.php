@@ -12,6 +12,7 @@ use PHPStan\Type;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 
@@ -62,8 +63,13 @@ class HigherOrderCollectionProxyHelper
         return $valueType->hasInstanceProperty($name)->yes();
     }
 
-    public function determineReturnType(string $name, Type\Type $valueType, Type\Type $methodOrPropertyReturnType, string $collectionType): Type\Type
-    {
+    public function determineReturnType(
+        string $name,
+        Type\Type $valueType,
+        Type\Type $methodOrPropertyReturnType,
+        string $collectionType,
+        Type\Type $collectionKeyType,
+    ): Type\Type {
         $integerType = new Type\IntegerType();
 
         switch ($name) {
@@ -115,7 +121,9 @@ class HigherOrderCollectionProxyHelper
             case 'map':
                 $returnType = $this->getCollectionType(
                     SupportCollection::class,
-                    new BenevolentUnionType([new IntegerType(), new StringType()]),
+                    $collectionKeyType instanceof MixedType
+                        ? new BenevolentUnionType([new IntegerType(), new StringType()])
+                        : $collectionKeyType,
                     $methodOrPropertyReturnType,
                 );
                 break;
