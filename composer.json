@@ -33,7 +33,7 @@
     "illuminate/http": "^12.67.0 || ^13.26.1",
     "illuminate/pipeline": "^12.67.0 || ^13.26.1",
     "illuminate/support": "^12.67.0 || ^13.26.1",
-    "phpstan/phpstan": "^2.2.9"
+    "phpstan/phpstan": "^2.2.8"
   },
   "require-dev": {
     "calebdw/pg-schema-parser": "^1.0",
