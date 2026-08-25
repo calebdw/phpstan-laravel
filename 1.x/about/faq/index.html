@@ -1209,10 +1209,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#my-grouped-collection-annotation-is-rejected" class="md-nav__link">
+  <a href="#my-grouped-or-keyed-collection-annotation-is-rejected" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        My grouped collection annotation is rejected
+        My grouped or keyed collection annotation is rejected
       </span>
     </span>
   </a>
@@ -1522,10 +1522,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#my-grouped-collection-annotation-is-rejected" class="md-nav__link">
+  <a href="#my-grouped-or-keyed-collection-annotation-is-rejected" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        My grouped collection annotation is rejected
+        My grouped or keyed collection annotation is rejected
       </span>
     </span>
   </a>
@@ -1708,28 +1708,45 @@ application to boot, and set
 <a href="../../reference/configuration/#configdirectories"><code>configDirectories</code></a> if your
 package ships config files. See <a href="../../getting-started/packages/">analysing a
 package</a>.</p>
-<h2 id="my-grouped-collection-annotation-is-rejected">My grouped collection annotation is rejected<a class="headerlink" href="#my-grouped-collection-annotation-is-rejected" title="Permanent link">&para;</a></h2>
+<h2 id="my-grouped-or-keyed-collection-annotation-is-rejected">My grouped or keyed collection annotation is rejected<a class="headerlink" href="#my-grouped-or-keyed-collection-annotation-is-rejected" title="Permanent link">&para;</a></h2>
 <p><code>groupBy</code>, <code>keyBy</code> and <code>pluck</code> resolve keys precisely, so grouping by an enum's
 value gives <code>Collection&lt;10|20, ...&gt;</code> rather than <code>Collection&lt;int, ...&gt;</code>. Since
 <code>Collection</code> declares its templates invariantly, ask for the general type at the
 annotation:</p>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="sd">/** @return Collection&lt;covariant int, Collection&lt;int, Item&gt;&gt; */</span>
 </span></code></pre></div>
+<p>The same applies when <code>keyBy</code> preserves enum case names:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">/** @return Collection&lt;covariant string, covariant Status&gt; */</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">collectInstances</span><span class="p">()</span><span class="o">:</span> <span class="nx">Collection</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="p">{</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="k">return</span> <span class="nx">collect</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="na">cases</span><span class="p">())</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nx">self</span> <span class="nv">$case</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$case</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">);</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>For a backed enum keyed by its value, <code>value-of</code> can retain the exact finite set
+without spelling out every case:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="sd">/** @return Collection&lt;value-of&lt;Status&gt;, covariant Status&gt; */</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">collectInstances</span><span class="p">()</span><span class="o">:</span> <span class="nx">Collection</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="p">{</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="k">return</span> <span class="nx">collect</span><span class="p">(</span><span class="nx">self</span><span class="o">::</span><span class="na">cases</span><span class="p">())</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nx">self</span> <span class="nv">$case</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$case</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">);</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><code>value-of&lt;Status&gt;</code> means the enum's backed values, not its case names. Use
+<code>covariant string</code> for <code>$case-&gt;name</code>.</p>
 <p><code>array-key</code> works too, being a benevolent union. A plain <code>int|string</code> does not,
 because it is matched invariantly and accepts neither side. See <a href="../../guide/collections/#precision-and-widening-it-where-you-want-it">precision, and
 widening it where you want
 it</a>.</p>
 <h2 id="a-collection-is-rejected-when-both-sides-read-the-same">A collection is rejected when both sides read the same<a class="headerlink" href="#a-collection-is-rejected-when-both-sides-read-the-same" title="Permanent link">&para;</a></h2>
 <p>Something like this, where the expected and the given type print identically:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Parameter #1 $values of method App\Repro::accept() expects
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Illuminate\Support\Collection&lt;int, string|null&gt;,
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>Illuminate\Support\Collection&lt;int, string|null&gt; given.
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    Tip: Template type TValue on class Illuminate\Support\Collection is not covariant.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Parameter #1 $values of method App\Repro::accept() expects
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Illuminate\Support\Collection&lt;int, string|null&gt;,
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Illuminate\Support\Collection&lt;int, string|null&gt; given.
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    Tip: Template type TValue on class Illuminate\Support\Collection is not covariant.
 </span></code></pre></div>
 <p>The <code>Tip</code> is the whole message. The two types differ in a way the description
 does not show, and because <code>TValue</code> is invariant, differing is enough to fail.
 Ask for the general type at the annotation:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="sd">/** @param Collection&lt;int, covariant string|null&gt; $values */</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="sd">/** @param Collection&lt;int, covariant string|null&gt; $values */</span>
 </span></code></pre></div>
 <p>That is sound in a way that changing the collection is not: <code>covariant</code> at a
 parameter promises only that you will read from it, and the parameter is the one
@@ -1754,8 +1771,8 @@ static analyser that may never report anything new is one that may never
 improve. It will not be a new rule, since those ship off by default. Commit
 your <code>composer.lock</code> and you control when the improvements arrive.</p>
 <h2 id="do-i-need-an-sql-parser">Do I need an SQL parser?<a class="headerlink" href="#do-i-need-an-sql-parser" title="Permanent link">&para;</a></h2>
-<p>Only if you have squashed schema dumps under <code>database/schema</code>. Neither parser
-is a hard dependency, so the license that enters your tree is your choice. See
+<p>Only if you have squashed schema dumps under <code>database/schema</code>. The parsers are
+optional dependencies, so the license that enters your tree is your choice. See
 <a href="../../getting-started/installation/#squashed-schema-dumps">installation</a>.</p>
 <h2 id="does-a-gpl-parser-affect-my-applications-license">Does a GPL parser affect my application's license?<a class="headerlink" href="#does-a-gpl-parser-affect-my-applications-license" title="Permanent link">&para;</a></h2>
 <p>No. Copyleft is triggered by distributing the code, and a dev-only analyser is

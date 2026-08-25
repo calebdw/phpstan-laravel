@@ -1510,12 +1510,20 @@ paths relative to the PHPStan config file that declares them:</p>
 </tbody>
 </table>
 <p>Migration and schema paths expand <code>glob</code> wildcards, which modular applications
-need:</p>
+need. Setting either option replaces its conventional default directory, so
+include that directory explicitly when you want to add to it:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>parameters:
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    laravel:
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>        migrationDirectories:
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>            - modules/*/database/migrations
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>            - database/migrations
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>            - modules/*/database/migrations
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>        schemaDirectories:
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>            - database/schema
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>            - modules/*/database/schema
 </span></code></pre></div>
+<p>Migration scanning follows Laravel and reads only files directly inside each
+matched directory. It does not descend into directories such as <code>archive</code>
+unless another path, for example <code>database/migrations/*</code>, matches them.</p>
 <h2 id="next">Next<a class="headerlink" href="#next" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../reference/configuration/">The full option reference</a>.</li>

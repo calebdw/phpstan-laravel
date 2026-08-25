@@ -1220,6 +1220,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#postgresql-schema-dumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        PostgreSQL schema dumps
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-builders-survive-the-chain" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1591,6 +1602,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#postgresql-schema-dumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        PostgreSQL schema dumps
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-builders-survive-the-chain" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1938,6 +1960,15 @@ with different columns and each model sees the right one.</p>
 </span></code></pre></div>
 <p>Schema dumps are matched per connection too, by the
 <code>{connection}-schema.sql</code> filename Laravel writes.</p>
+<h3 id="postgresql-schema-dumps">PostgreSQL schema dumps<a class="headerlink" href="#postgresql-schema-dumps" title="Permanent link">&para;</a></h3>
+<p>PostgreSQL plain-text schema dumps are supported directly through
+<code>calebdw/pg-schema-parser</code>. PostgreSQL enums retain their labels as literal
+string unions, domains resolve to their underlying types, arrays reflect the
+string values returned by PDO, and tables outside <code>public</code> keep their
+schema-qualified names.</p>
+<p>Larastan's schema parsing is built around MySQL parsers, which do not reliably
+handle PostgreSQL dumps. Set <code>sqlParser: postgres</code>, or let <code>auto</code> select it when
+it is the only installed parser.</p>
 <h3 id="custom-builders-survive-the-chain">Custom builders survive the chain<a class="headerlink" href="#custom-builders-survive-the-chain" title="Permanent link">&para;</a></h3>
 <p>A model declaring its own builder keeps that builder through inherited methods,
 rather than degrading to <code>Builder&lt;Model&gt;</code> at the first <code>where()</code>:</p>
@@ -2175,8 +2206,15 @@ reported:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>parameters:
 </span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>    laravel:
 </span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>        migrationDirectories:
-</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>            - modules/*/database/migrations
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>            - database/migrations
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>            - modules/*/database/migrations
 </span></code></pre></div>
+<p>A configured list replaces the conventional directory. Including
+<code>database/migrations</code> above retains application migrations while adding the
+module migrations; omit it when the modules are the only source.</p>
+<p>Like Laravel's migrator, each matched migration directory is scanned directly
+rather than recursively. Nested directories are only included when another
+configured path explicitly matches them.</p>
 <p>Relative directory options resolve against the PHPStan config file that
 declares them, rather than against whatever directory you happened to run from.</p>
 <p>A schema dump the parser cannot read fails the run rather than being skipped
@@ -2202,10 +2240,10 @@ prefixed identifier, so you can ignore a category precisely. See
 </span></code></pre></div>
 <h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The SQL parser is optional.</strong> Squashed schema dumps need one, but neither is
-  a hard dependency, so the license entering your dependency tree is your
-  choice: <code>iamcal/sql-parser</code> (MIT) or <code>phpmyadmin/sql-parser</code>
-  (GPL-2.0-or-later). Name one with
+<li><strong>The SQL parser is optional.</strong> Squashed schema dumps need one, but it is not
+  a hard dependency. MySQL dumps support <code>iamcal/sql-parser</code> (MIT) and
+  <code>phpmyadmin/sql-parser</code> (GPL-2.0-or-later); PostgreSQL dumps support
+  <code>calebdw/pg-schema-parser</code> (MIT). Name one with
   <a href="../../reference/configuration/#sqlparser"><code>sqlParser</code></a> or let it pick.</li>
 <li><strong>Options nest under <code>laravel:</code></strong> rather than being mixed into PHPStan's own
   <code>parameters</code>, with rule toggles a level deeper under <code>laravel.rules</code>. The
