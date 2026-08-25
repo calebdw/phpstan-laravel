@@ -7,6 +7,8 @@ namespace Type;
 use PHPStan\Testing\TypeInferenceTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+use function Orchestra\Testbench\laravel_version_compare;
+
 class GeneralTypeTest extends TypeInferenceTestCase
 {
     /** @return iterable<mixed> */
@@ -19,53 +21,56 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-only.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-pluck.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/auth.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/benchmark.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-support-collection.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/mixin-infinite-recursion.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-model-collection-unique.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-intersection-types.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-model-collection-make.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/belongs-to-many-generics.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/benchmark.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-filter.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-helper.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-intersection-types.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-make-static.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-reject.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-stubs.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-where.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-where-not-null.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-where.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/conditionable.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/container-array-access.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/container-make.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/contracts.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/custom-eloquent-builder.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/custom-eloquent-collection.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-model-collection-make.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-model-collection-unique.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/custom-support-collection.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/database-transaction.php');
-
         yield from self::gatherAssertTypes(__DIR__ . '/data/date-extension.php');
-
-        yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder-pluck.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-getter-types.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/environment-helper.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/enumerable-pluck.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/environment-helper.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/facades.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/form-request.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/gate-facade.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/group-by.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/has-events.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/helpers.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/key-by.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/group-by.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/higher-order-collection-proxy-methods.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/model-factories.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/key-by.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/mixin-infinite-recursion.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-attributes.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-factories.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-keys.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-methods.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-properties-relations.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-properties.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-relations.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-scope-attribute.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-scopes.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/optional-helper.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/paginator-extension.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/passthru.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/query-builder.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/request-header.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/request-object.php');
@@ -79,10 +84,9 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/view.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/where-relation.php');
 
-        yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/model-scope-attribute.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/passthru.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/facades.php');
+        if (laravel_version_compare('13.0.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/l13-eloquent-builder-model-keys.php');
+        }
 
         //##############################################################################################################
 
@@ -93,11 +97,8 @@ class GeneralTypeTest extends TypeInferenceTestCase
     }
 
     #[DataProvider('dataFileAsserts')]
-    public function testFileAsserts(
-        string $assertType,
-        string $file,
-        mixed ...$args,
-    ): void {
+    public function testFileAsserts(string $assertType, string $file, mixed ...$args): void
+    {
         $this->assertFileAsserts($assertType, $file, ...$args);
     }
 
