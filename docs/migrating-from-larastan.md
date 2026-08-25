@@ -10,6 +10,15 @@ package, so migrating takes a handful of mechanical changes.
     from Larastan](about/differences-from-larastan.md) is the other half, what
     the analysis actually understands that it did not before.
 
+!!! tip "Or have an agent do it"
+
+    If you use [Laravel Boost][boost], this package ships a
+    `phpstan-laravel-larastan-migration` skill covering every step on this
+    page---the package swap, the option renames, the identifier rewrite in
+    baselines and inline ignores, and a verification pass against the error
+    count from before the switch. Commit your work first, ask the agent to
+    migrate off Larastan, and review the diff.
+
 ## Requirements
 
 | | Larastan 3.x | This package |
@@ -63,7 +72,7 @@ sit one level deeper again, under `laravel.rules:`.
      level: 8
      paths:
          - app
--    modelPropertyType: true
+-    checkModelProperties: true
 -    checkUnusedViews: true
 -    viewDirectories:
 -        - resources/views
@@ -260,6 +269,7 @@ general ones. Review the diff before committing:
 
 ```bash
 sed -i -E \
+  -e 's/\blarastan\.noEnvCallsOutsideOfConfig\b/laravel.envCallOutsideConfig/g' \
   -e 's/\blarastan\.noAuthFacadeInRequestScope\b/laravel.authInRequestScope.facade/g' \
   -e 's/\blarastan\.noAuthHelperInRequestScope\b/laravel.authInRequestScope.helper/g' \
   -e 's/\blarastan\.noPublicModelScopeMethod\b/laravel.modelMethodVisibility.scope/g' \
@@ -343,6 +353,7 @@ extends one of them, or your own service definitions:
 ```
 
 <!-- links -->
+[boost]: https://github.com/laravel/boost
 [larastan]: https://github.com/larastan/larastan
 [unmatched]: https://phpstan.org/user-guide/ignoring-errors#reporting-unused-ignores
 [extension-installer]: https://phpstan.org/user-guide/extension-library#installing-extensions

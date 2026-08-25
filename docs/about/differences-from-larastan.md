@@ -515,6 +515,12 @@ If you use [Laravel Boost][boost], this package ships an AI guideline and a
 `phpstan-laravel-analysis` skill, so an agent working in your project knows how
 to run the analysis and how to read what comes back.
 
+A second skill, `phpstan-laravel-larastan-migration`, performs the switch
+itself. The renames in [the migration
+guide](../migrating-from-larastan.md)---options, identifiers in baselines and
+inline ignores---are mechanical enough to hand off, so an agent can do them and
+then verify the result against the error count from before.
+
 <!-- links -->
 [larastan]: https://github.com/larastan/larastan
 [boost]: https://github.com/laravel/boost
