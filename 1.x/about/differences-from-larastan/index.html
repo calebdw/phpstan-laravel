@@ -2274,6 +2274,11 @@ policy is in <a href="../../about/backward-compatibility/">backward compatibilit
 <p>If you use <a href="https://github.com/laravel/boost">Laravel Boost</a>, this package ships an AI guideline and a
 <code>phpstan-laravel-analysis</code> skill, so an agent working in your project knows how
 to run the analysis and how to read what comes back.</p>
+<p>A second skill, <code>phpstan-laravel-larastan-migration</code>, performs the switch
+itself. The renames in <a href="../../migrating-from-larastan/">the migration
+guide</a>&mdash;options, identifiers in baselines and
+inline ignores&mdash;are mechanical enough to hand off, so an agent can do them and
+then verify the result against the error count from before.</p>
 <!-- links -->
 <h2 id="acknowledgments">Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permanent link">&para;</a></h2>
 <p>Larastan was created by <a href="https://github.com/canvural">Can Vural</a> and <a href="https://github.com/nunomaduro">Nuno

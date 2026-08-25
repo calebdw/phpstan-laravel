@@ -1599,6 +1599,15 @@ package, so migrating takes a handful of mechanical changes.</p>
 from Larastan</a> is the other half, what
 the analysis actually understands that it did not before.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Or have an agent do it</p>
+<p>If you use <a href="https://github.com/laravel/boost">Laravel Boost</a>, this package ships a
+<code>phpstan-laravel-larastan-migration</code> skill covering every step on this
+page&mdash;the package swap, the option renames, the identifier rewrite in
+baselines and inline ignores, and a verification pass against the error
+count from before the switch. Commit your work first, ask the agent to
+migrate off Larastan, and review the diff.</p>
+</div>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1653,7 +1662,7 @@ sit one level deeper again, under <code>laravel.rules:</code>.</p>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w"> </span>    level: 8
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w"> </span>    paths:
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w"> </span>        - app
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="gd">-    modelPropertyType: true</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="gd">-    checkModelProperties: true</span>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="gd">-    checkUnusedViews: true</span>
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="gd">-    viewDirectories:</span>
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="gd">-        - resources/views</span>
@@ -1961,16 +1970,17 @@ covering every typed accessor, and reports under <code>laravel.configAccessor</c
 names lose a plural, and four are regrouped. The specific cases have to run before the
 general ones. Review the diff before committing:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sed<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noAuthFacadeInRequestScope\b/laravel.authInRequestScope.facade/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noAuthHelperInRequestScope\b/laravel.authInRequestScope.helper/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelScopeMethod\b/laravel.modelMethodVisibility.scope/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelAccessorMethod\b/laravel.modelMethodVisibility.accessor/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.unusedViews\b/laravel.unusedView/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.missingTranslations\b/laravel.missingTranslation/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.no([A-Z])/laravel.\l\1/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\./laravel./g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\brules\.modelAppends\b/laravel.modelAppends/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span>phpstan-baseline.neon
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noEnvCallsOutsideOfConfig\b/laravel.envCallOutsideConfig/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noAuthFacadeInRequestScope\b/laravel.authInRequestScope.facade/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noAuthHelperInRequestScope\b/laravel.authInRequestScope.helper/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelScopeMethod\b/laravel.modelMethodVisibility.scope/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelAccessorMethod\b/laravel.modelMethodVisibility.accessor/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.unusedViews\b/laravel.unusedView/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.missingTranslations\b/laravel.missingTranslation/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.no([A-Z])/laravel.\l\1/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\./laravel./g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\brules\.modelAppends\b/laravel.modelAppends/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span>phpstan-baseline.neon
 </span></code></pre></div>
 <p>Inline ignore comments have to be updated in your source as well. The same script works
 on them, with the file list swapped:</p>
