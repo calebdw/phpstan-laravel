@@ -154,6 +154,15 @@ function test(
     assertType('App\UserCollection', $secondCustomEloquentCollection->values());
     assertType('Illuminate\Support\Collection<int, int>', $items->values());
 
+    assertType('list<App\User>', $collection->values()->all());
+    assertType('list<App\Transaction>', $customEloquentCollection->values()->all());
+    assertType('list<App\User>', $secondCustomEloquentCollection->values()->all());
+    assertType('list<int>', $items->values()->all());
+    assertType('list<App\User>', $lazyCollection->values()->all());
+    assertType('list<App\User>', $enumerableIntUsers->values()->all());
+    assertType('list<App\User>', $enumerableStringUsers->values()->all());
+    assertType('array<string, int>', $items->all());
+
     assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User|int>>', $collection->zip([1]));
     assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\Transaction|string>>', $customEloquentCollection->zip(['foo']));
     assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User|string>>', $secondCustomEloquentCollection->zip(['foo']));
