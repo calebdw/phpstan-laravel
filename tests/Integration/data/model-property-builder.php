@@ -46,6 +46,9 @@ function test(Builder $builder, User $user, string $union, ): void
 
     User::query()->get(DB::raw('name'));
     User::query()->get([DB::raw('name')]);
+
+    User::query()->createQuietly(['foo' => 'bar']);
+    User::query()->createQuietly(['id' => 1]);
 }
 
 User::query()->whereHas('accounts', function (Builder $query) {
