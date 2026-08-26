@@ -22,6 +22,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Stringable as IlluminateStringable;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ParameterReflection;
@@ -53,6 +54,7 @@ use function class_exists;
 use function explode;
 use function str_replace;
 
+#[AutowiredService]
 class ModelCastHelper
 {
     /** @var array<string, array<string, string>> */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Internal;
 
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -20,6 +21,7 @@ use function preg_match;
 use const GLOB_ONLYDIR;
 
 /** @internal */
+#[AutowiredService]
 final class FileHelper
 {
     public function __construct(

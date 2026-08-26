@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Concerns;
 use Illuminate\Auth\AuthManager;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
@@ -17,6 +18,7 @@ use PHPStan\Type\TypeCombinator;
 use function array_map;
 use function count;
 
+#[AutowiredService]
 final class AuthManagerExtension implements DynamicMethodReturnTypeExtension
 {
     use Concerns\HasContainer;

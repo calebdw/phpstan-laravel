@@ -10,6 +10,8 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
@@ -35,6 +37,7 @@ use function is_numeric;
  *
  * @internal
  */
+#[AutowiredService]
 final class ConfigParser
 {
     /** @var array<string, SplFileInfo>|null */
@@ -46,12 +49,15 @@ final class ConfigParser
     /** @var array<string, Type|null> */
     private array $types = [];
 
-    /** @param list<non-empty-string> $configDirectories */
     public function __construct(
+        /** @var list<non-empty-string> */
+        #[AutowiredParameter(ref: '%laravel.configDirectories%')]
         private array $configDirectories,
         private FileHelper $fileHelper,
+        #[AutowiredParameter(ref: '@currentPhpVersionSimpleDirectParser')]
         private Parser $parser,
         private FileTypeMapper $fileTypeMapper,
+        #[AutowiredParameter(ref: '%treatPhpDocTypesAsCertain%')]
         private bool $treatPhpDocTypesAsCertain,
     ) {
     }

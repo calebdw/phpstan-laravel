@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Rules\Rule;
@@ -26,6 +27,7 @@ use function sprintf;
 use function str_contains;
 
 /** @implements Rule<Node\Expr\CallLike> */
+#[AutowiredService]
 class RelationExistenceRule implements Rule
 {
     public function __construct(private ModelRuleHelper $modelRuleHelper)

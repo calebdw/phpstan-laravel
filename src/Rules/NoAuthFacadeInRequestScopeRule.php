@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -23,6 +24,7 @@ use function in_array;
 use function sprintf;
 
 /** @implements Rule<StaticCall> */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.authInRequestScope%')]
 class NoAuthFacadeInRequestScopeRule implements Rule
 {
     public function getNodeType(): string

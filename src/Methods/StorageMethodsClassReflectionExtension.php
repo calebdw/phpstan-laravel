@@ -9,11 +9,13 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Support\Facades\Storage;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\ReflectionProvider;
 
+#[AutowiredService]
 class StorageMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
     public function __construct(private ReflectionProvider $reflectionProvider)

@@ -9,6 +9,7 @@ use CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver;
 use InvalidArgumentException;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -18,6 +19,7 @@ use PHPStan\Type\TypeCombinator;
 use function count;
 use function in_array;
 
+#[AutowiredService]
 class ArgumentDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ConsoleApplicationResolver $consoleApplicationResolver, private ConsoleApplicationHelper $consoleApplicationHelper)

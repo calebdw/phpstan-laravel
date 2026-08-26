@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Helpers;
 
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\NeverType;
@@ -15,6 +16,7 @@ use PHPStan\Type\TypeTraverser;
 use function count;
 
 /** @internal */
+#[AutowiredService]
 final class ValueExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool

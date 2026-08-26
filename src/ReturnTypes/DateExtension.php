@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes;
 use Illuminate\Support\Facades\Date;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
@@ -17,6 +18,7 @@ use function get_class;
 use function in_array;
 use function now;
 
+#[AutowiredService]
 class DateExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string

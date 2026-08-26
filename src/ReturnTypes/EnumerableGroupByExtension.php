@@ -10,6 +10,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Generic\GenericObjectType;
@@ -26,6 +27,7 @@ use function array_reverse;
  * groupers were passed, so it gives up and widens the values to mixed as soon
  * as an array is involved.
  */
+#[AutowiredService]
 final class EnumerableGroupByExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ColumnHelper $columnHelper)

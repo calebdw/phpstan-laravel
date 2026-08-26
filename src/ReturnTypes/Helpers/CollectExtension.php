@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Support\Collection;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
@@ -19,6 +20,7 @@ use PHPStan\Type\Type;
 
 use function count;
 
+#[AutowiredService]
 final class CollectExtension implements DynamicFunctionReturnTypeExtension
 {
     public function __construct(private CollectionHelper $collectionHelper)

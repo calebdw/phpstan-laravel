@@ -11,6 +11,7 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Property;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -28,6 +29,7 @@ use function sprintf;
  *
  * @implements Rule<Property>
  */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.modelAppends%')]
 class ModelAppendsRule implements Rule
 {
     public function __construct(

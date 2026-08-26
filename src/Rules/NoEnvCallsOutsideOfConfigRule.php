@@ -9,6 +9,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\File\FileHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -24,6 +26,7 @@ use function str_starts_with;
  *
  * @implements Rule<FuncCall>
  */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.envCallOutsideConfig%')]
 class NoEnvCallsOutsideOfConfigRule implements Rule
 {
     use HasContainer;
@@ -32,8 +35,11 @@ class NoEnvCallsOutsideOfConfigRule implements Rule
     private array $configDirectories = [];
 
     /** @param  list<non-empty-string> $configDirectories */
-    public function __construct(array $configDirectories, private FileHelper $fileHelper)
-    {
+    public function __construct(
+        #[AutowiredParameter(ref: '%laravel.configDirectories%')]
+        array $configDirectories,
+        private FileHelper $fileHelper,
+    ) {
         if (count($configDirectories) !== 0) {
             foreach ($configDirectories as $directory) {
                 $this->configDirectories[] = $this->fileHelper->normalizePath($directory);

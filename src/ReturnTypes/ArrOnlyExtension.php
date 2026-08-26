@@ -7,10 +7,12 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class ArrOnlyExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string

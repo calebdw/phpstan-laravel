@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Methods;
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassMemberReflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\FunctionVariant;
@@ -29,6 +30,7 @@ use function array_key_exists;
 use function array_map;
 use function in_array;
 
+#[AutowiredService]
 final class ModelForwardsCallsExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection> */

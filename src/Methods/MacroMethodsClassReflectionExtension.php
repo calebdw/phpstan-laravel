@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -38,6 +39,7 @@ use function is_callable;
 use function is_string;
 use function str_contains;
 
+#[AutowiredService]
 class MacroMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
     use HasContainer;

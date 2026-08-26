@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\HigherOrderCollectionProxy;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 use function count;
 
+#[AutowiredService]
 final class HigherOrderCollectionProxyOnlyExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

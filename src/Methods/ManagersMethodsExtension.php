@@ -9,12 +9,14 @@ use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\ReflectionProvider;
 
 /** @internal */
+#[AutowiredService]
 final class ManagersMethodsExtension implements MethodsClassReflectionExtension
 {
     use Concerns\HasContainer;

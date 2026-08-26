@@ -11,6 +11,8 @@ use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Sql\SqlDialect;
 use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 
 use function array_key_exists;
 use function database_path;
@@ -18,15 +20,18 @@ use function explode;
 use function file_get_contents;
 use function ksort;
 
+#[AutowiredService]
 final class SquashedMigrationHelper
 {
-    /** @param  string[] $schemaPaths */
     public function __construct(
+        /** @var string[] */
+        #[AutowiredParameter(ref: '%laravel.schemaDirectories%')]
         private array $schemaPaths,
         private FileHelper $fileHelper,
         private SqlDataTypeToPhpTypeConverter $converter,
         private PostgresDataTypeToPhpTypeConverter $postgresConverter,
         private SqlParserManager $parserManager,
+        #[AutowiredParameter(ref: '%laravel.scanSchema%')]
         private bool $scanSchema,
     ) {
     }

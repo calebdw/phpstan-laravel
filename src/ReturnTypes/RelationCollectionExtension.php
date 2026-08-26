@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
@@ -20,6 +21,7 @@ use PHPStan\Type\Type;
 use function in_array;
 
 /** @internal */
+#[AutowiredService]
 final class RelationCollectionExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

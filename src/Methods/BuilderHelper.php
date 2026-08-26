@@ -13,6 +13,8 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Str;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Name;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
@@ -38,6 +40,7 @@ use function ucfirst;
 
 use const PREG_SPLIT_DELIM_CAPTURE;
 
+#[AutowiredService]
 class BuilderHelper
 {
     public const array MODEL_RETRIEVAL_METHODS = ['first', 'find', 'findMany', 'findOrFail', 'firstOrFail', 'sole'];
@@ -77,6 +80,7 @@ class BuilderHelper
 
     public function __construct(
         private ReflectionProvider $reflectionProvider,
+        #[AutowiredParameter(ref: '%laravel.modelPropertyType%')]
         private bool $checkProperties,
         private MacroMethodsClassReflectionExtension $macroMethodsClassReflectionExtension,
     ) {

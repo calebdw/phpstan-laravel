@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Methods\BuilderHelper;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
@@ -15,6 +16,7 @@ use PHPStan\Type\Type;
 use function collect;
 use function in_array;
 
+#[AutowiredService]
 class NewModelQueryDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private BuilderHelper $builderHelper)

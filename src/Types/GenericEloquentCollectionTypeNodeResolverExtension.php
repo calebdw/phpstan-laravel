@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Types;
 
 use Illuminate\Database\Eloquent\Collection;
 use PHPStan\Analyser\NameScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\PhpDoc\TypeNodeResolver;
 use PHPStan\PhpDoc\TypeNodeResolverExtension;
 use PHPStan\PhpDocParser\Ast\Type\ArrayTypeNode;
@@ -33,6 +34,7 @@ use function count;
  * @see https://gist.github.com/ondrejmirtes/56af016d0595788d5400b8dfb6520adc
  *      for the original sketch of this approach
  */
+#[AutowiredService]
 class GenericEloquentCollectionTypeNodeResolverExtension implements TypeNodeResolverExtension
 {
     public function __construct(private TypeNodeResolver $typeNodeResolver)

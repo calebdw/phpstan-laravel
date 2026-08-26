@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\InClassNode;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Rules\Rule;
@@ -16,6 +17,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 
 /** @implements Rule<InClassNode> */
+#[RegisteredRule(level: 0)]
 class DeferrableServiceProviderMissingProvidesRule implements Rule
 {
     public function getNodeType(): string

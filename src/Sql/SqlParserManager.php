@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Sql;
 
 use Closure;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 
 use function class_exists;
 
@@ -16,6 +18,7 @@ use function class_exists;
  * analysed application's config repository, whereas the driver here comes from
  * this extension's own PHPStan configuration.
  */
+#[AutowiredService]
 final class SqlParserManager
 {
     public const string DRIVER_AUTO       = 'auto';
@@ -68,6 +71,7 @@ final class SqlParserManager
 
     /** @param (Closure(string): bool)|null $classExists */
     public function __construct(
+        #[AutowiredParameter(ref: '%laravel.sqlParser%')]
         private string $defaultDriver = self::DRIVER_AUTO,
         Closure|null $classExists = null,
     ) {

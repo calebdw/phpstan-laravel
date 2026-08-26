@@ -13,6 +13,7 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Contracts\Auth\Guard;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -21,6 +22,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use function in_array;
 
 /** @internal */
+#[AutowiredService]
 final class AuthsMethodsExtension implements MethodsClassReflectionExtension
 {
     use Concerns\HasContainer;

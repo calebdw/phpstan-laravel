@@ -12,6 +12,7 @@ use Iterator;
 use IteratorAggregate;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Name;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\BenevolentUnionType;
@@ -33,6 +34,7 @@ use function array_values;
 use function count;
 use function in_array;
 
+#[AutowiredService]
 final class CollectionHelper
 {
     public function __construct(private ReflectionProvider $reflectionProvider)
