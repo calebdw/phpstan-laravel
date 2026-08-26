@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\ReturnTypes\AppMakeHelper;
 use Illuminate\Foundation\Application;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ObjectType;
@@ -15,6 +16,7 @@ use PHPStan\Type\Type;
 
 use function count;
 
+#[AutowiredService]
 class AppExtension implements DynamicFunctionReturnTypeExtension
 {
     public function __construct(

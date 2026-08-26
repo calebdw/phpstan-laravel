@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -21,6 +22,7 @@ use PHPStan\Type\Type;
 
 use function array_key_exists;
 
+#[AutowiredService]
 final class RelationForwardsCallsExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection> */

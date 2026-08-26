@@ -14,6 +14,7 @@ use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use Illuminate\View\Factory;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -27,6 +28,7 @@ use function iterator_to_array;
 use function view;
 
 /** @implements Rule<CollectedDataNode> */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.unusedView%')]
 final class UnusedViewsRule implements Rule
 {
     /** @var list<string>|null */

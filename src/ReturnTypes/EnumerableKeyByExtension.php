@@ -8,11 +8,13 @@ use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class EnumerableKeyByExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ColumnHelper $columnHelper)

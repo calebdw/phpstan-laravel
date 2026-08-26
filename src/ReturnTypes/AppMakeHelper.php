@@ -9,6 +9,8 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
@@ -18,11 +20,13 @@ use Throwable;
 
 use function count;
 
+#[AutowiredService]
 final class AppMakeHelper
 {
     use HasContainer;
 
     public function __construct(
+        #[AutowiredParameter(ref: '%laravel.strictContracts%')]
         private readonly bool $strictContracts = false,
     ) {
     }

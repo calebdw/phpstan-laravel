@@ -6,11 +6,13 @@ namespace CalebDW\PhpstanLaravel\Parameters;
 
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\MethodParameterClosureTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class EloquentBuilderRelationParameterExtension implements MethodParameterClosureTypeExtension
 {
     public function __construct(private RelationClosureHelper $relationClosureHelper)

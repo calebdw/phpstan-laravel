@@ -12,6 +12,7 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Str;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ArrayType;
@@ -26,6 +27,7 @@ use function count;
 use function in_array;
 
 /** @internal */
+#[AutowiredService]
 final class BuilderModelFindExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ReflectionProvider $reflectionProvider, private CollectionHelper $collectionHelper)

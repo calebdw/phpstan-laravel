@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\BenevolentUnionType;
@@ -17,6 +18,7 @@ use Throwable;
 use function is_string;
 
 /** @internal */
+#[AutowiredService]
 final class ModelHelper
 {
     public function __construct(private ReflectionProvider $reflectionProvider)

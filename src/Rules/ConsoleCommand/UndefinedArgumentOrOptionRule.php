@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -18,6 +19,7 @@ use function in_array;
 use function sprintf;
 
 /** @implements Rule<MethodCall> */
+#[RegisteredRule(level: 0)]
 final class UndefinedArgumentOrOptionRule implements Rule
 {
     public function __construct(private ConsoleApplicationResolver $consoleApplicationResolver)

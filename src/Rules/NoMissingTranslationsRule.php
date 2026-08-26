@@ -12,6 +12,8 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -33,12 +35,14 @@ use function strlen;
 use const DIRECTORY_SEPARATOR;
 
 /** @implements Rule<CollectedDataNode> */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.missingTranslation%')]
 final class NoMissingTranslationsRule implements Rule
 {
-    /** @param string[] $translationDirectories */
     public function __construct(
         private UsedTranslationViewCollector $usedTranslationViewCollector,
         private Filesystem $filesystem,
+        /** @var string[] */
+        #[AutowiredParameter(ref: '%laravel.translationDirectories%')]
         private array $translationDirectories,
     ) {
     }

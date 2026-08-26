@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Database\Eloquent\Builder;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\MixedType;
@@ -16,6 +17,7 @@ use PHPStan\Type\TypeCombinator;
 
 use function in_array;
 
+#[AutowiredService]
 final class EloquentValueExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ColumnHelper $columnHelper)

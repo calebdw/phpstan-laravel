@@ -10,6 +10,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -27,6 +28,7 @@ use PHPStan\Type\ObjectType;
  *
  * @implements Rule<StaticCall>
  */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.modelMake%')]
 class NoModelMakeRule implements Rule
 {
     public function __construct(protected ReflectionProvider $reflectionProvider)

@@ -8,6 +8,8 @@ use CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Illuminate\Database\Eloquent\Model;
 use PHPStan\Analyser\NameScope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\PhpDoc\TypeNodeResolver;
 use PHPStan\PhpDoc\TypeNodeResolverExtension;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
@@ -23,10 +25,12 @@ use function count;
 /**
  * Ensures a 'model-property' type in PHPDoc is recognised to be of type ModelPropertyType.
  */
+#[AutowiredService]
 final class ModelPropertyTypeNodeResolverExtension implements TypeNodeResolverExtension
 {
     public function __construct(
         protected TypeNodeResolver $baseResolver,
+        #[AutowiredParameter(ref: '%laravel.modelPropertyType%')]
         protected bool $active,
         private ModelDatabaseHelper $modelDatabaseHelper,
         private ModelHelper $modelHelper,

@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Internal\RecursionGuard;
 use CalebDW\PhpstanLaravel\Reflection\ReflectionHelper;
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
 use Illuminate\Support\Facades\Facade;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -21,6 +22,7 @@ use function strrpos;
 use function substr;
 
 /** @internal */
+#[AutowiredService]
 final class FacadesMethodsExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection> */

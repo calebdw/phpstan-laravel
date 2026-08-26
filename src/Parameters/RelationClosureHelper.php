@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\ClosureType;
@@ -32,6 +33,7 @@ use function count;
 use function explode;
 use function in_array;
 
+#[AutowiredService]
 final class RelationClosureHelper
 {
     /** @var list<string> */

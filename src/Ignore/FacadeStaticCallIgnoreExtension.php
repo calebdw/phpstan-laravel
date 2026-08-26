@@ -12,8 +12,10 @@ use PhpParser\Node\Name;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\IgnoreErrorExtension;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\ObjectType;
 
+#[AutowiredService]
 final class FacadeStaticCallIgnoreExtension implements IgnoreErrorExtension
 {
     public function shouldIgnore(Error $error, Node $node, Scope $scope): bool

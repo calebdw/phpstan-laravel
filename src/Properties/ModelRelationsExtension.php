@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
@@ -25,6 +26,7 @@ use PHPStan\Type\UnionType;
 use function str_ends_with;
 
 /** @internal */
+#[AutowiredService]
 final class ModelRelationsExtension implements PropertiesClassReflectionExtension
 {
     use Concerns\HasContainer;

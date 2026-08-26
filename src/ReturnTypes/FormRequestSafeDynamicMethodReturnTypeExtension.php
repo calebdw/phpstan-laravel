@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes;
 use Illuminate\Foundation\Http\FormRequest;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
@@ -17,6 +18,7 @@ use PHPStan\Type\Type;
 use function assert;
 use function count;
 
+#[AutowiredService]
 class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

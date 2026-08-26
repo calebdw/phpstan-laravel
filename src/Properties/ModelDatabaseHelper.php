@@ -6,9 +6,11 @@ namespace CalebDW\PhpstanLaravel\Properties;
 
 use CalebDW\PhpstanLaravel\Concerns\HasContainer;
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\DependencyInjection\AutowiredService;
 
 use function count;
 
+#[AutowiredService]
 final class ModelDatabaseHelper
 {
     use HasContainer;

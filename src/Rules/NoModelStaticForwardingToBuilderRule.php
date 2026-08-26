@@ -12,6 +12,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
@@ -19,6 +20,7 @@ use function array_map;
 use function sprintf;
 
 /** @implements Rule<StaticCall> */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.modelStaticForwardingToBuilder%')]
 final class NoModelStaticForwardingToBuilderRule implements Rule
 {
     public function getNodeType(): string

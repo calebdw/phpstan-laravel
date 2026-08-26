@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ArrayType;
@@ -28,6 +29,7 @@ use function count;
 use function in_array;
 
 /** @internal */
+#[AutowiredService]
 final class ModelFindExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private ReflectionProvider $reflectionProvider, private CollectionHelper $collectionHelper)

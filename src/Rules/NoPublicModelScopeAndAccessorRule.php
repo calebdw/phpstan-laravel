@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use PhpParser\Modifiers;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope as AnalyserScope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -20,6 +21,7 @@ use function str_ends_with;
 use function str_starts_with;
 
 /** @implements Rule<InClassMethodNode> */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.modelMethodVisibility%')]
 class NoPublicModelScopeAndAccessorRule implements Rule
 {
     public function getNodeType(): string

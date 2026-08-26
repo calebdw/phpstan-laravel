@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel;
 
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\PhpDoc\StubFilesExtension as StubFilesExtensionContract;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
@@ -13,6 +14,7 @@ use function array_values;
 use function iterator_to_array;
 use function version_compare;
 
+#[AutowiredService]
 final class StubFilesExtension implements StubFilesExtensionContract
 {
     /** @inheritDoc */

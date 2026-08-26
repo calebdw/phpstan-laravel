@@ -9,6 +9,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\Native\NativeParameterReflection;
 use PHPStan\Reflection\PassedByReference;
 use PHPStan\Reflection\Php\DummyParameter;
@@ -34,6 +35,7 @@ use function collect;
 use function explode;
 
 /** @internal */
+#[AutowiredService]
 final class ColumnHelper
 {
     public function getArrayType(

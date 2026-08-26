@@ -7,6 +7,8 @@ namespace CalebDW\PhpstanLaravel\Support;
 use CalebDW\PhpstanLaravel\Concerns\HasContainer;
 use Generator;
 use Illuminate\Contracts\View\Factory as ViewFactory;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileHelper;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -25,13 +27,17 @@ use function str_replace;
 
 use const DIRECTORY_SEPARATOR;
 
+#[AutowiredService]
 final class ViewFileHelper
 {
     use HasContainer;
 
-    /** @param  list<non-empty-string> $viewDirectories */
-    public function __construct(private array $viewDirectories, private FileHelper $fileHelper)
-    {
+    public function __construct(
+        /** @var list<non-empty-string> */
+        #[AutowiredParameter(ref: '%laravel.viewDirectories%')]
+        private array $viewDirectories,
+        private FileHelper $fileHelper,
+    ) {
         if (count($viewDirectories) !== 0) {
             return;
         }

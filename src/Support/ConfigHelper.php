@@ -11,6 +11,7 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\BooleanType;
@@ -40,6 +41,7 @@ use function is_int;
 use function is_object;
 use function is_string;
 
+#[AutowiredService]
 final class ConfigHelper
 {
     use HasContainer;

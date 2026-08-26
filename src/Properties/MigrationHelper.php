@@ -6,6 +6,8 @@ namespace CalebDW\PhpstanLaravel\Properties;
 
 use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Reflection\ReflectionProvider;
@@ -15,13 +17,17 @@ use function count;
 use function database_path;
 use function uasort;
 
+#[AutowiredService]
 class MigrationHelper
 {
     public function __construct(
+        #[AutowiredParameter(ref: '@currentPhpVersionSimpleDirectParser')]
         private Parser $parser,
         /** @var string[] */
+        #[AutowiredParameter(ref: '%laravel.migrationDirectories%')]
         private array $databaseMigrationPath,
         private FileHelper $fileHelper,
+        #[AutowiredParameter(ref: '%laravel.scanMigrations%')]
         private bool $scanMigrations,
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,

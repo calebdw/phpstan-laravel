@@ -11,6 +11,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\TypeCombinator;
@@ -19,6 +20,7 @@ use function array_map;
 use function sprintf;
 
 /** @implements Rule<MethodCall> */
+#[RegisteredRule(level: 0, enabledBy: '%laravel.rules.modelForwardingToBuilder%')]
 final class NoModelForwardingToBuilderRule implements Rule
 {
     public function getNodeType(): string
