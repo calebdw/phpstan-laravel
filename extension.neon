@@ -115,8 +115,6 @@ services:
     tags: [phpstan.broker.methodsClassReflectionExtension]
   - class: CalebDW\PhpstanLaravel\Methods\HigherOrderCollectionProxyExtension
     tags: [phpstan.broker.methodsClassReflectionExtension]
-  - class: CalebDW\PhpstanLaravel\Methods\StorageMethodsClassReflectionExtension
-    tags: [phpstan.broker.methodsClassReflectionExtension]
   - class: CalebDW\PhpstanLaravel\Methods\ContractsMethodsExtension
     tags: [phpstan.broker.methodsClassReflectionExtension]
   - class: CalebDW\PhpstanLaravel\Methods\FacadesMethodsExtension
