@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
-use CalebDW\PhpstanLaravel\Concerns;
+use CalebDW\PhpstanLaravel\Internal\RecursionGuard;
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
+use CalebDW\PhpstanLaravel\Support\ManagerHelper;
 use Illuminate\Support\Manager;
-use InvalidArgumentException;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
-use PHPStan\Reflection\ReflectionProvider;
 
 /** @internal */
 final class ManagersMethodsExtension implements MethodsClassReflectionExtension
 {
-    use Concerns\HasContainer;
-
     /** @var array<string, MethodReflection> */
     private array $cache = [];
 
-    public function __construct(private ReflectionProvider $reflectionProvider)
+    public function __construct(private ManagerHelper $managerHelper)
     {
     }
 
@@ -38,40 +35,23 @@ final class ManagersMethodsExtension implements MethodsClassReflectionExtension
             return true;
         }
 
-        $concrete = $this->resolve($classReflection->getName());
+        $result = RecursionGuard::run($key, function () use ($classReflection, $methodName, $key) {
+            foreach ($this->managerHelper->getDriverTypes($classReflection) as $type) {
+                if (! $type->hasMethod($methodName)->yes()) {
+                    continue;
+                }
 
-        if ($concrete === null) {
+                $this->cache[$key] = new StaticMethodReflection(
+                    $type->getMethod($methodName, new OutOfClassScope()),
+                );
+
+                return true;
+            }
+
             return false;
-        }
+        });
 
-        $driver = null;
-
-        try {
-            $driver = $concrete->driver();
-        } catch (InvalidArgumentException) {
-        }
-
-        if ($driver === null) {
-            return false;
-        }
-
-        $driverClass = $driver::class;
-
-        if (! $this->reflectionProvider->hasClass($driverClass)) {
-            return false;
-        }
-
-        $driverReflection = $this->reflectionProvider->getClass($driverClass);
-
-        if (! $driverReflection->hasMethod($methodName)) {
-            return false;
-        }
-
-        $this->cache[$key] = new StaticMethodReflection(
-            $driverReflection->getMethod($methodName, new OutOfClassScope()),
-        );
-
-        return true;
+        return $result ?? false;
     }
 
     public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection

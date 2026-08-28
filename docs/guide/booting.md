@@ -50,6 +50,10 @@ No route is handled, no query is sent, nothing is queued. The database is never
 contacted either, since columns come from reading migration files and schema
 dumps as text, so analysis works with no database available.
 
+A manager's driver is not built either, as long as its `create{Driver}Driver()`
+method declares what it returns; the declared type is read instead. See
+[managers](../about/differences-from-larastan.md#managers).
+
 ## What to watch out for
 
 The consequence is that **anything your providers do on boot, they do on every

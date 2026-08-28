@@ -33,6 +33,12 @@ class IntegrationTest extends PHPStanTestCase
         yield [__DIR__ . '/data/macro-call-forms.php', [33 => ['Static call to instance method Illuminate\Support\Collection<(int|string),mixed>::plainClosureMacro().']]];
         yield [__DIR__ . '/data/static-model-macro.php', [11 => ['Static call to instance method App\PostBuilder::modelBoundMacro().']]];
 
+        // Managers returning a contract only expose the contract's methods.
+        yield [
+            __DIR__ . '/data/managers.php',
+            [54 => ['Call to an undefined method IntegrationManagers\ContractManager::notInContract().']],
+        ];
+
         yield [
             __DIR__ . '/data/model-property-builder.php',
             [

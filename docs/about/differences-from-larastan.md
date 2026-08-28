@@ -391,6 +391,67 @@ User::paginate()->getCollection();
 // Illuminate\Database\Eloquent\Collection<int, App\User>
 ```
 
+## Managers
+
+An `Illuminate\Support\Manager` subclass forwards unknown calls to its driver,
+so the driver decides what the manager can do. Which driver that is, and what
+type it has, is read from the `create{Driver}Driver()` method rather than taken
+from the object the container happens to build:
+
+```php
+class NotifierManager extends Manager
+{
+    public function getDefaultDriver(): string
+    {
+        return config('notifier.default');
+    }
+
+    protected function createSlackDriver(): Notifier
+    {
+        return new SlackNotifier();
+    }
+}
+
+$manager->driver();
+// App\Notifier
+
+$manager->driver('slack');
+// App\Notifier
+
+$manager->send($message);
+// checked against Notifier, not against SlackNotifier
+```
+
+Two things follow from reading the declared type. The driver is never
+constructed, so one that needs credentials, a connection or a config key absent
+from your environment costs nothing and cannot fail the run. And a creator
+returning a contract exposes only that contract: a method the implementation has
+and the interface does not is reported as undefined, which is what declaring the
+return type asked for.
+
+Larastan resolves the manager and calls `driver()` for real, then uses the class
+of whatever came back, so the contract is ignored and every public method of the
+implementation is callable.
+
+A creator with no declared return type still falls back to resolving the driver
+from the container, so managers written before the framework had return types
+keep working:
+
+```php
+protected function createSlackDriver()
+{
+    return new SlackNotifier();
+}
+
+$manager->driver();
+// App\SlackNotifier
+```
+
+The driver's name is the one part that still comes from the manager itself,
+since `getDefaultDriver()` usually reads config. When it cannot be determined,
+every driver the manager declares is considered instead, so a method belonging
+to any of them is accepted rather than none of them.
+
 ## Configuration
 
 Typed configuration is not new: Larastan reads your config files too, behind
