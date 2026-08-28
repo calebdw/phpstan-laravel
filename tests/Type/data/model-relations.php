@@ -84,6 +84,11 @@ function test(
     assertType('Illuminate\Database\Eloquent\Relations\BelongsTo<App\Group, App\User>', $appUser->group()->onlyTrashed());
     assertType('Illuminate\Database\Eloquent\Relations\BelongsTo<App\Group, App\User>', $appUser->group()->withoutTrashed());
     assertType('Illuminate\Database\Eloquent\Relations\HasManyThrough<App\Transaction, App\Account, App\User>', $appUser->transactions());
+    assertType('Illuminate\Database\Eloquent\Relations\HasManyThrough<App\Transaction, App\Account, App\User>', $appUser->transactions()->whereIn('id', [1, 2, 3]));
+    assertType('App\Transaction|null', $appUser->transactions()->first());
+    assertType('App\Transaction', $appUser->transactions()->firstOrFail());
+    assertType('42|App\Transaction', $appUser->transactions()->firstOr(fn () => 42));
+    assertType('42|App\Transaction', $appUser->transactions()->firstOr(callback: fn () => 42));
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', User::with([
         'accounts' => function (HasMany $query) {
             return $query->where('foo', 'bar');
