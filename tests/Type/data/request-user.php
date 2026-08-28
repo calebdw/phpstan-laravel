@@ -14,3 +14,9 @@ function test(Request $request): void
     assertType('App\User|null', $request->user('web'));
     assertType('App\Admin|null', $request->user('admin'));
 }
+
+/** @param 'admin'|'web' $guard */
+function testGuardUnion(Request $request, string $guard): void
+{
+    assertType('App\Admin|App\User|null', $request->user($guard));
+}

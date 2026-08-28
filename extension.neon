@@ -171,8 +171,6 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AuthExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\GuardDynamicStaticMethodReturnTypeExtension
-    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AuthManagerExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\ManagerDriverExtension
@@ -276,6 +274,7 @@ services:
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Support\ModelHelper
   - class: CalebDW\PhpstanLaravel\Support\ManagerHelper
+  - class: CalebDW\PhpstanLaravel\Support\AuthHelper
   - class: CalebDW\PhpstanLaravel\Properties\MigrationHelper
     arguments: {databaseMigrationPath: %laravel.migrationDirectories%, scanMigrations: %laravel.scanMigrations%, parser: @currentPhpVersionSimpleDirectParser}
   - class: CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper

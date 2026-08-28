@@ -68,13 +68,7 @@ final class AuthsMethodsExtension implements MethodsClassReflectionExtension
 
     private function findMethodInAuthModels(string $cacheKey, string $methodName): bool
     {
-        $config = $this->resolve('config');
-
-        if ($config === null) {
-            return false;
-        }
-
-        $authModels = $this->getAuthModels($config);
+        $authModels = $this->getAuthModels();
 
         foreach ($authModels as $authModel) {
             if ($this->findMethodOnClass($cacheKey, $authModel, $methodName)) {

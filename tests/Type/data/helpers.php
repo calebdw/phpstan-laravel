@@ -27,14 +27,29 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
     assertType('Illuminate\Auth\AuthManager', resolve('auth'));
 
     assertType('Illuminate\Auth\AuthManager', auth());
-    assertType('Illuminate\Contracts\Auth\Guard', auth()->guard('web'));
-    assertType('Illuminate\Contracts\Auth\StatefulGuard', auth('web'));
+    assertType('Illuminate\Auth\SessionGuard', auth()->guard());
+    assertType('Illuminate\Auth\SessionGuard', auth()->guard('web'));
+    assertType('Illuminate\Auth\SessionGuard', auth()->guard('admin'));
+    assertType('Illuminate\Auth\TokenGuard', auth()->guard('api'));
+    assertType('App\CustomGuard', auth()->guard('custom'));
+    assertType('Illuminate\Contracts\Auth\StatefulGuard', auth()->guard('unknown'));
+    assertType('Illuminate\Auth\SessionGuard', auth('web'));
+    assertType('Illuminate\Auth\SessionGuard', auth('admin'));
+    assertType('Illuminate\Auth\TokenGuard', auth('api'));
+    assertType('App\CustomGuard', auth('custom'));
+    assertType('Illuminate\Contracts\Auth\StatefulGuard', auth('unknown'));
     assertType('App\Admin|App\User|null', auth()->user());
+    assertType('App\Admin|App\User', auth()->authenticate());
     assertType('bool', auth()->check());
     assertType('App\User|null', auth()->guard('web')->user());
+    assertType('App\User', auth()->guard('web')->authenticate());
     assertType('App\User|null', auth('web')->user());
+    assertType('App\User', auth('web')->authenticate());
     assertType('App\Admin|null', auth()->guard('admin')->user());
     assertType('App\Admin|null', auth('admin')->user());
+    assertType('App\Admin', auth('admin')->authenticate());
+    assertType('App\User|null', auth('api')->user());
+    assertType('App\User', auth('api')->authenticate());
     assertType('int|string|null', auth()->id());
     assertType('int|string|null', auth('web')->id());
     assertType('int|string|null', auth('admin')->id());
@@ -216,6 +231,13 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
     assertType("Illuminate\Support\Collection<'guard'|'passwords', string>", Config::collection('auth.defaults'));
     // not an array, so the declared return type stands
     assertType('Illuminate\Support\Collection<(int|string), mixed>', Config::collection('auth.defaults.guard'));
+}
+
+/** @param 'api'|'custom' $guard */
+function testAuthGuardUnion(string $guard): void
+{
+    assertType('App\CustomGuard|Illuminate\Auth\TokenGuard', auth($guard));
+    assertType('App\User|null', auth($guard)->user());
 }
 
 function testConfigRepository(\Illuminate\Config\Repository $repository, \Illuminate\Contracts\Config\Repository $contract): void

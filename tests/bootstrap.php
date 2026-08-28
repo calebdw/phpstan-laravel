@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\CustomGuard;
 use App\Importer;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Auth\SessionGuard;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Benchmark;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Number;
@@ -95,3 +97,7 @@ enum FooEnum: string
 Builder::macro('macroWithEnumDefaultValue', static function (string $arg = 'foobar', $b = FooEnum::Foo): string {
     return $arg;
 });
+
+Auth::extend('custom', static fn ($app, $name, array $config): CustomGuard => new CustomGuard(
+    Auth::createUserProvider($config['provider']),
+));

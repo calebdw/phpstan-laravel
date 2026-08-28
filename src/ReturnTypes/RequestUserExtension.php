@@ -4,25 +4,20 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
-use CalebDW\PhpstanLaravel\Concerns\LoadsAuthModel;
+use CalebDW\PhpstanLaravel\Support\AuthHelper;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
-
-use function array_map;
-use function count;
 
 /** @internal */
 final class RequestUserExtension implements DynamicMethodReturnTypeExtension
 {
-    use HasContainer;
-    use LoadsAuthModel;
+    public function __construct(private AuthHelper $authHelper)
+    {
+    }
 
     public function getClass(): string
     {
@@ -34,50 +29,15 @@ final class RequestUserExtension implements DynamicMethodReturnTypeExtension
         return $methodReflection->getName() === 'user';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         if ($methodReflection->getDeclaringClass()->getName() !== Request::class) {
             return null;
         }
 
-        $config     = $this->getContainer()->get('config');
-        $authModels = [];
-
-        if ($config !== null) {
-            $guard      = $this->getGuardFromMethodCall($scope, $methodCall);
-            $authModels = $this->getAuthModels($config, $guard);
-        }
-
-        if (count($authModels) === 0) {
-            return null;
-        }
-
-        return TypeCombinator::addNull(
-            TypeCombinator::union(...array_map(
-                static fn (string $authModel): Type => new ObjectType($authModel),
-                $authModels,
-            )),
+        return $this->authHelper->getUserType(
+            guards: $this->authHelper->getGuardsFromArg($methodCall->getArg('guard', 0), $scope),
+            nullable: true,
         );
-    }
-
-    private function getGuardFromMethodCall(Scope $scope, MethodCall $methodCall): string|null
-    {
-        $args = $methodCall->getArgs();
-
-        if (count($args) !== 1) {
-            return null;
-        }
-
-        $guardType       = $scope->getType($args[0]->value);
-        $constantStrings = $guardType->getConstantStrings();
-
-        if (count($constantStrings) !== 1) {
-            return null;
-        }
-
-        return $constantStrings[0]->getValue();
     }
 }

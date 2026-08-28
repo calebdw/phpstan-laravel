@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Concerns;
 
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-
 use function array_keys;
 use function array_reduce;
 use function in_array;
@@ -13,20 +11,27 @@ use function is_array;
 
 trait LoadsAuthModel
 {
-    /** @phpstan-return list<class-string> */
-    private function getAuthModels(ConfigRepository $config, string|null $guard = null): array
+    use HasContainer;
+
+    /**
+     * @param list<string>|string|null $guard
+     *
+     * @return list<class-string>
+     */
+    private function getAuthModels(array|string|null $guard = null): array
     {
-        $guards    = $config->get('auth.guards');
-        $providers = $config->get('auth.providers');
+        $config    = $this->getConfigRepository();
+        $guards    = $config?->get('auth.guards');
+        $providers = $config?->get('auth.providers');
 
         if (! is_array($guards) || ! is_array($providers)) {
             return [];
         }
 
         return array_reduce(
-            $guard === null ? array_keys($guards) : [$guard],
-            static function ($carry, $guardName) use ($guards, $providers) {
-                $provider = $guards[$guardName]['provider'] ?? null;
+            (array) ($guard ?? array_keys($guards)),
+            static function ($carry, $name) use ($guards, $providers) {
+                $provider = $guards[$name]['provider'] ?? null;
 
                 if (! $provider) {
                     return $carry;

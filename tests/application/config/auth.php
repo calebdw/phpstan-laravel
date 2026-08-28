@@ -23,6 +23,11 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'custom' => [
+            'driver' => 'custom',
+            'provider' => 'users',
+        ],
     ],
 
     'providers' => [

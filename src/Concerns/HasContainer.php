@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Concerns;
 
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container as ContainerContract;
 use Throwable;
 
@@ -38,5 +39,12 @@ trait HasContainer
         }
 
         return $concrete;
+    }
+
+    private function getConfigRepository(): ConfigRepository|null
+    {
+        $config = $this->resolve('config');
+
+        return $config instanceof ConfigRepository ? $config : null;
     }
 }
