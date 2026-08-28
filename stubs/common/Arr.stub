@@ -5,6 +5,18 @@ namespace Illuminate\Support;
 class Arr
 {
    /**
+    * Get a value from the array, and remove it.
+    *
+    * @template TArray of array
+    * @param TArray $array
+    * @param string|int $key
+    * @param mixed $default
+    * @return mixed
+    * @param-out TArray $array
+    */
+   public static function pull(&$array, $key, $default = null);
+
+   /**
     * Pluck an array of values from an array.
     *
     * @template TValue

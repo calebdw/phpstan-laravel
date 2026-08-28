@@ -173,6 +173,8 @@ services:
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AuthManagerExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrGetPullExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\ManagerDriverExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\DateExtension
@@ -225,6 +227,8 @@ services:
   - class: CalebDW\PhpstanLaravel\Types\AbortIfFunctionTypeSpecifyingExtension
     arguments: {methodName: 'abort', negate: false}
     tags: [phpstan.typeSpecifier.functionTypeSpecifyingExtension]
+  - class: CalebDW\PhpstanLaravel\Types\ArrPullParameterOutTypeExtension
+    tags: [phpstan.staticMethodParameterOutTypeExtension]
   - class: CalebDW\PhpstanLaravel\Types\AbortIfFunctionTypeSpecifyingExtension
     arguments: {methodName: 'abort', negate: true}
     tags: [phpstan.typeSpecifier.functionTypeSpecifyingExtension]

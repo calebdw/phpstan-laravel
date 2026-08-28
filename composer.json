@@ -33,7 +33,8 @@
     "illuminate/http": "^12.67.0 || ^13.26.1",
     "illuminate/pipeline": "^12.67.0 || ^13.26.1",
     "illuminate/support": "^12.67.0 || ^13.26.1",
-    "phpstan/phpstan": "^2.2.8"
+    "phpstan/phpstan": "^2.2.8",
+    "webmozart/assert": "^2.4"
   },
   "require-dev": {
     "calebdw/pg-schema-parser": "^1.0",
@@ -46,6 +47,7 @@
     "orchestra/testbench-core": "^10.0 || ^11",
     "phpmyadmin/sql-parser": "^5.9.0",
     "phpstan/phpstan-deprecation-rules": "^2.0.1",
+    "phpstan/phpstan-webmozart-assert": "^2.0",
     "phpunit/phpunit": "^12.5.8 || ^13.1.8"
   },
   "suggest": {
