@@ -7,7 +7,26 @@ namespace CalebDW\PhpstanLaravel\Properties;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Exception;
 use Illuminate\Support\Str;
-use PhpParser;
+use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\Closure;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\If_;
+use PhpParser\Node\Stmt\Property;
 use PhpParser\NodeFinder;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
@@ -36,26 +55,26 @@ final class SchemaAggregator
     ) {
     }
 
-    /** @param  array<int, PhpParser\Node\Stmt> $stmts */
+    /** @param  array<int, Stmt> $stmts */
     public function addStatements(array $stmts): void
     {
         $nodeFinder = new NodeFinder();
 
-        /** @var PhpParser\Node\Stmt\Class_[] $classes */
-        $classes = $nodeFinder->findInstanceOf($stmts, PhpParser\Node\Stmt\Class_::class);
+        /** @var Class_[] $classes */
+        $classes = $nodeFinder->findInstanceOf($stmts, Class_::class);
 
         foreach ($classes as $stmt) {
             $this->addClassStatements($stmt->stmts);
         }
     }
 
-    /** @param  array<int, PhpParser\Node\Stmt> $stmts */
+    /** @param  array<int, Stmt> $stmts */
     private function addClassStatements(array $stmts): void
     {
         $nodeFinder = new NodeFinder();
 
-        /** @var  PhpParser\Node\Stmt\Property[] $properties */
-        $properties     = $nodeFinder->findInstanceOf($stmts, PhpParser\Node\Stmt\Property::class);
+        /** @var  Property[] $properties */
+        $properties     = $nodeFinder->findInstanceOf($stmts, Property::class);
         $connectionName = null;
 
         foreach ($properties as $method) {
@@ -63,7 +82,7 @@ final class SchemaAggregator
                 continue;
             }
 
-            if ($method->props[0]->default instanceof PhpParser\Node\Scalar\String_) {
+            if ($method->props[0]->default instanceof String_) {
                 $connectionName = $method->props[0]->default->value;
 
                 break;
@@ -74,7 +93,7 @@ final class SchemaAggregator
 
         foreach ($stmts as $stmt) {
             if (
-                ! ($stmt instanceof PhpParser\Node\Stmt\ClassMethod)
+                ! ($stmt instanceof ClassMethod)
                 || $stmt->name->name === 'down'
                 || ! $stmt->stmts
             ) {
@@ -87,20 +106,40 @@ final class SchemaAggregator
         array_pop($this->connectionStack);
     }
 
-    /** @param  PhpParser\Node\Stmt[] $stmts */
+    /** @param  Stmt[] $stmts */
     private function addUpMethodStatements(array $stmts): void
     {
         $nodeFinder = new NodeFinder();
-        $methods    = $nodeFinder->findInstanceOf($stmts, PhpParser\Node\Stmt\Expression::class);
+        $methods    = $nodeFinder->findInstanceOf($stmts, Expression::class);
+
+        $schemaVariables = [];
 
         foreach ($methods as $stmt) {
             $connection = null;
 
             if (
-                $stmt->expr instanceof PhpParser\Node\Expr\MethodCall
-                && $stmt->expr->var instanceof PhpParser\Node\Expr\StaticCall
-                && $stmt->expr->var->class instanceof PhpParser\Node\Name
-                && $stmt->expr->var->name instanceof PhpParser\Node\Identifier
+                $stmt->expr instanceof Assign
+                && $stmt->expr->var instanceof Variable
+                && is_string($stmt->expr->var->name)
+            ) {
+                $variable = $stmt->expr->var->name;
+                unset($schemaVariables[$variable]);
+
+                if (
+                    $stmt->expr->expr instanceof StaticCall
+                    && $this->isSchemaConnectionCall($stmt->expr->expr)
+                ) {
+                    $schemaVariables[$variable] = $this->getConnectionName($stmt->expr->expr);
+                }
+
+                continue;
+            }
+
+            if (
+                $stmt->expr instanceof MethodCall
+                && $stmt->expr->var instanceof StaticCall
+                && $stmt->expr->var->class instanceof Name
+                && $stmt->expr->var->name instanceof Identifier
                 && in_array($stmt->expr->var->name->name, ['connection', 'setConnection'], strict: true)
                 && ($stmt->expr->var->class->toCodeString() === '\Schema' || (new ObjectType('Illuminate\Support\Facades\Schema'))->isSuperTypeOf(new ObjectType($stmt->expr->var->class->toCodeString()))->yes())
             ) {
@@ -108,14 +147,22 @@ final class SchemaAggregator
                 $args      = $stmt->expr->var->getArgs();
                 if (count($args) > 0) {
                     $connectionArg = $args[0]->value;
-                    if ($connectionArg instanceof PhpParser\Node\Scalar\String_) {
+                    if ($connectionArg instanceof String_) {
                         $connection = $connectionArg->value;
                     }
                 }
             } elseif (
-                $stmt->expr instanceof PhpParser\Node\Expr\StaticCall
-                && $stmt->expr->class instanceof PhpParser\Node\Name
-                && $stmt->expr->name instanceof PhpParser\Node\Identifier
+                $stmt->expr instanceof MethodCall
+                && $stmt->expr->var instanceof Variable
+                && is_string($stmt->expr->var->name)
+                && array_key_exists($stmt->expr->var->name, $schemaVariables)
+            ) {
+                $statement  = $stmt->expr;
+                $connection = $schemaVariables[$stmt->expr->var->name];
+            } elseif (
+                $stmt->expr instanceof StaticCall
+                && $stmt->expr->class instanceof Name
+                && $stmt->expr->name instanceof Identifier
                 && ($stmt->expr->class->toCodeString() === '\Schema' || (new ObjectType('Illuminate\Support\Facades\Schema'))->isSuperTypeOf(new ObjectType($stmt->expr->class->toCodeString()))->yes())
             ) {
                 $statement = $stmt->expr;
@@ -123,7 +170,7 @@ final class SchemaAggregator
                 continue;
             }
 
-            if (! $statement->name instanceof PhpParser\Node\Identifier) {
+            if (! $statement->name instanceof Identifier) {
                 continue;
             }
 
@@ -147,7 +194,24 @@ final class SchemaAggregator
         }
     }
 
-    private function alterTable(PhpParser\Node\Expr\StaticCall|PhpParser\Node\Expr\MethodCall $call, bool $creating): void
+    private function isSchemaConnectionCall(Expr $expr): bool
+    {
+        return $expr instanceof StaticCall
+            && $expr->class instanceof Name
+            && $expr->name instanceof Identifier
+            && in_array($expr->name->name, ['connection', 'setConnection'], strict: true)
+            && ($expr->class->toCodeString() === '\\Schema'
+                || (new ObjectType('Illuminate\Support\Facades\Schema'))->isSuperTypeOf(new ObjectType($expr->class->toCodeString()))->yes());
+    }
+
+    private function getConnectionName(StaticCall $call): string|null
+    {
+        $connection = $call->getArgs()[0]->value ?? null;
+
+        return $connection instanceof String_ ? $connection->value : null;
+    }
+
+    private function alterTable(StaticCall|MethodCall $call, bool $creating): void
     {
         if (! isset($call->args[0])) {
             return;
@@ -157,16 +221,16 @@ final class SchemaAggregator
 
         $tableName = null;
 
-        if ($value instanceof PhpParser\Node\Scalar\String_) {
+        if ($value instanceof String_) {
             $tableName = $value->value;
         }
 
-        if ($value instanceof PhpParser\Node\Expr\ClassConstFetch) {
-            if (! $value->class instanceof PhpParser\Node\Name\FullyQualified) {
+        if ($value instanceof ClassConstFetch) {
+            if (! $value->class instanceof FullyQualified) {
                 return;
             }
 
-            if (! $value->name instanceof PhpParser\Node\Identifier) {
+            if (! $value->name instanceof Identifier) {
                 return;
             }
 
@@ -193,10 +257,10 @@ final class SchemaAggregator
 
         if (
             ! isset($call->args[1])
-            || ! $call->getArgs()[1]->value instanceof PhpParser\Node\Expr\Closure
+            || ! $call->getArgs()[1]->value instanceof Closure
             || count($call->getArgs()[1]->value->params) < 1
             || (
-                $call->getArgs()[1]->value->params[0]->type instanceof PhpParser\Node\Name
+                $call->getArgs()[1]->value->params[0]->type instanceof Name
                 && ! (new ObjectType('Illuminate\Database\Schema\Blueprint'))->isSuperTypeOf(new ObjectType($call->getArgs()[1]->value->params[0]->type->toCodeString()))->yes()
             )
         ) {
@@ -206,7 +270,7 @@ final class SchemaAggregator
         $updateClosure = $call->getArgs()[1]->value;
 
         if (
-            ! ($call->getArgs()[1]->value->params[0]->var instanceof PhpParser\Node\Expr\Variable)
+            ! ($call->getArgs()[1]->value->params[0]->var instanceof Variable)
             || ! is_string($call->getArgs()[1]->value->params[0]->var->name)
         ) {
             return;
@@ -218,7 +282,7 @@ final class SchemaAggregator
     }
 
     /**
-     * @param  PhpParser\Node\Stmt[] $stmts
+     * @param  Stmt[] $stmts
      *
      * @throws Exception
      */
@@ -232,9 +296,9 @@ final class SchemaAggregator
 
         foreach ($stmts as $stmt) {
             if (
-                ! ($stmt instanceof PhpParser\Node\Stmt\Expression)
-                || ! ($stmt->expr instanceof PhpParser\Node\Expr\MethodCall)
-                || ! ($stmt->expr->name instanceof PhpParser\Node\Identifier)
+                ! ($stmt instanceof Expression)
+                || ! ($stmt->expr instanceof MethodCall)
+                || ! ($stmt->expr->name instanceof Identifier)
             ) {
                 continue;
             }
@@ -245,9 +309,9 @@ final class SchemaAggregator
 
             $nullable = false;
 
-            while ($rootVar instanceof PhpParser\Node\Expr\MethodCall) {
+            while ($rootVar instanceof MethodCall) {
                 if (
-                    $rootVar->name instanceof PhpParser\Node\Identifier
+                    $rootVar->name instanceof Identifier
                     && $rootVar->name->name === 'nullable'
                     && $this->getNullableArgumentValue($rootVar) === true
                 ) {
@@ -259,9 +323,9 @@ final class SchemaAggregator
             }
 
             if (
-                ! ($rootVar instanceof PhpParser\Node\Expr\Variable)
+                ! ($rootVar instanceof Variable)
                 || $rootVar->name !== $argName
-                || ! ($firstMethodCall->name instanceof PhpParser\Node\Identifier)
+                || ! ($firstMethodCall->name instanceof Identifier)
             ) {
                 continue;
             }
@@ -271,18 +335,18 @@ final class SchemaAggregator
 
             if ($firstMethodCall->name->name === 'foreignIdFor') {
                 if (
-                    $firstArg instanceof PhpParser\Node\Expr\ClassConstFetch
-                    && $firstArg->class instanceof PhpParser\Node\Name
+                    $firstArg instanceof ClassConstFetch
+                    && $firstArg->class instanceof Name
                 ) {
                     $modelClass = $firstArg->class->toCodeString();
-                } elseif ($firstArg instanceof PhpParser\Node\Scalar\String_) {
+                } elseif ($firstArg instanceof String_) {
                     $modelClass = $firstArg->value;
                 } else {
                     continue;
                 }
 
                 $columnName = Str::snake(class_basename($modelClass)) . '_id';
-                if ($secondArg instanceof PhpParser\Node\Scalar\String_) {
+                if ($secondArg instanceof String_) {
                     $columnName = $secondArg->value;
                 }
 
@@ -301,10 +365,10 @@ final class SchemaAggregator
                 continue;
             }
 
-            if (! $firstArg instanceof PhpParser\Node\Scalar\String_) {
-                if ($firstArg instanceof PhpParser\Node\Expr\Array_ && $firstMethodCall->name->name === 'dropColumn') {
+            if (! $firstArg instanceof String_) {
+                if ($firstArg instanceof Array_ && $firstMethodCall->name->name === 'dropColumn') {
                     foreach ($firstArg->items as $arrayItem) {
-                        if (! $arrayItem->value instanceof PhpParser\Node\Scalar\String_) {
+                        if (! $arrayItem->value instanceof String_) {
                             continue;
                         }
 
@@ -359,11 +423,11 @@ final class SchemaAggregator
 
             $secondArgArray = null;
 
-            if ($secondArg instanceof PhpParser\Node\Expr\Array_) {
+            if ($secondArg instanceof Array_) {
                 $secondArgArray = [];
 
                 foreach ($secondArg->items as $arrayItem) {
-                    if (! $arrayItem->value instanceof PhpParser\Node\Scalar\String_) {
+                    if (! $arrayItem->value instanceof String_) {
                         continue;
                     }
 
@@ -386,11 +450,11 @@ final class SchemaAggregator
         }
     }
 
-    private function dropTable(PhpParser\Node\Expr\StaticCall|PhpParser\Node\Expr\MethodCall $call): void
+    private function dropTable(StaticCall|MethodCall $call): void
     {
         if (
             ! isset($call->args[0])
-            || ! $call->getArgs()[0]->value instanceof PhpParser\Node\Scalar\String_
+            || ! $call->getArgs()[0]->value instanceof String_
         ) {
             return;
         }
@@ -400,12 +464,12 @@ final class SchemaAggregator
         $this->getCurrentConnection()->dropTable($tableName);
     }
 
-    private function renameTableThroughStaticCall(PhpParser\Node\Expr\StaticCall|PhpParser\Node\Expr\MethodCall $call): void
+    private function renameTableThroughStaticCall(StaticCall|MethodCall $call): void
     {
         if (
             ! isset($call->args[0], $call->args[1])
-            || ! $call->getArgs()[0]->value instanceof PhpParser\Node\Scalar\String_
-            || ! $call->getArgs()[1]->value instanceof PhpParser\Node\Scalar\String_
+            || ! $call->getArgs()[0]->value instanceof String_
+            || ! $call->getArgs()[1]->value instanceof String_
         ) {
             return;
         }
@@ -416,16 +480,16 @@ final class SchemaAggregator
         $this->getCurrentConnection()->renameTable($oldTableName, $newTableName);
     }
 
-    private function renameTableThroughMethodCall(SchemaTable $oldTable, PhpParser\Node\Expr\MethodCall $call): void
+    private function renameTableThroughMethodCall(SchemaTable $oldTable, MethodCall $call): void
     {
         if (
             ! isset($call->args[0])
-            || ! $call->getArgs()[0]->value instanceof PhpParser\Node\Scalar\String_
+            || ! $call->getArgs()[0]->value instanceof String_
         ) {
             return;
         }
 
-        /** @var PhpParser\Node\Scalar\String_ $methodCallArgument */
+        /** @var String_ $methodCallArgument */
         $methodCallArgument = $call->getArgs()[0]->value;
 
         $oldTableName = $oldTable->name;
@@ -434,7 +498,7 @@ final class SchemaAggregator
         $this->getCurrentConnection()->renameTable($oldTableName, $newTableName);
     }
 
-    private function getNullableArgumentValue(PhpParser\Node\Expr\MethodCall $rootVar): bool
+    private function getNullableArgumentValue(MethodCall $rootVar): bool
     {
         if (! array_key_exists(0, $rootVar->args)) {
             return true;
@@ -442,21 +506,21 @@ final class SchemaAggregator
 
         $arg = $rootVar->args[0];
 
-        if (! ($arg instanceof PhpParser\Node\Arg)) {
+        if (! ($arg instanceof Arg)) {
             return true;
         }
 
         $argExpression = $arg->value;
 
-        if (! ($argExpression instanceof PhpParser\Node\Expr\ConstFetch)) {
+        if (! ($argExpression instanceof ConstFetch)) {
             return true;
         }
 
         return $argExpression->name->getFirst() === 'true';
     }
 
-    /** @return PhpParser\Node\Stmt\Expression[] */
-    private function getUpdateStatements(PhpParser\Node\Expr $updateClosure): array
+    /** @return Expression[] */
+    private function getUpdateStatements(Expr $updateClosure): array
     {
         if (! property_exists($updateClosure, 'stmts')) {
             return [];
@@ -466,10 +530,10 @@ final class SchemaAggregator
         $nodeFinder = new NodeFinder();
 
         foreach ($updateClosure->stmts as $updateStatement) {
-            if ($updateStatement instanceof PhpParser\Node\Stmt\If_) {
+            if ($updateStatement instanceof If_) {
                 $statements = array_merge(
                     $statements,
-                    $nodeFinder->findInstanceOf($updateStatement, PhpParser\Node\Stmt\Expression::class),
+                    $nodeFinder->findInstanceOf($updateStatement, Expression::class),
                 );
 
                 continue;
@@ -488,15 +552,15 @@ final class SchemaAggregator
      */
     private function processStatementAlterMethod(
         string $method,
-        PhpParser\Node\Expr\MethodCall|null $firstMethodCall,
+        MethodCall|null $firstMethodCall,
         SchemaTable $table,
         string $columnName,
         bool $nullable,
         mixed $secondArg,
-        PhpParser\Node\Expr|string $argName,
+        Expr|string $argName,
         string $tableName,
         array|null $secondArgArray,
-        PhpParser\Node\Stmt\Expression $stmt,
+        Expression $stmt,
     ): void {
         switch ($method) {
             case 'addcolumn':
@@ -590,9 +654,9 @@ final class SchemaAggregator
 
             case 'after':
                 if (
-                    $secondArg instanceof PhpParser\Node\Expr\Closure
-                    && $secondArg->params[0]->var instanceof PhpParser\Node\Expr\Variable
-                    && ! ($secondArg->params[0]->var->name instanceof PhpParser\Node\Expr)
+                    $secondArg instanceof Closure
+                    && $secondArg->params[0]->var instanceof Variable
+                    && ! ($secondArg->params[0]->var->name instanceof Expr)
                 ) {
                     $argName = $secondArg->params[0]->var->name;
                     $this->processColumnUpdates($tableName, $argName, $secondArg->stmts);
@@ -653,14 +717,14 @@ final class SchemaAggregator
                 return;
 
             case 'rename':
-                /** @var PhpParser\Node\Expr\MethodCall $methodCall */
+                /** @var MethodCall $methodCall */
                 $methodCall = $stmt->expr;
                 $this->renameTableThroughMethodCall($table, $methodCall);
 
                 return;
 
             case 'renamecolumn':
-                if ($secondArg instanceof PhpParser\Node\Scalar\String_) {
+                if ($secondArg instanceof String_) {
                     $table->renameColumn($columnName, $secondArg->value);
                 }
 

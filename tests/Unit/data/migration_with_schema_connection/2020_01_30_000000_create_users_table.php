@@ -22,7 +22,9 @@ class CreateUsersTable extends Migration
             $table->timestamps();
         });
 
-        Schema::connection('bar')->create('users', static function (Blueprint $table) {
+        $schema = Schema::connection('bar');
+
+        $schema->create('users', static function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->string('email')->unique();
