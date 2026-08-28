@@ -21,6 +21,7 @@ parameters:
       modelMethodVisibility: false
       modelStaticForwardingToBuilder: false
       octaneCompatibility: false
+      undefinedConfigName: false
       unnecessaryCollectionCall:
         enabled: true
         only: []
@@ -57,6 +58,7 @@ parametersSchema:
       modelMethodVisibility: bool()
       modelStaticForwardingToBuilder: bool()
       octaneCompatibility: bool()
+      undefinedConfigName: bool()
       unnecessaryCollectionCall: structure([
         enabled: bool()
         only: listOf(string())
@@ -95,6 +97,7 @@ conditionalTags:
   CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule: {phpstan.rules.rule: %laravel.rules.missingTranslation%}
   CalebDW\PhpstanLaravel\Rules\ModelAppendsRule: {phpstan.rules.rule: %laravel.rules.modelAppends%}
   CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule: {phpstan.rules.rule: %laravel.rules.configAccessor%}
+  CalebDW\PhpstanLaravel\Rules\UndefinedConfigNameRule: {phpstan.rules.rule: %laravel.rules.undefinedConfigName%}
   CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule: {phpstan.rules.rule: %laravel.rules.modelMethodVisibility%}
   CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule: {phpstan.rules.rule: %laravel.rules.authInRequestScope%}
   CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule: {phpstan.rules.rule: %laravel.rules.authInRequestScope%}
@@ -258,6 +261,7 @@ services:
   - class: CalebDW\PhpstanLaravel\Rules\NoUnnecessaryEnumerableToArrayCallsRule
   - class: CalebDW\PhpstanLaravel\Rules\ModelAppendsRule
   - class: CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule
+  - class: CalebDW\PhpstanLaravel\Rules\UndefinedConfigNameRule
   - class: CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule
   - class: CalebDW\PhpstanLaravel\Types\GenericEloquentBuilderTypeNodeResolverExtension
     tags: [phpstan.phpDoc.typeNodeResolverExtension]

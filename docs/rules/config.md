@@ -127,3 +127,78 @@ parameters:
             - src/config
             - tests
 ```
+
+## Undefined config name
+
+`laravel.undefinedConfigName` &middot; option `rules.undefinedConfigName` &middot; off by default
+
+Checks the name handed to a manager against the configuration that defines the
+names it accepts. Every one of these lookups throws an
+`InvalidArgumentException` when the name is not configured, so a typo is a
+guaranteed runtime failure rather than a style issue:
+
+| Call | Names come from |
+| --- | --- |
+| `Storage::disk()`, `::drive()` | `filesystems.disks` |
+| `Cache::store()`, `::driver()` | `cache.stores` |
+| `DB::connection()` | `database.connections` |
+| `Queue::connection()` | `queue.connections` |
+| `Mail::mailer()` | `mail.mailers` |
+| `Log::channel()`, `::driver()` | `logging.channels` |
+| `Broadcast::connection()` | `broadcasting.connections` |
+| `Auth::guard()` | `auth.guards` |
+
+### Examples
+
+```php
+Storage::disk('s3');       // fine, filesystems.disks defines it
+Storage::disk('s3-backup'); // always throws
+```
+
+The last call reports the message the call would itself throw:
+
+```
+Disk [s3-backup] does not have a configured driver.
+```
+
+Both call styles are covered, so `Cache::store(...)`, `$manager->store(...)`
+and a manager injected as either the concrete class or its contract are all
+checked.
+
+A database connection may name one side of a read/write pair, which is not
+part of the name configuration defines, so the suffix is stripped before the
+lookup:
+
+```php
+DB::connection('mysql::read');  // fine, mysql is configured
+DB::connection('mysql::stale'); // always throws, not a side
+```
+
+Only a name known statically is checked. A variable, or configuration that
+neither the booted container nor
+[`configDirectories`](../reference/configuration.md#configdirectories) can
+resolve, could be anything and is left alone. Calling with no argument or with
+`null` asks for the default, which configuration always names.
+
+### Why it is off by default
+
+A name does not have to come from configuration. `Storage::fake('avatars')`
+and `Storage::set()` register a disk directly, which is how Laravel's own
+testing documentation writes it:
+
+```php
+Storage::fake('avatars');
+Storage::disk('avatars'); // works at runtime, reported by this rule
+```
+
+Nothing in the analysis can see that registration, so the rule would report a
+disk that does exist. Turn it on if you resolve every name from configuration,
+or ignore [`laravel.undefinedConfigName`](../reference/identifiers.md) in your
+test suite:
+
+```neon
+parameters:
+    laravel:
+        rules:
+            undefinedConfigName: true
+```

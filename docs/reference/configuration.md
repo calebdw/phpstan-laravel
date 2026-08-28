@@ -37,6 +37,7 @@ reports, its error identifier, and its own options.
 | `modelMethodVisibility` | `false` | [Model method visibility](../rules/eloquent.md#model-method-visibility) |
 | `modelStaticForwardingToBuilder` | `false` | [Model static forwarding to builder](../rules/eloquent.md#model-static-forwarding-to-builder) |
 | `octaneCompatibility` | `false` | [Octane compatibility](../rules/framework.md#octane-compatibility) |
+| `undefinedConfigName` | `false` | [Undefined config name](../rules/config.md#undefined-config-name) |
 | `unnecessaryCollectionCall` | `true` | [Unnecessary collection call](../rules/collections.md#unnecessary-collection-call) |
 | `unnecessaryEnumerableToArrayCall` | `true` | [Unnecessary enumerable toArray call](../rules/collections.md#unnecessary-enumerable-toarray-call) |
 | `unusedView` | `false` | [Unused view](../rules/views-and-translations.md#unused-view) |

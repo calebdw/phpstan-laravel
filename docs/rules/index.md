@@ -45,8 +45,9 @@ matter of taste. Ignore by identifier if you need an exception.
 ## Off by default
 
 Off for one of two reasons: the rule enforces a style choice rather than
-finding a bug, or it depends on a scan that can be incomplete, in which case
-the gap shows up as a false positive rather than as silence.
+finding a bug, or what it checks against can be incomplete---a scan that
+misses a file, or configuration that something is registered outside of---in
+which case the gap shows up as a false positive rather than as silence.
 
 | Rule | Identifier | Off because |
 | --- | --- | --- |
@@ -55,6 +56,7 @@ the gap shows up as a false positive rather than as silence.
 | [Model static forwarding to builder](eloquent.md#model-static-forwarding-to-builder) | `laravel.modelStaticForwardingToBuilder` | style |
 | [Octane compatibility](framework.md#octane-compatibility) | `laravel.octaneCompatibility` | only applies under Octane |
 | [Auth in request scope](framework.md#auth-in-request-scope) | `laravel.authInRequestScope.facade`, `….helper` | style |
+| [Undefined config name](config.md#undefined-config-name) | `laravel.undefinedConfigName` | names can be registered at runtime |
 | [Unused view](views-and-translations.md#unused-view) | `laravel.unusedView` | scan can be incomplete |
 | [Missing translation](views-and-translations.md#missing-translation) | `laravel.missingTranslation` | scan can be incomplete |
 

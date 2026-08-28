@@ -40,6 +40,7 @@ identifiers share a stem: `laravel.modelMethodVisibility.scope` and
 | [`laravel.modelStaticForwardingToBuilder`](../rules/eloquent.md#model-static-forwarding-to-builder) | A builder method is called statically on a model | `rules.modelStaticForwardingToBuilder` |
 | [`laravel.octaneCompatibility`](../rules/framework.md#octane-compatibility) | A binding captures the container in a way Octane cannot reuse | `rules.octaneCompatibility` |
 | [`laravel.relationExistence`](../rules/eloquent.md#relation-existence) | A builder method names a relation that does not exist | always |
+| [`laravel.undefinedConfigName`](../rules/config.md#undefined-config-name) | A named Laravel service is not defined in its configuration | `rules.undefinedConfigName` |
 | [`laravel.unnecessaryCollectionCall`](../rules/collections.md#unnecessary-collection-call) | A collection method could have been a query instead | `rules.unnecessaryCollectionCall.enabled` |
 | [`laravel.unnecessaryEnumerableToArrayCall`](../rules/collections.md#unnecessary-enumerable-toarray-call) | `toArray()` is called where `all()` would do the same | `rules.unnecessaryEnumerableToArrayCall` |
 | [`laravel.unusedView`](../rules/views-and-translations.md#unused-view) | A Blade view is never referenced | `rules.unusedView` |
