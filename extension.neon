@@ -216,6 +216,8 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\CollectionWhereNotNullDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableSelectExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableValuesAllExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\HigherOrderCollectionProxyOnlyExtension
@@ -348,6 +350,8 @@ services:
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrPluckExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrSelectExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentPluckExtension
     arguments: {class: Illuminate\Database\Eloquent\Builder, templateType: TModel}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -391,6 +395,7 @@ services:
   - class: CalebDW\PhpstanLaravel\Support\ConfigParser
     arguments: {configDirectories: %laravel.configDirectories%, parser: @currentPhpVersionSimpleDirectParser, treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%}
   - class: CalebDW\PhpstanLaravel\Support\ColumnHelper
+  - class: CalebDW\PhpstanLaravel\Support\SelectHelper
   - class: CalebDW\PhpstanLaravel\ReturnTypes\FormRequestSafeDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule

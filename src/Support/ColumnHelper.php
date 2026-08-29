@@ -211,8 +211,13 @@ final class ColumnHelper
             ->all();
     }
 
-    /** @param array<int, string> $keys */
-    private function pluckFromType(Type $from, array $keys, Scope $scope): Type|null
+    /**
+     * Resolves a key against a type, as a property or as an offset, following
+     * each segment of a dotted path in turn.
+     *
+     * @param array<int, string> $keys
+     */
+    public function pluckFromType(Type $from, array $keys, Scope $scope): Type|null
     {
         if ($keys === []) {
             return null;

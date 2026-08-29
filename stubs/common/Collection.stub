@@ -41,6 +41,16 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     public function combine($values);
 
     /**
+     * Select specific values from the items within the collection.
+     *
+     * The keys are looked up on the items, so they are unrelated to TKey.
+     *
+     * @param  \Illuminate\Support\Enumerable<array-key, array-key>|array<array-key, array-key>|array-key|null  $keys
+     * @return static
+     */
+    public function select($keys);
+
+    /**
      * Get and remove the last N items from the collection.
      *
      * @param  int  $count
@@ -113,6 +123,16 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return static<array-key, TCombineValue>
      */
     public function combine($values);
+
+    /**
+     * Select specific values from the items within the collection.
+     *
+     * The keys are looked up on the items, so they are unrelated to TKey.
+     *
+     * @param  \Illuminate\Support\Enumerable<array-key, array-key>|array<array-key, array-key>|array-key|null  $keys
+     * @return static
+     */
+    public function select($keys);
 
     /**
      * Chunk the collection into chunks with a callback.
