@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Internal;
 
 use PHPStan\File\FileHelper as PHPStanFileHelper;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use RegexIterator;
 use SplFileInfo;
 
 use function array_reduce;
+use function closedir;
 use function glob;
 use function is_dir;
-use function is_string;
-use function iterator_to_array;
+use function is_link;
+use function opendir;
 use function preg_match;
+use function readdir;
+use function rtrim;
 
+use const DIRECTORY_SEPARATOR;
 use const GLOB_ONLYDIR;
 
 /** @internal */
@@ -56,25 +57,66 @@ final class FileHelper
                 }
 
                 foreach ($directories as $directory) {
-                    $iterator = new RecursiveIteratorIterator(
-                        new RecursiveDirectoryIterator($directory),
-                    );
-
-                    if (! $recursive) {
-                        $iterator->setMaxDepth(0);
-                    }
-
-                    if (is_string($filter)) {
-                        $iterator = new RegexIterator($iterator, $filter);
-                    }
-
-                    $carry += iterator_to_array($iterator);
+                    $carry += $this->scanDirectory($directory, $filter, $recursive);
                 }
 
                 return $carry;
             },
             [],
         );
+    }
+
+    /**
+     * Directories are walked with readdir() rather than the SPL directory
+     * iterators, which rewind a partially read directory handle. Filesystems
+     * that silently ignore such a rewind — notably the 9p mounts used by WSL2
+     * and Docker Desktop — drop the entries already buffered, hiding files
+     * from the scan. Symlinked directories are not followed, matching the
+     * behavior of the replaced iterators.
+     *
+     * @return array<string, SplFileInfo>
+     */
+    private function scanDirectory(string $directory, string|null $filter, bool $recursive): array
+    {
+        $handle = @opendir($directory);
+
+        if ($handle === false) {
+            return [];
+        }
+
+        $directory      = rtrim($directory, '/\\');
+        $files          = [];
+        $subdirectories = [];
+
+        while (($entry = readdir($handle)) !== false) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+
+            $path = $directory . DIRECTORY_SEPARATOR . $entry;
+
+            if (is_dir($path)) {
+                if ($recursive && ! is_link($path)) {
+                    $subdirectories[] = $path;
+                }
+
+                continue;
+            }
+
+            if ($filter !== null && preg_match($filter, $path) !== 1) {
+                continue;
+            }
+
+            $files[$path] = new SplFileInfo($path);
+        }
+
+        closedir($handle);
+
+        foreach ($subdirectories as $subdirectory) {
+            $files += $this->scanDirectory($subdirectory, $filter, $recursive);
+        }
+
+        return $files;
     }
 
     private function isGlobPattern(string $path): bool
