@@ -100,7 +100,7 @@ function rescue(callable $callback, $rescue = null, $report = true) {}
  * @template TValue
  * @param int|array<int, int> $times
  * @param callable(int): TValue $callback
- * @param int|callable(int, \Throwable): int $sleepMilliseconds
+ * @param \Carbon\CarbonInterval|int|callable(int, \Throwable): (\Carbon\CarbonInterval|int) $sleepMilliseconds
  * @param null|callable(\Throwable): bool $when
  * @phpstan-return TValue
  *

@@ -1,0 +1,5 @@
+<?php
+
+namespace Carbon;
+
+class CarbonInterval extends \DateInterval {}

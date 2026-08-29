@@ -1,6 +1,7 @@
 <?php
 
 use App\User;
+use Carbon\CarbonInterval;
 
 function transformAcceptsNonNullableCallable(): void
 {
@@ -15,6 +16,19 @@ function retryAcceptsCallableAsSleepMilliseconds(): void
         return 0;
     }, function (\Throwable $e): bool {
         return true;
+    });
+}
+
+function retryAcceptsCarbonIntervalAsSleepMilliseconds(): void
+{
+    retry(5, function (int $attempt): bool {
+        return false;
+    }, CarbonInterval::seconds(1));
+
+    retry(5, function (int $attempt): bool {
+        return false;
+    }, function (int $attempt, \Throwable $e): CarbonInterval {
+        return CarbonInterval::seconds(1);
     });
 }
 
