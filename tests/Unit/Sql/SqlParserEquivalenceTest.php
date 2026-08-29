@@ -49,6 +49,34 @@ class SqlParserEquivalenceTest extends TestCase
         );
     }
 
+    /**
+     * Dumps written by hand state NULL and NOT NULL less consistently than
+     * mysqldump does, which is where the two parsers are most likely to drift
+     * apart on nullability.
+     */
+    #[Test]
+    public function both_parsers_agree_on_columns_without_a_null_constraint(): void
+    {
+        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_IAMCAL, SqlParserManager::DRIVER_PHPMYADMIN);
+
+        $sql = <<<'SQL'
+            CREATE TABLE `t` (
+                `id` int NOT NULL AUTO_INCREMENT,
+                `action_value` float DEFAULT 0,
+                `fba_vat` float DEFAULT NULL,
+                `not_null_col` int NOT NULL DEFAULT 1,
+                `bare_varchar` varchar(255),
+                `body` text,
+                PRIMARY KEY (`id`)
+            );
+            SQL;
+
+        $this->assertSame(
+            $this->normalize(new PhpMyAdminSqlParser(), $sql),
+            $this->normalize(new IamcalSqlParser(), $sql),
+        );
+    }
+
     /** @return list<array{name: string, columns: list<array{name: string, type: string, nullable: bool}>}> */
     private function normalize(SqlParser $parser, string $sql): array
     {
