@@ -10,13 +10,10 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\ErrorType;
-use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use Throwable;
-
-use function count;
 
 final class AppMakeHelper
 {
@@ -27,51 +24,50 @@ final class AppMakeHelper
     ) {
     }
 
-    public function resolveTypeFromCall(FuncCall|MethodCall|StaticCall $call, Scope $scope): Type
+    public function resolveTypeFromCall(FuncCall|MethodCall|StaticCall $call, Scope $scope): Type|null
     {
         $args = $call->getArgs();
-        if (count($args) === 0) {
-            return new ErrorType();
+
+        if ($args === []) {
+            return null;
         }
 
-        $argType = $scope->getType($args[0]->value);
+        $constantStrings = $scope->getType($args[0]->value)->getConstantStrings();
 
-        $constantStrings = $argType->getConstantStrings();
+        if ($constantStrings === []) {
+            return null;
+        }
 
-        if (count($constantStrings) > 0) {
-            $types = [];
-            foreach ($constantStrings as $constantString) {
-                // Take the argument at face value rather than asking the
-                // container what it is bound to, so that code depending on a
-                // contract is not silently typed as whatever concrete class
-                // happens to be bound in this environment.
-                if ($this->strictContracts && $constantString->isClassString()->yes()) {
-                    $types[] = $constantString->getClassStringObjectType();
-                    continue;
-                }
-
-                try {
-                    /** @var object|null $resolved */
-                    $resolved = $this->resolve($constantString->getValue());
-
-                    if ($resolved === null) {
-                        if ($constantString->isClassString()->yes()) {
-                            $types[] = $constantString->getClassStringObjectType();
-                            continue;
-                        }
-
-                        return new ErrorType();
-                    }
-
-                    $types[] = new ObjectType($resolved::class);
-                } catch (Throwable) {
-                    return new ErrorType();
-                }
+        $types = [];
+        foreach ($constantStrings as $constantString) {
+            // Take the argument at face value rather than asking the
+            // container what it is bound to, so that code depending on a
+            // contract is not silently typed as whatever concrete class
+            // happens to be bound in this environment.
+            if ($this->strictContracts && $constantString->isClassString()->yes()) {
+                $types[] = $constantString->getClassStringObjectType();
+                continue;
             }
 
-            return TypeCombinator::union(...$types);
+            try {
+                /** @var object|null $resolved */
+                $resolved = $this->resolve($constantString->getValue());
+
+                if ($resolved === null) {
+                    if ($constantString->isClassString()->yes()) {
+                        $types[] = $constantString->getClassStringObjectType();
+                        continue;
+                    }
+
+                    return new ErrorType();
+                }
+
+                $types[] = new ObjectType($resolved::class);
+            } catch (Throwable) {
+                return new ErrorType();
+            }
         }
 
-        return new MixedType();
+        return TypeCombinator::union(...$types);
     }
 }

@@ -10,7 +10,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
@@ -41,7 +40,11 @@ final class EloquentValueExtension implements DynamicMethodReturnTypeExtension
         }
 
         $modelType = $scope->getType($methodCall->var)->getTemplateType(Builder::class, 'TModel');
-        $type      = $this->columnHelper->getTypeFromArg($modelType, $columnArg, $scope) ?? new MixedType();
+        $type      = $this->columnHelper->getTypeFromArg($modelType, $columnArg, $scope);
+
+        if ($type === null) {
+            return null;
+        }
 
         // value() returns null when no row matches; the other methods throw instead.
         return $methodReflection->getName() === 'value'

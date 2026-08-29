@@ -244,8 +244,6 @@ services:
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ValueExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\StrExtension
-    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\TapExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StorageDynamicStaticMethodReturnTypeExtension

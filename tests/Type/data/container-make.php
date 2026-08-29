@@ -14,6 +14,7 @@ function test(
     Container $container,
     ContainerContract $container2,
     string $model,
+    mixed $mixed,
 ): void {
     assertType('Illuminate\Config\Repository', $container->make(Repository::class));
     assertType('Illuminate\Config\Repository', $container->makeWith(Repository::class));
@@ -23,7 +24,14 @@ function test(
     assertType('Illuminate\Config\Repository', $container2->makeWith(Repository::class));
     assertType('Illuminate\Config\Repository', $container2->resolve(Repository::class));
 
-    assertType('mixed', $container->make($foo));
-    assertType('mixed', $container->makeWith($foo));
-    assertType('mixed', $container->resolve($foo));
+    assertType('Illuminate\Database\Eloquent\Model', $container->make($model));
+    assertType('Illuminate\Database\Eloquent\Model', $container->makeWith($model));
+    assertType('Illuminate\Database\Eloquent\Model', $container->resolve($model));
+    assertType('Illuminate\Database\Eloquent\Model', $container2->make($model));
+    assertType('Illuminate\Database\Eloquent\Model', $container2->makeWith($model));
+    assertType('Illuminate\Database\Eloquent\Model', $container2->resolve($model));
+
+    assertType('mixed', $container->make($mixed));
+    assertType('mixed', $container->makeWith($mixed));
+    assertType('mixed', $container->resolve($mixed));
 }

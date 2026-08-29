@@ -133,7 +133,7 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
     }));
 
     assertType('Illuminate\Support\Stringable', str('foo'));
-    assertType('mixed', str());
+    assertType('object', str());
 
     assertType("'Laravel'", Str::replace('foo', 'bar', 'Laravel'));
     assertType("array{'Laravel', 'Framework'}", Str::replace('foo', 'bar', ['Laravel', 'Framework']));
