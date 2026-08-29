@@ -91,6 +91,7 @@ namespace Illuminate\Http\Client
 
     /**
      * @implements \ArrayAccess<array-key, mixed>
+     * @mixin \Psr\Http\Message\ResponseInterface
      */
     class Response implements \ArrayAccess, \Stringable {}
 
@@ -104,4 +105,3 @@ namespace Illuminate\Http\Client\Promises
 {
     class LazyPromise implements \GuzzleHttp\Promise\PromiseInterface {}
 }
-
