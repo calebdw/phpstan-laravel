@@ -6,18 +6,12 @@ namespace CalebDW\PhpstanLaravel\Internal;
 
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use SplFileInfo;
+use Symfony\Component\Finder\Finder;
 
-use function array_reduce;
-use function closedir;
 use function glob;
 use function is_dir;
-use function is_link;
-use function opendir;
-use function preg_match;
-use function readdir;
-use function rtrim;
+use function iterator_to_array;
 
-use const DIRECTORY_SEPARATOR;
 use const GLOB_ONLYDIR;
 
 /** @internal */
@@ -30,97 +24,43 @@ final class FileHelper
 
     /**
      * @param  array<array-key, string> $directories
+     * @param  list<string>|string|null $name
      *
      * @return array<string, SplFileInfo>
      */
-    public function getFiles(array $directories, string|null $filter = null, bool $recursive = true): array
+    public function getFiles(array $directories, array|string|null $name = null, bool $recursive = true): array
     {
-        return array_reduce(
-            $directories,
-            function (array $carry, string $path) use ($filter, $recursive): array {
-                $absolutePath = $this->fileHelper->absolutizePath($path);
+        /** @var list<string> $resolvedDirectories */
+        $resolvedDirectories = [];
 
-                if ($this->isGlobPattern($absolutePath)) {
-                    $glob = glob($absolutePath, GLOB_ONLYDIR);
+        foreach ($directories as $directory) {
+            $directory = $this->fileHelper->absolutizePath($directory);
 
-                    if ($glob === false) {
-                        return $carry;
-                    }
+            if (is_dir($directory)) {
+                $resolvedDirectories[] = $directory;
 
-                    $directories = $glob;
-                } else {
-                    if (! is_dir($absolutePath)) {
-                        return $carry;
-                    }
+                continue;
+            }
 
-                    $directories = [$absolutePath];
-                }
+            foreach (glob($directory, GLOB_ONLYDIR) ?: [] as $globbedDirectory) {
+                $resolvedDirectories[] = $globbedDirectory;
+            }
+        }
 
-                foreach ($directories as $directory) {
-                    $carry += $this->scanDirectory($directory, $filter, $recursive);
-                }
-
-                return $carry;
-            },
-            [],
-        );
-    }
-
-    /**
-     * Directories are walked with readdir() rather than the SPL directory
-     * iterators, which rewind a partially read directory handle. Filesystems
-     * that silently ignore such a rewind — notably the 9p mounts used by WSL2
-     * and Docker Desktop — drop the entries already buffered, hiding files
-     * from the scan. Symlinked directories are not followed, matching the
-     * behavior of the replaced iterators.
-     *
-     * @return array<string, SplFileInfo>
-     */
-    private function scanDirectory(string $directory, string|null $filter, bool $recursive): array
-    {
-        $handle = @opendir($directory);
-
-        if ($handle === false) {
+        if ($resolvedDirectories === []) {
             return [];
         }
 
-        $directory      = rtrim($directory, '/\\');
-        $files          = [];
-        $subdirectories = [];
+        $finder = Finder::create()->files()->in($resolvedDirectories);
 
-        while (($entry = readdir($handle)) !== false) {
-            if ($entry === '.' || $entry === '..') {
-                continue;
-            }
-
-            $path = $directory . DIRECTORY_SEPARATOR . $entry;
-
-            if (is_dir($path)) {
-                if ($recursive && ! is_link($path)) {
-                    $subdirectories[] = $path;
-                }
-
-                continue;
-            }
-
-            if ($filter !== null && preg_match($filter, $path) !== 1) {
-                continue;
-            }
-
-            $files[$path] = new SplFileInfo($path);
+        if ($name !== null) {
+            $finder->name($name);
         }
 
-        closedir($handle);
-
-        foreach ($subdirectories as $subdirectory) {
-            $files += $this->scanDirectory($subdirectory, $filter, $recursive);
+        if (! $recursive) {
+            $finder->depth(0);
         }
 
-        return $files;
-    }
-
-    private function isGlobPattern(string $path): bool
-    {
-        return preg_match('~[*?[\]]~', $path) > 0;
+        return iterator_to_array($finder);
     }
 }

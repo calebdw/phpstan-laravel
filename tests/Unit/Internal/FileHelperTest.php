@@ -87,7 +87,7 @@ class FileHelperTest extends PHPStanTestCase
     }
 
     #[Test]
-    public function it_matches_the_filter_against_the_full_pathname(): void
+    public function it_filters_files_by_name(): void
     {
         $files = $this->fileHelper->getFiles([$this->directory], '/\.dump|\.sql/i');
 
