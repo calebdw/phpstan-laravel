@@ -402,8 +402,6 @@ services:
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule
   - class: CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilderRule
   - class: CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilderRule
-  - class: Illuminate\Filesystem\Filesystem
-    autowired: self
   - class: CalebDW\PhpstanLaravel\Ignore\FacadeStaticCallIgnoreExtension
     tags: [phpstan.ignoreErrorExtension]
   - class: CalebDW\PhpstanLaravel\Ignore\MacroStaticCallIgnoreExtension

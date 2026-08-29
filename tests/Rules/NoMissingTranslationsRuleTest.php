@@ -8,10 +8,10 @@ use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFacadeCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFunctionCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationTranslatorCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector;
+use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule;
 use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use CalebDW\PhpstanLaravel\Support\ViewParser;
-use Illuminate\Filesystem\Filesystem;
 use PhpParser\Node\Expr\CallLike;
 use PHPStan\Collectors\Collector;
 use PHPStan\Rules\Rule;
@@ -27,7 +27,11 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
         $viewParser     = new ViewParser($this->getContainer()->getService('currentPhpVersionSimpleDirectParser'));
         $viewFileHelper = new ViewFileHelper([], $this->getFileHelper());
 
-        return new NoMissingTranslationsRule(new UsedTranslationViewCollector($viewParser, $viewFileHelper), new Filesystem(), []);
+        return new NoMissingTranslationsRule(
+            new UsedTranslationViewCollector($viewParser, $viewFileHelper),
+            new FileHelper($this->getFileHelper()),
+            [],
+        );
     }
 
     /** @return array<Collector<CallLike, mixed>> */

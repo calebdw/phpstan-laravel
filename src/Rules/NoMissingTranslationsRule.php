@@ -8,7 +8,7 @@ use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFacadeCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFunctionCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationTranslatorCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector;
-use Illuminate\Filesystem\Filesystem;
+use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use Illuminate\Support\Str;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -16,19 +16,23 @@ use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
-use Symfony\Component\Finder\SplFileInfo;
+use SplFileInfo;
 
 use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_values;
+use function explode;
+use function file_get_contents;
 use function in_array;
 use function is_array;
-use function is_dir;
 use function json_decode;
 use function lang_path;
+use function rtrim;
 use function str_contains;
 use function strlen;
+use function strval;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -38,7 +42,7 @@ final class NoMissingTranslationsRule implements Rule
     /** @param string[] $translationDirectories */
     public function __construct(
         private UsedTranslationViewCollector $usedTranslationViewCollector,
-        private Filesystem $filesystem,
+        private FileHelper $fileHelper,
         private array $translationDirectories,
     ) {
     }
@@ -64,36 +68,14 @@ final class NoMissingTranslationsRule implements Rule
         $availableTranslations = [];
 
         foreach ($paths as $path) {
-            if (! is_dir($path)) {
-                continue;
-            }
+            $files = $this->fileHelper->getFiles([$path], '/\.(php|json)$/i');
 
-            $files = $this->filesystem->allFiles($path);
-
-            $translations = array_map(function (SplFileInfo $file): array {
-                $translations = [];
-
-                if ($file->getExtension() === 'php') {
-                    $prefix = Str::of($file->getRelativePathname())
-                        ->explode(DIRECTORY_SEPARATOR)
-                        ->slice(1, -1) // Trim locale and filename
-                        ->join('/');
-
-                    $root = strlen($prefix) > 0
-                        ? $prefix . '/' . $file->getFilenameWithoutExtension()
-                        : $file->getFilenameWithoutExtension();
-
-                    $array = $this->filesystem->getRequire($file->getPathname());
-
-                    $translations = array_merge([$root], $this->keys($array, $root));
-                } elseif ($file->getExtension() === 'json') {
-                    $translations = array_keys(
-                        json_decode($this->filesystem->get($file->getPathname()), true),
-                    );
-                }
-
-                return $translations;
-            }, $files);
+            // getFiles() keys by pathname, and array_merge() reads string keys
+            // in a spread as named arguments.
+            $translations = array_values(array_map(
+                fn (SplFileInfo $file): array => $this->translations($file, $path),
+                $files,
+            ));
 
             $availableTranslations = array_merge($availableTranslations, ...$translations);
         }
@@ -127,6 +109,52 @@ final class NoMissingTranslationsRule implements Rule
         }
 
         return $errors;
+    }
+
+    /**
+     * A JSON file holds its keys directly, while a PHP file is addressed by the
+     * path that leads to it, without the locale directory it sits under.
+     *
+     * @return string[]
+     */
+    private function translations(SplFileInfo $file, string $directory): array
+    {
+        if ($file->getExtension() === 'json') {
+            $contents = file_get_contents($file->getPathname());
+            $decoded  = $contents === false ? null : json_decode($contents, true);
+
+            if (! is_array($decoded)) {
+                return [];
+            }
+
+            return array_map(strval(...), array_keys($decoded));
+        }
+
+        $prefix = Str::of($this->relativePathname($file, $directory))
+            ->explode(DIRECTORY_SEPARATOR)
+            ->slice(1, -1) // Trim locale and filename
+            ->join('/');
+
+        $filename = $file->getBasename('.' . $file->getExtension());
+
+        $root = strlen($prefix) > 0
+            ? $prefix . '/' . $filename
+            : $filename;
+
+        $array = (static fn (): mixed => require $file->getPathname())();
+
+        if (! is_array($array)) {
+            return [];
+        }
+
+        return array_merge([$root], $this->keys($array, $root));
+    }
+
+    private function relativePathname(SplFileInfo $file, string $directory): string
+    {
+        $parts = explode(rtrim($directory, '/\\') . DIRECTORY_SEPARATOR, $file->getPathname());
+
+        return $parts[1] ?? $file->getBasename();
     }
 
     /**
