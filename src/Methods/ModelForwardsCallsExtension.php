@@ -31,6 +31,17 @@ use function in_array;
 
 final class ModelForwardsCallsExtension implements MethodsClassReflectionExtension
 {
+    private const array FORWARDED_COUNTER_METHODS = [
+        'increment',
+        'decrement',
+        'incrementQuietly',
+        'decrementQuietly',
+        'incrementEach',
+        'decrementEach',
+        'incrementEachQuietly',
+        'decrementEachQuietly',
+    ];
+
     /** @var array<string, MethodReflection> */
     private array $cache = [];
 
@@ -74,7 +85,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
             return null;
         }
 
-        if (in_array($methodName, ['increment', 'decrement'], true)) {
+        if (in_array($methodName, self::FORWARDED_COUNTER_METHODS, true) && $classReflection->hasNativeMethod($methodName)) {
             return $this->counterMethodReflection($classReflection, $methodName);
         }
 
