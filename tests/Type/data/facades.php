@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Redis;
 
 use function PHPStan\Testing\assertType;
 
@@ -38,6 +39,9 @@ function test(): void
         key: 'cache-key',
         callback: static fn (): int => 123,
     ));
+
+    assertType('mixed', Redis::eval('return redis.call("get", KEYS[1])', 1, 'key'));
+    assertType('mixed', Redis::evalsha('sha1', 1, 'key'));
 
     // Inspection methods that live only on the fake, not just assertions.
     assertType('Illuminate\Support\Collection', Queue::pushed('SomeJob'));

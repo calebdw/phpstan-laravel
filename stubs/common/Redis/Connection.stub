@@ -8,6 +8,10 @@ namespace Illuminate\Redis\Connections {
     /**
      * @mixin \Redis
      */
-    abstract class Connection {}
-}
+    abstract class Connection
+    {
+        public function eval(string $script, int $numberOfKeys, mixed ...$arguments): mixed {}
 
+        public function evalsha(string $script, int $numberOfKeys, mixed ...$arguments): mixed {}
+    }
+}
