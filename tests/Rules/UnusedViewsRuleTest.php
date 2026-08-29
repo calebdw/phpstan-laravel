@@ -10,6 +10,7 @@ use CalebDW\PhpstanLaravel\Collectors\UsedViewFacadeMakeCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedViewFunctionCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedViewInAnotherViewCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedViewMakeCollector;
+use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use CalebDW\PhpstanLaravel\Rules\UnusedViewsRule;
 use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use CalebDW\PhpstanLaravel\Support\ViewParser;
@@ -27,7 +28,7 @@ class UnusedViewsRuleTest extends RuleTestCase
         $viewFileHelper = new ViewFileHelper([
             __DIR__ . '/../application/resources/views/',
             __DIR__ . '/../../vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/views',
-        ], $this->getFileHelper());
+        ], new FileHelper($this->getFileHelper()));
 
         return new UnusedViewsRule(new UsedViewInAnotherViewCollector($viewParser, $viewFileHelper), $viewFileHelper);
     }

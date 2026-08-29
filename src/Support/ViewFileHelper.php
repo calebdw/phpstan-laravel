@@ -5,20 +5,15 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use CalebDW\PhpstanLaravel\Concerns\HasContainer;
+use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use Generator;
 use Illuminate\Contracts\View\Factory as ViewFactory;
-use PHPStan\File\FileHelper;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use RegexIterator;
 use SplFileInfo;
 
 use function array_merge;
 use function array_values;
 use function count;
 use function explode;
-use function is_dir;
-use function iterator_to_array;
 use function rtrim;
 use function str_contains;
 use function str_replace;
@@ -88,17 +83,6 @@ final class ViewFileHelper
     /** @return SplFileInfo[] */
     protected function getViews(string $path): array
     {
-        $absolutePath = $this->fileHelper->absolutizePath($path);
-
-        if (! is_dir($absolutePath)) {
-            return [];
-        }
-
-        return iterator_to_array(
-            new RegexIterator(
-                new RecursiveIteratorIterator(new RecursiveDirectoryIterator($absolutePath)),
-                '/\.blade\.php$/i',
-            ),
-        );
+        return $this->fileHelper->getFiles([$path], '/\.blade\.php$/i');
     }
 }

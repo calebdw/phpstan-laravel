@@ -4,37 +4,74 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel;
 
+use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use PHPStan\PhpDoc\StubFilesExtension as StubFilesExtensionContract;
 use SplFileInfo;
-use Symfony\Component\Finder\Finder;
 
-use function array_keys;
+use function array_filter;
 use function array_values;
-use function iterator_to_array;
+use function basename;
+use function glob;
+use function realpath;
+use function rtrim;
+use function strlen;
+use function substr;
+use function usort;
 use function version_compare;
+
+use const DIRECTORY_SEPARATOR;
+use const GLOB_ONLYDIR;
 
 final class StubFilesExtension implements StubFilesExtensionContract
 {
+    public function __construct(
+        private FileHelper $fileHelper,
+        private string $stubDirectory = __DIR__ . '/../stubs',
+        private string|null $laravelVersion = null,
+    ) {
+    }
+
     /** @inheritDoc */
     public function getFiles(): array
     {
-        $stubDirectories = Finder::create()->directories()->name('/^\d+/')->in(__DIR__ . '/../stubs')->depth(0);
+        $stubDirectories = glob($this->stubDirectory . '/[0-9]*', GLOB_ONLYDIR) ?: [];
 
-        // Include only applicable versions
-        $stubDirectories
-            ->filter(static fn (SplFileInfo $directory) => version_compare($directory->getFilename(), LARAVEL_VERSION, '<='))
-            ->sort(static fn (SplFileInfo $a, SplFileInfo $b) => version_compare($a->getFilename(), $b->getFilename()));
+        $stubDirectories = array_values(array_filter(
+            $stubDirectories,
+            fn (string $directory): bool => version_compare(
+                basename($directory),
+                $this->laravelVersion ?? LARAVEL_VERSION,
+                '<=',
+            ),
+        ));
 
-        $files = [];
+        usort(
+            $stubDirectories,
+            static fn (string $a, string $b): int => version_compare(basename($a), basename($b)),
+        );
 
-        $stubDirs = [__DIR__ . '/../stubs/common', ...array_keys(iterator_to_array($stubDirectories))];
+        $directories = [$this->stubDirectory . '/common', ...$stubDirectories];
+        $files       = [];
 
-        $stubFiles = Finder::create()->files()->name('*.stub')->in($stubDirs);
+        // Later version directories replace common or older stubs with the
+        // same relative pathname while leaving unrelated stubs in place.
+        foreach ($directories as $directory) {
+            $absoluteDirectory = realpath($directory);
 
-        foreach ($stubFiles as $stubFile) {
-            $files[$stubFile->getRelativePathname()] = $stubFile->getRealPath();
+            if ($absoluteDirectory === false) {
+                continue;
+            }
+
+            foreach ($this->fileHelper->getFiles([$absoluteDirectory], '/\.stub$/i') as $file) {
+                $files[$this->relativePathname($file, $absoluteDirectory)] = $file->getPathname();
+            }
         }
 
         return array_values($files);
+    }
+
+    private function relativePathname(SplFileInfo $file, string $directory): string
+    {
+        return substr($file->getPathname(), strlen(rtrim($directory, '/\\') . DIRECTORY_SEPARATOR));
     }
 }

@@ -25,7 +25,7 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
     protected function getRule(): Rule
     {
         $viewParser     = new ViewParser($this->getContainer()->getService('currentPhpVersionSimpleDirectParser'));
-        $viewFileHelper = new ViewFileHelper([], $this->getFileHelper());
+        $viewFileHelper = new ViewFileHelper([], new FileHelper($this->getFileHelper()));
 
         return new NoMissingTranslationsRule(
             new UsedTranslationViewCollector($viewParser, $viewFileHelper),
