@@ -1380,6 +1380,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Managers
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1758,6 +1769,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Managers
+      </span>
+    </span>
+  </a>
   
 </li>
       
@@ -2178,6 +2200,57 @@ collection half.</p>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">paginate</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getCollection</span><span class="p">();</span>
 </span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="c1">// Illuminate\Database\Eloquent\Collection&lt;int, App\User&gt;</span>
 </span></code></pre></div>
+<h2 id="managers">Managers<a class="headerlink" href="#managers" title="Permanent link">&para;</a></h2>
+<p>An <code>Illuminate\Support\Manager</code> subclass forwards unknown calls to its driver,
+so the driver decides what the manager can do. Which driver that is, and what
+type it has, is read from the <code>create{Driver}Driver()</code> method rather than taken
+from the object the container happens to build:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="k">class</span> <span class="nc">NotifierManager</span> <span class="k">extends</span> <span class="nx">Manager</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="p">{</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">getDefaultDriver</span><span class="p">()</span><span class="o">:</span> <span class="nx">string</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="p">{</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>        <span class="k">return</span> <span class="nx">config</span><span class="p">(</span><span class="s1">'notifier.default'</span><span class="p">);</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    <span class="p">}</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>    <span class="k">protected</span> <span class="k">function</span> <span class="nf">createSlackDriver</span><span class="p">()</span><span class="o">:</span> <span class="nx">Notifier</span>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>    <span class="p">{</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>        <span class="k">return</span> <span class="k">new</span> <span class="nx">SlackNotifier</span><span class="p">();</span>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>    <span class="p">}</span>
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="p">}</span>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">();</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="c1">// App\Notifier</span>
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a>
+</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">(</span><span class="s1">'slack'</span><span class="p">);</span>
+</span><span id="__span-23-18"><a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a><span class="c1">// App\Notifier</span>
+</span><span id="__span-23-19"><a id="__codelineno-23-19" name="__codelineno-23-19" href="#__codelineno-23-19"></a>
+</span><span id="__span-23-20"><a id="__codelineno-23-20" name="__codelineno-23-20" href="#__codelineno-23-20"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
+</span><span id="__span-23-21"><a id="__codelineno-23-21" name="__codelineno-23-21" href="#__codelineno-23-21"></a><span class="c1">// checked against Notifier, not against SlackNotifier</span>
+</span></code></pre></div>
+<p>Two things follow from reading the declared type. The driver is never
+constructed, so one that needs credentials, a connection or a config key absent
+from your environment costs nothing and cannot fail the run. And a creator
+returning a contract exposes only that contract: a method the implementation has
+and the interface does not is reported as undefined, which is what declaring the
+return type asked for.</p>
+<p>Larastan resolves the manager and calls <code>driver()</code> for real, then uses the class
+of whatever came back, so the contract is ignored and every public method of the
+implementation is callable.</p>
+<p>A creator with no declared return type still falls back to resolving the driver
+from the container, so managers written before the framework had return types
+keep working:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">createSlackDriver</span><span class="p">()</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="p">{</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>    <span class="k">return</span> <span class="k">new</span> <span class="nx">SlackNotifier</span><span class="p">();</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="p">}</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">();</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="c1">// App\SlackNotifier</span>
+</span></code></pre></div>
+<p>The driver's name is the one part that still comes from the manager itself,
+since <code>getDefaultDriver()</code> usually reads config. When it cannot be determined,
+every driver the manager declares is considered instead, so a method belonging
+to any of them is accepted rather than none of them.</p>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>Typed configuration is not new: Larastan reads your config files too, behind
 its <code>checkConfigTypes</code> option. Two things differ.</p>
@@ -2186,28 +2259,28 @@ its <code>checkConfigTypes</code> option. Two things differ.</p>
 not useful to anybody. Where the application boots, the container answers, and
 file parsing fills in only what the container could not, which is what makes it
 work for packages that have no application to boot.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="c1">// array{guard: string, passwords: string}</span>
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
-</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>
-</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="c1">// string|null</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="c1">// array{guard: string, passwords: string}</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="c1">// string|null</span>
 </span></code></pre></div>
 <h3 id="the-typed-accessors-are-checked">The typed accessors are checked<a class="headerlink" href="#the-typed-accessors-are-checked" title="Permanent link">&para;</a></h3>
 <p><code>string()</code>, <code>integer()</code>, <code>float()</code>, <code>boolean()</code>, <code>array()</code> and <code>collection()</code>
 each throw when the value is not already of that type: none of them coerce.
 Reading a key of the wrong type is a guaranteed runtime failure, and is now
 reported:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// fine</span>
-</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>  <span class="c1">// error: is string, requires an array</span>
-</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">float</span><span class="p">(</span><span class="s1">'auth.password_timeout'</span><span class="p">);</span> <span class="c1">// error: is int, requires a float</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// fine</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>  <span class="c1">// error: is string, requires an array</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">float</span><span class="p">(</span><span class="s1">'auth.password_timeout'</span><span class="p">);</span> <span class="c1">// error: is int, requires a float</span>
 </span></code></pre></div>
 <h2 id="paths-and-scanning">Paths and scanning<a class="headerlink" href="#paths-and-scanning" title="Permanent link">&para;</a></h2>
 <p>Migration and schema paths accept wildcards, which modular applications need:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>parameters:
-</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>    laravel:
-</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>        migrationDirectories:
-</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>            - database/migrations
-</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>            - modules/*/database/migrations
+<div class="language-text highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>parameters:
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>    laravel:
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>        migrationDirectories:
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>            - database/migrations
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>            - modules/*/database/migrations
 </span></code></pre></div>
 <p>A configured list replaces the conventional directory. Including
 <code>database/migrations</code> above retains application migrations while adding the
@@ -2234,9 +2307,9 @@ prefixed identifier, so you can ignore a category precisely. See
   lets code drift onto methods only one implementation happens to have. Enable
   it to take the contract at face value:</li>
 </ul>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
-</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="c1">// off: Illuminate\Config\Repository</span>
-</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="c1">// on:  Illuminate\Contracts\Config\Repository</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="c1">// off: Illuminate\Config\Repository</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="c1">// on:  Illuminate\Contracts\Config\Repository</span>
 </span></code></pre></div>
 <h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
 <ul>

@@ -1442,6 +1442,9 @@ dispatches to them, and nothing dispatches during analysis.</p>
 <p>No route is handled, no query is sent, nothing is queued. The database is never
 contacted either, since columns come from reading migration files and schema
 dumps as text, so analysis works with no database available.</p>
+<p>A manager's driver is not built either, as long as its <code>create{Driver}Driver()</code>
+method declares what it returns; the declared type is read instead. See
+<a href="../../about/differences-from-larastan/#managers">managers</a>.</p>
 <h2 id="what-to-watch-out-for">What to watch out for<a class="headerlink" href="#what-to-watch-out-for" title="Permanent link">&para;</a></h2>
 <p>The consequence is that <strong>anything your providers do on boot, they do on every
 analysis run</strong>. Usually that is nothing of consequence. Occasionally it is not.</p>

@@ -1467,8 +1467,9 @@ matter of taste. Ignore by identifier if you need an exception.</p>
 </table>
 <h2 id="off-by-default">Off by default<a class="headerlink" href="#off-by-default" title="Permanent link">&para;</a></h2>
 <p>Off for one of two reasons: the rule enforces a style choice rather than
-finding a bug, or it depends on a scan that can be incomplete, in which case
-the gap shows up as a false positive rather than as silence.</p>
+finding a bug, or what it checks against can be incomplete&mdash;a scan that
+misses a file, or configuration that something is registered outside of&mdash;in
+which case the gap shows up as a false positive rather than as silence.</p>
 <table>
 <thead>
 <tr>
@@ -1502,6 +1503,11 @@ the gap shows up as a false positive rather than as silence.</p>
 <td><a href="framework/#auth-in-request-scope">Auth in request scope</a></td>
 <td><code>laravel.authInRequestScope.facade</code>, <code>….helper</code></td>
 <td>style</td>
+</tr>
+<tr>
+<td><a href="config/#undefined-config-name">Undefined config name</a></td>
+<td><code>laravel.undefinedConfigName</code></td>
+<td>names can be registered at runtime</td>
 </tr>
 <tr>
 <td><a href="views-and-translations/#unused-view">Unused view</a></td>

@@ -970,6 +970,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#undefined-config-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Undefined config name
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Undefined config name">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-it-is-off-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Why it is off by default
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1424,6 +1463,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#undefined-config-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Undefined config name
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Undefined config name">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-it-is-off-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Why it is off by default
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1531,6 +1609,91 @@ If your configuration files live elsewhere, name those directories with
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>        configDirectories:
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>            - src/config
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>            - tests
+</span></code></pre></div>
+<h2 id="undefined-config-name">Undefined config name<a class="headerlink" href="#undefined-config-name" title="Permanent link">&para;</a></h2>
+<p><code>laravel.undefinedConfigName</code> &middot; option <code>rules.undefinedConfigName</code> &middot; off by default</p>
+<p>Checks the name handed to a manager against the configuration that defines the
+names it accepts. Every one of these lookups throws an
+<code>InvalidArgumentException</code> when the name is not configured, so a typo is a
+guaranteed runtime failure rather than a style issue:</p>
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>Names come from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Storage::disk()</code>, <code>::drive()</code></td>
+<td><code>filesystems.disks</code></td>
+</tr>
+<tr>
+<td><code>Cache::store()</code>, <code>::driver()</code></td>
+<td><code>cache.stores</code></td>
+</tr>
+<tr>
+<td><code>DB::connection()</code></td>
+<td><code>database.connections</code></td>
+</tr>
+<tr>
+<td><code>Queue::connection()</code></td>
+<td><code>queue.connections</code></td>
+</tr>
+<tr>
+<td><code>Mail::mailer()</code></td>
+<td><code>mail.mailers</code></td>
+</tr>
+<tr>
+<td><code>Log::channel()</code>, <code>::driver()</code></td>
+<td><code>logging.channels</code></td>
+</tr>
+<tr>
+<td><code>Broadcast::connection()</code></td>
+<td><code>broadcasting.connections</code></td>
+</tr>
+<tr>
+<td><code>Auth::guard()</code></td>
+<td><code>auth.guards</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="examples_2">Examples<a class="headerlink" href="#examples_2" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nx">Storage</span><span class="o">::</span><span class="na">disk</span><span class="p">(</span><span class="s1">'s3'</span><span class="p">);</span>       <span class="c1">// fine, filesystems.disks defines it</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nx">Storage</span><span class="o">::</span><span class="na">disk</span><span class="p">(</span><span class="s1">'s3-backup'</span><span class="p">);</span> <span class="c1">// always throws</span>
+</span></code></pre></div>
+<p>The last call reports the message the call would itself throw:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Disk [s3-backup] does not have a configured driver.
+</span></code></pre></div>
+<p>Both call styles are covered, so <code>Cache::store(...)</code>, <code>$manager-&gt;store(...)</code>
+and a manager injected as either the concrete class or its contract are all
+checked.</p>
+<p>A database connection may name one side of a read/write pair, which is not
+part of the name configuration defines, so the suffix is stripped before the
+lookup:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nx">DB</span><span class="o">::</span><span class="na">connection</span><span class="p">(</span><span class="s1">'mysql::read'</span><span class="p">);</span>  <span class="c1">// fine, mysql is configured</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nx">DB</span><span class="o">::</span><span class="na">connection</span><span class="p">(</span><span class="s1">'mysql::stale'</span><span class="p">);</span> <span class="c1">// always throws, not a side</span>
+</span></code></pre></div>
+<p>Only a name known statically is checked. A variable, or configuration that
+neither the booted container nor
+<a href="../../reference/configuration/#configdirectories"><code>configDirectories</code></a> can
+resolve, could be anything and is left alone. Calling with no argument or with
+<code>null</code> asks for the default, which configuration always names.</p>
+<h3 id="why-it-is-off-by-default">Why it is off by default<a class="headerlink" href="#why-it-is-off-by-default" title="Permanent link">&para;</a></h3>
+<p>A name does not have to come from configuration. <code>Storage::fake('avatars')</code>
+and <code>Storage::set()</code> register a disk directly, which is how Laravel's own
+testing documentation writes it:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nx">Storage</span><span class="o">::</span><span class="na">fake</span><span class="p">(</span><span class="s1">'avatars'</span><span class="p">);</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nx">Storage</span><span class="o">::</span><span class="na">disk</span><span class="p">(</span><span class="s1">'avatars'</span><span class="p">);</span> <span class="c1">// works at runtime, reported by this rule</span>
+</span></code></pre></div>
+<p>Nothing in the analysis can see that registration, so the rule would report a
+disk that does exist. Turn it on if you resolve every name from configuration,
+or ignore <a href="../../reference/identifiers/"><code>laravel.undefinedConfigName</code></a> in your
+test suite:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>parameters:
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>    laravel:
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>        rules:
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>            undefinedConfigName: true
 </span></code></pre></div>
 
 
