@@ -25,9 +25,19 @@ class Scopes extends Model
         $query->where('whyuse', 'void');
     }
 
+    public function scopeCount(Builder $query): void
+    {
+        $query->whereNotNull('id');
+    }
+
     /** @param Builder<Scopes> $query */
     public function test(User $user, Builder $query): void
     {
+        // A scope shadowing a passthru method still returns the builder, while
+        // a model without such a scope keeps the passthru return type.
+        assertType('Illuminate\Database\Eloquent\Builder<ModelScope\Scopes>', self::query()->count());
+        assertType('int<0, max>', User::query()->count());
+
         assertType('Illuminate\Database\Eloquent\Relations\HasOne<App\User, $this(ModelScope\Scopes)>', $this->hasOne(User::class)->active());
         assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\User, $this(ModelScope\Scopes)>', $this->hasMany(User::class)->active());
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', User::where('name', 'bar')->where('name', 'bar')->where('name', 'bar')->where('name', 'bar')->where('name', 'bar')->where('name', 'bar')->where('name', 'bar')->where('name', 'bar')->where('name', 'bar')->active());

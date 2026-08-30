@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Methods;
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
@@ -117,11 +118,16 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
         }
 
         $parametersAcceptor = $ref->getVariants()[0];
-        $returnType         = $parametersAcceptor->getReturnType();
+        // A named scope can shadow a passthru method, e.g. `scopeCount()`. Only
+        // forward the declared return type when the method genuinely came from
+        // the query builder; a scope that happens to share the name still has
+        // to return the builder.
+        $isPassthru = $ref->getDeclaringClass()->getName() === QueryBuilder::class
+            && $this->builderHelper->methodIsBuilderPassthru($methodName);
 
-        if (! $this->builderHelper->methodIsBuilderPassthru($methodName)) {
-            $returnType = new ThisType($classReflection);
-        }
+        $returnType = $isPassthru
+            ? $parametersAcceptor->getReturnType()
+            : new ThisType($classReflection);
 
         return new EloquentBuilderMethodReflection(
             $methodName,
