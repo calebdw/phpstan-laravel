@@ -40,7 +40,7 @@ function test(
     FooUser $fooUser,
     FooThread $fooThread,
 ): void {
-    assertType('*ERROR*', $user->newStyleAttribute); // Doesn't have generic type, so we treat as it doesnt exist
+    assertType('mixed', $user->newStyleAttribute);
     assertType('int', $user->stringButInt);
     assertType('string', $user->email);
     assertType('array', $user->allowed_ips);

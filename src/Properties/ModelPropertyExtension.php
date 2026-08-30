@@ -18,7 +18,7 @@ final class ModelPropertyExtension implements PropertiesClassReflectionExtension
 
     public function hasProperty(ClassReflection $classReflection, string $propertyName): bool
     {
-        if ($this->modelPropertyHelper->hasAccessor($classReflection, $propertyName, strictGenerics: false)) {
+        if ($this->modelPropertyHelper->hasAccessor($classReflection, $propertyName)) {
             return false;
         }
 
