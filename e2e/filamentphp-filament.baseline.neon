@@ -91,6 +91,12 @@ parameters:
 			path: ../build/e2e/filamentphp-filament/packages/support/src/Commands/Concerns/CanReadModelSchemas.php
 
 		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/tables/src/Concerns/CanReorderRecords.php
+
+		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Connection\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -101,18 +107,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: ../build/e2e/filamentphp-filament/packages/tables/src/TableComponent.php
-
-		-
-			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/widgets/src/Commands/FileGenerators/TableWidgetClassGenerator.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: ../build/e2e/filamentphp-filament/packages/widgets/src/TableWidget.php
 
 		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Connection\. Use \-\> instead\.$#'
