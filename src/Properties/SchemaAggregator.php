@@ -226,19 +226,30 @@ final class SchemaAggregator
         }
 
         if ($value instanceof ClassConstFetch) {
-            if (! $value->class instanceof FullyQualified) {
+            if (
+                ! $value->class instanceof Name
+                || ! $value->name instanceof Identifier
+            ) {
                 return;
             }
 
-            if (! $value->name instanceof Identifier) {
+            if ($value->class instanceof FullyQualified) {
+                $className = $value->class->name;
+            } else {
+                $resolvedName = $value->class->getAttribute('resolvedName');
+
+                if (! $resolvedName instanceof FullyQualified) {
+                    return;
+                }
+
+                $className = $resolvedName->name;
+            }
+
+            if (! $this->reflectionProvider->hasClass($className)) {
                 return;
             }
 
-            if (! $this->reflectionProvider->hasClass($value->class->name)) {
-                return;
-            }
-
-            $class = $this->reflectionProvider->getClass($value->class->name);
+            $class = $this->reflectionProvider->getClass($className);
 
             $constantValueType = $class->getConstant($value->name->toString())->getValueType();
 
