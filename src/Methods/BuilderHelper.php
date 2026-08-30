@@ -33,47 +33,20 @@ use function count;
 use function in_array;
 use function is_string;
 use function preg_split;
+use function strtolower;
 use function substr;
 use function ucfirst;
 
 use const PREG_SPLIT_DELIM_CAPTURE;
 
-class BuilderHelper
+final class BuilderHelper
 {
     public const array MODEL_RETRIEVAL_METHODS = ['first', 'find', 'findMany', 'findOrFail', 'firstOrFail', 'sole'];
 
     public const array MODEL_CREATION_METHODS = ['make', 'create', 'forceCreate', 'findOrNew', 'firstOrNew', 'updateOrCreate', 'firstOrCreate', 'createOrFirst'];
 
-    /**
-     * The methods that should be returned from query builder.
-     *
-     * @var string[]
-     */
-    public array $passthru = [
-        'average',
-        'avg',
-        'count',
-        'dd',
-        'dump',
-        'doesntExist',
-        'exists',
-        'getBindings',
-        'getConnection',
-        'getCountForPagination',
-        'getGrammar',
-        'insert',
-        'insertGetId',
-        'insertOrIgnore',
-        'insertUsing',
-        'max',
-        'min',
-        'raw',
-        'sum',
-        'toSql',
-        'toRawSql',
-        'dumpRawSql',
-        'ddRawSql',
-    ];
+    /** @var list<lowercase-string> */
+    private array $passthru;
 
     public function __construct(
         private ReflectionProvider $reflectionProvider,
@@ -241,11 +214,7 @@ class BuilderHelper
 
         $queryBuilderReflection = $this->reflectionProvider->getClass(QueryBuilder::class);
 
-        if (in_array($methodName, $this->passthru, true)) {
-            return $queryBuilderReflection->getNativeMethod($methodName);
-        }
-
-        if ($queryBuilderReflection->hasNativeMethod($methodName)) {
+        if ($this->methodIsBuilderPassthru($methodName) || $queryBuilderReflection->hasNativeMethod($methodName)) {
             return $queryBuilderReflection->getNativeMethod($methodName);
         }
 
@@ -320,5 +289,27 @@ class BuilderHelper
             })
             ->values()
             ->pipe(static fn ($types) => TypeCombinator::union(...$types));
+    }
+
+    public function methodIsBuilderPassthru(string $methodName): bool
+    {
+        return in_array(strtolower($methodName), $this->getEloquentBuilderPassthru(), true);
+    }
+
+    /** @return list<lowercase-string> */
+    private function getEloquentBuilderPassthru(): array
+    {
+        if (isset($this->passthru)) {
+            return $this->passthru;
+        }
+
+        if (! $this->reflectionProvider->hasClass(EloquentBuilder::class)) {
+            return [];
+        }
+
+        return $this->passthru = $this->reflectionProvider
+            ->getClass(EloquentBuilder::class)
+            ->getNativeReflection()
+            ->getDefaultProperties()['passthru'] ?? [];
     }
 }

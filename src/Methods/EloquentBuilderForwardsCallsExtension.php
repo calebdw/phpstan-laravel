@@ -129,7 +129,7 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
         $parametersAcceptor = $ref->getVariants()[0];
         $returnType         = $parametersAcceptor->getReturnType();
 
-        if (! in_array($methodName, $this->builderHelper->passthru, true)) {
+        if (! $this->builderHelper->methodIsBuilderPassthru($methodName)) {
             $returnType = new ThisType($classReflection);
         }
 
