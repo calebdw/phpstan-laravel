@@ -13,6 +13,54 @@ parameters:
 			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/Select.php
 
 		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Connection\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/TableSelect/Livewire/TableSelectLivewireComponent.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Query\\Grammars\\Grammar\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/forms/src/Components/TableSelect/Livewire/TableSelectLivewireComponent.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Connection\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/panels/src/Resources/Pages/ListRecords.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Query\\Grammars\\Grammar\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/panels/src/Resources/Pages/ListRecords.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Connection\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/panels/src/Resources/Pages/ManageRelatedRecords.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Query\\Grammars\\Grammar\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/panels/src/Resources/Pages/ManageRelatedRecords.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Connection\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/panels/src/Resources/RelationManagers/RelationManager.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Query\\Grammars\\Grammar\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/panels/src/Resources/RelationManagers/RelationManager.php
+
+		-
 			message: '#^Method Filament\\Infolists\\Components\\SpatieTagsEntry\:\:getState\(\) should return array\<string\> but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -25,7 +73,49 @@ parameters:
 			path: ../build/e2e/filamentphp-filament/packages/spatie-laravel-tags-plugin/src/Tables/Columns/SpatieTagsColumn.php
 
 		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(int, string\)\: mixed\)\|null, Closure\(string, string\)\: non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../build/e2e/filamentphp-filament/packages/support/src/Colors/ColorManager.php
+
+		-
 			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
 			identifier: laravel.unnecessaryEnumerableToArrayCall
 			count: 2
 			path: ../build/e2e/filamentphp-filament/packages/support/src/Commands/CheckTranslationsCommand.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Connection\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/tables/src/TableComponent.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Query\\Grammars\\Grammar\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/tables/src/TableComponent.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/widgets/src/Commands/FileGenerators/TableWidgetClassGenerator.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/widgets/src/TableWidget.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Connection\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/widgets/src/TableWidget.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Query\\Grammars\\Grammar\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: ../build/e2e/filamentphp-filament/packages/widgets/src/TableWidget.php
