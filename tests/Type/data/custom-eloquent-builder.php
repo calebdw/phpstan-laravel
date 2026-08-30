@@ -173,9 +173,9 @@ class FooModel extends Model
 }
 
 /**
- * @method static CustomBuilder2|ModelWithCustomBuilderAndDocBlocks newModelQuery()
- * @method static CustomBuilder2|ModelWithCustomBuilderAndDocBlocks newQuery()
- * @method static CustomBuilder2|ModelWithCustomBuilderAndDocBlocks query()
+ * @method static CustomBuilder2<ModelWithCustomBuilderAndDocBlocks> newModelQuery()
+ * @method static CustomBuilder2<ModelWithCustomBuilderAndDocBlocks> newQuery()
+ * @method static CustomBuilder2<ModelWithCustomBuilderAndDocBlocks> query()
  */
 class ModelWithCustomBuilderAndDocBlocks extends Model
 {

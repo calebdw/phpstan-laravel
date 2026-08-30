@@ -71,17 +71,7 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
             return null;
         }
 
-        $loopReflection = $classReflection;
-
-        do {
-            $modelType = $loopReflection->getActiveTemplateTypeMap()->getType('TModel');
-
-            if ($modelType !== null) {
-                break;
-            }
-
-            $loopReflection = $loopReflection->getParentClass();
-        } while ($loopReflection !== null);
+        $modelType = $this->builderHelper->getModelType($classReflection);
 
         if ($modelType === null) {
             return null;

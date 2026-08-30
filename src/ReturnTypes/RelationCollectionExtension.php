@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
+use CalebDW\PhpstanLaravel\Methods\BuilderHelper;
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,6 +26,7 @@ final class RelationCollectionExtension implements DynamicMethodReturnTypeExtens
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private CollectionHelper $collectionHelper,
+        private BuilderHelper $builderHelper,
     ) {
     }
 
@@ -35,26 +37,21 @@ final class RelationCollectionExtension implements DynamicMethodReturnTypeExtens
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        $modelType = $methodReflection->getDeclaringClass()->getActiveTemplateTypeMap()->getType('TRelatedModel');
-
-        if ($modelType === null && $methodReflection->getDeclaringClass()->getName() === Builder::class) {
-            $modelType = $methodReflection->getDeclaringClass()->getActiveTemplateTypeMap()->getType('TModel');
-        }
+        $modelType = $this->builderHelper->getModelType($methodReflection->getDeclaringClass());
 
         if ($modelType === null || $modelType->getObjectClassNames() === []) {
             return false;
         }
 
-        return $methodReflection->getDeclaringClass()->hasNativeMethod($methodReflection->getName()) ||
-            $this->reflectionProvider->getClass(Builder::class)->hasNativeMethod($methodReflection->getName()) ||
-            $this->reflectionProvider->getClass(QueryBuilder::class)->hasNativeMethod($methodReflection->getName());
+        $methodName = $methodReflection->getName();
+
+        return $methodReflection->getDeclaringClass()->hasNativeMethod($methodName) ||
+            $this->reflectionProvider->getClass(Builder::class)->hasNativeMethod($methodName) ||
+            $this->reflectionProvider->getClass(QueryBuilder::class)->hasNativeMethod($methodName);
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $returnType = ParametersAcceptorSelector::selectFromArgs($scope, $methodCall->getArgs(), $methodReflection->getVariants())->getReturnType();
 
         if (! in_array(Collection::class, $returnType->getReferencedClasses(), true)) {

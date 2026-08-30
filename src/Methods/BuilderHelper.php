@@ -7,8 +7,11 @@ namespace CalebDW\PhpstanLaravel\Methods;
 use CalebDW\PhpstanLaravel\Reflection\AnnotationScopeMethodParameterReflection;
 use CalebDW\PhpstanLaravel\Reflection\DynamicWhereParameterReflection;
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Str;
 use PhpParser\Node\Expr\ClassConstFetch;
@@ -19,6 +22,7 @@ use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
+use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
@@ -55,19 +59,14 @@ final class BuilderHelper
     ) {
     }
 
-    public function dynamicWhere(
-        string $methodName,
-        Type $returnObject,
-    ): EloquentBuilderMethodReflection|null {
+    public function dynamicWhere(string $methodName, Type $returnObject, Type|null $modelType = null): EloquentBuilderMethodReflection|null
+    {
         if (! Str::startsWith($methodName, 'where')) {
             return null;
         }
 
-        if (count($returnObject->getObjectClassReflections()) > 0 && $this->checkProperties) {
-            $returnClassReflection = $returnObject->getObjectClassReflections()[0];
-
-            $modelType = $returnClassReflection->getActiveTemplateTypeMap()->getType('TModel')
-                ?? $returnClassReflection->getActiveTemplateTypeMap()->getType('TRelatedModel');
+        if ($this->checkProperties) {
+            $modelType ??= $this->getModelType($returnObject);
 
             if ($modelType !== null) {
                 $finder = substr($methodName, 5);
@@ -136,8 +135,7 @@ final class BuilderHelper
                 $methodReflection  = $reflection->getNativeMethod($methodName);
                 $hasScopeAttribute = false;
                 foreach ($methodReflection->getAttributes() as $attribute) {
-                    // using string instead of class constant to avoid failing on older Laravel versions
-                    if ($attribute->getName() === 'Illuminate\Database\Eloquent\Attributes\Scope') {
+                    if ($attribute->getName() === Scope::class) {
                         $hasScopeAttribute = true;
                         break;
                     }
@@ -223,7 +221,31 @@ final class BuilderHelper
             return $this->macroMethodsClassReflectionExtension->getMethod($queryBuilderReflection, $methodName);
         }
 
-        return $this->dynamicWhere($methodName, new GenericObjectType($eloquentBuilder->getName(), [$modelType]));
+        return $this->dynamicWhere($methodName, $this->getBuilderType($eloquentBuilder->getName(), $modelType), $modelType);
+    }
+
+    public function getModelType(ClassReflection|Type $type): Type|null
+    {
+        if ($type instanceof ClassReflection) {
+            $type = $type->getObjectType();
+        }
+
+        $modelType = $type->getTemplateType(EloquentBuilder::class, 'TModel');
+
+        if ($modelType instanceof ErrorType) {
+            $modelType = $type->getTemplateType(Relation::class, 'TRelatedModel');
+        }
+
+        return $modelType instanceof ErrorType ? null : $modelType;
+    }
+
+    public function getBuilderType(string $builderClassName, Type $modelType): ObjectType
+    {
+        if (! $this->reflectionProvider->getClass($builderClassName)->isGeneric()) {
+            return new ObjectType($builderClassName);
+        }
+
+        return new GenericObjectType($builderClassName, [$modelType]);
     }
 
     /**
@@ -236,7 +258,7 @@ final class BuilderHelper
         $method          = $modelReflection->getNativeMethod('newEloquentBuilder');
 
         if ($method->getDeclaringClass()->getName() === Model::class) {
-            $attrs = $modelReflection->getNativeReflection()->getAttributes('Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder'); //@phpstan-ignore argument.type (Attribute class might not exist)
+            $attrs = $modelReflection->getNativeReflection()->getAttributes(UseEloquentBuilder::class);
 
             if ($attrs !== []) {
                 $expr =  $attrs[0]->getArgumentsExpressions()[0];
@@ -280,13 +302,7 @@ final class BuilderHelper
                 return [$model->getClassName() => $model];
             })
             ->mapToGroups(fn ($type, $class) => [$this->determineBuilderName($class) => $type])
-            ->map(function ($models, $builder) {
-                $builderReflection = $this->reflectionProvider->getClass($builder);
-
-                return $builderReflection->isGeneric()
-                    ? new GenericObjectType($builder, [TypeCombinator::union(...$models)])
-                    : new ObjectType($builder);
-            })
+            ->map(fn ($models, $builder) => $this->getBuilderType($builder, TypeCombinator::union(...$models)))
             ->values()
             ->pipe(static fn ($types) => TypeCombinator::union(...$types));
     }

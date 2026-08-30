@@ -17,6 +17,7 @@ use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\TrinaryLogic;
+use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
@@ -36,16 +37,9 @@ class ModelFactoryMethodsClassReflectionExtension implements MethodsClassReflect
             return false;
         }
 
-        $modelType = $classReflection->getActiveTemplateTypeMap()->getType('TModel');
+        $modelType = $classReflection->getObjectType()->getTemplateType(Factory::class, 'TModel');
 
-        // Generic type is not specified
-        if ($modelType === null) {
-            if (! $classReflection->isGeneric() && $classReflection->getParentClass()?->isGeneric()) {
-                $modelType = $classReflection->getParentClass()->getActiveTemplateTypeMap()->getType('TModel');
-            }
-        }
-
-        if ($modelType === null) {
+        if ($modelType instanceof ErrorType) {
             return false;
         }
 

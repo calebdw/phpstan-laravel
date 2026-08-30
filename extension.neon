@@ -263,8 +263,6 @@ services:
   - class: CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule
   - class: CalebDW\PhpstanLaravel\Rules\UndefinedConfigNameRule
   - class: CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule
-  - class: CalebDW\PhpstanLaravel\Types\GenericEloquentBuilderTypeNodeResolverExtension
-    tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AppEnvironmentReturnTypeExtension
     arguments: {class: "Illuminate\\Foundation\\Application"}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]

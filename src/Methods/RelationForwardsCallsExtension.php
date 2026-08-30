@@ -64,7 +64,7 @@ final class RelationForwardsCallsExtension implements MethodsClassReflectionExte
             return null;
         }
 
-        $relatedModel = $classReflection->getActiveTemplateTypeMap()->getType('TRelatedModel');
+        $relatedModel = $this->builderHelper->getModelType($classReflection);
 
         if ($relatedModel === null) {
             return null;

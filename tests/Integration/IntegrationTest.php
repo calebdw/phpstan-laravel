@@ -17,7 +17,7 @@ use function sprintf;
 
 class IntegrationTest extends PHPStanTestCase
 {
-    /** @return iterable<array{0: string, 1?: array<int, array<int, string>>}> */
+    /** @return iterable<array{0: string, 1?: array<int, array<int, string>>, 2?: bool}> */
     public static function dataIntegrationTests(): iterable
     {
         self::getContainer();
@@ -59,6 +59,15 @@ class IntegrationTest extends PHPStanTestCase
                 50 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Builder<App\User>::createQuietly() expects array<model property of App\User, mixed>, array<string, string> given.'],
                 55 => ['Parameter #1 $column of method Illuminate\Database\Eloquent\Builder<App\Account>::where() expects array<int|model property of App\Account, mixed>|(Closure(Illuminate\Database\Eloquent\Builder<App\Account>): Illuminate\Database\Eloquent\Builder<App\Account>)|(Closure(Illuminate\Database\Eloquent\Builder<App\Account>): void)|Illuminate\Contracts\Database\Query\Expression|model property of App\Account, \'foo\' given.'],
             ],
+        ];
+
+        yield [
+            __DIR__ . '/data/model-property-dynamic-where.php',
+            [
+                12 => ['Call to an undefined static method App\User::whereBogusColumn().'],
+                18 => ['Call to an undefined static method App\Team::whereBogusColumn().'],
+            ],
+            true,
         ];
 
         yield [
@@ -119,7 +128,7 @@ class IntegrationTest extends PHPStanTestCase
      * @throws Throwable
      */
     #[DataProvider('dataIntegrationTests')]
-    public function testIntegration(string $file, array|null $expectedErrors = null): void
+    public function testIntegration(string $file, array|null $expectedErrors = null, bool $assertAllExpectedReported = false): void
     {
         $errors = $this->runAnalyse($file);
 
@@ -130,7 +139,7 @@ class IntegrationTest extends PHPStanTestCase
                 $this->assertNotEmpty($errors);
             }
 
-            $this->assertSameErrorMessages($file, $expectedErrors, $errors);
+            $this->assertSameErrorMessages($file, $expectedErrors, $errors, $assertAllExpectedReported);
         }
     }
 
@@ -167,7 +176,7 @@ class IntegrationTest extends PHPStanTestCase
      * @param array<int, array<int, string>> $expectedErrors
      * @param Error[]                        $errors
      */
-    private function assertSameErrorMessages(string $file, array $expectedErrors, array $errors): void
+    private function assertSameErrorMessages(string $file, array $expectedErrors, array $errors, bool $assertAllExpectedReported): void
     {
         foreach ($errors as $error) {
             $errorLine = $error->getLine() ?? 0;
@@ -182,6 +191,29 @@ class IntegrationTest extends PHPStanTestCase
                 $expectedErrors[$errorLine],
                 sprintf("File %s has unexpected error \"%s\" at line %d.\n\nExpected \"%s\"", $file, $error->getMessage(), $errorLine, implode("\n\t", $expectedErrors[$errorLine])),
             );
+        }
+
+        // Opt-in, because an expectation that never fires otherwise still
+        // passes, which makes a regression test for a silently skipped check
+        // meaningless. Not enabled everywhere: some existing expectations in
+        // this suite do not currently fire.
+        if (! $assertAllExpectedReported) {
+            return;
+        }
+
+        $reported = [];
+        foreach ($errors as $error) {
+            $reported[$error->getLine() ?? 0][] = $error->getMessage();
+        }
+
+        foreach ($expectedErrors as $line => $messages) {
+            foreach ($messages as $message) {
+                $this->assertContains(
+                    $message,
+                    $reported[$line] ?? [],
+                    sprintf('File %s expected error "%s" at line %d, but it was not reported.', $file, $message, $line),
+                );
+            }
         }
     }
 
