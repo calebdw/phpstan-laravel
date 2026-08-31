@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Methods;
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
 use CalebDW\PhpstanLaravel\Reflection\ModelCounterMethodReflection;
 use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
+use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use PHPStan\Reflection\ClassReflection;

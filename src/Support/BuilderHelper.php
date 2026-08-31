@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Methods;
+namespace CalebDW\PhpstanLaravel\Support;
 
+use CalebDW\PhpstanLaravel\Methods\MacroMethodsClassReflectionExtension;
 use CalebDW\PhpstanLaravel\Reflection\DynamicWhereParameterReflection;
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
 use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;

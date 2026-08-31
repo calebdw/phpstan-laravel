@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Ignore;
 
-use CalebDW\PhpstanLaravel\Methods\Macro;
+use CalebDW\PhpstanLaravel\Reflection\MacroMethodReflection;
 use PhpParser\Node;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
@@ -59,6 +59,6 @@ final class MacroStaticCallIgnoreExtension implements IgnoreErrorExtension
 
     private function isMacro(ClassMemberReflection $reflection): bool
     {
-        return $reflection instanceof Macro;
+        return $reflection instanceof MacroMethodReflection;
     }
 }

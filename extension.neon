@@ -289,7 +289,7 @@ services:
   - class: CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper
   - class: CalebDW\PhpstanLaravel\Properties\ModelPropertyHelper
   - class: CalebDW\PhpstanLaravel\Rules\ModelRuleHelper
-  - class: CalebDW\PhpstanLaravel\Methods\BuilderHelper
+  - class: CalebDW\PhpstanLaravel\Support\BuilderHelper
     arguments: {checkProperties: %laravel.modelPropertyType%}
   - class: CalebDW\PhpstanLaravel\Rules\RelationExistenceRule
     tags: [phpstan.rules.rule]

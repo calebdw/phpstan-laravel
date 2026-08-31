@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Methods\BuilderHelper;
+use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Methods;
+namespace CalebDW\PhpstanLaravel\Reflection;
 
 use Illuminate\Validation\ValidationException;
 use PHPStan\Reflection\ClassMemberReflection;
@@ -17,7 +17,7 @@ use PHPStan\Type\Type;
 
 use function array_key_exists;
 
-final class Macro implements MethodReflection
+final class MacroMethodReflection implements MethodReflection
 {
     /**
      * Map of macro methods and thrown exception classes.

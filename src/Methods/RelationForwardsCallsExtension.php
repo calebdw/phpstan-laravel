@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Methods;
 
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
+use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Methods\BuilderHelper;
+use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

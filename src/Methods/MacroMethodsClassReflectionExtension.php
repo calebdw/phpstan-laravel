@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
+use CalebDW\PhpstanLaravel\Reflection\MacroMethodReflection;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Closure;
 use Illuminate\Auth\RequestGuard;
@@ -144,7 +145,7 @@ class MacroMethodsClassReflectionExtension implements MethodsClassReflectionExte
 
                         $methodReflection = $this->reflectionProvider->getClass($macroClassName)->getNativeMethod($macroDefinition[1]);
                     } elseif (is_callable($macroDefinition)) {
-                        $methodReflection = new Macro(
+                        $methodReflection = new MacroMethodReflection(
                             $macroClassReflection,
                             $methodName,
                             $this->closureTypeFactory->fromClosureObject(Closure::fromCallable($macroDefinition)),
@@ -165,7 +166,7 @@ class MacroMethodsClassReflectionExtension implements MethodsClassReflectionExte
 
                     $methodReflection = $this->reflectionProvider->getClass($macroClassName)->getNativeMethod($macroDefinition[1]);
                 } else {
-                    $methodReflection = new Macro(
+                    $methodReflection = new MacroMethodReflection(
                         $macroClassReflection,
                         $methodName,
                         $this->closureTypeFactory->fromClosureObject($macroDefinition),
@@ -183,10 +184,8 @@ class MacroMethodsClassReflectionExtension implements MethodsClassReflectionExte
         return $found;
     }
 
-    public function getMethod(
-        ClassReflection $classReflection,
-        string $methodName,
-    ): MethodReflection {
+    public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
+    {
         return $this->methods[$classReflection->getName() . '-' . $methodName];
     }
 
