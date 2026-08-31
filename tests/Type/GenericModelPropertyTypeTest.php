@@ -6,7 +6,7 @@ namespace Tests\Type;
 
 use App\Account;
 use App\User;
-use CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper;
+use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use CalebDW\PhpstanLaravel\Types\ModelProperty\GenericModelPropertyType;
 use PHPStan\Testing\PHPStanTestCase;

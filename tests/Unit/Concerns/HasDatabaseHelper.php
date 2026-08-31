@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Concerns;
 
-use CalebDW\PhpstanLaravel\Properties\MigrationHelper;
-use CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper;
-use CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper;
+use CalebDW\PhpstanLaravel\Schema\MigrationHelper;
+use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
+use CalebDW\PhpstanLaravel\Schema\SquashedMigrationHelper;
+use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;

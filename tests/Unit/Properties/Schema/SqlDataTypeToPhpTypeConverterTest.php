@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Properties\Schema;
 
-use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

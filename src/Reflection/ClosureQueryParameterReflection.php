@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Parameters;
+namespace CalebDW\PhpstanLaravel\Reflection;
 
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\PassedByReference;
 use PHPStan\Type\Type;
 
-final class ClosureQueryParameter implements ParameterReflection
+final class ClosureQueryParameterReflection implements ParameterReflection
 {
     public function __construct(
         private string $name,

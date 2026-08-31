@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use CalebDW\PhpstanLaravel\Properties\SchemaTable;
+use CalebDW\PhpstanLaravel\Schema\SchemaTable;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Concerns\HasDatabaseHelper;

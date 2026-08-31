@@ -279,16 +279,16 @@ services:
   - class: CalebDW\PhpstanLaravel\Support\ModelHelper
   - class: CalebDW\PhpstanLaravel\Support\ManagerHelper
   - class: CalebDW\PhpstanLaravel\Support\AuthHelper
-  - class: CalebDW\PhpstanLaravel\Properties\MigrationHelper
+  - class: CalebDW\PhpstanLaravel\Schema\MigrationHelper
     arguments: {databaseMigrationPath: %laravel.migrationDirectories%, scanMigrations: %laravel.scanMigrations%, parser: @currentPhpVersionSimpleDirectParser}
-  - class: CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper
+  - class: CalebDW\PhpstanLaravel\Schema\SquashedMigrationHelper
     arguments: {schemaPaths: %laravel.schemaDirectories%, scanSchema: %laravel.scanSchema%}
   - class: CalebDW\PhpstanLaravel\Sql\SqlParserManager
     arguments: {defaultDriver: %laravel.sqlParser%}
-  - class: CalebDW\PhpstanLaravel\Properties\ModelCastHelper
-  - class: CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper
-  - class: CalebDW\PhpstanLaravel\Properties\ModelPropertyHelper
-  - class: CalebDW\PhpstanLaravel\Rules\ModelRuleHelper
+  - class: CalebDW\PhpstanLaravel\Support\ModelCastHelper
+  - class: CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper
+  - class: CalebDW\PhpstanLaravel\Support\ModelPropertyHelper
+  - class: CalebDW\PhpstanLaravel\Support\ModelRuleHelper
   - class: CalebDW\PhpstanLaravel\Support\BuilderHelper
     arguments: {checkProperties: %laravel.modelPropertyType%}
   - class: CalebDW\PhpstanLaravel\Rules\RelationExistenceRule
@@ -299,8 +299,8 @@ services:
   - class: CalebDW\PhpstanLaravel\Rules\CheckDispatchArgumentTypesCompatibleWithClassConstructorRule
     arguments: {dispatchableClass: Illuminate\Foundation\Events\Dispatchable}
     tags: [phpstan.rules.rule]
-  - class: CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter
-  - class: CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter
+  - class: CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter
+  - class: CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter
   - class: CalebDW\PhpstanLaravel\StubFilesExtension
     tags: [phpstan.stubFilesExtension]
   - class: CalebDW\PhpstanLaravel\Rules\UnusedViewsRule
@@ -382,8 +382,8 @@ services:
     tags: [phpstan.methodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\ModelRelationParameterExtension
     tags: [phpstan.staticMethodParameterClosureTypeExtension]
-  - class: CalebDW\PhpstanLaravel\Parameters\RelationClosureHelper
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppMakeHelper
+  - class: CalebDW\PhpstanLaravel\Support\RelationClosureHelper
+  - class: CalebDW\PhpstanLaravel\Support\AppMakeHelper
     arguments: {strictContracts: %laravel.strictContracts%}
   - class: CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver
   - class: CalebDW\PhpstanLaravel\Support\ConsoleApplicationHelper

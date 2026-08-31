@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
+use CalebDW\PhpstanLaravel\Support\AppMakeHelper;
 use Illuminate\Contracts\Container\Container;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;

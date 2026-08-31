@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Properties;
+namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Database\Eloquent\Castable;

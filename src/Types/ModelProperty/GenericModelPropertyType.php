@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Types\ModelProperty;
 
-use CalebDW\PhpstanLaravel\Properties\ModelDatabaseHelper;
+use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;

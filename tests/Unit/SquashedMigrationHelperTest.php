@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use CalebDW\PhpstanLaravel\Schema\SquashedMigrationHelper;
 use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 use PHPStan\Testing\PHPStanTestCase;

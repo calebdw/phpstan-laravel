@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\ModelRuleHelper;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;

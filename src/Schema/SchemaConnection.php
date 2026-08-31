@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Properties;
+namespace CalebDW\PhpstanLaravel\Schema;
 
 final class SchemaConnection
 {

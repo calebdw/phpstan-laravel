@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Helpers;
 
-use CalebDW\PhpstanLaravel\ReturnTypes\AppMakeHelper;
+use CalebDW\PhpstanLaravel\Support\AppMakeHelper;
 use Illuminate\Foundation\Application;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;

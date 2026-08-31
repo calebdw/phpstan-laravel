@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
-use CalebDW\PhpstanLaravel\Properties\ModelPropertyHelper;
+use CalebDW\PhpstanLaravel\Support\ModelPropertyHelper;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;

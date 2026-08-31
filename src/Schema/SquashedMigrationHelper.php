@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Properties;
+namespace CalebDW\PhpstanLaravel\Schema;
 
-use CalebDW\PhpstanLaravel\Properties\Schema\DataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Schema\Type\DataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Sql\SqlDialect;
 use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;

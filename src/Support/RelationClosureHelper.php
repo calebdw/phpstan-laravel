@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Parameters;
+namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Support\BuilderHelper;
+use CalebDW\PhpstanLaravel\Reflection\ClosureQueryParameterReflection;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -102,8 +102,8 @@ final class RelationClosureHelper
         }
 
         return new ClosureType([
-            new ClosureQueryParameter('query', $type),
-            new ClosureQueryParameter('type', $isMorphMethod ? new StringType() : new NeverType()),
+            new ClosureQueryParameterReflection('query', $type),
+            new ClosureQueryParameterReflection('type', $isMorphMethod ? new StringType() : new NeverType()),
         ], new MixedType());
     }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Properties;
+namespace CalebDW\PhpstanLaravel\Schema;
 
 /** @see https://github.com/psalm/laravel-psalm-plugin/blob/master/src/SchemaColumn.php */
 final class SchemaColumn

@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\ReturnTypes;
+namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;

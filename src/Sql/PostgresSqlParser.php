@@ -8,7 +8,7 @@ use CalebDW\PgSchemaParser\Column;
 use CalebDW\PgSchemaParser\Database;
 use CalebDW\PgSchemaParser\PgDumpParser;
 use CalebDW\PgSchemaParser\Table;
-use CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
 use Throwable;
 
 final class PostgresSqlParser implements SqlParser

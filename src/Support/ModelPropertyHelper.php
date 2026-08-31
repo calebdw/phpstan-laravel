@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Properties;
+namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Support\ModelHelper;
-use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
+use CalebDW\PhpstanLaravel\Properties\ModelProperty;
+use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Parameters;
 
+use CalebDW\PhpstanLaravel\Support\RelationClosureHelper;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -22,12 +23,8 @@ final class EloquentBuilderRelationParameterExtension implements MethodParameter
         return $this->relationClosureHelper->isMethodSupported($methodReflection, $parameter);
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        ParameterReflection $parameter,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, ParameterReflection $parameter, Scope $scope): Type|null
+    {
         return $this->relationClosureHelper->getTypeFromMethodCall($methodReflection, $methodCall, $parameter, $scope);
     }
 }

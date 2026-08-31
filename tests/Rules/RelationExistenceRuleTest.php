@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Rules;
 
-use CalebDW\PhpstanLaravel\Rules\ModelRuleHelper;
 use CalebDW\PhpstanLaravel\Rules\RelationExistenceRule;
+use CalebDW\PhpstanLaravel\Support\ModelRuleHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Properties\Schema;
+namespace CalebDW\PhpstanLaravel\Schema\Type;
 
 interface DataTypeToPhpTypeConverter
 {
