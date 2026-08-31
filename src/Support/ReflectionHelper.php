@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Reflection;
+namespace CalebDW\PhpstanLaravel\Support;
 
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Mixin\MixinMethodsClassReflectionExtension;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Rules\ConsoleCommand;
 
 use CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver;
+use Illuminate\Console\Command;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -46,11 +47,13 @@ final class UndefinedArgumentOrOptionRule implements Rule
             return [];
         }
 
-        if (! (new ObjectType('Illuminate\Console\Command'))->isSuperTypeOf(new ObjectType($classReflection->getName()))->yes()) {
+        $commandType = new ObjectType(Command::class);
+
+        if (! $commandType->isSuperTypeOf($classReflection->getObjectType())->yes()) {
             return [];
         }
 
-        if (! (new ObjectType('Illuminate\Console\Command'))->isSuperTypeOf($scope->getType($node->var))->yes()) {
+        if (! $commandType->isSuperTypeOf($scope->getType($node->var))->yes()) {
             return [];
         }
 

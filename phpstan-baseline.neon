@@ -13,12 +13,6 @@ parameters:
 			path: src/Methods/HigherOrderCollectionProxyExtension.php
 
 		-
-			rawMessage: Creating new PHPStan\Reflection\Php\DummyParameter is not covered by backward compatibility promise. The class might change in a minor PHPStan version.
-			identifier: phpstanApi.constructor
-			count: 1
-			path: src/Methods/ModelForwardsCallsExtension.php
-
-		-
 			rawMessage: PHPDoc tag @var assumes the expression with type PHPStan\Type\Type|null is always PHPStan\Type\Constant\ConstantStringType but it's error-prone and dangerous.
 			identifier: phpstanApi.varTagAssumption
 			count: 1
@@ -95,4 +89,3 @@ parameters:
 			identifier: method.internal
 			count: 2
 			path: src/Rules/UselessConstructs/NoUselessWithFunctionCallsRule.php
-

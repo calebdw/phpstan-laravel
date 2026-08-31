@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
-use CalebDW\PhpstanLaravel\Reflection\DynamicWhereMethodReflection;
+use CalebDW\PhpstanLaravel\Reflection\DynamicWithMethodReflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -28,10 +28,8 @@ class ViewWithMethodsClassReflectionExtension implements MethodsClassReflectionE
         return true;
     }
 
-    public function getMethod(
-        ClassReflection $classReflection,
-        string $methodName,
-    ): MethodReflection {
-        return new DynamicWhereMethodReflection($classReflection, $methodName);
+    public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
+    {
+        return new DynamicWithMethodReflection($classReflection, $methodName);
     }
 }

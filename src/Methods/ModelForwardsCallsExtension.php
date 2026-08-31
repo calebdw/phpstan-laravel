@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Methods;
 
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
+use CalebDW\PhpstanLaravel\Reflection\ModelCounterMethodReflection;
+use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use PHPStan\Reflection\ClassMemberReflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\FunctionVariant;
 use PHPStan\Reflection\MethodReflection;
@@ -15,9 +16,7 @@ use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\ParametersAcceptor;
-use PHPStan\Reflection\Php\DummyParameter;
 use PHPStan\ShouldNotHappenException;
-use PHPStan\TrinaryLogic;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\ThisType;
@@ -45,8 +44,10 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
     /** @var array<string, MethodReflection> */
     private array $cache = [];
 
-    public function __construct(private BuilderHelper $builderHelper, private EloquentBuilderForwardsCallsExtension $eloquentBuilderForwardsCallsExtension)
-    {
+    public function __construct(
+        private BuilderHelper $builderHelper,
+        private EloquentBuilderForwardsCallsExtension $eloquentBuilderForwardsCallsExtension,
+    ) {
     }
 
     /**
@@ -86,7 +87,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
         }
 
         if (in_array($methodName, self::FORWARDED_COUNTER_METHODS, true) && $classReflection->hasNativeMethod($methodName)) {
-            return $this->counterMethodReflection($classReflection, $methodName);
+            return new ModelCounterMethodReflection($classReflection, $methodName);
         }
 
         $builderType       = $this->builderHelper->getBuilderTypeForModels(new StaticType($classReflection));
@@ -150,7 +151,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
         return new FunctionVariant($acceptor->getTemplateTypeMap(), $acceptor->getResolvedTemplateTypeMap(), array_map(function (
             ParameterReflection $parameter,
         ) use ($builder): ParameterReflection {
-            return new DummyParameter(
+            return new SimpleParameterReflection(
                 $parameter->getName(),
                 $this->transformStaticType($parameter->getType(), $builder),
                 $parameter->isOptional(),
@@ -170,87 +171,5 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
 
             return $traverse($type);
         });
-    }
-
-    private function counterMethodReflection(ClassReflection $classReflection, string $methodName): MethodReflection
-    {
-        $methodReflection = $classReflection->getNativeMethod($methodName);
-
-        return new class ($classReflection, $methodName, $methodReflection) implements MethodReflection {
-            public function __construct(private ClassReflection $classReflection, private string $methodName, private MethodReflection $methodReflection)
-            {
-            }
-
-            public function getDeclaringClass(): ClassReflection
-            {
-                return $this->classReflection;
-            }
-
-            public function isStatic(): bool
-            {
-                return false;
-            }
-
-            public function isPrivate(): bool
-            {
-                return false;
-            }
-
-            public function isPublic(): bool
-            {
-                return true;
-            }
-
-            public function getDocComment(): string|null
-            {
-                return null;
-            }
-
-            public function getName(): string
-            {
-                return $this->methodName;
-            }
-
-            public function getPrototype(): ClassMemberReflection
-            {
-                return $this;
-            }
-
-            /** @return ParametersAcceptor[] */
-            public function getVariants(): array
-            {
-                return $this->methodReflection->getVariants();
-            }
-
-            public function isDeprecated(): TrinaryLogic
-            {
-                return TrinaryLogic::createNo();
-            }
-
-            public function getDeprecatedDescription(): string|null
-            {
-                return null;
-            }
-
-            public function isFinal(): TrinaryLogic
-            {
-                return TrinaryLogic::createNo();
-            }
-
-            public function isInternal(): TrinaryLogic
-            {
-                return TrinaryLogic::createNo();
-            }
-
-            public function getThrowType(): Type|null
-            {
-                return null;
-            }
-
-            public function hasSideEffects(): TrinaryLogic
-            {
-                return TrinaryLogic::createYes();
-            }
-        };
     }
 }

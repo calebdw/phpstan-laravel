@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Properties;
 
 use CalebDW\PhpstanLaravel\Concerns;
-use CalebDW\PhpstanLaravel\Reflection\ReflectionHelper;
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
+use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;

@@ -22,10 +22,9 @@ final class ConsoleApplicationResolver
     public function findCommands(ClassReflection $classReflection): array
     {
         $consoleApplication = $this->getApplication();
+        $classType          = $classReflection->getObjectType();
 
-        $classType = new ObjectType($classReflection->getName());
-
-        if (! (new ObjectType('Illuminate\Console\Command'))->isSuperTypeOf($classType)->yes()) {
+        if (! (new ObjectType(Command::class))->isSuperTypeOf($classType)->yes()) {
             return [];
         }
 

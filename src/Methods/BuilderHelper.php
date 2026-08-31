@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
-use CalebDW\PhpstanLaravel\Reflection\AnnotationScopeMethodParameterReflection;
 use CalebDW\PhpstanLaravel\Reflection\DynamicWhereParameterReflection;
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
+use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -167,11 +167,11 @@ final class BuilderHelper
 
                 $parameters = [];
                 foreach ($methodTag->getParameters() as $parameterName => $parameterTag) {
-                    $parameters[] = new AnnotationScopeMethodParameterReflection(
+                    $parameters[] = new SimpleParameterReflection(
                         $parameterName,
                         $parameterTag->getType(),
-                        $parameterTag->passedByReference(),
                         $parameterTag->isOptional(),
+                        $parameterTag->passedByReference(),
                         $parameterTag->isVariadic(),
                         $parameterTag->getDefaultValue(),
                     );

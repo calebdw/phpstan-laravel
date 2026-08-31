@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Properties;
 
-use CalebDW\PhpstanLaravel\Reflection\ReflectionHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
+use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;

@@ -6,33 +6,25 @@ namespace CalebDW\PhpstanLaravel\Reflection;
 
 use PHPStan\Reflection\ClassMemberReflection;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\FunctionVariant;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\Type;
 
-final class ModelScopeMethodReflection implements MethodReflection
+/** Exposes Laravel's protected model counter methods as public methods handled by Model::__call(). */
+final class ModelCounterMethodReflection implements MethodReflection
 {
-    /** @var FunctionVariant[] */
+    /** @var ParametersAcceptor[] */
     private array $variants;
 
-    public function __construct(private string $methodName, private ClassReflection $classReflection, ClassReflection $relation)
+    public function __construct(private ClassReflection $declaringClass, private string $name)
     {
-        $this->variants = [
-            new FunctionVariant(
-                TemplateTypeMap::createEmpty(),
-                null,
-                [],
-                false,
-                $relation->getObjectType(),
-            ),
-        ];
+        $this->variants = $this->declaringClass->getNativeMethod($this->name)->getVariants();
     }
 
     public function getDeclaringClass(): ClassReflection
     {
-        return $this->classReflection;
+        return $this->declaringClass;
     }
 
     public function isStatic(): bool
@@ -50,9 +42,14 @@ final class ModelScopeMethodReflection implements MethodReflection
         return true;
     }
 
+    public function getDocComment(): string|null
+    {
+        return null;
+    }
+
     public function getName(): string
     {
-        return $this->methodName;
+        return $this->name;
     }
 
     public function getPrototype(): ClassMemberReflection
@@ -60,15 +57,10 @@ final class ModelScopeMethodReflection implements MethodReflection
         return $this;
     }
 
-    /** @return FunctionVariant[] */
+    /** @return ParametersAcceptor[] */
     public function getVariants(): array
     {
         return $this->variants;
-    }
-
-    public function getDocComment(): string|null
-    {
-        return null;
     }
 
     public function isDeprecated(): TrinaryLogic
@@ -98,6 +90,6 @@ final class ModelScopeMethodReflection implements MethodReflection
 
     public function hasSideEffects(): TrinaryLogic
     {
-        return TrinaryLogic::createMaybe();
+        return TrinaryLogic::createYes();
     }
 }

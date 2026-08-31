@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
-use CalebDW\PhpstanLaravel\Reflection\DynamicWhereMethodReflection;
+use CalebDW\PhpstanLaravel\Reflection\DynamicWithMethodReflection;
 use PHPStan\Reflection;
 
 use function str_starts_with;
@@ -25,10 +25,8 @@ class RedirectResponseMethodsClassReflectionExtension implements Reflection\Meth
         return true;
     }
 
-    public function getMethod(
-        Reflection\ClassReflection $classReflection,
-        string $methodName,
-    ): Reflection\MethodReflection {
-        return new DynamicWhereMethodReflection($classReflection, $methodName);
+    public function getMethod(Reflection\ClassReflection $classReflection, string $methodName): Reflection\MethodReflection
+    {
+        return new DynamicWithMethodReflection($classReflection, $methodName);
     }
 }

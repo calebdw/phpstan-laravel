@@ -8,10 +8,16 @@ use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\PassedByReference;
 use PHPStan\Type\Type;
 
-final class AnnotationScopeMethodParameterReflection implements ParameterReflection
+final class SimpleParameterReflection implements ParameterReflection
 {
-    public function __construct(private string $name, private Type $type, private PassedByReference $passedByReference, private bool $isOptional, private bool $isVariadic, private Type|null $defaultValue = null)
-    {
+    public function __construct(
+        private string $name,
+        private Type $type,
+        private bool $optional,
+        private PassedByReference $passedByReference,
+        private bool $variadic,
+        private Type|null $defaultValue = null,
+    ) {
     }
 
     public function getName(): string
@@ -21,7 +27,7 @@ final class AnnotationScopeMethodParameterReflection implements ParameterReflect
 
     public function isOptional(): bool
     {
-        return $this->isOptional;
+        return $this->optional;
     }
 
     public function getType(): Type
@@ -36,7 +42,7 @@ final class AnnotationScopeMethodParameterReflection implements ParameterReflect
 
     public function isVariadic(): bool
     {
-        return $this->isVariadic;
+        return $this->variadic;
     }
 
     public function getDefaultValue(): Type|null

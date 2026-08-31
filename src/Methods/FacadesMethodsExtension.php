@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Methods;
 
 use CalebDW\PhpstanLaravel\Internal\RecursionGuard;
-use CalebDW\PhpstanLaravel\Reflection\ReflectionHelper;
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
+use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use Illuminate\Support\Facades\Facade;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;

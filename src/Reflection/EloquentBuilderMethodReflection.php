@@ -17,12 +17,18 @@ use PHPStan\Type\Type;
 
 final class EloquentBuilderMethodReflection implements MethodReflection
 {
-    private Type $returnType;
+    /** @var FunctionVariant[] */
+    private array $variants;
 
-    /** @param list<ParameterReflection> $parameters */
-    public function __construct(private string $methodName, private ClassReflection $classReflection, private array $parameters, Type|null $returnType = null, private bool $isVariadic = false)
-    {
-        $this->returnType = $returnType ?? new ObjectType(Builder::class);
+    public function __construct(
+        private string $methodName,
+        private ClassReflection $classReflection,
+        /** @var list<ParameterReflection> */
+        private array $parameters,
+        private Type $returnType = new ObjectType(Builder::class),
+        private bool $isVariadic = false,
+    ) {
+        $this->variants = [new FunctionVariant(TemplateTypeMap::createEmpty(), null, $this->parameters, $this->isVariadic, $this->returnType)];
     }
 
     public function getDeclaringClass(): ClassReflection
@@ -55,20 +61,10 @@ final class EloquentBuilderMethodReflection implements MethodReflection
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** @return FunctionVariant[] */
     public function getVariants(): array
     {
-        return [
-            new FunctionVariant(
-                TemplateTypeMap::createEmpty(),
-                null,
-                $this->parameters,
-                $this->isVariadic,
-                $this->returnType,
-            ),
-        ];
+        return $this->variants;
     }
 
     public function getDocComment(): string|null

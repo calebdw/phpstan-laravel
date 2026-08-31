@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Reflection;
 
 use CalebDW\PhpstanLaravel\Methods\RedirectResponseMethodsClassReflectionExtension;
+use CalebDW\PhpstanLaravel\Reflection\DynamicWithMethodReflection;
+use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use Illuminate\Http\RedirectResponse;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Testing\PHPStanTestCase;
@@ -51,14 +53,22 @@ class RedirectResponseMethodsClassReflectionExtensionTest extends PHPStanTestCas
         $requestClass       = $this->reflectionProvider->getClass(RedirectResponse::class);
         $methodReflection   = $this->reflectionExtension->getMethod($requestClass, $methodName);
         $parametersAcceptor = $methodReflection->getVariants()[0];
+        $parameter          = $parametersAcceptor->getParameters()[0];
 
+        $this->assertInstanceOf(DynamicWithMethodReflection::class, $methodReflection);
         $this->assertSame($methodName, $methodReflection->getName());
         $this->assertSame($requestClass, $methodReflection->getDeclaringClass());
         $this->assertFalse($methodReflection->isStatic());
         $this->assertFalse($methodReflection->isPrivate());
         $this->assertTrue($methodReflection->isPublic());
         $this->assertCount(1, $parametersAcceptor->getParameters());
-        $this->assertSame('mixed', $parametersAcceptor->getParameters()[0]->getType()->describe(VerbosityLevel::value()));
+        $this->assertInstanceOf(SimpleParameterReflection::class, $parameter);
+        $this->assertSame('dynamic-with', $parameter->getName());
+        $this->assertFalse($parameter->isOptional());
+        $this->assertSame('mixed', $parameter->getType()->describe(VerbosityLevel::value()));
+        $this->assertTrue($parameter->passedByReference()->no());
+        $this->assertFalse($parameter->isVariadic());
+        $this->assertNull($parameter->getDefaultValue());
         $this->assertSame(RedirectResponse::class, $parametersAcceptor->getReturnType()->describe(VerbosityLevel::value()));
     }
 

@@ -10,7 +10,6 @@ use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
-use PHPStan\TrinaryLogic;
 use PHPStan\Type;
 
 final class HigherOrderCollectionProxyPropertyExtension implements PropertiesClassReflectionExtension
@@ -55,76 +54,6 @@ final class HigherOrderCollectionProxyPropertyExtension implements PropertiesCla
             $collectionType->getIterableKeyType(),
         );
 
-        return new class ($classReflection, $returnType) implements PropertyReflection
-        {
-            public function __construct(private ClassReflection $classReflection, private Type\Type $returnType)
-            {
-            }
-
-            public function getDeclaringClass(): ClassReflection
-            {
-                return $this->classReflection;
-            }
-
-            public function isStatic(): bool
-            {
-                return false;
-            }
-
-            public function isPrivate(): bool
-            {
-                return false;
-            }
-
-            public function isPublic(): bool
-            {
-                return true;
-            }
-
-            public function getDocComment(): string|null
-            {
-                return null;
-            }
-
-            public function getReadableType(): Type\Type
-            {
-                return $this->returnType;
-            }
-
-            public function getWritableType(): Type\Type
-            {
-                return $this->returnType;
-            }
-
-            public function canChangeTypeAfterAssignment(): bool
-            {
-                return false;
-            }
-
-            public function isReadable(): bool
-            {
-                return true;
-            }
-
-            public function isWritable(): bool
-            {
-                return false;
-            }
-
-            public function isDeprecated(): TrinaryLogic
-            {
-                return TrinaryLogic::createNo();
-            }
-
-            public function getDeprecatedDescription(): string|null
-            {
-                return null;
-            }
-
-            public function isInternal(): TrinaryLogic
-            {
-                return TrinaryLogic::createNo();
-            }
-        };
+        return new ModelProperty($classReflection, $returnType, $returnType, writeable: false);
     }
 }
