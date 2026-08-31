@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel;
+namespace CalebDW\PhpstanLaravel\PhpDoc;
 
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use PHPStan\PhpDoc\StubFilesExtension as StubFilesExtensionContract;
@@ -26,7 +26,7 @@ final class StubFilesExtension implements StubFilesExtensionContract
 {
     public function __construct(
         private FileHelper $fileHelper,
-        private string $stubDirectory = __DIR__ . '/../stubs',
+        private string $stubDirectory = __DIR__ . '/../../stubs',
         private string|null $laravelVersion = null,
     ) {
     }

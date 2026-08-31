@@ -9,16 +9,16 @@ use Illuminate\Database\Eloquent\Model;
 
 use function count;
 
-final class ModelDatabaseHelper
+final class ModelSchema
 {
-    /** @var array<string, SchemaConnection> */
+    /** @var array<string, Connection> */
     public array $connections = [];
 
     private string $defaultConnection;
 
     public function __construct(
-        private SquashedMigrationHelper $squashedMigrationHelper,
-        private MigrationHelper $migrationHelper,
+        private SchemaDumpParser $schemaDumpParser,
+        private MigrationFileParser $migrationFileParser,
         private ContainerHelper $containerHelper,
     ) {
     }
@@ -28,7 +28,7 @@ final class ModelDatabaseHelper
         return $model->getConnectionName() ?? $this->getDefaultConnection();
     }
 
-    public function getModelTable(Model $model): SchemaTable
+    public function getModelTable(Model $model): Table
     {
         return $this->connections[$this->getModelConnectionName($model)]
             ->tables[$model->getTable()];
@@ -61,7 +61,7 @@ final class ModelDatabaseHelper
         return isset($this->getModelTable($model)->columns[$column]);
     }
 
-    public function getOrCreateConnection(string|null $connectionName = null): SchemaConnection
+    public function getOrCreateConnection(string|null $connectionName = null): Connection
     {
         $connectionName ??= $this->getDefaultConnection();
 
@@ -70,19 +70,19 @@ final class ModelDatabaseHelper
             return $this->connections[$connectionName];
         }
 
-        $connection = new SchemaConnection($connectionName);
+        $connection = new Connection($connectionName);
 
         $this->setConnection($connection);
 
         return $connection;
     }
 
-    public function getModelColumn(Model $model, string $column): SchemaColumn
+    public function getModelColumn(Model $model, string $column): Column
     {
         return $this->getModelTable($model)->columns[$column];
     }
 
-    public function setConnection(SchemaConnection $connection): void
+    public function setConnection(Connection $connection): void
     {
         $this->connections[$connection->name] = $connection;
     }
@@ -100,8 +100,8 @@ final class ModelDatabaseHelper
 
         // First try to create tables from any squashed migrations.
         // Then scan the normal migration files for further changes to tables.
-        $this->squashedMigrationHelper->parseSchemaDumps($this);
-        $this->migrationHelper->parseMigrations($this);
+        $this->schemaDumpParser->parseSchemaDumps($this);
+        $this->migrationFileParser->parseMigrations($this);
     }
 
     public function getDefaultConnection(): string

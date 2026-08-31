@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Schema;
 
 /** @see https://github.com/psalm/laravel-psalm-plugin/blob/master/src/SchemaColumn.php */
-final class SchemaColumn
+final class Column
 {
     public string $writeableType;
 

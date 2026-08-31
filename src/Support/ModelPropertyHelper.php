@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use CalebDW\PhpstanLaravel\Properties\ModelProperty;
-use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
+use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -26,7 +26,7 @@ class ModelPropertyHelper
 {
     public function __construct(
         private TypeStringResolver $stringResolver,
-        private ModelDatabaseHelper $modelDatabaseHelper,
+        private ModelSchema $modelSchema,
         private ModelCastHelper $modelCastHelper,
         private ModelHelper $modelHelper,
     ) {
@@ -59,7 +59,7 @@ class ModelPropertyHelper
             return true;
         }
 
-        return $this->modelDatabaseHelper->hasModelColumn($modelInstance, $propertyName);
+        return $this->modelSchema->hasModelColumn($modelInstance, $propertyName);
     }
 
     public function getDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelProperty
@@ -69,7 +69,7 @@ class ModelPropertyHelper
 
         if (
             $propertyName === $modelInstance->getKeyName()
-            && ! $this->modelDatabaseHelper->hasModelColumn($modelInstance, $propertyName)
+            && ! $this->modelSchema->hasModelColumn($modelInstance, $propertyName)
         ) {
             return new ModelProperty(
                 $classReflection,
@@ -78,7 +78,7 @@ class ModelPropertyHelper
             );
         }
 
-        $column = $this->modelDatabaseHelper->getModelColumn($modelInstance, $propertyName);
+        $column = $this->modelSchema->getModelColumn($modelInstance, $propertyName);
         $cast   = $this->modelCastHelper->getCastForProperty($classReflection, $propertyName);
 
         if ($cast !== null) {

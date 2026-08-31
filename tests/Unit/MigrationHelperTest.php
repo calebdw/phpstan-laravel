@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use CalebDW\PhpstanLaravel\Schema\SchemaTable;
+use CalebDW\PhpstanLaravel\Schema\Table;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Concerns\HasDatabaseHelper;
@@ -352,7 +352,7 @@ class MigrationHelperTest extends PHPStanTestCase
         self::assertArrayHasKey('email', $tables['users']->columns);
     }
 
-    /** @param  array<string, SchemaTable> $tables */
+    /** @param  array<string, Table> $tables */
     private function assertUsersTableSchema(array $tables): void
     {
         self::assertCount(1, $tables);

@@ -3,7 +3,7 @@
 namespace AppMake;
 
 use Illuminate\Support\Facades\App;
-use CalebDW\PhpstanLaravel\ApplicationResolver;
+use CalebDW\PhpstanLaravel\Support\ApplicationResolver;
 use Illuminate\Database\Eloquent\Model;
 
 use function PHPStan\Testing\assertType;

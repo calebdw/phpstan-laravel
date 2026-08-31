@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Types\ModelProperty;
+namespace CalebDW\PhpstanLaravel\Types;
 
-use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
+use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -34,7 +34,7 @@ class GenericModelPropertyType extends StringType
 {
     public function __construct(
         private Type $type,
-        private ModelDatabaseHelper $modelDatabaseHelper,
+        private ModelSchema $modelSchema,
         private ModelHelper $modelHelper,
     ) {
         parent::__construct();
@@ -94,9 +94,9 @@ class GenericModelPropertyType extends StringType
                 $connection = $this->modelHelper
                     ->getModelInstance($modelClass)
                     ?->getConnectionName()
-                    ?? $this->modelDatabaseHelper->getDefaultConnection();
+                    ?? $this->modelSchema->getDefaultConnection();
 
-                if (! isset($this->modelDatabaseHelper->connections[$connection]->tables[$tableName]->columns[$propertyName])) {
+                if (! isset($this->modelSchema->connections[$connection]->tables[$tableName]->columns[$propertyName])) {
                     return AcceptsResult::createNo([sprintf('Database table "%s" does not have column "%s"', $tableName, $propertyName)]);
                 }
 
@@ -156,7 +156,7 @@ class GenericModelPropertyType extends StringType
             return $this;
         }
 
-        return new self($newType, $this->modelDatabaseHelper, $this->modelHelper);
+        return new self($newType, $this->modelSchema, $this->modelHelper);
     }
 
     public function inferTemplateTypes(Type $receivedType): TemplateTypeMap
@@ -207,6 +207,6 @@ class GenericModelPropertyType extends StringType
     /** @param  mixed[] $properties */
     public static function __set_state(array $properties): Type
     {
-        return new self($properties['type'], $properties['modelDatabaseHelper'], $properties['modelHelper']);
+        return new self($properties['type'], $properties['modelSchema'], $properties['modelHelper']);
     }
 }

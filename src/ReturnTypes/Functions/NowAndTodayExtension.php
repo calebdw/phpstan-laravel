@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\ReturnTypes\Helpers;
+namespace CalebDW\PhpstanLaravel\ReturnTypes\Functions;
 
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;

@@ -18,7 +18,7 @@ use function explode;
 use function file_get_contents;
 use function ksort;
 
-final class SquashedMigrationHelper
+final class SchemaDumpParser
 {
     /** @param  string[] $schemaPaths */
     public function __construct(
@@ -39,7 +39,7 @@ final class SquashedMigrationHelper
         };
     }
 
-    public function parseSchemaDumps(ModelDatabaseHelper &$modelDatabaseHelper): void
+    public function parseSchemaDumps(ModelSchema &$modelSchema): void
     {
         if (! $this->scanSchema) {
             return;
@@ -67,7 +67,7 @@ final class SquashedMigrationHelper
             // file name as the connection name.
             $baseName       = explode('.', $file->getBasename())[0];
             $connectionName = explode('-schema', $baseName)[0];
-            $connection     = new SchemaConnection($connectionName);
+            $connection     = new Connection($connectionName);
 
             $fileContents = file_get_contents($file->getPathname());
 
@@ -86,10 +86,10 @@ final class SquashedMigrationHelper
                     continue;
                 }
 
-                $table = new SchemaTable($definition->name);
+                $table = new Table($definition->name);
 
                 foreach ($definition->columns as $column) {
-                    $table->setColumn(new SchemaColumn(
+                    $table->setColumn(new Column(
                         $column->name,
                         $this->converterFor($column->dialect)
                             ->convert($column->type, $column->typeOptions, $column->values),
@@ -100,7 +100,7 @@ final class SquashedMigrationHelper
                 $connection->setTable($table);
             }
 
-            $modelDatabaseHelper->setConnection($connection);
+            $modelSchema->setConnection($connection);
         }
     }
 }

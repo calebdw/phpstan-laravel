@@ -20,7 +20,7 @@ use function sprintf;
 
 /**
  * SqlParser::parseTables() documents SqlParserFailure as the only exception it
- * throws, and SquashedMigrationHelper relies on that to report the offending
+ * throws, and SchemaDumpParser relies on that to report the offending
  * file. A library exception reaching the caller instead crashes the analysis.
  */
 class SqlParserFailureContractTest extends TestCase

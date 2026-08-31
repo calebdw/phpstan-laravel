@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use CalebDW\PhpstanLaravel\StubFilesExtension;
+use CalebDW\PhpstanLaravel\PhpDoc\StubFilesExtension;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use PHPStan\Testing\PHPStanTestCase;

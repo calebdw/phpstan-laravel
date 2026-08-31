@@ -6,9 +6,9 @@ namespace Tests\Type;
 
 use App\Account;
 use App\User;
-use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
+use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
-use CalebDW\PhpstanLaravel\Types\ModelProperty\GenericModelPropertyType;
+use CalebDW\PhpstanLaravel\Types\GenericModelPropertyType;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\NeverType;
@@ -206,7 +206,7 @@ class GenericModelPropertyTypeTest extends PHPStanTestCase
     {
         return new GenericModelPropertyType(
             new ObjectType($class),
-            self::getContainer()->getByType(ModelDatabaseHelper::class),
+            self::getContainer()->getByType(ModelSchema::class),
             new ModelHelper(self::createReflectionProvider()),
         );
     }

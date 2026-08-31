@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use CalebDW\PhpstanLaravel\ApplicationResolver;
+use CalebDW\PhpstanLaravel\Support\ApplicationResolver;
 use CalebDW\PhpstanLaravel\Support\BootstrapErrorHandler;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Contracts\Foundation\Application;

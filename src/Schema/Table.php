@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Schema;
 
 /** @see https://github.com/psalm/laravel-psalm-plugin/blob/master/src/SchemaTable.php */
-final class SchemaTable
+final class Table
 {
-    /** @var array<string, SchemaColumn> */
+    /** @var array<string, Column> */
     public array $columns = [];
 
     public function __construct(public string $name)
     {
     }
 
-    public function setColumn(SchemaColumn $column): void
+    public function setColumn(Column $column): void
     {
         $this->columns[$column->name] = $column;
     }

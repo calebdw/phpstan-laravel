@@ -15,7 +15,7 @@ use function count;
 use function database_path;
 use function uasort;
 
-class MigrationHelper
+class MigrationFileParser
 {
     public function __construct(
         private Parser $parser,
@@ -28,7 +28,7 @@ class MigrationHelper
     ) {
     }
 
-    public function parseMigrations(ModelDatabaseHelper &$modelDatabaseHelper): void
+    public function parseMigrations(ModelSchema &$modelSchema): void
     {
         if (! $this->scanMigrations) {
             return;
@@ -38,8 +38,8 @@ class MigrationHelper
             $this->databaseMigrationPath = [database_path('migrations')];
         }
 
-        $schemaAggregator = new SchemaAggregator($modelDatabaseHelper, $this->modelHelper, $this->reflectionProvider);
-        $filesArray       = $this->fileHelper->getFiles($this->databaseMigrationPath, '/\.php$/i', recursive: false);
+        $schemaParser = new MigrationSchemaParser($modelSchema, $this->modelHelper, $this->reflectionProvider);
+        $filesArray   = $this->fileHelper->getFiles($this->databaseMigrationPath, '/\.php$/i', recursive: false);
 
         if (empty($filesArray)) {
             return;
@@ -51,7 +51,7 @@ class MigrationHelper
 
         foreach ($filesArray as $file) {
             try {
-                $schemaAggregator->addStatements($this->parser->parseFile($file->getPathname()));
+                $schemaParser->addStatements($this->parser->parseFile($file->getPathname()));
             } catch (ParserErrorsException) {
                 continue;
             }

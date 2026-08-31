@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Types;
+namespace CalebDW\PhpstanLaravel\PhpDoc;
 
 use Illuminate\Database\Eloquent\Collection;
 use PHPStan\Analyser\NameScope;

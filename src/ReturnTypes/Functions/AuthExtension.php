@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\ReturnTypes\Helpers;
+namespace CalebDW\PhpstanLaravel\ReturnTypes\Functions;
 
 use CalebDW\PhpstanLaravel\Support\AuthHelper;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;

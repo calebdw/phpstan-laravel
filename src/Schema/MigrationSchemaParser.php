@@ -43,13 +43,13 @@ use function property_exists;
 use function strtolower;
 
 /** @see https://github.com/psalm/laravel-psalm-plugin/blob/master/src/SchemaAggregator.php */
-final class SchemaAggregator
+final class MigrationSchemaParser
 {
-    /** @var list<SchemaConnection> */
+    /** @var list<Connection> */
     private array $connectionStack = [];
 
     public function __construct(
-        private ModelDatabaseHelper $modelDatabaseHelper,
+        private ModelSchema $modelSchema,
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
     ) {
@@ -89,7 +89,7 @@ final class SchemaAggregator
             }
         }
 
-        $this->connectionStack[] = $this->modelDatabaseHelper->getOrCreateConnection($connectionName);
+        $this->connectionStack[] = $this->modelSchema->getOrCreateConnection($connectionName);
 
         foreach ($stmts as $stmt) {
             if (
@@ -175,7 +175,7 @@ final class SchemaAggregator
             }
 
             if ($connection !== null) {
-                $this->connectionStack[] = $this->modelDatabaseHelper->getOrCreateConnection($connection);
+                $this->connectionStack[] = $this->modelSchema->getOrCreateConnection($connection);
             }
 
             match ($statement->name->name) {
@@ -263,7 +263,7 @@ final class SchemaAggregator
         }
 
         if ($creating) {
-            $this->getCurrentConnection()->setTable(new SchemaTable($tableName));
+            $this->getCurrentConnection()->setTable(new Table($tableName));
         }
 
         if (
@@ -368,10 +368,10 @@ final class SchemaAggregator
                     continue;
                 }
 
-                $type = $this->modelDatabaseHelper->hasModelColumn($model, $model->getKeyName())
-                    ? $this->modelDatabaseHelper->getModelColumn($model, $model->getKeyName())->readableType
+                $type = $this->modelSchema->hasModelColumn($model, $model->getKeyName())
+                    ? $this->modelSchema->getModelColumn($model, $model->getKeyName())->readableType
                     : 'int';
-                $table->setColumn(new SchemaColumn($columnName, $type, $nullable));
+                $table->setColumn(new Column($columnName, $type, $nullable));
 
                 continue;
             }
@@ -395,7 +395,7 @@ final class SchemaAggregator
                         continue 2;
 
                     case 'remembertoken':
-                        $table->setColumn(new SchemaColumn('remember_token', 'string', true));
+                        $table->setColumn(new Column('remember_token', 'string', true));
                         continue 2;
 
                     case 'dropremembertoken':
@@ -406,8 +406,8 @@ final class SchemaAggregator
                     case 'timestampstz':
                     case 'nullabletimestamps':
                     case 'nullabletimestampstz':
-                        $table->setColumn(new SchemaColumn('created_at', 'string', true));
-                        $table->setColumn(new SchemaColumn('updated_at', 'string', true));
+                        $table->setColumn(new Column('created_at', 'string', true));
+                        $table->setColumn(new Column('updated_at', 'string', true));
                         continue 2;
                 }
 
@@ -491,7 +491,7 @@ final class SchemaAggregator
         $this->getCurrentConnection()->renameTable($oldTableName, $newTableName);
     }
 
-    private function renameTableThroughMethodCall(SchemaTable $oldTable, MethodCall $call): void
+    private function renameTableThroughMethodCall(Table $oldTable, MethodCall $call): void
     {
         if (
             ! isset($call->args[0])
@@ -564,7 +564,7 @@ final class SchemaAggregator
     private function processStatementAlterMethod(
         string $method,
         MethodCall|null $firstMethodCall,
-        SchemaTable $table,
+        Table $table,
         string $columnName,
         bool $nullable,
         mixed $secondArg,
@@ -609,7 +609,7 @@ final class SchemaAggregator
             case 'bigincrements':
             case 'foreignid':
             case 'year':
-                $table->setColumn(new SchemaColumn($columnName, 'int', $nullable));
+                $table->setColumn(new Column($columnName, 'int', $nullable));
 
                 return;
 
@@ -634,12 +634,12 @@ final class SchemaAggregator
             case 'ulid':
             case 'uuid':
             case 'binary':
-                $table->setColumn(new SchemaColumn($columnName, 'string', $nullable));
+                $table->setColumn(new Column($columnName, 'string', $nullable));
 
                 return;
 
             case 'boolean':
-                $table->setColumn(new SchemaColumn($columnName, 'bool', $nullable));
+                $table->setColumn(new Column($columnName, 'bool', $nullable));
 
                 return;
 
@@ -651,7 +651,7 @@ final class SchemaAggregator
             case 'point':
             case 'polygon':
             case 'computed':
-                $table->setColumn(new SchemaColumn($columnName, 'mixed', $nullable));
+                $table->setColumn(new Column($columnName, 'mixed', $nullable));
 
                 return;
 
@@ -659,7 +659,7 @@ final class SchemaAggregator
             case 'float':
             case 'unsigneddecimal':
             case 'decimal':
-                $table->setColumn(new SchemaColumn($columnName, 'float', $nullable));
+                $table->setColumn(new Column($columnName, 'float', $nullable));
 
                 return;
 
@@ -705,25 +705,25 @@ final class SchemaAggregator
                 return;
 
             case 'enum':
-                $table->setColumn(new SchemaColumn($columnName, 'enum', $nullable, $secondArgArray));
+                $table->setColumn(new Column($columnName, 'enum', $nullable, $secondArgArray));
 
                 return;
 
             case 'morphs':
-                $table->setColumn(new SchemaColumn($columnName . '_type', 'string', $nullable));
-                $table->setColumn(new SchemaColumn($columnName . '_id', 'int', $nullable));
+                $table->setColumn(new Column($columnName . '_type', 'string', $nullable));
+                $table->setColumn(new Column($columnName . '_id', 'int', $nullable));
 
                 return;
 
             case 'nullablemorphs':
-                $table->setColumn(new SchemaColumn($columnName . '_type', 'string', true));
-                $table->setColumn(new SchemaColumn($columnName . '_id', 'int', true));
+                $table->setColumn(new Column($columnName . '_type', 'string', true));
+                $table->setColumn(new Column($columnName . '_id', 'int', true));
 
                 return;
 
             case 'nullableuuidmorphs':
-                $table->setColumn(new SchemaColumn($columnName . '_type', 'string', true));
-                $table->setColumn(new SchemaColumn($columnName . '_id', 'string', true));
+                $table->setColumn(new Column($columnName . '_type', 'string', true));
+                $table->setColumn(new Column($columnName . '_id', 'string', true));
 
                 return;
 
@@ -742,30 +742,30 @@ final class SchemaAggregator
                 return;
 
             case 'set':
-                $table->setColumn(new SchemaColumn($columnName, 'set', $nullable, $secondArgArray));
+                $table->setColumn(new Column($columnName, 'set', $nullable, $secondArgArray));
 
                 return;
 
             case 'softdeletes':
             case 'softdeletesdatetime':
             case 'softdeletestz':
-                $table->setColumn(new SchemaColumn($columnName, 'string', true));
+                $table->setColumn(new Column($columnName, 'string', true));
 
                 return;
 
             case 'uuidmorphs':
-                $table->setColumn(new SchemaColumn($columnName . '_type', 'string', $nullable));
-                $table->setColumn(new SchemaColumn($columnName . '_id', 'string', $nullable));
+                $table->setColumn(new Column($columnName . '_type', 'string', $nullable));
+                $table->setColumn(new Column($columnName . '_id', 'string', $nullable));
 
                 return;
 
             default:
                 // We know a property exists with a name, we just don't know its type.
-                $table->setColumn(new SchemaColumn($columnName, 'mixed', $nullable));
+                $table->setColumn(new Column($columnName, 'mixed', $nullable));
         }
     }
 
-    private function getCurrentConnection(): SchemaConnection
+    private function getCurrentConnection(): Connection
     {
         $connection = end($this->connectionStack);
 

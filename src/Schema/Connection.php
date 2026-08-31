@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Schema;
 
-final class SchemaConnection
+final class Connection
 {
-    /** @var array<string, SchemaTable> */
+    /** @var array<string, Table> */
     public array $tables = [];
 
     public function __construct(public string $name)
     {
     }
 
-    public function setTable(SchemaTable $table): void
+    public function setTable(Table $table): void
     {
         $this->tables[$table->name] = $table;
     }

@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel;
+namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Support\ComposerHelper;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;

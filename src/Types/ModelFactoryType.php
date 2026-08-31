@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Types\Factory;
+namespace CalebDW\PhpstanLaravel\Types;
 
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\TrinaryLogic;

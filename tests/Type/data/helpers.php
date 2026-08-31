@@ -6,7 +6,7 @@ use App\User;
 use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
-use CalebDW\PhpstanLaravel\ApplicationResolver;
+use CalebDW\PhpstanLaravel\Support\ApplicationResolver;
 use Throwable;
 
 use function PHPStan\Testing\assertType;
@@ -21,9 +21,9 @@ use function PHPStan\Testing\assertType;
 function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $intOrClosureWithNoDocBlock = 0): void
 {
     assertType('Illuminate\Foundation\Application', app());
-    assertType('CalebDW\PhpstanLaravel\ApplicationResolver', app(ApplicationResolver::class));
+    assertType('CalebDW\PhpstanLaravel\Support\ApplicationResolver', app(ApplicationResolver::class));
     assertType('Illuminate\Auth\AuthManager', app('auth'));
-    assertType('CalebDW\PhpstanLaravel\ApplicationResolver', resolve(ApplicationResolver::class));
+    assertType('CalebDW\PhpstanLaravel\Support\ApplicationResolver', resolve(ApplicationResolver::class));
     assertType('Illuminate\Auth\AuthManager', resolve('auth'));
 
     assertType('Illuminate\Auth\AuthManager', auth());

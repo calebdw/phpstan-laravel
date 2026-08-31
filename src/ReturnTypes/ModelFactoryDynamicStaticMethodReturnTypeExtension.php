@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Types\Factory\ModelFactoryType;
+use CalebDW\PhpstanLaravel\Types\ModelFactoryType;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;

@@ -6,7 +6,7 @@ namespace Unit;
 
 use App\User;
 use CalebDW\PhpstanLaravel\ReturnTypes\ModelFactoryDynamicStaticMethodReturnTypeExtension;
-use CalebDW\PhpstanLaravel\Types\Factory\ModelFactoryType;
+use CalebDW\PhpstanLaravel\Types\ModelFactoryType;
 use Generator;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\StaticCall;

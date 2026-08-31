@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Types;
+namespace CalebDW\PhpstanLaravel\PhpDoc;
 
+use CalebDW\PhpstanLaravel\Types\ViewStringType;
 use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeNodeResolverExtension;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;

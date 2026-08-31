@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Concerns;
 
-use CalebDW\PhpstanLaravel\Schema\MigrationHelper;
-use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
-use CalebDW\PhpstanLaravel\Schema\SquashedMigrationHelper;
+use CalebDW\PhpstanLaravel\Schema\MigrationFileParser;
+use CalebDW\PhpstanLaravel\Schema\ModelSchema;
+use CalebDW\PhpstanLaravel\Schema\SchemaDumpParser;
 use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
@@ -20,14 +20,14 @@ use PHPStan\Testing\PHPStanTestCase;
 trait HasDatabaseHelper
 {
     private string $defaultConnection;
-    private ModelDatabaseHelper $modelDatabaseHelper;
+    private ModelSchema $modelDatabaseHelper;
     private ModelHelper $modelHelper;
 
     public function setUp(): void
     {
         $this->modelHelper = new ModelHelper($this->createReflectionProvider());
 
-        $this->modelDatabaseHelper = new ModelDatabaseHelper(
+        $this->modelDatabaseHelper = new ModelSchema(
             $this->getSquashedMigrationHelper(),
             $this->getMigrationHelper(),
             new ContainerHelper(),
@@ -37,9 +37,9 @@ trait HasDatabaseHelper
     }
 
     /** @param  string[] $dirs */
-    private function getMigrationHelper(array $dirs = ['foo'], bool $scan = true): MigrationHelper
+    private function getMigrationHelper(array $dirs = ['foo'], bool $scan = true): MigrationFileParser
     {
-        return new MigrationHelper(
+        return new MigrationFileParser(
             self::getContainer()->getService('currentPhpVersionSimpleDirectParser'),
             $dirs,
             new FileHelper(
@@ -52,9 +52,9 @@ trait HasDatabaseHelper
     }
 
     /** @param  string[] $dirs */
-    private function getSquashedMigrationHelper(array $dirs = ['foo'], bool $scan = true, string $driver = SqlParserManager::DRIVER_AUTO): SquashedMigrationHelper
+    private function getSquashedMigrationHelper(array $dirs = ['foo'], bool $scan = true, string $driver = SqlParserManager::DRIVER_AUTO): SchemaDumpParser
     {
-        return new SquashedMigrationHelper(
+        return new SchemaDumpParser(
             $dirs,
             new FileHelper(
                 self::getContainer()->getByType(PHPStanFileHelper::class),

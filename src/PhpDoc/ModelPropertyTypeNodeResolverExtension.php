@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Types\ModelProperty;
+namespace CalebDW\PhpstanLaravel\PhpDoc;
 
-use CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper;
+use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
+use CalebDW\PhpstanLaravel\Types\GenericModelPropertyType;
 use Illuminate\Database\Eloquent\Model;
 use PHPStan\Analyser\NameScope;
 use PHPStan\PhpDoc\TypeNodeResolver;
@@ -28,7 +29,7 @@ final class ModelPropertyTypeNodeResolverExtension implements TypeNodeResolverEx
     public function __construct(
         protected TypeNodeResolver $baseResolver,
         protected bool $active,
-        private ModelDatabaseHelper $modelDatabaseHelper,
+        private ModelSchema $modelSchema,
         private ModelHelper $modelHelper,
     ) {
     }
@@ -61,6 +62,6 @@ final class ModelPropertyTypeNodeResolverExtension implements TypeNodeResolverEx
             return new ErrorType();
         }
 
-        return new GenericModelPropertyType($genericType, $this->modelDatabaseHelper, $this->modelHelper);
+        return new GenericModelPropertyType($genericType, $this->modelSchema, $this->modelHelper);
     }
 }

@@ -200,19 +200,19 @@ services:
   - class: CalebDW\PhpstanLaravel\Support\CollectionHelper
   - class: CalebDW\PhpstanLaravel\Support\ContainerHelper
   - class: CalebDW\PhpstanLaravel\Support\AuthModelHelper
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\AuthExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\AuthExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\CollectExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\CollectExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ConfigDynamicFunctionReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\ConfigDynamicFunctionReturnTypeExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\NowAndTodayExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\NowAndTodayExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ResponseExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\ResponseExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ValidatorExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\ValidatorExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\LiteralExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\LiteralExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\CollectionFilterRejectDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -242,17 +242,17 @@ services:
   - class: CalebDW\PhpstanLaravel\Types\AbortIfFunctionTypeSpecifyingExtension
     arguments: {methodName: throw, negate: true}
     tags: [phpstan.typeSpecifier.functionTypeSpecifyingExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\AppExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\AppExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\ValueExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\ValueExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Helpers\TapExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\TapExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StorageDynamicStaticMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\Types\GenericEloquentCollectionTypeNodeResolverExtension
+  - class: CalebDW\PhpstanLaravel\PhpDoc\GenericEloquentCollectionTypeNodeResolverExtension
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
-  - class: CalebDW\PhpstanLaravel\Types\ViewStringTypeNodeResolverExtension
+  - class: CalebDW\PhpstanLaravel\PhpDoc\ViewStringTypeNodeResolverExtension
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Rules\OctaneCompatibilityRule
   - class: CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule
@@ -273,20 +273,20 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AppFacadeEnvironmentReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\Types\ModelProperty\ModelPropertyTypeNodeResolverExtension
+  - class: CalebDW\PhpstanLaravel\PhpDoc\ModelPropertyTypeNodeResolverExtension
     arguments: {active: %laravel.modelPropertyType%}
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Support\ModelHelper
   - class: CalebDW\PhpstanLaravel\Support\ManagerHelper
   - class: CalebDW\PhpstanLaravel\Support\AuthHelper
-  - class: CalebDW\PhpstanLaravel\Schema\MigrationHelper
+  - class: CalebDW\PhpstanLaravel\Schema\MigrationFileParser
     arguments: {databaseMigrationPath: %laravel.migrationDirectories%, scanMigrations: %laravel.scanMigrations%, parser: @currentPhpVersionSimpleDirectParser}
-  - class: CalebDW\PhpstanLaravel\Schema\SquashedMigrationHelper
+  - class: CalebDW\PhpstanLaravel\Schema\SchemaDumpParser
     arguments: {schemaPaths: %laravel.schemaDirectories%, scanSchema: %laravel.scanSchema%}
   - class: CalebDW\PhpstanLaravel\Sql\SqlParserManager
     arguments: {defaultDriver: %laravel.sqlParser%}
   - class: CalebDW\PhpstanLaravel\Support\ModelCastHelper
-  - class: CalebDW\PhpstanLaravel\Schema\ModelDatabaseHelper
+  - class: CalebDW\PhpstanLaravel\Schema\ModelSchema
   - class: CalebDW\PhpstanLaravel\Support\ModelPropertyHelper
   - class: CalebDW\PhpstanLaravel\Support\ModelRuleHelper
   - class: CalebDW\PhpstanLaravel\Support\BuilderHelper
@@ -301,7 +301,7 @@ services:
     tags: [phpstan.rules.rule]
   - class: CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter
   - class: CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter
-  - class: CalebDW\PhpstanLaravel\StubFilesExtension
+  - class: CalebDW\PhpstanLaravel\PhpDoc\StubFilesExtension
     tags: [phpstan.stubFilesExtension]
   - class: CalebDW\PhpstanLaravel\Rules\UnusedViewsRule
   - class: CalebDW\PhpstanLaravel\Collectors\UsedViewFunctionCollector
