@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel;
 
-use CalebDW\PhpstanLaravel\Internal\FileHelper;
+use CalebDW\PhpstanLaravel\Support\FileHelper;
 use PHPStan\PhpDoc\StubFilesExtension as StubFilesExtensionContract;
 use SplFileInfo;
 

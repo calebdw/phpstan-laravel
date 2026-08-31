@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand;
 
-use CalebDW\PhpstanLaravel\Internal\ConsoleApplicationHelper;
-use CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver;
+use CalebDW\PhpstanLaravel\Support\ConsoleApplicationHelper;
+use CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver;
 use InvalidArgumentException;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;

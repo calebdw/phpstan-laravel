@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
-use CalebDW\PhpstanLaravel\Internal\RecursionGuard;
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
 use CalebDW\PhpstanLaravel\Support\ManagerHelper;
+use CalebDW\PhpstanLaravel\Support\RecursionGuard;
 use Illuminate\Support\Manager;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 
-/** @internal */
 final class ManagersMethodsExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection> */

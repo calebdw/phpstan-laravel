@@ -24,7 +24,6 @@ use PHPStan\Type\UnionType;
 
 use function str_ends_with;
 
-/** @internal */
 final class ModelRelationsExtension implements PropertiesClassReflectionExtension
 {
     use Concerns\HasContainer;

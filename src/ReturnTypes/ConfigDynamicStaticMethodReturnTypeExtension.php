@@ -14,7 +14,6 @@ use PHPStan\Type\Type;
 
 use function in_array;
 
-/** @internal */
 final class ConfigDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private ConfigHelper $configHelper)

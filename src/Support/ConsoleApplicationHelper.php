@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Internal;
+namespace CalebDW\PhpstanLaravel\Support;
 
 use InvalidArgumentException;
 use PHPStan\Analyser\Scope;

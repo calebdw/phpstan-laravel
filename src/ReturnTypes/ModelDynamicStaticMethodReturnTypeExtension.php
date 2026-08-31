@@ -28,7 +28,6 @@ use function collect;
 use function count;
 use function in_array;
 
-/** @internal */
 final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(

@@ -16,7 +16,6 @@ use Throwable;
 
 use function is_string;
 
-/** @internal */
 final class ModelHelper
 {
     public function __construct(private ReflectionProvider $reflectionProvider)

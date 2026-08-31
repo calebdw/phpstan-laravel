@@ -19,7 +19,6 @@ use function explode;
 use function in_array;
 use function str_contains;
 
-/** @internal */
 final class ArrGetPullExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string

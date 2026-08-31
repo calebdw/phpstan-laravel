@@ -22,7 +22,6 @@ use function explode;
 use function is_string;
 use function str_contains;
 
-/** @internal */
 final class ArrPullParameterOutTypeExtension implements StaticMethodParameterOutTypeExtension
 {
     public function isStaticMethodSupported(MethodReflection $methodReflection, ParameterReflection $parameter): bool

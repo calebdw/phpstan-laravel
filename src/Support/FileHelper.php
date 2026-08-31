@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Internal;
+namespace CalebDW\PhpstanLaravel\Support;
 
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use SplFileInfo;
@@ -14,7 +14,6 @@ use function iterator_to_array;
 
 use const GLOB_ONLYDIR;
 
-/** @internal */
 final class FileHelper
 {
     public function __construct(

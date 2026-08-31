@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Internal;
+namespace CalebDW\PhpstanLaravel\Support;
 
 use Illuminate\Console\Application;
 use Illuminate\Console\Command;
@@ -13,7 +13,6 @@ use PHPStan\Type\ObjectType;
 
 use function app;
 
-/** @internal */
 final class ConsoleApplicationResolver
 {
     private Application|null $application = null;

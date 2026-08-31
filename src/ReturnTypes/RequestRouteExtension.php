@@ -20,7 +20,6 @@ use PHPStan\Type\TypeUtils;
 
 use function count;
 
-/** @internal */
 final class RequestRouteExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

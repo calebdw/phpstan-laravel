@@ -20,7 +20,6 @@ use PHPStan\Type\Type;
 
 use function in_array;
 
-/** @internal */
 final class RelationCollectionExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

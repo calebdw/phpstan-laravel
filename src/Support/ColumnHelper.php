@@ -33,7 +33,6 @@ use function array_map;
 use function collect;
 use function explode;
 
-/** @internal */
 final class ColumnHelper
 {
     public function getArrayType(

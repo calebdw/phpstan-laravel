@@ -15,7 +15,6 @@ use PHPStan\Type\Type;
 
 use function count;
 
-/** @internal */
 final class ResponseExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool

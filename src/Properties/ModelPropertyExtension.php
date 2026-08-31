@@ -8,7 +8,6 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
 
-/** @internal */
 final class ModelPropertyExtension implements PropertiesClassReflectionExtension
 {
     public function __construct(

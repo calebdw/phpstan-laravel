@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel;
 
-use CalebDW\PhpstanLaravel\Internal\ComposerHelper;
+use CalebDW\PhpstanLaravel\Support\ComposerHelper;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
@@ -20,7 +20,6 @@ use function file_exists;
 use function getcwd;
 use function sprintf;
 
-/** @internal */
 final class ApplicationResolver
 {
     /**

@@ -11,7 +11,6 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
-/** @internal */
 final class HigherOrderTapProxyExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

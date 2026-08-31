@@ -8,7 +8,7 @@ use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFacadeCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFunctionCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationTranslatorCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector;
-use CalebDW\PhpstanLaravel\Internal\FileHelper;
+use CalebDW\PhpstanLaravel\Support\FileHelper;
 use Illuminate\Support\Str;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;

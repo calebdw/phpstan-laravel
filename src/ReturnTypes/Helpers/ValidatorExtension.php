@@ -16,7 +16,6 @@ use PHPStan\Type\TypeCombinator;
 
 use function count;
 
-/** @internal */
 final class ValidatorExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool

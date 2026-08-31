@@ -383,9 +383,9 @@ services:
   - class: CalebDW\PhpstanLaravel\Parameters\RelationClosureHelper
   - class: CalebDW\PhpstanLaravel\ReturnTypes\AppMakeHelper
     arguments: {strictContracts: %laravel.strictContracts%}
-  - class: CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver
-  - class: CalebDW\PhpstanLaravel\Internal\ConsoleApplicationHelper
-  - class: CalebDW\PhpstanLaravel\Internal\FileHelper
+  - class: CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver
+  - class: CalebDW\PhpstanLaravel\Support\ConsoleApplicationHelper
+  - class: CalebDW\PhpstanLaravel\Support\FileHelper
   - class: CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper
   - class: CalebDW\PhpstanLaravel\Support\ConfigHelper
   - class: CalebDW\PhpstanLaravel\Support\ConfigParser

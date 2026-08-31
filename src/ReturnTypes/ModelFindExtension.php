@@ -27,7 +27,6 @@ use function array_filter;
 use function count;
 use function in_array;
 
-/** @internal */
 final class ModelFindExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private ReflectionProvider $reflectionProvider, private CollectionHelper $collectionHelper)

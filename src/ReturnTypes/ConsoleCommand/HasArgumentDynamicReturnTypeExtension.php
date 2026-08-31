@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand;
 
-use CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver;
+use CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;

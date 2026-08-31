@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use CalebDW\PhpstanLaravel\Concerns\HasContainer;
-use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use Generator;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use SplFileInfo;

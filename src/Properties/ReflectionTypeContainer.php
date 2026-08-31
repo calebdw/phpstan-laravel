@@ -6,7 +6,6 @@ namespace CalebDW\PhpstanLaravel\Properties;
 
 use ReflectionNamedType;
 
-/** @internal */
 final class ReflectionTypeContainer extends ReflectionNamedType
 {
     public function __construct(private string $type)

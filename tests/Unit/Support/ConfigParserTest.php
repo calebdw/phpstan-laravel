@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Support;
 
-use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ConfigParser;
+use CalebDW\PhpstanLaravel\Support\FileHelper;
 use PhpParser\Node\Stmt;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;

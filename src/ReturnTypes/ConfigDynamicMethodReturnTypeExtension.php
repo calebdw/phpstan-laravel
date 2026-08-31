@@ -13,7 +13,6 @@ use PHPStan\Type\Type;
 
 use function in_array;
 
-/** @internal */
 final class ConfigDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     /** @param class-string $class */

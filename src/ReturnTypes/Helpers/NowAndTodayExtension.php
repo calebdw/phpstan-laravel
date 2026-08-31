@@ -14,7 +14,6 @@ use PHPStan\Type\Type;
 use function get_class;
 use function now;
 
-/** @internal */
 final class NowAndTodayExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool

@@ -19,7 +19,6 @@ use PHPStan\Type\Type;
 
 use function count;
 
-/** @internal */
 final class RequestFileExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

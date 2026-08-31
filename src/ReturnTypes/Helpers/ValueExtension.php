@@ -14,7 +14,6 @@ use PHPStan\Type\TypeTraverser;
 
 use function count;
 
-/** @internal */
 final class ValueExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool

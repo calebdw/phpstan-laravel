@@ -9,7 +9,6 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container as ContainerContract;
 use Throwable;
 
-/** @internal */
 trait HasContainer
 {
     protected ContainerContract|null $container = null;

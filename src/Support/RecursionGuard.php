@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Internal;
+namespace CalebDW\PhpstanLaravel\Support;
 
 /**
  * Prevents infinite recursion when resolving methods/properties through
  * class-reflection extensions. Modeled after PHPStan's RecursionGuard.
- *
- * @internal
  *
  * @see https://github.com/phpstan/phpstan-src/blob/2.2.x/src/Type/RecursionGuard.php
  */

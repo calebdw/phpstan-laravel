@@ -17,7 +17,6 @@ use PHPStan\Type\TypeCombinator;
 use function count;
 use function in_array;
 
-/** @internal */
 final class TestCaseExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

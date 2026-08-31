@@ -19,7 +19,6 @@ use function is_object;
 use function is_string;
 use function preg_match;
 
-/** @internal */
 final class ManagerHelper
 {
     use HasContainer;

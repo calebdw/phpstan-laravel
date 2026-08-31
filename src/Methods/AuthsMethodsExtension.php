@@ -20,7 +20,6 @@ use PHPStan\Reflection\ReflectionProvider;
 
 use function in_array;
 
-/** @internal */
 final class AuthsMethodsExtension implements MethodsClassReflectionExtension
 {
     use Concerns\HasContainer;

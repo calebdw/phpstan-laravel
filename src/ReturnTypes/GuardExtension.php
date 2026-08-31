@@ -14,7 +14,6 @@ use PHPStan\Type\Type;
 
 use function in_array;
 
-/** @internal */
 final class GuardExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private AuthHelper $authHelper)

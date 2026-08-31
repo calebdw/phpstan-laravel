@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Properties;
 
-use CalebDW\PhpstanLaravel\Internal\FileHelper;
+use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;

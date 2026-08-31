@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Stmt\Return_;
@@ -32,8 +31,6 @@ use function is_numeric;
  *
  * Only consulted for keys the booted container does not know about, which is
  * typically the case when analysing a package without a host application.
- *
- * @internal
  */
 final class ConfigParser
 {

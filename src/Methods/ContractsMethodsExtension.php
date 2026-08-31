@@ -13,7 +13,6 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\ReflectionProvider;
 
-/** @internal */
 final class ContractsMethodsExtension implements MethodsClassReflectionExtension
 {
     use Concerns\HasContainer;

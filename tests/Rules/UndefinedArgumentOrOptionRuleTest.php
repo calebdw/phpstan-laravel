@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Rules;
 
-use CalebDW\PhpstanLaravel\Internal\ConsoleApplicationResolver;
 use CalebDW\PhpstanLaravel\Rules\ConsoleCommand\UndefinedArgumentOrOptionRule;
+use CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 

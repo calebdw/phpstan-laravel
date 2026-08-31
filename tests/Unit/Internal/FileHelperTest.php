@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Internal;
 
-use CalebDW\PhpstanLaravel\Internal\FileHelper;
+use CalebDW\PhpstanLaravel\Support\FileHelper;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\Test;

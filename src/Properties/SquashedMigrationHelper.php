@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Properties;
 
-use CalebDW\PhpstanLaravel\Internal\FileHelper;
 use CalebDW\PhpstanLaravel\Properties\Schema\DataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Sql\SqlDialect;
 use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Support\FileHelper;
 
 use function array_key_exists;
 use function database_path;

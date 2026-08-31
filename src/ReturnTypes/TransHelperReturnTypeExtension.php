@@ -18,7 +18,6 @@ use PHPStan\Type\Type;
 
 use function count;
 
-/** @internal */
 final class TransHelperReturnTypeExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool

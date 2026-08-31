@@ -15,7 +15,6 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 
-/** @internal */
 final class LangGetReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string

@@ -17,7 +17,6 @@ use PHPStan\Type\Type;
 
 use function count;
 
-/** @internal */
 final class DoubleUnderscoreHelperReturnTypeExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool

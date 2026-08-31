@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Internal;
+namespace CalebDW\PhpstanLaravel\Support;
 
 use JsonException;
 
@@ -16,7 +16,6 @@ use function trim;
 
 use const JSON_THROW_ON_ERROR;
 
-/** @internal */
 final class ComposerHelper
 {
     /** @return array<string, mixed> */

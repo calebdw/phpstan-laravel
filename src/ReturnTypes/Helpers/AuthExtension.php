@@ -14,7 +14,6 @@ use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
-/** @internal */
 final class AuthExtension implements DynamicFunctionReturnTypeExtension
 {
     use Concerns\HasContainer;
