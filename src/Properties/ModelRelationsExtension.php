@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Properties;
 
-use CalebDW\PhpstanLaravel\Concerns;
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use Illuminate\Database\Eloquent\Model;
@@ -26,8 +25,6 @@ use function str_ends_with;
 
 final class ModelRelationsExtension implements PropertiesClassReflectionExtension
 {
-    use Concerns\HasContainer;
-
     public function __construct(private CollectionHelper $collectionHelper)
     {
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Helpers;
 
-use CalebDW\PhpstanLaravel\Concerns;
 use CalebDW\PhpstanLaravel\Support\AuthHelper;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Illuminate\Contracts\Auth\Factory;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
@@ -16,9 +16,7 @@ use PHPStan\Type\Type;
 
 final class AuthExtension implements DynamicFunctionReturnTypeExtension
 {
-    use Concerns\HasContainer;
-
-    public function __construct(private AuthHelper $authHelper)
+    public function __construct(private AuthHelper $authHelper, private ContainerHelper $containerHelper)
     {
     }
 
@@ -31,7 +29,7 @@ final class AuthExtension implements DynamicFunctionReturnTypeExtension
     {
         if ($functionCall->getArgs() === []) {
             /** @var ?object $class */
-            $class = $this->resolve(Factory::class);
+            $class = $this->containerHelper->resolve(Factory::class);
 
             return $class === null ? new ObjectType(Factory::class) : new ObjectType($class::class);
         }

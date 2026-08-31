@@ -10,6 +10,7 @@ use CalebDW\PhpstanLaravel\Properties\Schema\PostgresDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Properties\Schema\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Properties\SquashedMigrationHelper;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
@@ -29,6 +30,7 @@ trait HasDatabaseHelper
         $this->modelDatabaseHelper = new ModelDatabaseHelper(
             $this->getSquashedMigrationHelper(),
             $this->getMigrationHelper(),
+            new ContainerHelper(),
         );
 
         $this->defaultConnection = $this->modelDatabaseHelper->getDefaultConnection();

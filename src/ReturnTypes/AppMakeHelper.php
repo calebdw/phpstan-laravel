@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
@@ -17,9 +17,8 @@ use Throwable;
 
 final class AppMakeHelper
 {
-    use HasContainer;
-
     public function __construct(
+        private ContainerHelper $containerHelper,
         private readonly bool $strictContracts = false,
     ) {
     }
@@ -51,7 +50,7 @@ final class AppMakeHelper
 
             try {
                 /** @var object|null $resolved */
-                $resolved = $this->resolve($constantString->getValue());
+                $resolved = $this->containerHelper->resolve($constantString->getValue());
 
                 if ($resolved === null) {
                     if ($constantString->isClassString()->yes()) {

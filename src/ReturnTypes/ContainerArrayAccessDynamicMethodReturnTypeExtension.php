@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -19,10 +19,8 @@ use function is_object;
 
 class ContainerArrayAccessDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    use HasContainer;
-
     /** @param class-string $className */
-    public function __construct(private string $className)
+    public function __construct(private string $className, private ContainerHelper $containerHelper)
     {
     }
 
@@ -58,7 +56,7 @@ class ContainerArrayAccessDynamicMethodReturnTypeExtension implements DynamicMet
         $argTypes = [];
 
         foreach ($argStrings as $argString) {
-            $resolvedValue = $this->resolve($argString->getValue());
+            $resolvedValue = $this->containerHelper->resolve($argString->getValue());
 
             if ($resolvedValue === null) {
                 $argTypes[] = new ErrorType();

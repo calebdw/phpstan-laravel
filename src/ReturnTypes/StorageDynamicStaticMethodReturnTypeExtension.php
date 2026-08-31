@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use PhpParser\Node\Expr\StaticCall;
@@ -18,8 +17,6 @@ use function in_array;
 
 class StorageDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
-    use HasContainer;
-
     public function getClass(): string
     {
         return Storage::class;

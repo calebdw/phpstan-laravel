@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
-use CalebDW\PhpstanLaravel\Concerns;
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Illuminate\Support\Str;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
@@ -15,12 +15,10 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class ContractsMethodsExtension implements MethodsClassReflectionExtension
 {
-    use Concerns\HasContainer;
-
     /** @var array<string, MethodReflection> */
     private array $cache = [];
 
-    public function __construct(private ReflectionProvider $reflectionProvider)
+    public function __construct(private ReflectionProvider $reflectionProvider, private ContainerHelper $containerHelper)
     {
     }
 
@@ -36,7 +34,7 @@ final class ContractsMethodsExtension implements MethodsClassReflectionExtension
             return true;
         }
 
-        $concrete = $this->resolve($classReflection->getName());
+        $concrete = $this->containerHelper->resolve($classReflection->getName());
 
         if ($concrete === null) {
             return false;

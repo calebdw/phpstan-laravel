@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Illuminate\Foundation\Application;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
@@ -22,7 +23,11 @@ class NoEnvCallsOutsideOfConfigRuleTest extends RuleTestCase
 
     protected function getRule(): Rule
     {
-        return new NoEnvCallsOutsideOfConfigRule([__DIR__ . '/data/config'], $this->getFileHelper());
+        return new NoEnvCallsOutsideOfConfigRule(
+            [__DIR__ . '/data/config'],
+            $this->getFileHelper(),
+            new ContainerHelper(),
+        );
     }
 
     #[Test]

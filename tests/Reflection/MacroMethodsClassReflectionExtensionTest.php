@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Reflection;
 
 use CalebDW\PhpstanLaravel\Methods\MacroMethodsClassReflectionExtension;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -26,7 +27,11 @@ class MacroMethodsClassReflectionExtensionTest extends PHPStanTestCase
         parent::setUp();
 
         $this->reflectionProvider  = $this->createReflectionProvider();
-        $this->reflectionExtension = new MacroMethodsClassReflectionExtension($this->reflectionProvider, self::getContainer()->getByType(ClosureTypeFactory::class));
+        $this->reflectionExtension = new MacroMethodsClassReflectionExtension(
+            $this->reflectionProvider,
+            self::getContainer()->getByType(ClosureTypeFactory::class),
+            new ContainerHelper(),
+        );
     }
 
     #[Test]

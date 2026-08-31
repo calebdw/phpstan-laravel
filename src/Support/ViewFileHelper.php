@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
 use Generator;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use SplFileInfo;
@@ -21,16 +20,17 @@ use const DIRECTORY_SEPARATOR;
 
 final class ViewFileHelper
 {
-    use HasContainer;
-
     /** @param  list<non-empty-string> $viewDirectories */
-    public function __construct(private array $viewDirectories, private FileHelper $fileHelper)
-    {
+    public function __construct(
+        private array $viewDirectories,
+        private FileHelper $fileHelper,
+        private ContainerHelper $containerHelper,
+    ) {
         if (count($viewDirectories) !== 0) {
             return;
         }
 
-        $finder = $this->resolve(ViewFactory::class)->getFinder();
+        $finder = $this->containerHelper->resolve(ViewFactory::class)->getFinder();
 
         $viewDirectories = array_merge(
             $finder->getPaths(),
@@ -44,7 +44,7 @@ final class ViewFileHelper
     /** @return Generator<int, string, void, void> */
     public function getRootViewFilePaths(): Generator
     {
-        $finder = $this->resolve(ViewFactory::class)->getFinder();
+        $finder = $this->containerHelper->resolve(ViewFactory::class)->getFinder();
 
         foreach ($finder->getPaths() as $path) {
             foreach ($this->getViews($path) as $view) {

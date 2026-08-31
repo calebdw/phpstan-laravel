@@ -2,25 +2,27 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Concerns;
+namespace CalebDW\PhpstanLaravel\Support;
 
 use function array_keys;
 use function array_reduce;
 use function in_array;
 use function is_array;
 
-trait LoadsAuthModel
+final class AuthModelHelper
 {
-    use HasContainer;
+    public function __construct(private ContainerHelper $containerHelper)
+    {
+    }
 
     /**
      * @param list<string>|string|null $guard
      *
      * @return list<class-string>
      */
-    private function getAuthModels(array|string|null $guard = null): array
+    public function getModels(array|string|null $guard = null): array
     {
-        $config    = $this->getConfigRepository();
+        $config    = $this->containerHelper->getConfigRepository();
         $guards    = $config?->get('auth.guards');
         $providers = $config?->get('auth.providers');
 

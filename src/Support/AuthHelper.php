@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Concerns;
 use Illuminate\Contracts\Auth\Factory;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\StatefulGuard;
@@ -31,14 +30,14 @@ use function is_string;
 
 final class AuthHelper
 {
-    use Concerns\HasContainer;
-    use Concerns\LoadsAuthModel;
-
     /** @var array<string, Type> */
     private array $guardTypes = [];
 
-    public function __construct(private ReflectionProvider $reflectionProvider)
-    {
+    public function __construct(
+        private ReflectionProvider $reflectionProvider,
+        private ContainerHelper $containerHelper,
+        private AuthModelHelper $authModelHelper,
+    ) {
     }
 
     public function getGuardTypeFromArg(Arg|null $arg, Scope $scope): Type
@@ -149,7 +148,7 @@ final class AuthHelper
      */
     public function getUserType(array|string|null $guards = null, bool $nullable = false): Type|null
     {
-        $models = $this->getAuthModels($guards);
+        $models = $this->authModelHelper->getModels($guards);
 
         if ($models === []) {
             return null;
@@ -169,7 +168,7 @@ final class AuthHelper
      */
     private function getResolvedGuardType(string|null $guard): Type|null
     {
-        $manager = $this->resolve(Factory::class);
+        $manager = $this->containerHelper->resolve(Factory::class);
 
         if (! $manager instanceof Factory) {
             return null;
@@ -195,8 +194,8 @@ final class AuthHelper
      */
     private function getCreatorReturnType(string|null $guard): Type|null
     {
-        $config  = $this->getConfigRepository();
-        $manager = $this->resolve(Factory::class);
+        $config  = $this->containerHelper->getConfigRepository();
+        $manager = $this->containerHelper->resolve(Factory::class);
 
         if ($config === null || ! is_object($manager) || ! $this->reflectionProvider->hasClass($manager::class)) {
             return null;
@@ -242,7 +241,7 @@ final class AuthHelper
 
     private function getDefaultGuard(): string|null
     {
-        $guard = $this->getConfigRepository()?->get('auth.defaults.guard');
+        $guard = $this->containerHelper->getConfigRepository()?->get('auth.defaults.guard');
 
         return is_string($guard) ? $guard : null;
     }

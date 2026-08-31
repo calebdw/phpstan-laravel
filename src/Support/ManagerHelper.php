@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
 use Illuminate\Support\Manager;
 use Illuminate\Support\Str;
 use PHPStan\Reflection\ClassReflection;
@@ -21,8 +20,6 @@ use function preg_match;
 
 final class ManagerHelper
 {
-    use HasContainer;
-
     /** @var array<string, string|null> */
     private array $defaultDrivers = [];
 
@@ -32,7 +29,7 @@ final class ManagerHelper
     /** @var array<string, list<Type>> */
     private array $declaredDriverTypes = [];
 
-    public function __construct(private ReflectionProvider $reflectionProvider)
+    public function __construct(private ReflectionProvider $reflectionProvider, private ContainerHelper $containerHelper)
     {
     }
 
@@ -149,7 +146,7 @@ final class ManagerHelper
 
     private function getResolvedDriverType(ClassReflection $manager, string $driver): Type|null
     {
-        $concrete = $this->resolve($manager->getName());
+        $concrete = $this->containerHelper->resolve($manager->getName());
 
         if (! $concrete instanceof Manager) {
             return null;
@@ -178,7 +175,7 @@ final class ManagerHelper
 
         $this->defaultDrivers[$key] = null;
 
-        $concrete = $this->resolve($key);
+        $concrete = $this->containerHelper->resolve($key);
 
         if (! $concrete instanceof Manager) {
             return null;

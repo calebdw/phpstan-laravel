@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
@@ -26,14 +26,15 @@ use function str_starts_with;
  */
 class NoEnvCallsOutsideOfConfigRule implements Rule
 {
-    use HasContainer;
-
     /** @var list<string> */
     private array $configDirectories = [];
 
     /** @param  list<non-empty-string> $configDirectories */
-    public function __construct(array $configDirectories, private FileHelper $fileHelper)
-    {
+    public function __construct(
+        array $configDirectories,
+        private FileHelper $fileHelper,
+        private ContainerHelper $containerHelper,
+    ) {
         if (count($configDirectories) !== 0) {
             foreach ($configDirectories as $directory) {
                 $this->configDirectories[] = $this->fileHelper->normalizePath($directory);
@@ -45,7 +46,7 @@ class NoEnvCallsOutsideOfConfigRule implements Rule
         // Resolved through the container rather than config_path(), which is
         // a Foundation helper and is not necessarily loaded when a package is
         // being analysed on its own.
-        $path = $this->resolve('path.config');
+        $path = $this->containerHelper->resolve('path.config');
 
         if (! is_string($path)) {
             return;

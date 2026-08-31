@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Closure;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Auth\SessionGuard;
@@ -40,16 +40,17 @@ use function str_contains;
 
 class MacroMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
-    use HasContainer;
-
     /** @var array<string, MethodReflection> */
     private array $methods = [];
 
     /** @var array<string, array<string, bool>> */
     private array $traitCache = [];
 
-    public function __construct(private ReflectionProvider $reflectionProvider, private ClosureTypeFactory $closureTypeFactory)
-    {
+    public function __construct(
+        private ReflectionProvider $reflectionProvider,
+        private ClosureTypeFactory $closureTypeFactory,
+        private ContainerHelper $containerHelper,
+    ) {
     }
 
     /**
@@ -66,7 +67,7 @@ class MacroMethodsClassReflectionExtension implements MethodsClassReflectionExte
 
         if ($classReflection->isInterface() && Str::startsWith($classReflection->getName(), 'Illuminate\Contracts')) {
             /** @var object|null $concrete */
-            $concrete = $this->resolve($classReflection->getName());
+            $concrete = $this->containerHelper->resolve($classReflection->getName());
 
             if ($concrete !== null) {
                 $className = $concrete::class;

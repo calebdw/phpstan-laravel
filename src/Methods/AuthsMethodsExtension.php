@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Methods;
 
-use CalebDW\PhpstanLaravel\Concerns;
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
+use CalebDW\PhpstanLaravel\Support\AuthModelHelper;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -22,9 +22,6 @@ use function in_array;
 
 final class AuthsMethodsExtension implements MethodsClassReflectionExtension
 {
-    use Concerns\HasContainer;
-    use Concerns\LoadsAuthModel;
-
     /** @var array<string, MethodReflection> */
     private array $cache = [];
 
@@ -35,7 +32,7 @@ final class AuthsMethodsExtension implements MethodsClassReflectionExtension
         Authorizable::class,
     ];
 
-    public function __construct(private ReflectionProvider $reflectionProvider)
+    public function __construct(private ReflectionProvider $reflectionProvider, private AuthModelHelper $authModelHelper)
     {
     }
 
@@ -67,7 +64,7 @@ final class AuthsMethodsExtension implements MethodsClassReflectionExtension
 
     private function findMethodInAuthModels(string $cacheKey, string $methodName): bool
     {
-        $authModels = $this->getAuthModels();
+        $authModels = $this->authModelHelper->getModels();
 
         foreach ($authModels as $authModel) {
             if ($this->findMethodOnClass($cacheKey, $authModel, $methodName)) {

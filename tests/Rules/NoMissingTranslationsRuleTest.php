@@ -9,6 +9,7 @@ use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFunctionCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationTranslatorCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector;
 use CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use CalebDW\PhpstanLaravel\Support\ViewParser;
@@ -25,7 +26,11 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
     protected function getRule(): Rule
     {
         $viewParser     = new ViewParser($this->getContainer()->getService('currentPhpVersionSimpleDirectParser'));
-        $viewFileHelper = new ViewFileHelper([], new FileHelper($this->getFileHelper()));
+        $viewFileHelper = new ViewFileHelper(
+            [],
+            new FileHelper($this->getFileHelper()),
+            new ContainerHelper(),
+        );
 
         return new NoMissingTranslationsRule(
             new UsedTranslationViewCollector($viewParser, $viewFileHelper),

@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Properties;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Illuminate\Database\Eloquent\Model;
 
 use function count;
 
 final class ModelDatabaseHelper
 {
-    use HasContainer;
-
     /** @var array<string, SchemaConnection> */
     public array $connections = [];
 
@@ -21,6 +19,7 @@ final class ModelDatabaseHelper
     public function __construct(
         private SquashedMigrationHelper $squashedMigrationHelper,
         private MigrationHelper $migrationHelper,
+        private ContainerHelper $containerHelper,
     ) {
     }
 
@@ -108,7 +107,7 @@ final class ModelDatabaseHelper
     public function getDefaultConnection(): string
     {
         if (! isset($this->defaultConnection)) {
-            $this->defaultConnection = $this->resolve('config')['database.default'] ?? 'default';
+            $this->defaultConnection = $this->containerHelper->resolve('config')['database.default'] ?? 'default';
         }
 
         return $this->defaultConnection;

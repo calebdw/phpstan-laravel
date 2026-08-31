@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Concerns\HasContainer;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Collection;
 use PhpParser\Node\Expr\FuncCall;
@@ -42,9 +41,7 @@ use function is_string;
 
 final class ConfigHelper
 {
-    use HasContainer;
-
-    public function __construct(private ConfigParser $configParser)
+    public function __construct(private ConfigParser $configParser, private ContainerHelper $containerHelper)
     {
     }
 
@@ -189,7 +186,7 @@ final class ConfigHelper
 
     private function getRepository(): Repository|null
     {
-        $repository = $this->resolve('config');
+        $repository = $this->containerHelper->resolve('config');
 
         return $repository instanceof Repository ? $repository : null;
     }
