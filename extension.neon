@@ -137,65 +137,65 @@ services:
     tags: [phpstan.broker.propertiesClassReflectionExtension]
   - class: CalebDW\PhpstanLaravel\Properties\HigherOrderCollectionProxyPropertyExtension
     tags: [phpstan.broker.propertiesClassReflectionExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\HigherOrderTapProxyExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\HigherOrderTapProxyExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerArrayAccessDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ContainerArrayAccessDynamicMethodReturnTypeExtension
     arguments: {className: Illuminate\Contracts\Container\Container}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerArrayAccessDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ContainerArrayAccessDynamicMethodReturnTypeExtension
     arguments: {className: Illuminate\Container\Container}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerArrayAccessDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ContainerArrayAccessDynamicMethodReturnTypeExtension
     arguments: {className: Illuminate\Foundation\Application}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerArrayAccessDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ContainerArrayAccessDynamicMethodReturnTypeExtension
     arguments: {className: Illuminate\Contracts\Foundation\Application}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Properties\ModelRelationsExtension
     tags: [phpstan.broker.propertiesClassReflectionExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelOnlyDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ModelOnlyDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelFactoryDynamicStaticMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ModelFactoryDynamicStaticMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelDynamicStaticMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ModelDynamicStaticMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppMakeDynamicReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\AppMakeDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConfigDynamicStaticMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ConfigDynamicStaticMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConfigDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ConfigDynamicMethodReturnTypeExtension
     arguments: {class: Illuminate\Config\Repository}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConfigDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ConfigDynamicMethodReturnTypeExtension
     arguments: {class: Illuminate\Contracts\Config\Repository}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\AuthExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\AuthExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\AuthManagerExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\AuthManagerExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrGetPullExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrGetPullExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ManagerDriverExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ManagerDriverExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\DateExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\DateExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\GuardExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\GuardExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\RequestFileExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\RequestFileExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\RequestRouteExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\RequestRouteExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\RequestUserExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\RequestUserExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentBuilderExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EloquentBuilderExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\RelationCollectionExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\RelationCollectionExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelFindExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ModelFindExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\BuilderModelFindExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\BuilderModelFindExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\TestCaseExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\TestCaseExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Support\CollectionHelper
   - class: CalebDW\PhpstanLaravel\Support\ContainerHelper
@@ -214,19 +214,19 @@ services:
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\LiteralExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\CollectionFilterRejectDynamicReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\CollectionFilterRejectDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\CollectionWhereNotNullDynamicReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\CollectionWhereNotNullDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableSelectExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableSelectExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableValuesAllExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableValuesAllExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\HigherOrderCollectionProxyOnlyExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\HigherOrderCollectionProxyOnlyExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\NewModelQueryDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\NewModelQueryDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\FactoryDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\FactoryDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Types\AbortIfFunctionTypeSpecifyingExtension
     arguments: {methodName: 'abort', negate: false}
@@ -248,7 +248,7 @@ services:
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\TapExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\StorageDynamicStaticMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\StorageDynamicStaticMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\PhpDoc\GenericEloquentCollectionTypeNodeResolverExtension
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
@@ -265,13 +265,13 @@ services:
   - class: CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule
   - class: CalebDW\PhpstanLaravel\Rules\UndefinedConfigNameRule
   - class: CalebDW\PhpstanLaravel\Rules\NoPublicModelScopeAndAccessorRule
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppEnvironmentReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\AppEnvironmentReturnTypeExtension
     arguments: {class: "Illuminate\\Foundation\\Application"}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppEnvironmentReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\AppEnvironmentReturnTypeExtension
     arguments: {class: "Illuminate\\Contracts\\Foundation\\Application"}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\AppFacadeEnvironmentReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\AppFacadeEnvironmentReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\PhpDoc\ModelPropertyTypeNodeResolverExtension
     arguments: {active: %laravel.modelPropertyType%}
@@ -328,55 +328,51 @@ services:
   - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationFacadeCollector
     tags: [phpstan.collector]
   - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ApplicationMakeDynamicReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ApplicationMakeDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ContainerMakeDynamicReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ContainerMakeDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand\ArgumentDynamicReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\CommandArgumentDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand\HasArgumentDynamicReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\CommandOptionDynamicReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand\OptionDynamicReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\TranslatorGetReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ConsoleCommand\HasOptionDynamicReturnTypeExtension
-    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\TranslatorGetReturnTypeExtension
-    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrKeyByExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrKeyByExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrOnlyExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrOnlyExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrPluckExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrPluckExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ArrSelectExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrSelectExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentPluckExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EloquentPluckExtension
     arguments: {class: Illuminate\Database\Eloquent\Builder, templateType: TModel}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentPluckExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EloquentPluckExtension
     arguments: {class: Illuminate\Database\Eloquent\Relations\Relation, templateType: TRelatedModel}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentValueExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EloquentValueExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\ModelGetKeyExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ModelGetKeyExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentModelKeysExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EloquentModelKeysExtension
     arguments: {class: Illuminate\Database\Eloquent\Builder, templateType: TModel}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EloquentModelKeysExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EloquentModelKeysExtension
     arguments: {class: Illuminate\Database\Eloquent\Collection, templateType: TModel}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableGroupByExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableGroupByExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerableKeyByExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableKeyByExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\EnumerablePluckExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerablePluckExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\LangGetReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\LangGetReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\TransHelperReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\TransHelperReturnTypeExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\DoubleUnderscoreHelperReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\DoubleUnderscoreHelperReturnTypeExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\EloquentBuilderRelationParameterExtension
     tags: [phpstan.methodParameterClosureTypeExtension]
@@ -394,7 +390,7 @@ services:
     arguments: {configDirectories: %laravel.configDirectories%, parser: @currentPhpVersionSimpleDirectParser, treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%}
   - class: CalebDW\PhpstanLaravel\Support\ColumnHelper
   - class: CalebDW\PhpstanLaravel\Support\SelectHelper
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\FormRequestSafeDynamicMethodReturnTypeExtension
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\FormRequestSafeDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule

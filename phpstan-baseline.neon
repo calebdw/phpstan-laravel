@@ -27,26 +27,14 @@ parameters:
 		-
 			rawMessage: 'Call to internal method Symfony\Component\Console\Command\Command::mergeApplicationDefinition() from outside its root namespace Symfony.'
 			identifier: method.internal
-			count: 1
-			path: src/ReturnTypes/ConsoleCommand/ArgumentDynamicReturnTypeExtension.php
+			count: 2
+			path: src/ReturnTypes/Methods/CommandArgumentDynamicReturnTypeExtension.php
 
 		-
 			rawMessage: 'Call to internal method Symfony\Component\Console\Command\Command::mergeApplicationDefinition() from outside its root namespace Symfony.'
 			identifier: method.internal
-			count: 1
-			path: src/ReturnTypes/ConsoleCommand/HasArgumentDynamicReturnTypeExtension.php
-
-		-
-			rawMessage: 'Call to internal method Symfony\Component\Console\Command\Command::mergeApplicationDefinition() from outside its root namespace Symfony.'
-			identifier: method.internal
-			count: 1
-			path: src/ReturnTypes/ConsoleCommand/HasOptionDynamicReturnTypeExtension.php
-
-		-
-			rawMessage: 'Call to internal method Symfony\Component\Console\Command\Command::mergeApplicationDefinition() from outside its root namespace Symfony.'
-			identifier: method.internal
-			count: 1
-			path: src/ReturnTypes/ConsoleCommand/OptionDynamicReturnTypeExtension.php
+			count: 2
+			path: src/ReturnTypes/Methods/CommandOptionDynamicReturnTypeExtension.php
 
 		-
 			rawMessage: 'Call to internal method Symfony\Component\Console\Command\Command::mergeApplicationDefinition() from outside its root namespace Symfony.'

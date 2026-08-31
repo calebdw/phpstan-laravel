@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Unit;
 
 use App\User;
-use CalebDW\PhpstanLaravel\ReturnTypes\ModelFactoryDynamicStaticMethodReturnTypeExtension;
+use CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ModelFactoryDynamicStaticMethodReturnTypeExtension;
 use CalebDW\PhpstanLaravel\Types\ModelFactoryType;
 use Generator;
 use PhpParser\Node\Arg;
