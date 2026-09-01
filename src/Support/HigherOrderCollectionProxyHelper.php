@@ -20,6 +20,9 @@ use function count;
 
 class HigherOrderCollectionProxyHelper
 {
+    /** @var array<string, bool> */
+    private array $members = [];
+
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private ColumnHelper $columnHelper,
@@ -33,6 +36,14 @@ class HigherOrderCollectionProxyHelper
             return false;
         }
 
+        $cacheKey = $classReflection->getCacheKey() . '-' . $propertyOrMethod . '-' . $name;
+
+        return $this->members[$cacheKey] ??= $this->resolvePropertyOrMethod($classReflection, $name, $propertyOrMethod);
+    }
+
+    /** @phpstan-param 'method'|'property' $propertyOrMethod */
+    private function resolvePropertyOrMethod(ClassReflection $classReflection, string $name, string $propertyOrMethod): bool
+    {
         $activeTemplateTypeMap = $classReflection->getActiveTemplateTypeMap();
 
         if ($activeTemplateTypeMap->count() !== 3) {

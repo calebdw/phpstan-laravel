@@ -9,35 +9,43 @@ use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
-use PHPStan\ShouldNotHappenException;
+
+use function assert;
 
 final class HigherOrderTapProxyExtension implements MethodsClassReflectionExtension
 {
+    /** @var array<string, MethodReflection|false> */
+    private array $cache = [];
+
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
         if ($classReflection->getName() !== HigherOrderTapProxy::class) {
             return false;
         }
 
-        $templateTypeMap = $classReflection->getActiveTemplateTypeMap();
+        $cacheKey = $classReflection->getCacheKey() . '-' . $methodName;
 
-        $templateType = $templateTypeMap->getType('TClass');
-
-        if ($templateType === null || $templateType->getObjectClassReflections() === []) {
-            return false;
-        }
-
-        return $templateType->hasMethod($methodName)->yes();
+        return ($this->cache[$cacheKey] ??= $this->findMethod($classReflection, $methodName)) !== false;
     }
 
-    public function getMethod(
-        ClassReflection $classReflection,
-        string $methodName,
-    ): MethodReflection {
+    public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
+    {
+        $method = $this->cache[$classReflection->getCacheKey() . '-' . $methodName];
+        assert($method !== false);
+
+        return $method;
+    }
+
+    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|false
+    {
         $templateType = $classReflection->getActiveTemplateTypeMap()->getType('TClass');
 
-        if ($templateType === null || $templateType->getObjectClassReflections() === [] || ! $templateType->hasMethod($methodName)->yes()) {
-            throw new ShouldNotHappenException();
+        if (
+            $templateType === null
+            || $templateType->getObjectClassReflections() === []
+            || ! $templateType->hasMethod($methodName)->yes()
+        ) {
+            return false;
         }
 
         return $templateType->getMethod($methodName, new OutOfClassScope());

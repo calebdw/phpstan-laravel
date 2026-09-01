@@ -74,8 +74,6 @@ class CommandOptionDynamicReturnTypeExtension implements DynamicMethodReturnType
             return count($returnTypes) === 1 ? new ConstantBooleanType($returnTypes[0]) : null;
         }
 
-        $defaultReturnType = ParametersAcceptorSelector::selectFromArgs($scope, $methodCall->getArgs(), $methodReflection->getVariants())->getReturnType();
-
         if ($args === [] || $methodReflection->getName() === 'options') {
             return $this->consoleApplicationHelper->getOptions($classReflection, $scope);
         }
@@ -86,7 +84,8 @@ class CommandOptionDynamicReturnTypeExtension implements DynamicMethodReturnType
             return null;
         }
 
-        $returnTypes = [];
+        $returnTypes       = [];
+        $defaultReturnType = ParametersAcceptorSelector::selectFromArgs($scope, $args, $methodReflection->getVariants())->getReturnType();
 
         foreach ($argStrings as $argString) {
             $argName = $argString->getValue();

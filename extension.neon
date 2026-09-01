@@ -200,6 +200,7 @@ services:
   - class: CalebDW\PhpstanLaravel\Support\CollectionHelper
   - class: CalebDW\PhpstanLaravel\Support\ContainerHelper
   - class: CalebDW\PhpstanLaravel\Support\AuthModelHelper
+  - class: CalebDW\PhpstanLaravel\Support\FacadeHelper
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\AuthExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\CollectExtension

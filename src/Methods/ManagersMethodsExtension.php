@@ -13,9 +13,12 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 
+use function array_key_exists;
+use function assert;
+
 final class ManagersMethodsExtension implements MethodsClassReflectionExtension
 {
-    /** @var array<string, MethodReflection> */
+    /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
     public function __construct(private ManagerHelper $managerHelper)
@@ -28,33 +31,40 @@ final class ManagersMethodsExtension implements MethodsClassReflectionExtension
             return false;
         }
 
-        $key = $classReflection->getName() . '-' . $methodName;
+        $cacheKey = $classReflection->getName() . '-' . $methodName;
 
-        if (isset($this->cache[$key])) {
-            return true;
+        if (array_key_exists($cacheKey, $this->cache)) {
+            return $this->cache[$cacheKey] !== false;
         }
 
-        $result = RecursionGuard::run($key, function () use ($classReflection, $methodName, $key) {
-            foreach ($this->managerHelper->getDriverTypes($classReflection) as $type) {
-                if (! $type->hasMethod($methodName)->yes()) {
-                    continue;
-                }
+        $method = RecursionGuard::run($cacheKey, fn () => $this->findMethod($classReflection, $methodName));
 
-                $this->cache[$key] = new StaticMethodReflection(
-                    $type->getMethod($methodName, new OutOfClassScope()),
-                );
-
-                return true;
-            }
-
+        // A recursive lookup has no answer yet, so it must not be remembered.
+        if ($method === null) {
             return false;
-        });
+        }
 
-        return $result ?? false;
+        return ($this->cache[$cacheKey] = $method) !== false;
     }
 
     public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
     {
-        return $this->cache[$classReflection->getName() . '-' . $methodName];
+        $method = $this->cache[$classReflection->getName() . '-' . $methodName];
+        assert($method !== false);
+
+        return $method;
+    }
+
+    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|false
+    {
+        foreach ($this->managerHelper->getDriverTypes($classReflection) as $type) {
+            if (! $type->hasMethod($methodName)->yes()) {
+                continue;
+            }
+
+            return new StaticMethodReflection($type->getMethod($methodName, new OutOfClassScope()));
+        }
+
+        return false;
     }
 }

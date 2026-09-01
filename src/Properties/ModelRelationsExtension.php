@@ -9,7 +9,6 @@ use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
-use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
@@ -21,10 +20,14 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\UnionType;
 
+use function assert;
 use function str_ends_with;
 
 final class ModelRelationsExtension implements PropertiesClassReflectionExtension
 {
+    /** @var array<string, ModelProperty|false> */
+    private array $properties = [];
+
     public function __construct(private CollectionHelper $collectionHelper)
     {
     }
@@ -35,14 +38,21 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
             return false;
         }
 
+        $cacheKey = $classReflection->getCacheKey() . '-' . $propertyName;
+
+        return ($this->properties[$cacheKey] ??= $this->resolveProperty($classReflection, $propertyName)) !== false;
+    }
+
+    private function resolveProperty(ClassReflection $classReflection, string $propertyName): ModelProperty|false
+    {
         if (ReflectionHelper::hasPropertyTag($classReflection, $propertyName)) {
             return false;
         }
 
         if (str_ends_with($propertyName, '_count')) {
-            $propertyName = Str::before($propertyName, '_count');
+            $relationName = Str::before($propertyName, '_count');
 
-            $methodNames = [Str::camel($propertyName), $propertyName];
+            $methodNames = [Str::camel($relationName), $relationName];
         } else {
             $methodNames = [$propertyName];
         }
@@ -55,7 +65,25 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
             $returnType = $classReflection->getNativeMethod($methodName)->getVariants()[0]->getReturnType();
 
             if ((new ObjectType(Relation::class))->isSuperTypeOf($returnType)->yes()) {
-                return true;
+                if (str_ends_with($propertyName, '_count')) {
+                    return new ModelProperty($classReflection, IntegerRangeType::createAllGreaterThanOrEqualTo(0), new NeverType(), false);
+                }
+
+                $relationType = TypeTraverser::map($returnType, static function (Type $type, callable $traverse): Type {
+                    if ($type instanceof UnionType || $type instanceof IntersectionType) {
+                        return $traverse($type);
+                    }
+
+                    if (! (new ObjectType(Relation::class))->isSuperTypeOf($type)->yes()) {
+                        return $type;
+                    }
+
+                    return $type->getTemplateType(Relation::class, 'TResult');
+                });
+
+                $relationType = $this->collectionHelper->replaceCollectionsInType($relationType);
+
+                return new ModelProperty($classReflection, $relationType, new NeverType(), false);
             }
         }
 
@@ -64,28 +92,9 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
 
     public function getProperty(ClassReflection $classReflection, string $propertyName): PropertyReflection
     {
-        if (str_ends_with($propertyName, '_count')) {
-            return new ModelProperty($classReflection, IntegerRangeType::createAllGreaterThanOrEqualTo(0), new NeverType(), false);
-        }
+        $property = $this->properties[$classReflection->getCacheKey() . '-' . $propertyName];
+        assert($property !== false);
 
-        $returnType = $classReflection->getMethod($propertyName, new OutOfClassScope())
-            ->getVariants()[0]
-            ->getReturnType();
-
-        $relationType = TypeTraverser::map($returnType, static function (Type $type, callable $traverse): Type {
-            if ($type instanceof UnionType || $type instanceof IntersectionType) {
-                return $traverse($type);
-            }
-
-            if (! (new ObjectType(Relation::class))->isSuperTypeOf($type)->yes()) {
-                return $type;
-            }
-
-            return $type->getTemplateType(Relation::class, 'TResult');
-        });
-
-        $relationType = $this->collectionHelper->replaceCollectionsInType($relationType);
-
-        return new ModelProperty($classReflection, $relationType, new NeverType(), false);
+        return $property;
     }
 }

@@ -9,45 +9,48 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Type\ObjectType;
 
 use function app;
+use function is_a;
 
 final class ConsoleApplicationResolver
 {
     private Application|null $application = null;
 
+    /** @var array<string, Command[]> */
+    private array $commandsByClass = [];
+
     /** @return Command[] */
     public function findCommands(ClassReflection $classReflection): array
     {
-        $consoleApplication = $this->getApplication();
-        $classType          = $classReflection->getObjectType();
-
-        if (! (new ObjectType(Command::class))->isSuperTypeOf($classType)->yes()) {
+        if (! $classReflection->is(Command::class)) {
             return [];
         }
 
+        $className = $classReflection->getName();
+
+        return $this->commandsByClass[$className] ??= $this->resolveCommands($className);
+    }
+
+    /** @return Command[] */
+    private function resolveCommands(string $className): array
+    {
         $commands = [];
 
-        foreach ($consoleApplication->all() as $name => $command) {
-            if (! $classType->isSuperTypeOf(new ObjectType($command::class))->yes()) {
+        foreach ($this->getApplication()->all() as $name => $command) {
+            if (! $command instanceof Command || ! is_a($command, $className)) {
                 continue;
             }
 
             $commands[$name] = $command;
         }
 
-        /** @phpstan-ignore return.type (the console application does not type its command list) */
         return $commands;
     }
 
     private function getApplication(): Application
     {
-        if ($this->application === null) {
-            $this->application = new Application(app(Container::class), app(Dispatcher::class), app()->version());
-            $this->application->setContainerCommandLoader();
-        }
-
-        return $this->application;
+        return $this->application ??= new Application(app(Container::class), app(Dispatcher::class), app()->version())
+            ->setContainerCommandLoader();
     }
 }

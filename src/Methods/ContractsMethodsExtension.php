@@ -13,9 +13,11 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\ReflectionProvider;
 
+use function assert;
+
 final class ContractsMethodsExtension implements MethodsClassReflectionExtension
 {
-    /** @var array<string, MethodReflection> */
+    /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
     public function __construct(private ReflectionProvider $reflectionProvider, private ContainerHelper $containerHelper)
@@ -28,12 +30,21 @@ final class ContractsMethodsExtension implements MethodsClassReflectionExtension
             return false;
         }
 
-        $key = $classReflection->getName() . '-' . $methodName;
+        $cacheKey = $classReflection->getName() . '-' . $methodName;
 
-        if (isset($this->cache[$key])) {
-            return true;
-        }
+        return ($this->cache[$cacheKey] ??= $this->findMethod($classReflection, $methodName)) !== false;
+    }
 
+    public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
+    {
+        $method = $this->cache[$classReflection->getName() . '-' . $methodName];
+        assert($method !== false);
+
+        return $method;
+    }
+
+    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|false
+    {
         $concrete = $this->containerHelper->resolve($classReflection->getName());
 
         if ($concrete === null) {
@@ -52,15 +63,8 @@ final class ContractsMethodsExtension implements MethodsClassReflectionExtension
             return false;
         }
 
-        $this->cache[$key] = new StaticMethodReflection(
+        return new StaticMethodReflection(
             $concreteReflection->getMethod($methodName, new OutOfClassScope()),
         );
-
-        return true;
-    }
-
-    public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
-    {
-        return $this->cache[$classReflection->getName() . '-' . $methodName];
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Methods;
 
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
+use CalebDW\PhpstanLaravel\Support\FacadeHelper;
 use CalebDW\PhpstanLaravel\Support\RecursionGuard;
 use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use Illuminate\Support\Facades\Facade;
@@ -12,8 +13,8 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\ReflectionProvider;
-use Throwable;
 
+use function array_key_exists;
 use function assert;
 use function class_exists;
 use function sprintf;
@@ -22,10 +23,10 @@ use function substr;
 
 final class FacadesMethodsExtension implements MethodsClassReflectionExtension
 {
-    /** @var array<string, MethodReflection> */
+    /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
-    public function __construct(private ReflectionProvider $reflectionProvider)
+    public function __construct(private ReflectionProvider $reflectionProvider, private FacadeHelper $facadeHelper)
     {
     }
 
@@ -37,8 +38,8 @@ final class FacadesMethodsExtension implements MethodsClassReflectionExtension
 
         $key = $classReflection->getName() . '-' . $methodName;
 
-        if (isset($this->cache[$key])) {
-            return true;
+        if (array_key_exists($key, $this->cache)) {
+            return $this->cache[$key] !== false;
         }
 
         $result = RecursionGuard::run($key, function () use ($classReflection, $methodName, $key) {
@@ -48,12 +49,7 @@ final class FacadesMethodsExtension implements MethodsClassReflectionExtension
 
             $facadeClass = $classReflection->getName();
 
-            $concrete = null;
-
-            try {
-                $concrete = $facadeClass::getFacadeRoot();
-            } catch (Throwable) {
-            }
+            $concrete = $this->facadeHelper->getRoot($facadeClass);
 
             if ($concrete !== null) {
                 $concreteClass = $concrete::class;
@@ -95,12 +91,19 @@ final class FacadesMethodsExtension implements MethodsClassReflectionExtension
             return false;
         });
 
+        if ($result === false) {
+            $this->cache[$key] = false;
+        }
+
         return $result ?? false;
     }
 
     public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
     {
-        return $this->cache[$classReflection->getName() . '-' . $methodName];
+        $method = $this->cache[$classReflection->getName() . '-' . $methodName];
+        assert($method !== false);
+
+        return $method;
     }
 
     private function getFake(string $facade): string

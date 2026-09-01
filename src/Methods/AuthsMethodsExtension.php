@@ -18,11 +18,12 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\ReflectionProvider;
 
+use function assert;
 use function in_array;
 
 final class AuthsMethodsExtension implements MethodsClassReflectionExtension
 {
-    /** @var array<string, MethodReflection> */
+    /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
     /** @var string[] */
@@ -38,44 +39,47 @@ final class AuthsMethodsExtension implements MethodsClassReflectionExtension
 
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
-        $key = $classReflection->getName() . '-' . $methodName;
-
-        if (isset($this->cache[$key])) {
-            return true;
-        }
-
         $className = $classReflection->getName();
 
-        if (in_array($className, $this->authContracts, true)) {
-            return $this->findMethodInAuthModels($key, $methodName);
+        if (
+            ! in_array($className, $this->authContracts, true)
+            && $className !== Factory::class
+            && $className !== AuthManager::class
+        ) {
+            return false;
         }
 
-        if ($className === Factory::class || $className === AuthManager::class) {
-            return $this->findMethodOnClass($key, Guard::class, $methodName);
-        }
+        $cacheKey = $className . '-' . $methodName;
 
-        return false;
+        return ($this->cache[$cacheKey] ??= $this->findMethod($className, $methodName)) !== false;
     }
 
     public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
     {
-        return $this->cache[$classReflection->getName() . '-' . $methodName];
+        $method = $this->cache[$classReflection->getName() . '-' . $methodName];
+        assert($method !== false);
+
+        return $method;
     }
 
-    private function findMethodInAuthModels(string $cacheKey, string $methodName): bool
+    private function findMethod(string $className, string $methodName): MethodReflection|false
     {
-        $authModels = $this->authModelHelper->getModels();
+        if ($className === Factory::class || $className === AuthManager::class) {
+            return $this->findMethodOnClass(Guard::class, $methodName);
+        }
 
-        foreach ($authModels as $authModel) {
-            if ($this->findMethodOnClass($cacheKey, $authModel, $methodName)) {
-                return true;
+        foreach ($this->authModelHelper->getModels() as $authModel) {
+            $method = $this->findMethodOnClass($authModel, $methodName);
+
+            if ($method !== false) {
+                return $method;
             }
         }
 
         return false;
     }
 
-    private function findMethodOnClass(string $cacheKey, string $class, string $methodName): bool
+    private function findMethodOnClass(string $class, string $methodName): MethodReflection|false
     {
         if (! $this->reflectionProvider->hasClass($class)) {
             return false;
@@ -87,10 +91,6 @@ final class AuthsMethodsExtension implements MethodsClassReflectionExtension
             return false;
         }
 
-        $this->cache[$cacheKey] = new StaticMethodReflection(
-            $classReflection->getMethod($methodName, new OutOfClassScope()),
-        );
-
-        return true;
+        return new StaticMethodReflection($classReflection->getMethod($methodName, new OutOfClassScope()));
     }
 }

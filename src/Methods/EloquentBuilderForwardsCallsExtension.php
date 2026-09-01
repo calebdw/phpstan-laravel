@@ -14,9 +14,7 @@ use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
-use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Generic\TemplateObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\ThisType;
@@ -24,11 +22,12 @@ use PHPStan\Type\ThisType;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
+use function assert;
 use function in_array;
 
 final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflectionExtension
 {
-    /** @var array<string, MethodReflection> */
+    /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
     /** @var list<string> */
@@ -38,46 +37,31 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
     {
     }
 
-    /**
-     * @throws ShouldNotHappenException
-     * @throws MissingMethodFromReflectionException
-     */
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
-        if (array_key_exists($classReflection->getCacheKey() . '-' . $methodName, $this->cache)) {
-            return true;
-        }
+        $cacheKey = $classReflection->getCacheKey() . '-' . $methodName;
 
-        $methodReflection = $this->findMethod($classReflection, $methodName);
-
-        if ($methodReflection !== null) {
-            $this->cache[$classReflection->getCacheKey() . '-' . $methodName] = $methodReflection;
-
-            return true;
-        }
-
-        return false;
+        return ($this->cache[$cacheKey] ??= $this->findMethod($classReflection, $methodName)) !== false;
     }
 
     public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
     {
-        return $this->cache[$classReflection->getCacheKey() . '-' . $methodName];
+        $method = $this->cache[$classReflection->getCacheKey() . '-' . $methodName];
+        assert($method !== false);
+
+        return $method;
     }
 
-    /**
-     * @throws MissingMethodFromReflectionException
-     * @throws ShouldNotHappenException
-     */
-    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|null
+    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|false
     {
         if (! $classReflection->is(EloquentBuilder::class)) {
-            return null;
+            return false;
         }
 
         $modelType = $this->builderHelper->getModelType($classReflection);
 
         if ($modelType === null) {
-            return null;
+            return false;
         }
 
         if ($modelType instanceof TemplateObjectType) {
@@ -92,7 +76,7 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
                 ! in_array($methodName, $this->softDeletesMethods, true) ||
                 ! array_key_exists(SoftDeletes::class, array_merge(...array_map(static fn ($r) => $r->getTraits(true), $modelType->getObjectClassReflections())))
             ) {
-                return null;
+                return false;
             }
 
             $ref = $this->reflectionProvider->getClass(SoftDeletes::class)->getMethod($methodName, new OutOfClassScope());

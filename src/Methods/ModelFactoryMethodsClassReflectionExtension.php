@@ -19,6 +19,9 @@ use function array_key_exists;
 
 class ModelFactoryMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
+    /** @var array<string, bool> */
+    private array $methods = [];
+
     public function __construct(
         private ReflectionProvider $reflectionProvider,
     ) {
@@ -30,6 +33,13 @@ class ModelFactoryMethodsClassReflectionExtension implements MethodsClassReflect
             return false;
         }
 
+        $cacheKey = $classReflection->getCacheKey() . '-' . $methodName;
+
+        return $this->methods[$cacheKey] ??= $this->findMethod($classReflection, $methodName);
+    }
+
+    private function findMethod(ClassReflection $classReflection, string $methodName): bool
+    {
         $modelType = $classReflection->getObjectType()->getTemplateType(Factory::class, 'TModel');
 
         if ($modelType instanceof ErrorType) {

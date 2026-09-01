@@ -7,14 +7,14 @@ namespace CalebDW\PhpstanLaravel\Schema;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Illuminate\Database\Eloquent\Model;
 
-use function count;
-
 final class ModelSchema
 {
     /** @var array<string, Connection> */
     public array $connections = [];
 
     private string $defaultConnection;
+
+    private bool $initialized = false;
 
     public function __construct(
         private SchemaDumpParser $schemaDumpParser,
@@ -94,9 +94,11 @@ final class ModelSchema
 
     public function ensureInitialized(): void
     {
-        if (count($this->connections) !== 0) {
+        if ($this->initialized) {
             return;
         }
+
+        $this->initialized = true;
 
         // First try to create tables from any squashed migrations.
         // Then scan the normal migration files for further changes to tables.

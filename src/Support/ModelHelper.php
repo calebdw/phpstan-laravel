@@ -14,10 +14,14 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use Throwable;
 
+use function array_key_exists;
 use function is_string;
 
 final class ModelHelper
 {
+    /** @var array<class-string, Model|null> */
+    private array $instances = [];
+
     public function __construct(private ReflectionProvider $reflectionProvider)
     {
     }
@@ -26,8 +30,12 @@ final class ModelHelper
     public function getModelInstance(ClassReflection|string $model): Model|null
     {
         if (is_string($model)) {
+            if (array_key_exists($model, $this->instances)) {
+                return $this->instances[$model];
+            }
+
             if (! $this->reflectionProvider->hasClass($model)) {
-                return null;
+                return $this->instances[$model] = null;
             }
 
             $model = $this->reflectionProvider->getClass($model);
@@ -35,6 +43,12 @@ final class ModelHelper
 
         if (! $model->is(Model::class) || $model->isAbstract()) {
             return null;
+        }
+
+        $className = $model->getName();
+
+        if (array_key_exists($className, $this->instances)) {
+            return $this->instances[$className];
         }
 
         try {
@@ -45,7 +59,7 @@ final class ModelHelper
             $modelInstance = $model->getNativeReflection()->newInstanceWithoutConstructor();
         }
 
-        return $modelInstance;
+        return $this->instances[$className] = $modelInstance;
     }
 
     public function getModelKeyType(Type $modelType): Type

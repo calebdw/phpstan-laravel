@@ -6,6 +6,7 @@ namespace Reflection;
 
 use CalebDW\PhpstanLaravel\Methods\MacroMethodsClassReflectionExtension;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
+use CalebDW\PhpstanLaravel\Support\FacadeHelper;
 use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -31,6 +32,7 @@ class MacroMethodsClassReflectionExtensionTest extends PHPStanTestCase
             $this->reflectionProvider,
             self::getContainer()->getByType(ClosureTypeFactory::class),
             new ContainerHelper(),
+            new FacadeHelper(),
         );
     }
 

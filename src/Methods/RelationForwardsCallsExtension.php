@@ -13,18 +13,16 @@ use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
-use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 
-use function array_key_exists;
+use function assert;
 
 final class RelationForwardsCallsExtension implements MethodsClassReflectionExtension
 {
-    /** @var array<string, MethodReflection> */
+    /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
     public function __construct(private BuilderHelper $builderHelper, private ReflectionProvider $reflectionProvider)
@@ -33,42 +31,29 @@ final class RelationForwardsCallsExtension implements MethodsClassReflectionExte
 
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
-        if (array_key_exists($classReflection->getCacheKey() . '-' . $methodName, $this->cache)) {
-            return true;
-        }
+        $cacheKey = $classReflection->getCacheKey() . '-' . $methodName;
 
-        $methodReflection = $this->findMethod($classReflection, $methodName);
-
-        if ($methodReflection !== null) {
-            $this->cache[$classReflection->getCacheKey() . '-' . $methodName] = $methodReflection;
-
-            return true;
-        }
-
-        return false;
+        return ($this->cache[$cacheKey] ??= $this->findMethod($classReflection, $methodName)) !== false;
     }
 
-    public function getMethod(
-        ClassReflection $classReflection,
-        string $methodName,
-    ): MethodReflection {
-        return $this->cache[$classReflection->getCacheKey() . '-' . $methodName];
+    public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
+    {
+        $method = $this->cache[$classReflection->getCacheKey() . '-' . $methodName];
+        assert($method !== false);
+
+        return $method;
     }
 
-    /**
-     * @throws MissingMethodFromReflectionException
-     * @throws ShouldNotHappenException
-     */
-    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|null
+    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|false
     {
         if (! $classReflection->is(Relation::class)) {
-            return null;
+            return false;
         }
 
         $relatedModel = $this->builderHelper->getModelType($classReflection);
 
         if ($relatedModel === null) {
-            return null;
+            return false;
         }
 
         if ($relatedModel->getObjectClassReflections() !== []) {
@@ -78,13 +63,13 @@ final class RelationForwardsCallsExtension implements MethodsClassReflectionExte
         }
 
         if (! $modelReflection->is(Model::class)) {
-            return null;
+            return false;
         }
 
         $builderType = $this->builderHelper->getBuilderTypeForModels($modelReflection->getName());
 
         if (! $builderType->hasMethod($methodName)->yes()) {
-            return null;
+            return false;
         }
 
         $reflection = $builderType->getMethod($methodName, new OutOfClassScope());

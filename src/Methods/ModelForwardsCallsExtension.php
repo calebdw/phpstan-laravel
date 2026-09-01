@@ -14,10 +14,8 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\FunctionVariant;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
-use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Reflection\ParametersAcceptor;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\ThisType;
@@ -25,8 +23,8 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\TypeWithClassName;
 
-use function array_key_exists;
 use function array_map;
+use function assert;
 use function in_array;
 
 final class ModelForwardsCallsExtension implements MethodsClassReflectionExtension
@@ -42,7 +40,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
         'decrementEachQuietly',
     ];
 
-    /** @var array<string, MethodReflection> */
+    /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
     public function __construct(
@@ -51,40 +49,25 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
     ) {
     }
 
-    /**
-     * @throws MissingMethodFromReflectionException
-     * @throws ShouldNotHappenException
-     */
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
-        if (array_key_exists($classReflection->getCacheKey() . '-' . $methodName, $this->cache)) {
-            return true;
-        }
+        $cacheKey = $classReflection->getCacheKey() . '-' . $methodName;
 
-        $methodReflection = $this->findMethod($classReflection, $methodName);
-
-        if ($methodReflection !== null) {
-            $this->cache[$classReflection->getCacheKey() . '-' . $methodName] = $methodReflection;
-
-            return true;
-        }
-
-        return false;
+        return ($this->cache[$cacheKey] ??= $this->findMethod($classReflection, $methodName)) !== false;
     }
 
     public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
     {
-        return $this->cache[$classReflection->getCacheKey() . '-' . $methodName];
+        $method = $this->cache[$classReflection->getCacheKey() . '-' . $methodName];
+        assert($method !== false);
+
+        return $method;
     }
 
-    /**
-     * @throws ShouldNotHappenException
-     * @throws MissingMethodFromReflectionException
-     */
-    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|null
+    private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|false
     {
         if (! $classReflection->is(Model::class)) {
-            return null;
+            return false;
         }
 
         if (in_array($methodName, self::FORWARDED_COUNTER_METHODS, true) && $classReflection->hasNativeMethod($methodName)) {
@@ -95,7 +78,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
         $builderReflection = $builderType->getClassReflection();
 
         if ($builderReflection === null) {
-            return null;
+            return false;
         }
 
         if ($builderReflection->hasNativeMethod($methodName)) {
@@ -121,7 +104,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
         }
 
         if (! $this->eloquentBuilderForwardsCallsExtension->hasMethod($builderReflection, $methodName)) {
-            return null;
+            return false;
         }
 
         $reflection = $this->eloquentBuilderForwardsCallsExtension->getMethod($builderReflection, $methodName);

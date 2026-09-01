@@ -24,6 +24,12 @@ use function method_exists;
 
 class ModelPropertyHelper
 {
+    /** @var array<string, ModelProperty|false> */
+    private array $accessors = [];
+
+    /** @var array<string, ModelProperty|false> */
+    private array $databaseProperties = [];
+
     public function __construct(
         private TypeStringResolver $stringResolver,
         private ModelSchema $modelSchema,
@@ -37,14 +43,25 @@ class ModelPropertyHelper
      */
     public function hasDatabaseProperty(ClassReflection $classReflection, string $propertyName): bool
     {
-        if (! $classReflection->is(Model::class)) {
+        if (! $classReflection->is(Model::class) || $classReflection->isAbstract()) {
             return false;
         }
 
-        if ($classReflection->isAbstract()) {
-            return false;
-        }
+        $cacheKey = $classReflection->getCacheKey() . '-' . $propertyName;
 
+        return ($this->databaseProperties[$cacheKey] ??= $this->resolveDatabaseProperty($classReflection, $propertyName)) !== false;
+    }
+
+    public function getDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelProperty
+    {
+        $property = $this->databaseProperties[$classReflection->getCacheKey() . '-' . $propertyName];
+        assert($property !== false);
+
+        return $property;
+    }
+
+    private function resolveDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelProperty|false
+    {
         if (ReflectionHelper::hasPropertyTag($classReflection, $propertyName)) {
             return false;
         }
@@ -55,27 +72,15 @@ class ModelPropertyHelper
             return false;
         }
 
-        if ($propertyName === $modelInstance->getKeyName()) {
-            return true;
-        }
+        if (! $this->modelSchema->hasModelColumn($modelInstance, $propertyName)) {
+            // The key is always there, even when no migration declares it.
+            if ($propertyName !== $modelInstance->getKeyName()) {
+                return false;
+            }
 
-        return $this->modelSchema->hasModelColumn($modelInstance, $propertyName);
-    }
+            $keyType = $this->stringResolver->resolve($modelInstance->getKeyType());
 
-    public function getDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelProperty
-    {
-        $modelInstance = $this->modelHelper->getModelInstance($classReflection);
-        assert($modelInstance !== null);
-
-        if (
-            $propertyName === $modelInstance->getKeyName()
-            && ! $this->modelSchema->hasModelColumn($modelInstance, $propertyName)
-        ) {
-            return new ModelProperty(
-                $classReflection,
-                $this->stringResolver->resolve($modelInstance->getKeyType()),
-                $this->stringResolver->resolve($modelInstance->getKeyType()),
-            );
+            return new ModelProperty($classReflection, $keyType, $keyType);
         }
 
         $column = $this->modelSchema->getModelColumn($modelInstance, $propertyName);
@@ -111,11 +116,7 @@ class ModelPropertyHelper
             $writableType = TypeCombinator::addNull($writableType);
         }
 
-        return new ModelProperty(
-            $classReflection,
-            $readableType,
-            $writableType,
-        );
+        return new ModelProperty($classReflection, $readableType, $writableType);
     }
 
     /** Determine if the model has a property accessor. */
@@ -125,29 +126,25 @@ class ModelPropertyHelper
             return false;
         }
 
-        $camelCase = Str::camel($propertyName);
+        $cacheKey = $classReflection->getCacheKey() . '-' . $propertyName;
 
-        // Mirrors getAccessor(): an unusable camel case method is not an
-        // answer on its own, as the legacy accessor may still be there.
-        if ($classReflection->hasNativeMethod($camelCase)) {
-            $methodReflection = $classReflection->getNativeMethod($camelCase);
-
-            if (! $methodReflection->isPublic() && ! $methodReflection->isPrivate()) {
-                $returnType = $methodReflection->getVariants()[0]->getReturnType();
-
-                if ((new ObjectType(Attribute::class))->isSuperTypeOf($returnType)->yes()) {
-                    return true;
-                }
-            }
-        }
-
-        return $classReflection->hasNativeMethod('get' . Str::studly($propertyName) . 'Attribute');
+        return ($this->accessors[$cacheKey] ??= $this->resolveAccessor($classReflection, $propertyName)) !== false;
     }
 
     public function getAccessor(ClassReflection $classReflection, string $propertyName): ModelProperty
     {
+        $property = $this->accessors[$classReflection->getCacheKey() . '-' . $propertyName];
+        assert($property !== false);
+
+        return $property;
+    }
+
+    private function resolveAccessor(ClassReflection $classReflection, string $propertyName): ModelProperty|false
+    {
         $camelCase = Str::camel($propertyName);
 
+        // Mirrors getAccessor(): an unusable camel case method is not an
+        // answer on its own, as the legacy accessor may still be there.
         if ($classReflection->hasNativeMethod($camelCase)) {
             $methodReflection = $classReflection->getNativeMethod($camelCase);
 
@@ -164,13 +161,15 @@ class ModelPropertyHelper
             }
         }
 
-        $method = $classReflection->getNativeMethod('get' . Str::studly($propertyName) . 'Attribute');
+        $methodName = 'get' . Str::studly($propertyName) . 'Attribute';
 
-        return new ModelProperty(
-            $classReflection,
-            $method->getVariants()[0]->getReturnType(),
-            $method->getVariants()[0]->getReturnType(),
-        );
+        if (! $classReflection->hasNativeMethod($methodName)) {
+            return false;
+        }
+
+        $returnType = $classReflection->getNativeMethod($methodName)->getVariants()[0]->getReturnType();
+
+        return new ModelProperty($classReflection, $returnType, $returnType);
     }
 
     private function hasDate(Model $modelInstance, string $propertyName): bool
