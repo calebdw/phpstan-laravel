@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\RelationExistenceRule;
-use CalebDW\PhpstanLaravel\Support\ModelRuleHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -14,7 +13,7 @@ class RelationExistenceRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new RelationExistenceRule(new ModelRuleHelper());
+        return self::getContainer()->getByType(RelationExistenceRule::class);
     }
 
     public function testRule(): void

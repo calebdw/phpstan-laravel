@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Query\Builder;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -18,31 +14,28 @@ use function count;
 
 final class ModelRuleHelper
 {
+    private ObjectType $modelType;
+
+    public function __construct(private BuilderHelper $builderHelper)
+    {
+        $this->modelType = new ObjectType(Model::class);
+    }
+
     public function findModelReflectionFromType(Type $type): ClassReflection|null
     {
-        if (
-            ! (new ObjectType(Builder::class))->isSuperTypeOf($type)->yes() &&
-            ! (new ObjectType(EloquentBuilder::class))->isSuperTypeOf($type)->yes() &&
-            ! (new ObjectType(Relation::class))->isSuperTypeOf($type)->yes() &&
-            ! (new ObjectType(Model::class))->isSuperTypeOf($type)->yes()
-        ) {
+        $type = TypeCombinator::removeNull($type);
+
+        // Builders and relations carry their model as a template argument;
+        // anything else is only interesting when it is a model itself.
+        $modelType = $this->modelType->isSuperTypeOf($type)->yes()
+            ? $type
+            : $this->builderHelper->getModelType($type);
+
+        if ($modelType === null) {
             return null;
         }
 
-        // We expect it to be generic builder or relation class with model type inside
-        if ((! $type instanceof GenericObjectType) && (new ObjectType(Model::class))->isSuperTypeOf($type)->no()) {
-            return null;
-        }
-
-        if ($type instanceof GenericObjectType) {
-            $modelType = $type->getTypes()[0];
-        } else {
-            $modelType = $type;
-        }
-
-        $modelType = TypeCombinator::removeNull($modelType);
-
-        $classReflections = $modelType->getObjectClassReflections();
+        $classReflections = TypeCombinator::removeNull($modelType)->getObjectClassReflections();
 
         if (count($classReflections) !== 1) {
             return null;
@@ -50,11 +43,8 @@ final class ModelRuleHelper
 
         $modelReflection = $classReflections[0];
 
-        if ($modelReflection->getName() === Model::class) {
-            return null;
-        }
-
-        if ($modelReflection->isAbstract()) {
+        // A bare Model is the unresolved template bound, not a real model.
+        if ($modelReflection->getName() === Model::class || $modelReflection->isAbstract()) {
             return null;
         }
 

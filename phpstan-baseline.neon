@@ -43,12 +43,6 @@ parameters:
 			path: src/Rules/ConsoleCommand/UndefinedArgumentOrOptionRule.php
 
 		-
-			rawMessage: Doing instanceof PHPStan\Type\Generic\GenericObjectType is error-prone and deprecated.
-			identifier: phpstanApi.instanceofType
-			count: 2
-			path: src/Rules/ModelRuleHelper.php
-
-		-
 			rawMessage: 'Call to internal method PHPStan\Rules\RuleErrorBuilder::fixNode() from outside its root namespace PHPStan.'
 			identifier: method.internal
 			count: 2
