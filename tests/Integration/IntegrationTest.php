@@ -29,6 +29,7 @@ class IntegrationTest extends PHPStanTestCase
         yield [__DIR__ . '/data/model-factories.php'];
         yield [__DIR__ . '/data/blade-view.php'];
         yield [__DIR__ . '/data/helpers.php'];
+        yield [__DIR__ . '/data/facades.php'];
         yield [__DIR__ . '/data/facade-static-call.php', [9 => ['Static call to instance method App\Facades\Importer::facadeMethod().']]];
         yield [__DIR__ . '/data/macro-call-forms.php', [33 => ['Static call to instance method Illuminate\Support\Collection<(int|string),mixed>::plainClosureMacro().']]];
         yield [__DIR__ . '/data/static-model-macro.php', [11 => ['Static call to instance method App\PostBuilder::modelBoundMacro().']]];
