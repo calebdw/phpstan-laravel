@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\HigherOrderCollectionProxy;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Type;
 use PHPStan\Type\BenevolentUnionType;
+use PHPStan\Type\BooleanType;
+use PHPStan\Type\ErrorType;
+use PHPStan\Type\FloatType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 
-use function count;
+use function array_map;
 
 class HigherOrderCollectionProxyHelper
 {
@@ -41,57 +46,92 @@ class HigherOrderCollectionProxyHelper
         return $this->members[$cacheKey] ??= $this->resolvePropertyOrMethod($classReflection, $name, $propertyOrMethod);
     }
 
+    /** @return array{methods: non-empty-list<string>, value: Type, collection: Type}|null */
+    public function getProxyTemplates(ClassReflection $classReflection): array|null
+    {
+        $templateTypeMap = $classReflection->getActiveTemplateTypeMap();
+
+        if ($templateTypeMap->count() !== 3) {
+            return null;
+        }
+
+        $methodType     = $templateTypeMap->getType('T');
+        $valueType      = $templateTypeMap->getType('TValue');
+        $collectionType = $templateTypeMap->getType('TCollection');
+
+        if ($methodType === null || $valueType === null || $collectionType === null) {
+            return null;
+        }
+
+        $methods = array_map(static fn ($m) => $m->getValue(), $methodType->getConstantStrings());
+
+        if ($methods === []) {
+            return null;
+        }
+
+        return [
+            'methods' => $methods,
+            'value' => $valueType,
+            'collection' => $collectionType,
+        ];
+    }
+
     /** @phpstan-param 'method'|'property' $propertyOrMethod */
     private function resolvePropertyOrMethod(ClassReflection $classReflection, string $name, string $propertyOrMethod): bool
     {
-        $activeTemplateTypeMap = $classReflection->getActiveTemplateTypeMap();
+        $templates = $this->getProxyTemplates($classReflection);
 
-        if ($activeTemplateTypeMap->count() !== 3) {
-            return false;
-        }
-
-        $methodType = $activeTemplateTypeMap->getType('T');
-        $valueType  = $activeTemplateTypeMap->getType('TValue');
-
-        if (($methodType === null) || ($valueType === null)) {
-            return false;
-        }
-
-        $constants = $methodType->getConstantStrings();
-
-        if (count($constants) !== 1) {
-            return false;
-        }
-
-        if (! $valueType->canCallMethods()->yes()) {
+        if ($templates === null || ! $templates['value']->canCallMethods()->yes()) {
             return false;
         }
 
         if ($propertyOrMethod === 'method') {
-            return $valueType->hasMethod($name)->yes();
+            return $templates['value']->hasMethod($name)->yes();
         }
 
-        return $valueType->hasInstanceProperty($name)->yes();
+        return $templates['value']->hasInstanceProperty($name)->yes();
     }
 
-    public function determineReturnType(
-        string $name,
-        Type\Type $valueType,
-        Type\Type $methodOrPropertyReturnType,
-        string $collectionType,
-        Type\Type $collectionKeyType,
-    ): Type\Type {
-        $integerType = new Type\IntegerType();
+    /**
+     * @param  non-empty-list<string> $methods
+     * @param  list<string>           $collectionClasses
+     */
+    public function determineReturnType(array $methods, Type $valueType, Type $methodOrPropertyReturnType, array $collectionClasses, Type $collectionKeyType): Type
+    {
+        if ($collectionClasses === []) {
+            $collectionClasses = [Collection::class];
+        }
+
+        $types = [];
+
+        foreach ($methods as $name) {
+            foreach ($collectionClasses as $collectionClass) {
+                $types[] = $this->determineSingleReturnType(
+                    $name,
+                    $valueType,
+                    $methodOrPropertyReturnType,
+                    $collectionClass,
+                    $collectionKeyType,
+                );
+            }
+        }
+
+        return TypeCombinator::union(...$types);
+    }
+
+    private function determineSingleReturnType(string $name, Type $valueType, Type $methodOrPropertyReturnType, string $collectionType, Type $collectionKeyType): Type
+    {
+        $integerType = new IntegerType();
 
         switch ($name) {
             case 'average':
             case 'avg':
-                $returnType = new Type\FloatType();
+                $returnType = new FloatType();
                 break;
             case 'contains':
             case 'every':
             case 'some':
-                $returnType = new Type\BooleanType();
+                $returnType = new BooleanType();
                 break;
             case 'each':
             case 'filter':
@@ -113,10 +153,10 @@ class HigherOrderCollectionProxyHelper
                 );
                 break;
             case 'first':
-                $returnType = Type\TypeCombinator::addNull($valueType);
+                $returnType = TypeCombinator::addNull($valueType);
                 break;
             case 'flatMap':
-                $returnType = $this->getCollectionType(SupportCollection::class, $integerType, new Type\MixedType());
+                $returnType = $this->getCollectionType(SupportCollection::class, $integerType, new MixedType());
                 break;
             case 'groupBy':
                 $returnType = $this->getCollectionType(
@@ -143,22 +183,22 @@ class HigherOrderCollectionProxyHelper
                 $returnType = $methodOrPropertyReturnType;
                 break;
             case 'sum':
-                if ($methodOrPropertyReturnType->accepts(new Type\IntegerType(), true)->yes()) {
-                    $returnType = new Type\IntegerType();
+                if ($methodOrPropertyReturnType->accepts(new IntegerType(), true)->yes()) {
+                    $returnType = new IntegerType();
                 } else {
-                    $returnType = new Type\ErrorType();
+                    $returnType = new ErrorType();
                 }
 
                 break;
             default:
-                $returnType = new Type\ErrorType();
+                $returnType = new ErrorType();
                 break;
         }
 
         return $returnType;
     }
 
-    private function getCollectionType(string $collectionClassName, Type\Type $keyType, Type\Type $valueType): Type\Type
+    private function getCollectionType(string $collectionClassName, Type $keyType, Type $valueType): Type
     {
         $collectionReflection = $this->reflectionProvider->getClass($collectionClassName);
 

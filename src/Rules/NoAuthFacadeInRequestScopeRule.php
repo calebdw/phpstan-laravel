@@ -67,6 +67,7 @@ class NoAuthFacadeInRequestScopeRule implements Rule
 
         if ($scope->isInClass() && $scope->getClassReflection()->is(Request::class)) {
             return [
+                /** @phpstan-ignore method.internal (still experimental) */
                 RuleErrorBuilder::message(sprintf($message, 'this'))
                     ->identifier('laravel.authInRequestScope.facade')
                     ->fixNode($node, static function (Node $node) use ($methodName) {
@@ -93,6 +94,7 @@ class NoAuthFacadeInRequestScopeRule implements Rule
         }
 
         return [
+            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message(sprintf($message, 'request'))
                 ->identifier('laravel.authInRequestScope.facade')
                 ->fixNode($node, static function (Node $node) use ($methodName) {

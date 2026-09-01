@@ -72,7 +72,7 @@ final class UndefinedArgumentOrOptionRule implements Rule
         $errors = [];
 
         foreach ($this->consoleApplicationResolver->findCommands($classReflection) as $name => $command) {
-            $command->mergeApplicationDefinition();
+            $command->mergeApplicationDefinition(); // @phpstan-ignore method.internal (acceptable)
 
             if ($methodName === 'argument') {
                 if (! $command->getDefinition()->hasArgument($argName)) {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\HigherOrderCollectionProxy;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -13,7 +12,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
-use function count;
+use function array_map;
 
 final class HigherOrderCollectionProxyOnlyExtension implements DynamicMethodReturnTypeExtension
 {
@@ -33,32 +32,24 @@ final class HigherOrderCollectionProxyOnlyExtension implements DynamicMethodRetu
         return $methodReflection->getName() === 'only';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $proxyType      = $scope->getType($methodCall->var);
         $methodType     = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'T');
         $valueType      = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'TValue');
         $collectionType = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'TCollection');
 
-        $methods = $methodType->getConstantStrings();
+        $methods = array_map(static fn ($m) => $m->getValue(), $methodType->getConstantStrings());
 
-        if (count($methods) !== 1 || $valueType->canCallMethods()->no()) {
+        if ($methods === [] || $valueType->canCallMethods()->no()) {
             return null;
         }
 
-        $collectionClassNames = $collectionType->getObjectClassNames();
-        $collectionClassName  = count($collectionClassNames) === 0
-            ? Collection::class
-            : $collectionClassNames[0];
-
         return $this->higherOrderCollectionProxyHelper->determineReturnType(
-            $methods[0]->getValue(),
+            $methods,
             $valueType,
             $this->modelOnlyExtension->getTypeForModel($methodCall, $valueType, $scope),
-            $collectionClassName,
+            $collectionType->getObjectClassNames(),
             $collectionType->getIterableKeyType(),
         );
     }

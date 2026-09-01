@@ -63,7 +63,7 @@ class CommandArgumentDynamicReturnTypeExtension implements DynamicMethodReturnTy
             $returnTypes = [];
 
             foreach ($this->consoleApplicationResolver->findCommands($classReflection) as $command) {
-                $command->mergeApplicationDefinition();
+                $command->mergeApplicationDefinition(); // @phpstan-ignore method.internal (acceptable)
                 $returnTypes[] = $command->getDefinition()->hasArgument($constantStrings[0]->getValue());
             }
 
@@ -92,7 +92,7 @@ class CommandArgumentDynamicReturnTypeExtension implements DynamicMethodReturnTy
 
             foreach ($this->consoleApplicationResolver->findCommands($classReflection) as $command) {
                 try {
-                    $command->mergeApplicationDefinition();
+                    $command->mergeApplicationDefinition(); // @phpstan-ignore method.internal (acceptable)
                     $argument = $command->getDefinition()->getArgument($argName);
 
                     $argTypes[] = $this->consoleApplicationHelper->getArgumentType($scope, $argument);

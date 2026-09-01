@@ -70,6 +70,7 @@ class NoAuthHelperInRequestScopeRule implements Rule
 
         if ($scope->isInClass() && $scope->getClassReflection()->is(Request::class)) {
             return [
+                /** @phpstan-ignore method.internal (still experimental) */
                 RuleErrorBuilder::message(sprintf($message, 'this'))
                     ->identifier('laravel.authInRequestScope.helper')
                     ->fixNode($node, static function (Node $node) use ($methodName) {
@@ -96,6 +97,7 @@ class NoAuthHelperInRequestScopeRule implements Rule
         }
 
         return [
+            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message(sprintf($message, 'request'))
                 ->identifier('laravel.authInRequestScope.helper')
                 ->fixNode($node, static function (Node $node) use ($methodName) {

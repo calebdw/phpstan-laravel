@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Properties;
 
 use CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper;
-use Illuminate\Database\Eloquent\Collection;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
-use PHPStan\Type;
+
+use function assert;
 
 final class HigherOrderCollectionProxyPropertyExtension implements PropertiesClassReflectionExtension
 {
@@ -23,35 +23,19 @@ final class HigherOrderCollectionProxyPropertyExtension implements PropertiesCla
         return $this->higherOrderCollectionProxyHelper->hasPropertyOrMethod($classReflection, $propertyName, 'property');
     }
 
-    public function getProperty(
-        ClassReflection $classReflection,
-        string $propertyName,
-    ): PropertyReflection {
-        $activeTemplateTypeMap = $classReflection->getActiveTemplateTypeMap();
+    public function getProperty(ClassReflection $classReflection, string $propertyName): PropertyReflection
+    {
+        $templates = $this->higherOrderCollectionProxyHelper->getProxyTemplates($classReflection);
+        assert($templates !== null);
 
-        /** @var Type\Constant\ConstantStringType $methodType */
-        $methodType = $activeTemplateTypeMap->getType('T');
-
-        /** @var Type\ObjectType $modelType */
-        $modelType = $activeTemplateTypeMap->getType('TValue');
-
-        /** @var Type\Type $collectionType */
-        $collectionType = $activeTemplateTypeMap->getType('TCollection');
-
-        $propertyType = $modelType->getInstanceProperty($propertyName, new OutOfClassScope())->getReadableType();
-
-        if ($collectionType->getObjectClassNames() !== []) {
-            $collectionClassName = $collectionType->getObjectClassNames()[0];
-        } else {
-            $collectionClassName = Collection::class;
-        }
+        $propertyType = $templates['value']->getInstanceProperty($propertyName, new OutOfClassScope())->getReadableType();
 
         $returnType = $this->higherOrderCollectionProxyHelper->determineReturnType(
-            $methodType->getValue(),
-            $modelType,
+            $templates['methods'],
+            $templates['value'],
             $propertyType,
-            $collectionClassName,
-            $collectionType->getIterableKeyType(),
+            $templates['collection']->getObjectClassNames(),
+            $templates['collection']->getIterableKeyType(),
         );
 
         return new ModelProperty($classReflection, $returnType, $returnType, writeable: false);

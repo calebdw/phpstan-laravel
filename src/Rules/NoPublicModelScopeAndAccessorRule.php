@@ -49,6 +49,7 @@ class NoPublicModelScopeAndAccessorRule implements Rule
         if ($this->isScopeMethod($node)) {
             if (! $node->getOriginalNode()->isProtected()) {
                 return [
+                    /** @phpstan-ignore method.internal (still experimental) */
                     RuleErrorBuilder::message(
                         sprintf(
                             "Local query scope method '%s' should be declared as protected.",
@@ -73,6 +74,7 @@ class NoPublicModelScopeAndAccessorRule implements Rule
         if ($this->isAccessorMethod($node)) {
             if (! $node->getOriginalNode()->isProtected()) {
                 return [
+                    /** @phpstan-ignore method.internal (still experimental) */
                     RuleErrorBuilder::message(
                         sprintf(
                             "Model accessor method '%s' should be declared as protected.",

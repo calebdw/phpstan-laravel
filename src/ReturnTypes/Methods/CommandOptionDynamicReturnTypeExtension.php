@@ -64,7 +64,7 @@ class CommandOptionDynamicReturnTypeExtension implements DynamicMethodReturnType
             $returnTypes = [];
 
             foreach ($this->consoleApplicationResolver->findCommands($classReflection) as $command) {
-                $command->mergeApplicationDefinition();
+                $command->mergeApplicationDefinition(); // @phpstan-ignore method.internal (acceptable)
                 $definition    = $command->getDefinition();
                 $returnTypes[] = $definition->hasOption($argName) || $definition->hasShortcut($argName);
             }
@@ -94,7 +94,7 @@ class CommandOptionDynamicReturnTypeExtension implements DynamicMethodReturnType
 
             foreach ($this->consoleApplicationResolver->findCommands($classReflection) as $command) {
                 try {
-                    $command->mergeApplicationDefinition();
+                    $command->mergeApplicationDefinition(); // @phpstan-ignore method.internal (acceptable)
                     $definition = $command->getDefinition();
 
                     if ($definition->hasShortcut($argName)) {

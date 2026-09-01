@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use Illuminate\Database\Eloquent\Attributes\CollectedBy;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -96,8 +97,7 @@ final class CollectionHelper
             return null;
         }
 
-        /** @phpstan-ignore argument.type (Attribute class might not exist) */
-        $attrs = $modelReflection->getNativeReflection()->getAttributes('Illuminate\Database\Eloquent\Attributes\CollectedBy');
+        $attrs = $modelReflection->getNativeReflection()->getAttributes(CollectedBy::class);
 
         if ($attrs !== []) {
             $expr =  $attrs[0]->getArgumentsExpressions()[0];

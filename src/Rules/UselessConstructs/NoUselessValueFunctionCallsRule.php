@@ -46,6 +46,7 @@ class NoUselessValueFunctionCallsRule implements Rule
         }
 
         return [
+            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message("Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything")
                 ->line($node->getStartLine())
                 ->identifier('laravel.uselessConstructs.value')
