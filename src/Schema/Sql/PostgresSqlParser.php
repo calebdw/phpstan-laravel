@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Sql;
+namespace CalebDW\PhpstanLaravel\Schema\Sql;
 
 use CalebDW\PgSchemaParser\Column;
 use CalebDW\PgSchemaParser\Database;

@@ -9,7 +9,7 @@ use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use CalebDW\PhpstanLaravel\Schema\SchemaDumpParser;
 use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;

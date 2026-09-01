@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Sql;
 
-use CalebDW\PhpstanLaravel\Sql\IamcalSqlParser;
-use CalebDW\PhpstanLaravel\Sql\PhpMyAdminSqlParser;
-use CalebDW\PhpstanLaravel\Sql\PostgresSqlParser;
-use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
-use CalebDW\PhpstanLaravel\Sql\SqlParserNotAvailable;
+use CalebDW\PhpstanLaravel\Schema\Sql\IamcalSqlParser;
+use CalebDW\PhpstanLaravel\Schema\Sql\PhpMyAdminSqlParser;
+use CalebDW\PhpstanLaravel\Schema\Sql\PostgresSqlParser;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserNotAvailable;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Concerns\SkipsMissingSqlParsers;

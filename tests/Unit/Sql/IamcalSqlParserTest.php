@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Sql;
 
-use CalebDW\PhpstanLaravel\Sql\ColumnDefinition;
-use CalebDW\PhpstanLaravel\Sql\IamcalSqlParser;
-use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
-use CalebDW\PhpstanLaravel\Sql\TableDefinition;
+use CalebDW\PhpstanLaravel\Schema\Sql\ColumnDefinition;
+use CalebDW\PhpstanLaravel\Schema\Sql\IamcalSqlParser;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Schema\Sql\TableDefinition;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Concerns\SkipsMissingSqlParsers;

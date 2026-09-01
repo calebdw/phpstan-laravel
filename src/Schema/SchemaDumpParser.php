@@ -7,9 +7,9 @@ namespace CalebDW\PhpstanLaravel\Schema;
 use CalebDW\PhpstanLaravel\Schema\Type\DataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Sql\SqlDialect;
-use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
-use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlDialect;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use SplFileInfo;
 

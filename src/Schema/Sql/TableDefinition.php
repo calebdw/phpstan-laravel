@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Sql;
+namespace CalebDW\PhpstanLaravel\Schema\Sql;
 
 /** A table as described by a schema dump, independent of the parser that read it. */
 final class TableDefinition

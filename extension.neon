@@ -287,7 +287,7 @@ services:
     arguments: {tmpDir: %tmpDir%}
   - class: CalebDW\PhpstanLaravel\ResultCache\SchemaResultCacheMetaExtension
     tags: [phpstan.resultCacheMetaExtension]
-  - class: CalebDW\PhpstanLaravel\Sql\SqlParserManager
+  - class: CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager
     arguments: {defaultDriver: %laravel.sqlParser%}
   - class: CalebDW\PhpstanLaravel\Support\ModelCastHelper
   - class: CalebDW\PhpstanLaravel\Schema\ModelSchema

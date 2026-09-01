@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Sql;
 
-use CalebDW\PhpstanLaravel\Sql\IamcalSqlParser;
-use CalebDW\PhpstanLaravel\Sql\PhpMyAdminSqlParser;
-use CalebDW\PhpstanLaravel\Sql\SqlParser;
-use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
-use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Schema\Sql\IamcalSqlParser;
+use CalebDW\PhpstanLaravel\Schema\Sql\PhpMyAdminSqlParser;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParser;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;

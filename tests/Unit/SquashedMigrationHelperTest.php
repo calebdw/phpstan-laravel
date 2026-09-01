@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use CalebDW\PhpstanLaravel\Schema\SchemaDumpParser;
-use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
-use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;

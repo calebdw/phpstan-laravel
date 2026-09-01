@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Concerns;
 
-use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
 
 use function class_exists;
 use function sprintf;
