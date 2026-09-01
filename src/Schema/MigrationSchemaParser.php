@@ -6,6 +6,8 @@ namespace CalebDW\PhpstanLaravel\Schema;
 
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Exception;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
@@ -48,22 +50,48 @@ final class MigrationSchemaParser
     /** @var list<Connection> */
     private array $connectionStack = [];
 
+    private NodeFinder $nodeFinder;
+
+    private ObjectType $schemaFacadeType;
+
+    private ObjectType $blueprintType;
+
+    /** @var array<string, bool> */
+    private array $schemaFacades = [];
+
     public function __construct(
         private ModelSchema $modelSchema,
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
     ) {
+        $this->nodeFinder       = new NodeFinder();
+        $this->schemaFacadeType = new ObjectType(Schema::class);
+        $this->blueprintType    = new ObjectType(Blueprint::class);
+    }
+
+    /**
+     * Is the given class name the Schema facade?
+     *
+     * Migrations reference the facade on nearly every statement, so the
+     * subtype check is remembered per class name rather than repeated.
+     */
+    private function isSchemaFacade(Name $class): bool
+    {
+        $className = $class->toCodeString();
+
+        if ($className === Schema::class || $className === '\Schema') {
+            return true;
+        }
+
+        return $this->schemaFacades[$className] ??= $this->schemaFacadeType
+            ->isSuperTypeOf(new ObjectType($className))
+            ->yes();
     }
 
     /** @param  array<int, Stmt> $stmts */
     public function addStatements(array $stmts): void
     {
-        $nodeFinder = new NodeFinder();
-
-        /** @var Class_[] $classes */
-        $classes = $nodeFinder->findInstanceOf($stmts, Class_::class);
-
-        foreach ($classes as $stmt) {
+        foreach ($this->nodeFinder->findInstanceOf($stmts, Class_::class) as $stmt) {
             $this->addClassStatements($stmt->stmts);
         }
     }
@@ -71,13 +99,9 @@ final class MigrationSchemaParser
     /** @param  array<int, Stmt> $stmts */
     private function addClassStatements(array $stmts): void
     {
-        $nodeFinder = new NodeFinder();
-
-        /** @var  Property[] $properties */
-        $properties     = $nodeFinder->findInstanceOf($stmts, Property::class);
         $connectionName = null;
 
-        foreach ($properties as $method) {
+        foreach ($this->nodeFinder->findInstanceOf($stmts, Property::class) as $method) {
             if ($method->props[0]->name->name !== 'connection') {
                 continue;
             }
@@ -109,12 +133,9 @@ final class MigrationSchemaParser
     /** @param  Stmt[] $stmts */
     private function addUpMethodStatements(array $stmts): void
     {
-        $nodeFinder = new NodeFinder();
-        $methods    = $nodeFinder->findInstanceOf($stmts, Expression::class);
-
         $schemaVariables = [];
 
-        foreach ($methods as $stmt) {
+        foreach ($this->nodeFinder->findInstanceOf($stmts, Expression::class) as $stmt) {
             $connection = null;
 
             if (
@@ -141,7 +162,7 @@ final class MigrationSchemaParser
                 && $stmt->expr->var->class instanceof Name
                 && $stmt->expr->var->name instanceof Identifier
                 && in_array($stmt->expr->var->name->name, ['connection', 'setConnection'], strict: true)
-                && ($stmt->expr->var->class->toCodeString() === '\Schema' || (new ObjectType('Illuminate\Support\Facades\Schema'))->isSuperTypeOf(new ObjectType($stmt->expr->var->class->toCodeString()))->yes())
+                && $this->isSchemaFacade($stmt->expr->var->class)
             ) {
                 $statement = $stmt->expr;
                 $args      = $stmt->expr->var->getArgs();
@@ -163,7 +184,7 @@ final class MigrationSchemaParser
                 $stmt->expr instanceof StaticCall
                 && $stmt->expr->class instanceof Name
                 && $stmt->expr->name instanceof Identifier
-                && ($stmt->expr->class->toCodeString() === '\Schema' || (new ObjectType('Illuminate\Support\Facades\Schema'))->isSuperTypeOf(new ObjectType($stmt->expr->class->toCodeString()))->yes())
+                && $this->isSchemaFacade($stmt->expr->class)
             ) {
                 $statement = $stmt->expr;
             } else {
@@ -200,8 +221,7 @@ final class MigrationSchemaParser
             && $expr->class instanceof Name
             && $expr->name instanceof Identifier
             && in_array($expr->name->name, ['connection', 'setConnection'], strict: true)
-            && ($expr->class->toCodeString() === '\\Schema'
-                || (new ObjectType('Illuminate\Support\Facades\Schema'))->isSuperTypeOf(new ObjectType($expr->class->toCodeString()))->yes());
+            && $this->isSchemaFacade($expr->class);
     }
 
     private function getConnectionName(StaticCall $call): string|null
@@ -272,7 +292,7 @@ final class MigrationSchemaParser
             || count($call->getArgs()[1]->value->params) < 1
             || (
                 $call->getArgs()[1]->value->params[0]->type instanceof Name
-                && ! (new ObjectType('Illuminate\Database\Schema\Blueprint'))->isSuperTypeOf(new ObjectType($call->getArgs()[1]->value->params[0]->type->toCodeString()))->yes()
+                && ! $this->blueprintType->isSuperTypeOf(new ObjectType($call->getArgs()[1]->value->params[0]->type->toCodeString()))->yes()
             )
         ) {
             return;
@@ -538,13 +558,12 @@ final class MigrationSchemaParser
         }
 
         $statements = [];
-        $nodeFinder = new NodeFinder();
 
         foreach ($updateClosure->stmts as $updateStatement) {
             if ($updateStatement instanceof If_) {
                 $statements = array_merge(
                     $statements,
-                    $nodeFinder->findInstanceOf($updateStatement, Expression::class),
+                    $this->nodeFinder->findInstanceOf($updateStatement, Expression::class),
                 );
 
                 continue;

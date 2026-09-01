@@ -31,11 +31,13 @@ use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeWithClassName;
 use PHPStan\Type\VerbosityLevel;
 
+use function array_flip;
 use function array_key_exists;
 use function array_shift;
 use function collect;
 use function count;
 use function in_array;
+use function is_array;
 use function is_string;
 use function preg_split;
 use function strtolower;
@@ -50,8 +52,11 @@ final class BuilderHelper
 
     public const array MODEL_CREATION_METHODS = ['make', 'create', 'forceCreate', 'findOrNew', 'firstOrNew', 'updateOrCreate', 'firstOrCreate', 'createOrFirst'];
 
-    /** @var list<lowercase-string> */
+    /** @var array<lowercase-string, int> */
     private array $passthru;
+
+    /** @var array<string, string> */
+    private array $builderNames = [];
 
     public function __construct(
         private ReflectionProvider $reflectionProvider,
@@ -249,11 +254,12 @@ final class BuilderHelper
         return new GenericObjectType($builderClassName, [$modelType]);
     }
 
-    /**
-     * @throws MissingMethodFromReflectionException
-     * @throws ShouldNotHappenException
-     */
     public function determineBuilderName(string $modelClassName): string
+    {
+        return $this->builderNames[$modelClassName] ??= $this->resolveBuilderName($modelClassName);
+    }
+
+    private function resolveBuilderName(string $modelClassName): string
     {
         $modelReflection = $this->reflectionProvider->getClass($modelClassName);
         $method          = $modelReflection->getNativeMethod('newEloquentBuilder');
@@ -292,6 +298,13 @@ final class BuilderHelper
      */
     public function getBuilderTypeForModels(array|string|TypeWithClassName $models): Type
     {
+        // A single model is by far the common case, and does not need grouping.
+        if (! is_array($models)) {
+            return is_string($models)
+                ? $this->getBuilderType($this->determineBuilderName($models), new ObjectType($models))
+                : $this->getBuilderType($this->determineBuilderName($models->getClassName()), $models);
+        }
+
         return collect()
             ->wrap($models)
             ->unique()
@@ -310,10 +323,10 @@ final class BuilderHelper
 
     public function methodIsBuilderPassthru(string $methodName): bool
     {
-        return in_array(strtolower($methodName), $this->getEloquentBuilderPassthru(), true);
+        return isset($this->getEloquentBuilderPassthru()[strtolower($methodName)]);
     }
 
-    /** @return list<lowercase-string> */
+    /** @return array<lowercase-string, int> */
     private function getEloquentBuilderPassthru(): array
     {
         if (isset($this->passthru)) {
@@ -321,12 +334,16 @@ final class BuilderHelper
         }
 
         if (! $this->reflectionProvider->hasClass(EloquentBuilder::class)) {
-            return [];
+            return $this->passthru = [];
         }
 
-        return $this->passthru = $this->reflectionProvider
+        /** @var list<lowercase-string> $passthru */
+        $passthru = $this->reflectionProvider
             ->getClass(EloquentBuilder::class)
             ->getNativeReflection()
             ->getDefaultProperties()['passthru'] ?? [];
+
+        // Flipped so lookups are a hash hit rather than a linear scan.
+        return $this->passthru = array_flip($passthru);
     }
 }

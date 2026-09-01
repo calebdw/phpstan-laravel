@@ -28,8 +28,11 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
     /** @var array<string, ModelProperty|false> */
     private array $properties = [];
 
+    private ObjectType $relationObjectType;
+
     public function __construct(private CollectionHelper $collectionHelper)
     {
+        $this->relationObjectType = new ObjectType(Relation::class);
     }
 
     public function hasProperty(ClassReflection $classReflection, string $propertyName): bool
@@ -64,17 +67,17 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
 
             $returnType = $classReflection->getNativeMethod($methodName)->getVariants()[0]->getReturnType();
 
-            if ((new ObjectType(Relation::class))->isSuperTypeOf($returnType)->yes()) {
+            if ($this->relationObjectType->isSuperTypeOf($returnType)->yes()) {
                 if (str_ends_with($propertyName, '_count')) {
                     return new ModelProperty($classReflection, IntegerRangeType::createAllGreaterThanOrEqualTo(0), new NeverType(), false);
                 }
 
-                $relationType = TypeTraverser::map($returnType, static function (Type $type, callable $traverse): Type {
+                $relationType = TypeTraverser::map($returnType, function (Type $type, callable $traverse): Type {
                     if ($type instanceof UnionType || $type instanceof IntersectionType) {
                         return $traverse($type);
                     }
 
-                    if (! (new ObjectType(Relation::class))->isSuperTypeOf($type)->yes()) {
+                    if (! $this->relationObjectType->isSuperTypeOf($type)->yes()) {
                         return $type;
                     }
 

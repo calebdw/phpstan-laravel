@@ -43,10 +43,13 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
     /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
+    private ObjectType $builderType;
+
     public function __construct(
         private BuilderHelper $builderHelper,
         private EloquentBuilderForwardsCallsExtension $eloquentBuilderForwardsCallsExtension,
     ) {
+        $this->builderType = new ObjectType(Builder::class);
     }
 
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
@@ -148,8 +151,8 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
 
     private function transformStaticType(Type $type, ObjectType $builder): Type
     {
-        return TypeTraverser::map($type, static function (Type $type, callable $traverse) use ($builder): Type {
-            if ($type instanceof StaticType && (new ObjectType(Builder::class))->isSuperTypeOf($type)->yes()) {
+        return TypeTraverser::map($type, function (Type $type, callable $traverse) use ($builder): Type {
+            if ($type instanceof StaticType && $this->builderType->isSuperTypeOf($type)->yes()) {
                 return $builder;
             }
 
