@@ -15,7 +15,20 @@ final class Column
         public bool $nullable = false,
         /** @var array<int, string> */
         public array|null $options = null,
+        string|null $writeableType = null,
     ) {
-        $this->writeableType = $readableType;
+        $this->writeableType = $writeableType ?? $this->readableType;
+    }
+
+    /** @param array{name: string, readableType: string, nullable: bool, options: array<int, string>|null, writeableType: string} $properties */
+    public static function __set_state(array $properties): self
+    {
+        return new self(
+            $properties['name'],
+            $properties['readableType'],
+            $properties['nullable'],
+            $properties['options'],
+            $properties['writeableType'],
+        );
     }
 }

@@ -20,6 +20,7 @@ final class ModelSchema
         private SchemaDumpParser $schemaDumpParser,
         private MigrationFileParser $migrationFileParser,
         private ContainerHelper $containerHelper,
+        private SchemaCache|null $schemaCache = null,
     ) {
     }
 
@@ -100,8 +101,28 @@ final class ModelSchema
 
         $this->initialized = true;
 
-        // First try to create tables from any squashed migrations.
-        // Then scan the normal migration files for further changes to tables.
+        if ($this->schemaCache === null) {
+            $this->parseSchema();
+
+            return;
+        }
+
+        $schemaCache = $this->schemaCache;
+        $inputHash   = $schemaCache->inputHash();
+        $cached      = $schemaCache->load($inputHash);
+
+        if ($cached !== null) {
+            $this->connections = $cached;
+
+            return;
+        }
+
+        $this->parseSchema();
+        $schemaCache->save($inputHash, $this->connections);
+    }
+
+    private function parseSchema(): void
+    {
         $this->schemaDumpParser->parseSchemaDumps($this);
         $this->migrationFileParser->parseMigrations($this);
     }

@@ -1,6 +1,9 @@
 includes:
     - ../extension.neon
 parameters:
+    laravel:
+        migrationDirectories:
+            - %rootDir%/../../../tests/application/database/migrations
     bootstrapFiles:
         - ../bootstrap.php
         - bootstrap.php
@@ -9,4 +12,3 @@ parameters:
         - '#Return typehint of method Tests\\Features\\ReturnTypes\\Facades::testHttpBaseUrl\(\) has invalid type Illuminate\\Http\\Client\\PendingRequest\.#'
         - '#Call to static method baseUrl\(\) on an unknown class Illuminate\\Support\\Facades\\Http\.#'
         - '#testDiskGetDriver\(\) has invalid type League\\Flysystem\\FilesystemInterface.#'
-

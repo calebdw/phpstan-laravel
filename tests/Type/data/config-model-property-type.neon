@@ -3,3 +3,5 @@ includes:
 parameters:
     laravel:
         modelPropertyType: true
+        migrationDirectories:
+            - %rootDir%/../../../tests/application/database/migrations

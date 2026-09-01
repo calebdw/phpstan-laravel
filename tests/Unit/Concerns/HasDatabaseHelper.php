@@ -25,6 +25,11 @@ trait HasDatabaseHelper
 
     public function setUp(): void
     {
+        $this->setUpHasDatabaseHelper();
+    }
+
+    private function setUpHasDatabaseHelper(): void
+    {
         $this->modelHelper = new ModelHelper($this->createReflectionProvider());
 
         $this->modelDatabaseHelper = new ModelSchema(

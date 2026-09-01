@@ -11,15 +11,18 @@ use CalebDW\PhpstanLaravel\Sql\SqlDialect;
 use CalebDW\PhpstanLaravel\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
+use SplFileInfo;
 
 use function array_key_exists;
-use function database_path;
 use function explode;
 use function file_get_contents;
 use function ksort;
 
 final class SchemaDumpParser
 {
+    /** @var array<string, SplFileInfo>|null */
+    private array|null $files = null;
+
     /** @param  string[] $schemaPaths */
     public function __construct(
         private array $schemaPaths,
@@ -28,7 +31,13 @@ final class SchemaDumpParser
         private PostgresDataTypeToPhpTypeConverter $postgresConverter,
         private SqlParserManager $parserManager,
         private bool $scanSchema,
+        string $currentWorkingDirectory = '',
     ) {
+        if ($this->schemaPaths !== []) {
+            return;
+        }
+
+        $this->schemaPaths = [$currentWorkingDirectory . '/database/schema'];
     }
 
     private function converterFor(SqlDialect $dialect): DataTypeToPhpTypeConverter
@@ -41,27 +50,17 @@ final class SchemaDumpParser
 
     public function parseSchemaDumps(ModelSchema &$modelSchema): void
     {
-        if (! $this->scanSchema) {
+        $files = $this->files();
+
+        if ($files === []) {
             return;
         }
-
-        if (empty($this->schemaPaths)) {
-            $this->schemaPaths = [database_path('schema')];
-        }
-
-        $filesArray = $this->fileHelper->getFiles($this->schemaPaths, '/\.dump|\.sql/i');
-
-        if (empty($filesArray)) {
-            return;
-        }
-
-        ksort($filesArray);
 
         // Resolved lazily: neither parser is a hard requirement, so a project
         // without schema dumps never needs one installed.
         $parser = $this->parserManager->driver();
 
-        foreach ($filesArray as $file) {
+        foreach ($files as $file) {
             // Laravel generates schema files with the format `connectionName-schema.{sql,dump}`
             // If the file name does not match the expected format, then we just use the
             // file name as the connection name.
@@ -102,5 +101,22 @@ final class SchemaDumpParser
 
             $modelSchema->setConnection($connection);
         }
+    }
+
+    /** @return array<string, SplFileInfo> */
+    public function files(): array
+    {
+        if ($this->files !== null) {
+            return $this->files;
+        }
+
+        if (! $this->scanSchema) {
+            return $this->files = [];
+        }
+
+        $this->files = $this->fileHelper->getFiles($this->schemaPaths, '/\.dump|\.sql/i');
+        ksort($this->files);
+
+        return $this->files;
     }
 }

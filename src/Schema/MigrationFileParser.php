@@ -11,12 +11,13 @@ use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Reflection\ReflectionProvider;
 use SplFileInfo;
 
-use function count;
-use function database_path;
 use function uasort;
 
 class MigrationFileParser
 {
+    /** @var array<string, SplFileInfo>|null */
+    private array|null $files = null;
+
     public function __construct(
         private Parser $parser,
         /** @var string[] */
@@ -25,36 +26,43 @@ class MigrationFileParser
         private bool $scanMigrations,
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
+        string $currentWorkingDirectory = '',
     ) {
+        if ($this->databaseMigrationPath !== []) {
+            return;
+        }
+
+        $this->databaseMigrationPath = [$currentWorkingDirectory . '/database/migrations'];
     }
 
     public function parseMigrations(ModelSchema &$modelSchema): void
     {
-        if (! $this->scanMigrations) {
-            return;
-        }
-
-        if (count($this->databaseMigrationPath) === 0) {
-            $this->databaseMigrationPath = [database_path('migrations')];
-        }
-
         $schemaParser = new MigrationSchemaParser($modelSchema, $this->modelHelper, $this->reflectionProvider);
-        $filesArray   = $this->fileHelper->getFiles($this->databaseMigrationPath, '/\.php$/i', recursive: false);
 
-        if (empty($filesArray)) {
-            return;
-        }
-
-        uasort($filesArray, static function (SplFileInfo $a, SplFileInfo $b) {
-            return $a->getFilename() <=> $b->getFilename();
-        });
-
-        foreach ($filesArray as $file) {
+        foreach ($this->files() as $file) {
             try {
                 $schemaParser->addStatements($this->parser->parseFile($file->getPathname()));
             } catch (ParserErrorsException) {
                 continue;
             }
         }
+    }
+
+    /** @return array<string, SplFileInfo> */
+    public function files(): array
+    {
+        if ($this->files !== null) {
+            return $this->files;
+        }
+
+        if (! $this->scanMigrations) {
+            return $this->files = [];
+        }
+
+        $this->files = $this->fileHelper->getFiles($this->databaseMigrationPath, '/\.php$/i', recursive: false);
+
+        uasort($this->files, static fn ($a, $b) => $a->getFilename() <=> $b->getFilename());
+
+        return $this->files;
     }
 }

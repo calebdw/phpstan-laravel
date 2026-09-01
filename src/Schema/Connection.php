@@ -6,11 +6,11 @@ namespace CalebDW\PhpstanLaravel\Schema;
 
 final class Connection
 {
-    /** @var array<string, Table> */
-    public array $tables = [];
-
-    public function __construct(public string $name)
-    {
+    public function __construct(
+        public string $name,
+        /** @var array<string, Table> */
+        public array $tables = [],
+    ) {
     }
 
     public function setTable(Table $table): void
@@ -36,5 +36,11 @@ final class Connection
     public function dropTable(string $tableName): void
     {
         unset($this->tables[$tableName]);
+    }
+
+    /** @param array{name: string, tables: array<string, Table>} $properties */
+    public static function __set_state(array $properties): self
+    {
+        return new self($properties['name'], $properties['tables']);
     }
 }

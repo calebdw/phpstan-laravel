@@ -281,9 +281,13 @@ services:
   - class: CalebDW\PhpstanLaravel\Support\ManagerHelper
   - class: CalebDW\PhpstanLaravel\Support\AuthHelper
   - class: CalebDW\PhpstanLaravel\Schema\MigrationFileParser
-    arguments: {databaseMigrationPath: %laravel.migrationDirectories%, scanMigrations: %laravel.scanMigrations%, parser: @currentPhpVersionSimpleDirectParser}
+    arguments: {databaseMigrationPath: %laravel.migrationDirectories%, scanMigrations: %laravel.scanMigrations%, parser: @currentPhpVersionSimpleDirectParser, currentWorkingDirectory: '%currentWorkingDirectory%'}
   - class: CalebDW\PhpstanLaravel\Schema\SchemaDumpParser
-    arguments: {schemaPaths: %laravel.schemaDirectories%, scanSchema: %laravel.scanSchema%}
+    arguments: {schemaPaths: %laravel.schemaDirectories%, scanSchema: %laravel.scanSchema%, currentWorkingDirectory: '%currentWorkingDirectory%'}
+  - class: CalebDW\PhpstanLaravel\Schema\SchemaCache
+    arguments: {tmpDir: %tmpDir%}
+  - class: CalebDW\PhpstanLaravel\ResultCache\SchemaResultCacheMetaExtension
+    tags: [phpstan.resultCacheMetaExtension]
   - class: CalebDW\PhpstanLaravel\Sql\SqlParserManager
     arguments: {defaultDriver: %laravel.sqlParser%}
   - class: CalebDW\PhpstanLaravel\Support\ModelCastHelper

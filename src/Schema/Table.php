@@ -7,11 +7,11 @@ namespace CalebDW\PhpstanLaravel\Schema;
 /** @see https://github.com/psalm/laravel-psalm-plugin/blob/master/src/SchemaTable.php */
 final class Table
 {
-    /** @var array<string, Column> */
-    public array $columns = [];
-
-    public function __construct(public string $name)
-    {
+    public function __construct(
+        public string $name,
+        /** @var array<string, Column> */
+        public array $columns = [],
+    ) {
     }
 
     public function setColumn(Column $column): void
@@ -37,5 +37,11 @@ final class Table
     public function dropColumn(string $columnName): void
     {
         unset($this->columns[$columnName]);
+    }
+
+    /** @param array{name: string, columns: array<string, Column>} $properties */
+    public static function __set_state(array $properties): self
+    {
+        return new self($properties['name'], $properties['columns']);
     }
 }
