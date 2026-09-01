@@ -50,7 +50,7 @@ final class ConsoleApplicationResolver
 
     private function getApplication(): Application
     {
-        return $this->application ??= new Application(app(Container::class), app(Dispatcher::class), app()->version())
+        return $this->application ??= (new Application(app(Container::class), app(Dispatcher::class), app()->version()))
             ->setContainerCommandLoader();
     }
 }
