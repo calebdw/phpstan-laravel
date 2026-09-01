@@ -21,9 +21,11 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use Throwable;
 
+use function array_keys;
 use function array_map;
 use function array_unique;
 use function array_values;
+use function in_array;
 use function is_array;
 use function is_object;
 use function is_string;
@@ -33,11 +35,24 @@ final class AuthHelper
     /** @var array<string, Type> */
     private array $guardTypes = [];
 
+    /** @var array<string, list<string>> */
+    private array $models = [];
+
+    private string|false|null $defaultGuard = false;
+
+    /** @var list<string>|false */
+    private array|false $configuredGuards = false;
+
+    private Type $defaultGuardType;
+
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private ContainerHelper $containerHelper,
-        private AuthModelHelper $authModelHelper,
     ) {
+        $this->defaultGuardType = TypeCombinator::intersect(
+            new ObjectType(Guard::class),
+            new ObjectType(StatefulGuard::class),
+        );
     }
 
     public function getGuardTypeFromArg(Arg|null $arg, Scope $scope): Type
@@ -50,7 +65,7 @@ final class AuthHelper
         $guards = $type->getConstantStrings();
 
         if ($guards === []) {
-            return $type->isNull()->yes() ? $this->getGuardType() : $this->getDefaultGuardType();
+            return $type->isNull()->yes() ? $this->getGuardType() : $this->defaultGuardType;
         }
 
         $types = array_map(
@@ -134,7 +149,7 @@ final class AuthHelper
             $types[] = $this->getSingleGuardType($guard);
         }
 
-        return $types === [] ? $this->getDefaultGuardType() : TypeCombinator::union(...$types);
+        return $types === [] ? $this->defaultGuardType : TypeCombinator::union(...$types);
     }
 
     /**
@@ -148,7 +163,7 @@ final class AuthHelper
      */
     public function getUserType(array|string|null $guards = null, bool $nullable = false): Type|null
     {
-        $models = $this->authModelHelper->getModels($guards);
+        $models = $this->getModels($guards);
 
         if ($models === []) {
             return null;
@@ -157,6 +172,36 @@ final class AuthHelper
         $type = TypeCombinator::union(...array_map(static fn ($m) => new ObjectType($m), $models));
 
         return $nullable ? TypeCombinator::addNull($type) : $type;
+    }
+
+    /**
+     * @param list<string>|string|null $guard
+     *
+     * @return list<string>
+     */
+    public function getModels(array|string|null $guard = null): array
+    {
+        if ($guard === null) {
+            $guard = $this->getConfiguredGuards();
+        }
+
+        if (! is_array($guard)) {
+            return $this->models[$guard] ??= $this->resolveModels($guard);
+        }
+
+        $models = [];
+
+        foreach ($guard as $name) {
+            foreach ($this->getModels($name) as $model) {
+                if (in_array($model, $models, true)) {
+                    continue;
+                }
+
+                $models[] = $model;
+            }
+        }
+
+        return $models;
     }
 
     /**
@@ -201,7 +246,7 @@ final class AuthHelper
             return null;
         }
 
-        $guard ??= $config->get('auth.defaults.guard');
+        $guard ??= $this->getDefaultGuard();
 
         if (! is_string($guard)) {
             return null;
@@ -236,18 +281,46 @@ final class AuthHelper
 
         return $this->guardTypes[$key] ??= $this->getResolvedGuardType($guard)
             ?? $this->getCreatorReturnType($guard)
-            ?? $this->getDefaultGuardType();
+            ?? $this->defaultGuardType;
+    }
+
+    /** @return list<string> */
+    private function resolveModels(string $guard): array
+    {
+        $config    = $this->containerHelper->getConfigRepository();
+        $guards    = $config?->get('auth.guards');
+        $providers = $config?->get('auth.providers');
+
+        if (! is_array($guards) || ! is_array($providers)) {
+            return [];
+        }
+
+        $provider  = $guards[$guard]['provider'] ?? null;
+        $authModel = is_string($provider) ? ($providers[$provider]['model'] ?? null) : null;
+
+        return is_string($authModel) ? [$authModel] : [];
+    }
+
+    /** @return list<string> */
+    private function getConfiguredGuards(): array
+    {
+        if ($this->configuredGuards !== false) {
+            return $this->configuredGuards;
+        }
+
+        $guards = $this->containerHelper->getConfigRepository()?->get('auth.guards');
+
+        return $this->configuredGuards = is_array($guards) ? array_keys($guards) : [];
     }
 
     private function getDefaultGuard(): string|null
     {
+        if ($this->defaultGuard !== false) {
+            return $this->defaultGuard;
+        }
+
         $guard = $this->containerHelper->getConfigRepository()?->get('auth.defaults.guard');
 
-        return is_string($guard) ? $guard : null;
-    }
-
-    private function getDefaultGuardType(): Type
-    {
-        return TypeCombinator::intersect(new ObjectType(Guard::class), new ObjectType(StatefulGuard::class));
+        return $this->defaultGuard = is_string($guard) ? $guard : null;
     }
 }

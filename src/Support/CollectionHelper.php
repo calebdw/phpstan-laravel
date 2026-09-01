@@ -28,6 +28,7 @@ use PHPStan\Type\UnionType;
 use Traversable;
 
 use function array_filter;
+use function array_key_exists;
 use function array_map;
 use function array_values;
 use function count;
@@ -35,6 +36,12 @@ use function in_array;
 
 final class CollectionHelper
 {
+    /** @var array<string, Type|null> */
+    private array $originalCollectionTypes = [];
+
+    /** @var array<string, Type|null> */
+    private array $collectionTypes = [];
+
     public function __construct(private ReflectionProvider $reflectionProvider)
     {
     }
@@ -70,6 +77,15 @@ final class CollectionHelper
 
     public function determineOriginalCollectionType(string $modelClassName): Type|null
     {
+        if (array_key_exists($modelClassName, $this->originalCollectionTypes)) {
+            return $this->originalCollectionTypes[$modelClassName];
+        }
+
+        return $this->originalCollectionTypes[$modelClassName] = $this->resolveOriginalCollectionType($modelClassName);
+    }
+
+    private function resolveOriginalCollectionType(string $modelClassName): Type|null
+    {
         if (! $this->reflectionProvider->hasClass($modelClassName)) {
             return null;
         }
@@ -98,7 +114,19 @@ final class CollectionHelper
 
     public function determineCollectionType(string $modelClassName, Type|null $modelType = null): Type|null
     {
-        $modelType    ??= new ObjectType($modelClassName);
+        if ($modelType === null) {
+            if (array_key_exists($modelClassName, $this->collectionTypes)) {
+                return $this->collectionTypes[$modelClassName];
+            }
+
+            return $this->collectionTypes[$modelClassName] = $this->resolveCollectionType($modelClassName, new ObjectType($modelClassName));
+        }
+
+        return $this->resolveCollectionType($modelClassName, $modelType);
+    }
+
+    private function resolveCollectionType(string $modelClassName, Type $modelType): Type|null
+    {
         $collectionType = $this->determineOriginalCollectionType($modelClassName);
 
         if ($collectionType === null) {

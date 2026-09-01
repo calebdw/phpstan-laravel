@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Methods;
 
 use CalebDW\PhpstanLaravel\Reflection\StaticMethodReflection;
-use CalebDW\PhpstanLaravel\Support\AuthModelHelper;
+use CalebDW\PhpstanLaravel\Support\AuthHelper;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -33,7 +33,7 @@ final class AuthsMethodsExtension implements MethodsClassReflectionExtension
         Authorizable::class,
     ];
 
-    public function __construct(private ReflectionProvider $reflectionProvider, private AuthModelHelper $authModelHelper)
+    public function __construct(private ReflectionProvider $reflectionProvider, private AuthHelper $authHelper)
     {
     }
 
@@ -68,7 +68,7 @@ final class AuthsMethodsExtension implements MethodsClassReflectionExtension
             return $this->findMethodOnClass(Guard::class, $methodName);
         }
 
-        foreach ($this->authModelHelper->getModels() as $authModel) {
+        foreach ($this->authHelper->getModels() as $authModel) {
             $method = $this->findMethodOnClass($authModel, $methodName);
 
             if ($method !== false) {
