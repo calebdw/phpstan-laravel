@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Rules;
 
-use CalebDW\PhpstanLaravel\Rules\ConsoleCommand\UndefinedArgumentOrOptionRule;
+use CalebDW\PhpstanLaravel\Rules\UndefinedCommandInputRule;
 use CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
-/** @extends RuleTestCase<UndefinedArgumentOrOptionRule> */
-class UndefinedArgumentOrOptionRuleTest extends RuleTestCase
+/** @extends RuleTestCase<UndefinedCommandInputRule> */
+class UndefinedCommandInputRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new UndefinedArgumentOrOptionRule(self::getContainer()->getByType(ConsoleApplicationResolver::class));
+        return new UndefinedCommandInputRule(self::getContainer()->getByType(ConsoleApplicationResolver::class));
     }
 
     public function testRule(): void

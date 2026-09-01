@@ -407,7 +407,7 @@ services:
     tags: [phpstan.ignoreErrorExtension]
 
 rules:
-  - CalebDW\PhpstanLaravel\Rules\UselessConstructs\NoUselessWithFunctionCallsRule
-  - CalebDW\PhpstanLaravel\Rules\UselessConstructs\NoUselessValueFunctionCallsRule
+  - CalebDW\PhpstanLaravel\Rules\NoUselessWithFunctionCallsRule
+  - CalebDW\PhpstanLaravel\Rules\NoUselessValueFunctionCallsRule
   - CalebDW\PhpstanLaravel\Rules\DeferrableServiceProviderMissingProvidesRule
-  - CalebDW\PhpstanLaravel\Rules\ConsoleCommand\UndefinedArgumentOrOptionRule
+  - CalebDW\PhpstanLaravel\Rules\UndefinedCommandInputRule

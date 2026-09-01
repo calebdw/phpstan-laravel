@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Rules\ConsoleCommand;
+namespace CalebDW\PhpstanLaravel\Rules;
 
 use CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver;
 use Illuminate\Console\Command;
@@ -19,7 +19,7 @@ use function in_array;
 use function sprintf;
 
 /** @implements Rule<MethodCall> */
-final class UndefinedArgumentOrOptionRule implements Rule
+final class UndefinedCommandInputRule implements Rule
 {
     public function __construct(private ConsoleApplicationResolver $consoleApplicationResolver)
     {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Rules\UselessConstructs;
+namespace CalebDW\PhpstanLaravel\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;

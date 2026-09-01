@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Rules\UselessConstructs\data;
+namespace Tests\Rules\data;
 
 class UselessWithFunctionCall
 {
     public function foo(): string
     {
-        return 'foo';
+        return with('foo');
     }
 
     public function bar(): string
     {
-        return 'bar';
+        return with('bar', null);
     }
 }

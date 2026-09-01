@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rules\UselessConstructs\data;
+namespace Tests\Rules\data;
 
 class UselessValueFunctionCall
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Rules\UselessConstructs;
+namespace Tests\Rules;
 
-use CalebDW\PhpstanLaravel\Rules\UselessConstructs\NoUselessWithFunctionCallsRule;
+use CalebDW\PhpstanLaravel\Rules\NoUselessWithFunctionCallsRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
