@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Schema;
 
-use CalebDW\PhpstanLaravel\Schema\Type\DataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlDialect;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Schema\Type\DataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
+use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use SplFileInfo;
 
