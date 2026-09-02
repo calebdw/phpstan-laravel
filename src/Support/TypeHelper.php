@@ -25,6 +25,24 @@ final class TypeHelper
             ->contains(static fn ($c) => $c->hasTraitUse($trait));
     }
 
+    public function hasMethod(Type $type, string $name, bool $native = false): bool
+    {
+        if (! $native) {
+            return $type->hasMethod($name)->yes();
+        }
+
+        return collect($type->getObjectClassReflections())->every(static fn ($c) => $c->hasNativeMethod($name));
+    }
+
+    public function hasProperty(Type $type, string $name, bool $native = false): bool
+    {
+        if (! $native) {
+            return $type->hasInstanceProperty($name)->yes();
+        }
+
+        return collect($type->getObjectClassReflections())->every(static fn ($c) => $c->hasNativeProperty($name));
+    }
+
     /** @return list<string> */
     public function constantStrings(Type $type): array
     {

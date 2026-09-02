@@ -4,23 +4,25 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PhpParser\Node;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
-use function array_map;
 use function sprintf;
 
 /** @implements Rule<StaticCall> */
 final class NoModelStaticForwardingToBuilderRule implements Rule
 {
+    public function __construct(private CallHelper $callHelper)
+    {
+    }
+
     public function getNodeType(): string
     {
         return StaticCall::class;
@@ -31,16 +33,8 @@ final class NoModelStaticForwardingToBuilderRule implements Rule
     {
         $errors = [];
 
-        $calledMethods = $node->name instanceof Identifier
-            ? [$node->name->toString()]
-            : array_map(
-                static fn ($name) => $name->getValue(),
-                $scope->getType($node->name)->getConstantStrings(),
-            );
-
-        $calledOnType = $node->class instanceof Name
-            ? $scope->resolveTypeByName($node->class)
-            : $scope->getType($node->class);
+        $calledMethods = $this->callHelper->callNames($node, $scope);
+        $calledOnType  = $this->callHelper->receiverType($node, $scope);
 
         foreach ($calledOnType->getObjectClassReflections() as $classReflection) {
             if (! $classReflection->is(Model::class)) {

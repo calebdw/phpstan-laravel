@@ -40,11 +40,7 @@ final class HigherOrderTapProxyExtension implements MethodsClassReflectionExtens
     {
         $templateType = $classReflection->getActiveTemplateTypeMap()->getType('TClass');
 
-        if (
-            $templateType === null
-            || $templateType->getObjectClassReflections() === []
-            || ! $templateType->hasMethod($methodName)->yes()
-        ) {
+        if ($templateType === null || ! $templateType->hasMethod($methodName)->yes()) {
             return false;
         }
 

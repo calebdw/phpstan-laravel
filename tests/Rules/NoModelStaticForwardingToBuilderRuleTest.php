@@ -13,7 +13,7 @@ class NoModelStaticForwardingToBuilderRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new NoModelStaticForwardingToBuilderRule();
+        return self::getContainer()->getByType(NoModelStaticForwardingToBuilderRule::class);
     }
 
     public function testRule(): void

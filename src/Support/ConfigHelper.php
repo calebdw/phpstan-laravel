@@ -41,8 +41,11 @@ use function is_string;
 
 final class ConfigHelper
 {
-    public function __construct(private ConfigParser $configParser, private ContainerHelper $containerHelper)
-    {
+    public function __construct(
+        private ConfigParser $configParser,
+        private ContainerHelper $containerHelper,
+        private TypeHelper $typeHelper,
+    ) {
     }
 
     public function determineConfigType(
@@ -121,9 +124,9 @@ final class ConfigHelper
             return null;
         }
 
-        $constantStrings = $keyType->getConstantStrings();
+        $keys = $this->typeHelper->constantStrings($keyType);
 
-        if (! count($constantStrings)) {
+        if ($keys === []) {
             return null;
         }
 
@@ -135,9 +138,9 @@ final class ConfigHelper
         }
 
         $configType = TypeCombinator::union(...array_map(
-            fn ($key): Type => $this->resolveKey($key->getValue(), $repository, $scope)
+            fn (string $key): Type => $this->resolveKey($key, $repository, $scope)
                 ?? new MixedType(),
-            $constantStrings,
+            $keys,
         ));
 
         if ($reflection->getName() === 'collection') {

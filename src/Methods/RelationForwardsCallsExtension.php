@@ -13,7 +13,6 @@ use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
@@ -25,8 +24,9 @@ final class RelationForwardsCallsExtension implements MethodsClassReflectionExte
     /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
-    public function __construct(private BuilderHelper $builderHelper, private ReflectionProvider $reflectionProvider)
-    {
+    public function __construct(
+        private BuilderHelper $builderHelper,
+    ) {
     }
 
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
@@ -56,17 +56,15 @@ final class RelationForwardsCallsExtension implements MethodsClassReflectionExte
             return false;
         }
 
-        if ($relatedModel->getObjectClassReflections() !== []) {
-            $modelReflection = $relatedModel->getObjectClassReflections()[0];
-        } else {
-            $modelReflection = $this->reflectionProvider->getClass(Model::class);
+        foreach ($relatedModel->getObjectClassReflections() as $modelReflection) {
+            if (! $modelReflection->is(Model::class)) {
+                return false;
+            }
         }
 
-        if (! $modelReflection->is(Model::class)) {
-            return false;
-        }
-
-        $builderType = $this->builderHelper->getBuilderTypeForModels($modelReflection->getName());
+        $builderType = $this->builderHelper->getBuilderTypeForModels(
+            $relatedModel->getObjectClassNames() ?: [Model::class],
+        );
 
         if (! $builderType->hasMethod($methodName)->yes()) {
             return false;

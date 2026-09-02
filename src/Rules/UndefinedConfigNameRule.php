@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use CalebDW\PhpstanLaravel\Support\ConfigHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Broadcasting\Factory as BroadcastFactory;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
@@ -25,7 +27,6 @@ use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -34,7 +35,6 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Type;
 
 use function array_intersect;
-use function array_map;
 use function explode;
 use function in_array;
 use function sprintf;
@@ -98,8 +98,11 @@ final class UndefinedConfigNameRule implements Rule
 
     private const array CONNECTION_SUFFIXES = ['read', 'write', 'direct'];
 
-    public function __construct(private ConfigHelper $configHelper)
-    {
+    public function __construct(
+        private ConfigHelper $configHelper,
+        private CallHelper $callHelper,
+        private TypeHelper $typeHelper,
+    ) {
     }
 
     public function getNodeType(): string
@@ -120,10 +123,8 @@ final class UndefinedConfigNameRule implements Rule
             return [];
         }
 
-        $methods  = $node->name instanceof Identifier
-            ? [$node->name->name]
-            : array_map(static fn ($s) => $s->getValue(), $scope->getType($node->name)->getConstantStrings());
-        $receiver = $this->receiverType($node, $scope);
+        $methods  = $this->callHelper->callNames($node, $scope);
+        $receiver = $this->callHelper->receiverType($node, $scope);
         $errors   = [];
 
         foreach (self::LOOKUPS as $lookup) {
@@ -162,8 +163,8 @@ final class UndefinedConfigNameRule implements Rule
 
         $errors = [];
 
-        foreach ($requested->getConstantStrings() as $constantString) {
-            $name = $this->configuredName($constantString->getValue(), $lookup);
+        foreach ($this->typeHelper->constantStrings($requested) as $value) {
+            $name = $this->configuredName($value, $lookup);
 
             if (! $defined->hasOffsetValueType(new ConstantStringType($name))->no()) {
                 continue;
@@ -188,19 +189,6 @@ final class UndefinedConfigNameRule implements Rule
         [$connection, $side] = explode('::', $name, 2);
 
         return in_array($side, self::CONNECTION_SUFFIXES, true) ? $connection : $name;
-    }
-
-    private function receiverType(MethodCall|StaticCall $node, Scope $scope): Type
-    {
-        if ($node instanceof StaticCall) {
-            $type = $node->class instanceof Node\Name
-                ? $scope->resolveTypeByName($node->class)
-                : $scope->getType($node->class);
-
-            return $type->getObjectTypeOrClassStringObjectType();
-        }
-
-        return $scope->getType($node->var);
     }
 
     /** @param value-of<self::LOOKUPS> $lookup */

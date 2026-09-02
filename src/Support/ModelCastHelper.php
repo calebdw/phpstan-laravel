@@ -102,18 +102,23 @@ class ModelCastHelper
         }
 
         if ($classReflection->is(Castable::class)) {
-            $methodReflection = $classReflection->getNativeMethod('castUsing');
-            $castUsingReturn  = $methodReflection->getVariants()[0]->getReturnType();
+            $types = [];
 
-            if ($castUsingReturn->getObjectClassReflections() !== []) {
-                $classReflection = $castUsingReturn->getObjectClassReflections()[0];
+            foreach ($classReflection->getNativeMethod('castUsing')->getVariants()[0]->getReturnType()->getObjectClassReflections() as $caster) {
+                if ($caster->is(CastsAttributes::class)) {
+                    $types[] = $caster->getNativeMethod('get')->getVariants()[0]->getReturnType();
+                } elseif ($caster->is(CastsInboundAttributes::class)) {
+                    $types[] = $originalType;
+                }
+            }
+
+            if ($types !== []) {
+                return TypeCombinator::union(...$types);
             }
         }
 
         if ($classReflection->is(CastsAttributes::class)) {
-            $methodReflection = $classReflection->getNativeMethod('get');
-
-            return $methodReflection->getVariants()[0]->getReturnType();
+            return $classReflection->getNativeMethod('get')->getVariants()[0]->getReturnType();
         }
 
         if ($classReflection->is(CastsInboundAttributes::class)) {
@@ -159,11 +164,27 @@ class ModelCastHelper
         }
 
         if ($classReflection->is(Castable::class)) {
-            $methodReflection = $classReflection->getNativeMethod('castUsing');
-            $castUsingReturn  = $methodReflection->getVariants()[0]->getReturnType();
+            $types = [];
 
-            if ($castUsingReturn->getObjectClassReflections() !== []) {
-                $classReflection = $castUsingReturn->getObjectClassReflections()[0];
+            foreach ($classReflection->getNativeMethod('castUsing')->getVariants()[0]->getReturnType()->getObjectClassReflections() as $caster) {
+                if (! $caster->is(CastsAttributes::class) && ! $caster->is(CastsInboundAttributes::class)) {
+                    continue;
+                }
+
+                $valueParameter = Arr::first(
+                    $caster->getNativeMethod('set')->getVariants()[0]->getParameters(),
+                    static fn (ParameterReflection $parameterReflection) => $parameterReflection->getName() === 'value',
+                );
+
+                if ($valueParameter === null) {
+                    continue;
+                }
+
+                $types[] = $valueParameter->getType();
+            }
+
+            if ($types !== []) {
+                return TypeCombinator::union(...$types);
             }
         }
 
@@ -171,12 +192,12 @@ class ModelCastHelper
             $classReflection->is(CastsAttributes::class)
             || $classReflection->is(CastsInboundAttributes::class)
         ) {
-            $methodReflection = $classReflection->getNativeMethod('set');
-            $parameters       = $methodReflection->getVariants()[0]->getParameters();
+            $valueParameter = Arr::first(
+                $classReflection->getNativeMethod('set')->getVariants()[0]->getParameters(),
+                static fn (ParameterReflection $parameterReflection) => $parameterReflection->getName() === 'value',
+            );
 
-            $valueParameter = Arr::first($parameters, static fn (ParameterReflection $parameterReflection) => $parameterReflection->getName() === 'value');
-
-            if ($valueParameter) {
+            if ($valueParameter !== null) {
                 return $valueParameter->getType();
             }
         }

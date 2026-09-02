@@ -6,26 +6,17 @@ namespace CalebDW\PhpstanLaravel\Methods;
 
 use CalebDW\PhpstanLaravel\Reflection\ModelFactoryMethodReflection;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ErrorType;
-
-use function array_key_exists;
 
 class ModelFactoryMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, bool> */
     private array $methods = [];
-
-    public function __construct(
-        private ReflectionProvider $reflectionProvider,
-    ) {
-    }
 
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
@@ -46,14 +37,14 @@ class ModelFactoryMethodsClassReflectionExtension implements MethodsClassReflect
             return false;
         }
 
-        if ($modelType->getObjectClassReflections() !== []) {
-            $modelReflection = $modelType->getObjectClassReflections()[0];
-        } else {
-            $modelReflection = $this->reflectionProvider->getClass(Model::class);
-        }
+        if ($methodName === 'trashed') {
+            foreach ($modelType->getObjectClassReflections() as $modelReflection) {
+                if ($modelReflection->hasTraitUse(SoftDeletes::class)) {
+                    return true;
+                }
+            }
 
-        if ($methodName === 'trashed' && array_key_exists(SoftDeletes::class, $modelReflection->getTraits(true))) {
-            return true;
+            return false;
         }
 
         if (! Str::startsWith($methodName, ['for', 'has'])) {

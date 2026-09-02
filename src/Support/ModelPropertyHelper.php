@@ -35,6 +35,7 @@ class ModelPropertyHelper
         private ModelSchema $modelSchema,
         private ModelCastHelper $modelCastHelper,
         private ModelHelper $modelHelper,
+        private ReflectionHelper $reflectionHelper,
     ) {
     }
 
@@ -62,7 +63,7 @@ class ModelPropertyHelper
 
     private function resolveDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelProperty|false
     {
-        if (ReflectionHelper::hasPropertyTag($classReflection, $propertyName)) {
+        if ($this->reflectionHelper->hasPropertyTag($classReflection, $propertyName)) {
             return false;
         }
 

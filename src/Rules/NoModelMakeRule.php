@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node;
-use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\ObjectType;
+
+use function in_array;
 
 /**
  * Catches inefficient instantiation of models using Model::make().
@@ -29,8 +29,10 @@ use PHPStan\Type\ObjectType;
  */
 class NoModelMakeRule implements Rule
 {
-    public function __construct(protected ReflectionProvider $reflectionProvider)
-    {
+    public function __construct(
+        private CallHelper $callHelper,
+        private TypeHelper $typeHelper,
+    ) {
     }
 
     public function getNodeType(): string
@@ -41,13 +43,7 @@ class NoModelMakeRule implements Rule
     /** @return array<int, RuleError> */
     public function processNode(Node $node, Scope $scope): array
     {
-        $name = $node->name;
-
-        if (! $name instanceof Identifier) {
-            return [];
-        }
-
-        if ($name->name !== 'make') {
+        if (! in_array('make', $this->callHelper->callNames($node, $scope), true)) {
             return [];
         }
 
@@ -69,20 +65,6 @@ class NoModelMakeRule implements Rule
      */
     protected function isCalledOnModel(StaticCall $call, Scope $scope): bool
     {
-        $class = $call->class;
-
-        if ($class instanceof Expr) {
-            $type = $scope->getType($class);
-
-            if ($type->isClassString()->yes() && $type->getConstantStrings() !== []) {
-                $type = new ObjectType($type->getConstantStrings()[0]->getValue());
-            }
-        } else {
-            // Resolves every name form, so self, static and parent are
-            // covered as well as a written-out class name.
-            $type = $scope->resolveTypeByName($class);
-        }
-
-        return (new ObjectType(Model::class))->isSuperTypeOf($type)->yes();
+        return $this->typeHelper->isCalledOn($this->callHelper->receiverType($call, $scope), Model::class);
     }
 }

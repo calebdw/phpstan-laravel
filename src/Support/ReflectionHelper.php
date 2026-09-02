@@ -9,66 +9,61 @@ use PHPStan\Reflection\Mixin\MixinMethodsClassReflectionExtension;
 use PHPStan\Reflection\Mixin\MixinPropertiesClassReflectionExtension;
 
 use function array_key_exists;
+use function collect;
 
 final class ReflectionHelper
 {
     /** @var array<string, bool> */
-    private static array $propertyTags = [];
+    private array $propertyTags = [];
 
     /** @var array<string, bool> */
-    private static array $methodTags = [];
+    private array $methodTags = [];
 
     /**
      * Does the given class or any of its ancestors have an `@property*` annotation with the given name?
      */
-    public static function hasPropertyTag(ClassReflection $classReflection, string $propertyName): bool
+    public function hasPropertyTag(ClassReflection $classReflection, string $propertyName): bool
     {
         $cacheKey = $classReflection->getCacheKey() . '-' . $propertyName;
 
-        return self::$propertyTags[$cacheKey] ??= self::resolvePropertyTag($classReflection, $propertyName);
-    }
-
-    private static function resolvePropertyTag(ClassReflection $classReflection, string $propertyName): bool
-    {
-        if (array_key_exists($propertyName, $classReflection->getPropertyTags())) {
-            return true;
+        if (array_key_exists($cacheKey, $this->propertyTags)) {
+            return $this->propertyTags[$cacheKey];
         }
 
-        foreach ($classReflection->getAncestors() as $ancestor) {
-            if (array_key_exists($propertyName, $ancestor->getPropertyTags())) {
-                return true;
-            }
+        if (
+            array_key_exists($propertyName, $classReflection->getPropertyTags())
+            || collect($classReflection->getAncestors())
+                ->contains(static fn ($a) => array_key_exists($propertyName, $a->getPropertyTags()))
+        ) {
+            return $this->propertyTags[$cacheKey] = true;
         }
 
         /** @phpstan-ignore phpstanApi.method, phpstanApi.constructor (no public API answers whether a mixin supplies the member) */
-        return (new MixinPropertiesClassReflectionExtension([$classReflection->getName()]))
+        return $this->propertyTags[$cacheKey] = (new MixinPropertiesClassReflectionExtension([$classReflection->getName()]))
             ->hasProperty($classReflection, $propertyName);
     }
 
     /**
      * Does the given class or any of its ancestors have an `@method*` annotation with the given name?
      */
-    public static function hasMethodTag(ClassReflection $classReflection, string $methodName): bool
+    public function hasMethodTag(ClassReflection $classReflection, string $methodName): bool
     {
         $cacheKey = $classReflection->getCacheKey() . '-' . $methodName;
 
-        return self::$methodTags[$cacheKey] ??= self::resolveMethodTag($classReflection, $methodName);
-    }
-
-    private static function resolveMethodTag(ClassReflection $classReflection, string $methodName): bool
-    {
-        if (array_key_exists($methodName, $classReflection->getMethodTags())) {
-            return true;
+        if (array_key_exists($cacheKey, $this->methodTags)) {
+            return $this->methodTags[$cacheKey];
         }
 
-        foreach ($classReflection->getAncestors() as $ancestor) {
-            if (array_key_exists($methodName, $ancestor->getMethodTags())) {
-                return true;
-            }
+        if (
+            array_key_exists($methodName, $classReflection->getMethodTags())
+            || collect($classReflection->getAncestors())
+                ->contains(static fn ($a) => array_key_exists($methodName, $a->getMethodTags()))
+        ) {
+            return $this->methodTags[$cacheKey] = true;
         }
 
         /** @phpstan-ignore phpstanApi.method, phpstanApi.constructor (no public API answers whether a mixin supplies the member) */
-        return (new MixinMethodsClassReflectionExtension([$classReflection->getName()]))
+        return $this->methodTags[$cacheKey] = (new MixinMethodsClassReflectionExtension([$classReflection->getName()]))
             ->hasMethod($classReflection, $methodName);
     }
 }

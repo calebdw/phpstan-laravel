@@ -15,7 +15,7 @@ class NoModelMakeRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new NoModelMakeRule($this->createReflectionProvider());
+        return self::getContainer()->getByType(NoModelMakeRule::class);
     }
 
     public function testNoFalsePositives(): void
@@ -60,5 +60,11 @@ class NoModelMakeRuleTest extends RuleTestCase
             $actualErrors[0]->getFile(),
         );
         $this->assertSame(13, $actualErrors[0]->getLine());
+    }
+
+    /** @return string[] */
+    public static function getAdditionalConfigFiles(): array
+    {
+        return [__DIR__ . '/../phpstan-tests.neon'];
     }
 }

@@ -19,6 +19,7 @@ use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
+use function array_map;
 use function assert;
 use function count;
 use function in_array;
@@ -44,9 +45,16 @@ class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodR
         Scope $scope,
     ): Type|null {
         $calledOnType = $scope->getType($methodCall->var);
+        $classes      = $calledOnType->getObjectClassReflections();
 
-        if ($calledOnType->getObjectClassReflections() === [] || ! $calledOnType->getObjectClassReflections()[0]->isGeneric()) {
+        if ($classes === []) {
             return null;
+        }
+
+        foreach ($classes as $class) {
+            if (! $class->isGeneric()) {
+                return null;
+            }
         }
 
         $keyType   = $methodReflection->getDeclaringClass()->getActiveTemplateTypeMap()->getType('TKey');
@@ -74,9 +82,16 @@ class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodR
                 'where' => null,
             };
 
-            return $modifiedType !== null
-                ? new GenericObjectType($calledOnType->getObjectClassNames()[0], [$keyType, $modifiedType])
-                : null;
+            if ($modifiedType === null) {
+                return null;
+            }
+
+            $itemType = $modifiedType;
+
+            return TypeCombinator::union(...array_map(
+                static fn (string $class): Type => new GenericObjectType($class, [$keyType, $itemType]),
+                $calledOnType->getObjectClassNames(),
+            ));
         }
 
         $callbackArg = $methodCall->getArgs()[0]->value;
@@ -115,6 +130,9 @@ class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodR
             $valueType = $scope->getVariableType($itemVariableName);
         }
 
-        return new GenericObjectType($calledOnType->getObjectClassNames()[0], [$keyType, $valueType]);
+        return TypeCombinator::union(...array_map(
+            static fn (string $class): Type => new GenericObjectType($class, [$keyType, $valueType]),
+            $calledOnType->getObjectClassNames(),
+        ));
     }
 }

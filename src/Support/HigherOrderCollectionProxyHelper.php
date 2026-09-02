@@ -21,8 +21,6 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-use function array_map;
-
 class HigherOrderCollectionProxyHelper
 {
     /** @var array<string, bool> */
@@ -31,6 +29,7 @@ class HigherOrderCollectionProxyHelper
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private ColumnHelper $columnHelper,
+        private TypeHelper $typeHelper,
     ) {
     }
 
@@ -63,7 +62,7 @@ class HigherOrderCollectionProxyHelper
             return null;
         }
 
-        $methods = array_map(static fn ($m) => $m->getValue(), $methodType->getConstantStrings());
+        $methods = $this->typeHelper->constantStrings($methodType);
 
         if ($methods === []) {
             return null;
@@ -86,10 +85,10 @@ class HigherOrderCollectionProxyHelper
         }
 
         if ($propertyOrMethod === 'method') {
-            return $templates['value']->hasMethod($name)->yes();
+            return $this->typeHelper->hasMethod($templates['value'], $name);
         }
 
-        return $templates['value']->hasInstanceProperty($name)->yes();
+        return $this->typeHelper->hasProperty($templates['value'], $name);
     }
 
     /**

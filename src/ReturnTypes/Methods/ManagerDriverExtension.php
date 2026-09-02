@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\ManagerHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Support\Manager;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-use function array_map;
-
 final class ManagerDriverExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private ManagerHelper $managerHelper)
-    {
+    public function __construct(
+        private ManagerHelper $managerHelper,
+        private TypeHelper $typeHelper,
+    ) {
     }
 
     public function getClass(): string
@@ -81,16 +81,11 @@ final class ManagerDriverExtension implements DynamicMethodReturnTypeExtension
             return [null];
         }
 
-        $strings = $type->getConstantStrings();
+        $drivers = $this->typeHelper->constantStrings($type);
 
-        if ($strings === []) {
+        if ($drivers === []) {
             return null;
         }
-
-        $drivers = array_map(
-            static fn (ConstantStringType $string): string => $string->getValue(),
-            $strings,
-        );
 
         if (! $type->isNull()->no()) {
             $drivers[] = null;

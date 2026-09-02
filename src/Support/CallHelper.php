@@ -95,7 +95,7 @@ final class CallHelper
     }
 
     /** @return list<string> */
-    private function callNames(CallLike $node, Scope $scope): array
+    public function callNames(CallLike $node, Scope $scope): array
     {
         if ($node instanceof FuncCall) {
             if ($node->name instanceof Name) {

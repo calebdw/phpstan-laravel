@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Methods;
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
 use CalebDW\PhpstanLaravel\Reflection\MacroMethodReflection;
 use CalebDW\PhpstanLaravel\Support\BuilderHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -19,9 +20,6 @@ use PHPStan\Type\Generic\TemplateObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\ThisType;
 
-use function array_key_exists;
-use function array_map;
-use function array_merge;
 use function assert;
 use function in_array;
 
@@ -33,8 +31,11 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
     /** @var list<string> */
     private array $softDeletesMethods = ['withTrashed', 'onlyTrashed', 'withoutTrashed', 'restore', 'createOrRestore', 'restoreOrCreate'];
 
-    public function __construct(private BuilderHelper $builderHelper, private ReflectionProvider $reflectionProvider)
-    {
+    public function __construct(
+        private BuilderHelper $builderHelper,
+        private ReflectionProvider $reflectionProvider,
+        private TypeHelper $typeHelper,
+    ) {
     }
 
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
@@ -73,8 +74,8 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
         if ($ref === null) {
             // Special case for `SoftDeletes` trait
             if (
-                ! in_array($methodName, $this->softDeletesMethods, true) ||
-                ! array_key_exists(SoftDeletes::class, array_merge(...array_map(static fn ($r) => $r->getTraits(true), $modelType->getObjectClassReflections())))
+                ! in_array($methodName, $this->softDeletesMethods, true)
+                || ! $this->typeHelper->usesTrait($modelType, SoftDeletes::class)
             ) {
                 return false;
             }

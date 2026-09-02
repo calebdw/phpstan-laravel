@@ -30,8 +30,10 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
 
     private ObjectType $relationObjectType;
 
-    public function __construct(private CollectionHelper $collectionHelper)
-    {
+    public function __construct(
+        private CollectionHelper $collectionHelper,
+        private ReflectionHelper $reflectionHelper,
+    ) {
         $this->relationObjectType = new ObjectType(Relation::class);
     }
 
@@ -48,7 +50,7 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
 
     private function resolveProperty(ClassReflection $classReflection, string $propertyName): ModelProperty|false
     {
-        if (ReflectionHelper::hasPropertyTag($classReflection, $propertyName)) {
+        if ($this->reflectionHelper->hasPropertyTag($classReflection, $propertyName)) {
             return false;
         }
 

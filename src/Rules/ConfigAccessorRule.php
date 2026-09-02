@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use CalebDW\PhpstanLaravel\Support\ConfigHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Facades\Config;
 use PhpParser\Node;
@@ -15,7 +17,6 @@ use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 
@@ -45,8 +46,11 @@ final class ConfigAccessorRule implements Rule
         'boolean'    => 'a boolean',
     ];
 
-    public function __construct(private ConfigHelper $configHelper)
-    {
+    public function __construct(
+        private ConfigHelper $configHelper,
+        private CallHelper $callHelper,
+        private TypeHelper $typeHelper,
+    ) {
     }
 
     public function getNodeType(): string
@@ -58,16 +62,6 @@ final class ConfigAccessorRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         if (! $node instanceof MethodCall && ! $node instanceof StaticCall) {
-            return [];
-        }
-
-        if (! $node->name instanceof Node\Identifier) {
-            return [];
-        }
-
-        $method = $node->name->name;
-
-        if (! array_key_exists($method, self::REQUIREMENTS)) {
             return [];
         }
 
@@ -83,26 +77,31 @@ final class ConfigAccessorRule implements Rule
 
         $errors = [];
 
-        foreach ($scope->getType($args[0]->value)->getConstantStrings() as $constantString) {
-            $key  = $constantString->getValue();
-            $type = $this->configHelper->getKeyType($key, $scope);
-
-            // A key neither the container nor the parser knows about could
-            // hold anything, so there is nothing to report.
-            if ($type === null || ! $this->accepts($type, $method)->no()) {
+        foreach ($this->callHelper->callNames($node, $scope) as $method) {
+            if (! array_key_exists($method, self::REQUIREMENTS)) {
                 continue;
             }
 
-            $errors[] = RuleErrorBuilder::message(sprintf(
-                "Config key '%s' is %s, but '%s' requires %s.",
-                $key,
-                $type->describe(VerbosityLevel::typeOnly()),
-                $method,
-                self::REQUIREMENTS[$method],
-            ))
-                ->identifier('laravel.configAccessor')
-                ->line($node->getStartLine())
-                ->build();
+            foreach ($this->typeHelper->constantStrings($scope->getType($args[0]->value)) as $key) {
+                $type = $this->configHelper->getKeyType($key, $scope);
+
+                // A key neither the container nor the parser knows about could
+                // hold anything, so there is nothing to report.
+                if ($type === null || ! $this->accepts($type, $method)->no()) {
+                    continue;
+                }
+
+                $errors[] = RuleErrorBuilder::message(sprintf(
+                    "Config key '%s' is %s, but '%s' requires %s.",
+                    $key,
+                    $type->describe(VerbosityLevel::typeOnly()),
+                    $method,
+                    self::REQUIREMENTS[$method],
+                ))
+                    ->identifier('laravel.configAccessor')
+                    ->line($node->getStartLine())
+                    ->build();
+            }
         }
 
         return $errors;
@@ -122,14 +121,9 @@ final class ConfigAccessorRule implements Rule
 
     private function isConfigCall(MethodCall|StaticCall $node, Scope $scope): bool
     {
-        if ($node instanceof StaticCall) {
-            return $node->class instanceof Node\Name
-                && $scope->resolveName($node->class) === Config::class;
-        }
-
-        // The concrete repository implements the contract, so this covers both.
-        return (new ObjectType(Repository::class))
-            ->isSuperTypeOf($scope->getType($node->var))
-            ->yes();
+        return $this->typeHelper->isCalledOn(
+            $this->callHelper->receiverType($node, $scope),
+            [Config::class, Repository::class],
+        );
     }
 }

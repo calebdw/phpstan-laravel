@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\TypeCombinator;
 
-use function array_map;
 use function sprintf;
 
 /** @implements Rule<MethodCall> */
 final class NoModelForwardingToBuilderRule implements Rule
 {
+    public function __construct(private CallHelper $callHelper)
+    {
+    }
+
     public function getNodeType(): string
     {
         return MethodCall::class;
@@ -31,12 +34,7 @@ final class NoModelForwardingToBuilderRule implements Rule
     {
         $errors = [];
 
-        $calledMethods = $node->name instanceof Identifier
-            ? [$node->name->toString()]
-            : array_map(
-                static fn ($name) => $name->getValue(),
-                $scope->getType($node->name)->getConstantStrings(),
-            );
+        $calledMethods = $this->callHelper->callNames($node, $scope);
 
         $calledOnType = TypeCombinator::removeNull($scope->getType($node->var));
 

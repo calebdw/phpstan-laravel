@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Support\HigherOrderCollectionProxy;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -12,13 +13,12 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
-use function array_map;
-
 final class HigherOrderCollectionProxyOnlyExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(
         private ModelOnlyDynamicMethodReturnTypeExtension $modelOnlyExtension,
         private HigherOrderCollectionProxyHelper $higherOrderCollectionProxyHelper,
+        private TypeHelper $typeHelper,
     ) {
     }
 
@@ -39,7 +39,7 @@ final class HigherOrderCollectionProxyOnlyExtension implements DynamicMethodRetu
         $valueType      = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'TValue');
         $collectionType = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'TCollection');
 
-        $methods = array_map(static fn ($m) => $m->getValue(), $methodType->getConstantStrings());
+        $methods = $this->typeHelper->constantStrings($methodType);
 
         if ($methods === [] || $valueType->canCallMethods()->no()) {
             return null;

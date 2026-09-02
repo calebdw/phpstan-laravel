@@ -16,8 +16,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\ClosureType;
-use PHPStan\Type\Constant\ConstantArrayType;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
@@ -61,6 +59,7 @@ final class RelationClosureHelper
 
     public function __construct(
         private BuilderHelper $builderHelper,
+        private TypeHelper $typeHelper,
     ) {
     }
 
@@ -127,11 +126,7 @@ final class RelationClosureHelper
             return [];
         }
 
-        return collect($models->getConstantArrays())
-            ->flatMap(static fn (ConstantArrayType $t) => $t->getValueTypes())
-            ->flatMap(static fn (Type $t) => $t->getConstantStrings())
-            ->merge($models->getConstantStrings())
-            ->map(static fn (ConstantStringType $t) => $t->getValue())
+        return collect($this->typeHelper->constantStrings($models))
             ->map(static fn (string $v) => $v === '*' ? Model::class : $v)
             ->values()
             ->all();
@@ -184,11 +179,10 @@ final class RelationClosureHelper
                 : $scope->getType($methodCall->class)->getReferencedClasses();
         }
 
-        return collect($relationType->getConstantStrings())
-            ->map(static fn ($type) => $type->getValue())
+        return collect($this->typeHelper->constantStrings($relationType))
             ->flatMap(fn ($relation) => $this->getRelationTypeFromString($calledOnModels, explode('.', $relation), $scope))
             ->merge([$relationType])
-            ->filter(static fn ($r) => (new ObjectType(Relation::class))->isSuperTypeOf($r)->yes())
+            ->filter(fn ($r) => $this->typeHelper->isCalledOn($r, Relation::class))
             ->values()
             ->all();
     }
@@ -213,13 +207,13 @@ final class RelationClosureHelper
             foreach ($calledOnModels as $model) {
                 $modelType = new ObjectType($model);
 
-                if (! $modelType->hasMethod($relationName)->yes()) {
+                if (! $this->typeHelper->hasMethod($modelType, $relationName)) {
                     continue;
                 }
 
                 $relationType = $modelType->getMethod($relationName, $scope)->getVariants()[0]->getReturnType();
 
-                if (! (new ObjectType(Relation::class))->isSuperTypeOf($relationType)->yes()) {
+                if (! $this->typeHelper->isCalledOn($relationType, Relation::class)) {
                     continue;
                 }
 

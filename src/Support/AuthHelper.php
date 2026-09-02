@@ -15,7 +15,6 @@ use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -48,6 +47,7 @@ final class AuthHelper
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private ContainerHelper $containerHelper,
+        private TypeHelper $typeHelper,
     ) {
         $this->defaultGuardType = TypeCombinator::intersect(
             new ObjectType(Guard::class),
@@ -62,16 +62,13 @@ final class AuthHelper
         }
 
         $type   = $scope->getType($arg->value);
-        $guards = $type->getConstantStrings();
+        $guards = $this->typeHelper->constantStrings($type);
 
         if ($guards === []) {
             return $type->isNull()->yes() ? $this->getGuardType() : $this->defaultGuardType;
         }
 
-        $types = array_map(
-            fn (ConstantStringType $guard): Type => $this->getGuardType($guard->getValue()),
-            $guards,
-        );
+        $types = array_map(fn ($g) => $this->getGuardType($g), $guards);
 
         if (! $type->isNull()->no()) {
             $types[] = $this->getGuardType();
@@ -104,10 +101,10 @@ final class AuthHelper
             return null;
         }
 
-        $type    = $scope->getType($arg->value);
-        $strings = $type->getConstantStrings();
+        $type   = $scope->getType($arg->value);
+        $guards = $this->typeHelper->constantStrings($type);
 
-        if ($strings === []) {
+        if ($guards === []) {
             if (! $type->isNull()->yes()) {
                 return null;
             }
@@ -116,8 +113,6 @@ final class AuthHelper
 
             return $default === null ? null : [$default];
         }
-
-        $guards = array_map(static fn (ConstantStringType $string): string => $string->getValue(), $strings);
 
         if (! $type->isNull()->no()) {
             $default = $this->getDefaultGuard();

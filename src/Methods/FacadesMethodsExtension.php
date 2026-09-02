@@ -26,8 +26,11 @@ final class FacadesMethodsExtension implements MethodsClassReflectionExtension
     /** @var array<string, MethodReflection|false> */
     private array $cache = [];
 
-    public function __construct(private ReflectionProvider $reflectionProvider, private FacadeHelper $facadeHelper)
-    {
+    public function __construct(
+        private ReflectionProvider $reflectionProvider,
+        private FacadeHelper $facadeHelper,
+        private ReflectionHelper $reflectionHelper,
+    ) {
     }
 
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
@@ -43,7 +46,7 @@ final class FacadesMethodsExtension implements MethodsClassReflectionExtension
         }
 
         $result = RecursionGuard::run($key, function () use ($classReflection, $methodName, $key) {
-            if (ReflectionHelper::hasMethodTag($classReflection, $methodName)) {
+            if ($this->reflectionHelper->hasMethodTag($classReflection, $methodName)) {
                 return false;
             }
 

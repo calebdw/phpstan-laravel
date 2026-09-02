@@ -47,21 +47,29 @@ final class CollectionHelper
     {
     }
 
-    public function determineGenericCollectionTypeFromType(Type $type): GenericObjectType|null
+    public function determineGenericCollectionTypeFromType(Type $type): Type|null
     {
         $classReflections = $type->getObjectClassReflections();
 
-        if (count($classReflections) > 0) {
+        if ($classReflections !== []) {
             if ((new ObjectType(Enumerable::class))->isSuperTypeOf($type)->yes()) {
-                return $this->getTypeFromEloquentCollection($classReflections[0]);
+                $types = array_filter(array_map(
+                    fn ($reflection) => $this->getTypeFromEloquentCollection($reflection),
+                    $classReflections,
+                ));
+
+                return $types === [] ? null : TypeCombinator::union(...$types);
             }
 
             if (
-                (new ObjectType(Traversable::class))->isSuperTypeOf($type)->yes() ||
-                (new ObjectType(IteratorAggregate::class))->isSuperTypeOf($type)->yes() ||
-                (new ObjectType(Iterator::class))->isSuperTypeOf($type)->yes()
+                (new ObjectType(Traversable::class))->isSuperTypeOf($type)->yes()
+                || (new ObjectType(IteratorAggregate::class))->isSuperTypeOf($type)->yes()
+                || (new ObjectType(Iterator::class))->isSuperTypeOf($type)->yes()
             ) {
-                return $this->getTypeFromIterator($classReflections[0]);
+                return TypeCombinator::union(...array_map(
+                    fn ($reflection) => $this->getTypeFromIterator($reflection),
+                    $classReflections,
+                ));
             }
         }
 

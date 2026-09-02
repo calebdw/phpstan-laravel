@@ -309,6 +309,7 @@ services:
     tags: [phpstan.stubFilesExtension]
   - class: CalebDW\PhpstanLaravel\Rules\UnusedViewsRule
   - class: CalebDW\PhpstanLaravel\Support\TypeHelper
+  - class: CalebDW\PhpstanLaravel\Support\ReflectionHelper
   - class: CalebDW\PhpstanLaravel\Support\CallHelper
   - class: CalebDW\PhpstanLaravel\Collectors\UsedViewCollector
     tags: [phpstan.collector]
