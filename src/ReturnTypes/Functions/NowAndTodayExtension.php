@@ -11,21 +11,18 @@ use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
-use function get_class;
+use function in_array;
 use function now;
 
 final class NowAndTodayExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool
     {
-        return $functionReflection->getName() === 'now' || $functionReflection->getName() === 'today';
+        return in_array($functionReflection->getName(), ['now', 'today'], strict: true);
     }
 
-    public function getTypeFromFunctionCall(
-        FunctionReflection $functionReflection,
-        FuncCall $functionCall,
-        Scope $scope,
-    ): Type {
-        return new ObjectType(get_class(now()));
+    public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type
+    {
+        return new ObjectType(now()::class);
     }
 }

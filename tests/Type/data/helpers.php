@@ -145,7 +145,9 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
     }));
 
     assertType('Illuminate\Support\HigherOrderTapProxy<App\User>', tap(new User()));
+    assertType('Illuminate\Support\HigherOrderTapProxy<App\User>', tap(value: new User()));
     assertType('App\User', tap(new User())->update(['name' => 'Taylor Otwell']));
+    assertType('App\User', tap(new User())->save());
     assertType('Illuminate\Validation\Validator', tap(validator([], []))->addReplacers());
 
     assertType('string', url('/path'));

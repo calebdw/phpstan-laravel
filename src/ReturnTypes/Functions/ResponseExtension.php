@@ -13,8 +13,6 @@ use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
-use function count;
-
 final class ResponseExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool
@@ -22,12 +20,10 @@ final class ResponseExtension implements DynamicFunctionReturnTypeExtension
         return $functionReflection->getName() === 'response';
     }
 
-    public function getTypeFromFunctionCall(
-        FunctionReflection $functionReflection,
-        FuncCall $functionCall,
-        Scope $scope,
-    ): Type {
-        if (count($functionCall->getArgs()) === 0) {
+    public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type
+    {
+        // Runtime behavior depends on argument count, so the nullable $content parameter cannot express this distinction.
+        if ($functionCall->getArgs() === []) {
             return new ObjectType(ResponseFactory::class);
         }
 

@@ -22,6 +22,9 @@ function test(
     // happens to be bound in this environment.
     assertType('Illuminate\Contracts\Config\Repository', app(Repository::class));
     assertType('Illuminate\Contracts\Config\Repository', resolve(Repository::class));
+    assertType('Illuminate\Contracts\Validation\Factory', validator());
+    assertType('Illuminate\Contracts\Validation\Validator', validator([]));
+    assertType('Illuminate\Contracts\Validation\Validator', validator(null));
 
     // Aliases are not class strings, so they still resolve through the container.
     assertType('Illuminate\Auth\AuthManager', app('auth'));

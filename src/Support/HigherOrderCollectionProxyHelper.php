@@ -54,7 +54,7 @@ class HigherOrderCollectionProxyHelper
             return null;
         }
 
-        $methodType     = $templateTypeMap->getType('T');
+        $methodType     = $templateTypeMap->getType('TMethod');
         $valueType      = $templateTypeMap->getType('TValue');
         $collectionType = $templateTypeMap->getType('TCollection');
 

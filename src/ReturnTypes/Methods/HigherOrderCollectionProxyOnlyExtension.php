@@ -35,7 +35,7 @@ final class HigherOrderCollectionProxyOnlyExtension implements DynamicMethodRetu
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
         $proxyType      = $scope->getType($methodCall->var);
-        $methodType     = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'T');
+        $methodType     = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'TMethod');
         $valueType      = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'TValue');
         $collectionType = $proxyType->getTemplateType(HigherOrderCollectionProxy::class, 'TCollection');
 

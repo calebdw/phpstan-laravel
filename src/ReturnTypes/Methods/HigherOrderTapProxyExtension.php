@@ -25,6 +25,7 @@ final class HigherOrderTapProxyExtension implements DynamicMethodReturnTypeExten
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type
     {
-        return $scope->getType($methodCall->var)->getTemplateType(HigherOrderTapProxy::class, 'TClass');
+        // The mixin exposes target methods, but PHPStan otherwise keeps their return types instead of tap's target return.
+        return $scope->getType($methodCall->var)->getTemplateType(HigherOrderTapProxy::class, 'TTarget');
     }
 }

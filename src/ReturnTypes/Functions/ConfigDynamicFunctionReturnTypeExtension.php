@@ -22,11 +22,8 @@ final class ConfigDynamicFunctionReturnTypeExtension implements DynamicFunctionR
         return $functionReflection->getName() === 'config';
     }
 
-    public function getTypeFromFunctionCall(
-        FunctionReflection $functionReflection,
-        FuncCall $functionCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type|null
+    {
         return $this->configHelper->determineConfigType($functionReflection, $functionCall, $scope);
     }
 }

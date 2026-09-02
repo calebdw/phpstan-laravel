@@ -12,6 +12,7 @@ use PHPStan\Reflection\MethodsClassReflectionExtension;
 
 use function assert;
 
+// PHPStan does not resolve methods from a generic @mixin, so expose methods from the proxy's target explicitly.
 final class HigherOrderTapProxyExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection|false> */
@@ -38,7 +39,7 @@ final class HigherOrderTapProxyExtension implements MethodsClassReflectionExtens
 
     private function findMethod(ClassReflection $classReflection, string $methodName): MethodReflection|false
     {
-        $templateType = $classReflection->getActiveTemplateTypeMap()->getType('TClass');
+        $templateType = $classReflection->getActiveTemplateTypeMap()->getType('TTarget');
 
         if ($templateType === null || ! $templateType->hasMethod($methodName)->yes()) {
             return false;

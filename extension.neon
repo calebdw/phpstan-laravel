@@ -111,9 +111,9 @@ services:
     tags: [phpstan.broker.methodsClassReflectionExtension]
   - class: CalebDW\PhpstanLaravel\Methods\EloquentBuilderForwardsCallsExtension
     tags: [phpstan.broker.methodsClassReflectionExtension]
-  - class: CalebDW\PhpstanLaravel\Methods\HigherOrderTapProxyExtension
-    tags: [phpstan.broker.methodsClassReflectionExtension]
   - class: CalebDW\PhpstanLaravel\Methods\HigherOrderCollectionProxyExtension
+    tags: [phpstan.broker.methodsClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Methods\HigherOrderTapProxyExtension
     tags: [phpstan.broker.methodsClassReflectionExtension]
   - class: CalebDW\PhpstanLaravel\Methods\ContractsMethodsExtension
     tags: [phpstan.broker.methodsClassReflectionExtension]
@@ -211,6 +211,7 @@ services:
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\ResponseExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\ValidatorExtension
+    arguments: {strictContracts: %laravel.strictContracts%}
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\LiteralExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
@@ -245,8 +246,6 @@ services:
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\AppExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\ValueExtension
-    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\TapExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\StorageDynamicStaticMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
@@ -365,10 +364,6 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\LangGetReturnTypeExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\TransHelperReturnTypeExtension
-    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
-  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\DoubleUnderscoreHelperReturnTypeExtension
-    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\EloquentBuilderRelationParameterExtension
     tags: [phpstan.methodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\ModelRelationParameterExtension

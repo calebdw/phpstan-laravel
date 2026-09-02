@@ -3,21 +3,21 @@
 namespace Illuminate\Support;
 
 /**
- * @template TClass
- * @property TClass $target
+ * @template TTarget
+ * @property TTarget $target
  */
 class HigherOrderTapProxy
 {
     /**
-     * @param TClass $target
+     * @param TTarget $target
      */
     public function __construct($target);
 }
 
 /**
- * @template T
+ * @template TMethod of string
  * @template TValue
- * @template TCollection
+ * @template TCollection of \Illuminate\Support\Enumerable<array-key, TValue>
  */
 class HigherOrderCollectionProxy
 {}

@@ -13,8 +13,6 @@ use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
-use function count;
-
 class AppExtension implements DynamicFunctionReturnTypeExtension
 {
     public function __construct(
@@ -27,12 +25,9 @@ class AppExtension implements DynamicFunctionReturnTypeExtension
         return $functionReflection->getName() === 'app' || $functionReflection->getName() === 'resolve';
     }
 
-    public function getTypeFromFunctionCall(
-        FunctionReflection $functionReflection,
-        FuncCall $functionCall,
-        Scope $scope,
-    ): Type|null {
-        if (count($functionCall->getArgs()) === 0) {
+    public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type|null
+    {
+        if ($functionCall->getArgs() === []) {
             return new ObjectType(Application::class);
         }
 

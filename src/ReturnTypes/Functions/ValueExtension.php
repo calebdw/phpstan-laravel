@@ -8,11 +8,8 @@ use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
-use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
-
-use function count;
 
 final class ValueExtension implements DynamicFunctionReturnTypeExtension
 {
@@ -21,19 +18,15 @@ final class ValueExtension implements DynamicFunctionReturnTypeExtension
         return $functionReflection->getName() === 'value';
     }
 
-    public function getTypeFromFunctionCall(
-        FunctionReflection $functionReflection,
-        FuncCall $functionCall,
-        Scope $scope,
-    ): Type {
-        if (count($functionCall->getArgs()) === 0) {
-            return new NeverType();
+    public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type|null
+    {
+        $value = $functionCall->getArg('value', 0)?->value;
+
+        if ($value === null) {
+            return null;
         }
 
-        $arg     = $functionCall->getArgs()[0]->value;
-        $argType = $scope->getType($arg);
-
-        return TypeTraverser::map($argType, static function (Type $type, callable $traverse) use ($scope): Type {
+        return TypeTraverser::map($scope->getType($value), static function (Type $type, callable $traverse) use ($scope): Type {
             if ($type->isCallable()->yes()) {
                 return $type->getCallableParametersAcceptors($scope)[0]->getReturnType();
             }

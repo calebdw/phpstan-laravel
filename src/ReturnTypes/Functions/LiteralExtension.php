@@ -26,11 +26,8 @@ class LiteralExtension implements DynamicFunctionReturnTypeExtension
         return $functionReflection->getName() === 'literal';
     }
 
-    public function getTypeFromFunctionCall(
-        FunctionReflection $functionReflection,
-        FuncCall $functionCall,
-        Scope $scope,
-    ): Type {
+    public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type
+    {
         $args = $functionCall->getArgs();
 
         // Handle the case of a single argument, returning its type directly
