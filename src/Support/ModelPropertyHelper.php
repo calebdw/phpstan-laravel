@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Properties\ModelProperty;
+use CalebDW\PhpstanLaravel\Reflection\ModelPropertyReflection;
 use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -24,10 +24,10 @@ use function method_exists;
 
 class ModelPropertyHelper
 {
-    /** @var array<string, ModelProperty|false> */
+    /** @var array<string, ModelPropertyReflection|false> */
     private array $accessors = [];
 
-    /** @var array<string, ModelProperty|false> */
+    /** @var array<string, ModelPropertyReflection|false> */
     private array $databaseProperties = [];
 
     public function __construct(
@@ -53,7 +53,7 @@ class ModelPropertyHelper
         return ($this->databaseProperties[$cacheKey] ??= $this->resolveDatabaseProperty($classReflection, $propertyName)) !== false;
     }
 
-    public function getDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelProperty
+    public function getDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelPropertyReflection
     {
         $property = $this->databaseProperties[$classReflection->getCacheKey() . '-' . $propertyName];
         assert($property !== false);
@@ -61,7 +61,7 @@ class ModelPropertyHelper
         return $property;
     }
 
-    private function resolveDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelProperty|false
+    private function resolveDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelPropertyReflection|false
     {
         if ($this->reflectionHelper->hasPropertyTag($classReflection, $propertyName)) {
             return false;
@@ -81,7 +81,7 @@ class ModelPropertyHelper
 
             $keyType = $this->stringResolver->resolve($modelInstance->getKeyType());
 
-            return new ModelProperty($classReflection, $keyType, $keyType);
+            return new ModelPropertyReflection($classReflection, $keyType, $keyType);
         }
 
         $column = $this->modelSchema->getModelColumn($modelInstance, $propertyName);
@@ -117,7 +117,7 @@ class ModelPropertyHelper
             $writableType = TypeCombinator::addNull($writableType);
         }
 
-        return new ModelProperty($classReflection, $readableType, $writableType);
+        return new ModelPropertyReflection($classReflection, $readableType, $writableType);
     }
 
     /** Determine if the model has a property accessor. */
@@ -132,7 +132,7 @@ class ModelPropertyHelper
         return ($this->accessors[$cacheKey] ??= $this->resolveAccessor($classReflection, $propertyName)) !== false;
     }
 
-    public function getAccessor(ClassReflection $classReflection, string $propertyName): ModelProperty
+    public function getAccessor(ClassReflection $classReflection, string $propertyName): ModelPropertyReflection
     {
         $property = $this->accessors[$classReflection->getCacheKey() . '-' . $propertyName];
         assert($property !== false);
@@ -140,7 +140,7 @@ class ModelPropertyHelper
         return $property;
     }
 
-    private function resolveAccessor(ClassReflection $classReflection, string $propertyName): ModelProperty|false
+    private function resolveAccessor(ClassReflection $classReflection, string $propertyName): ModelPropertyReflection|false
     {
         $camelCase = Str::camel($propertyName);
 
@@ -153,7 +153,7 @@ class ModelPropertyHelper
                 $returnType = $methodReflection->getVariants()[0]->getReturnType();
 
                 if ((new ObjectType(Attribute::class))->isSuperTypeOf($returnType)->yes()) {
-                    return new ModelProperty(
+                    return new ModelPropertyReflection(
                         $classReflection,
                         $returnType->getTemplateType(Attribute::class, 'TGet'),
                         $returnType->getTemplateType(Attribute::class, 'TSet'),
@@ -170,7 +170,7 @@ class ModelPropertyHelper
 
         $returnType = $classReflection->getNativeMethod($methodName)->getVariants()[0]->getReturnType();
 
-        return new ModelProperty($classReflection, $returnType, $returnType);
+        return new ModelPropertyReflection($classReflection, $returnType, $returnType);
     }
 
     private function hasDate(Model $modelInstance, string $propertyName): bool

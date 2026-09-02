@@ -2,17 +2,21 @@
 
 declare(strict_types=1);
 
-namespace CalebDW\PhpstanLaravel\Properties;
+namespace CalebDW\PhpstanLaravel\Reflection;
 
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Type;
 
-class ModelProperty implements PropertyReflection
+final class ModelPropertyReflection implements PropertyReflection
 {
-    public function __construct(private ClassReflection $declaringClass, private Type $readableType, private Type $writableType, private bool $writeable = true)
-    {
+    public function __construct(
+        private ClassReflection $declaringClass,
+        private Type $readableType,
+        private Type $writableType,
+        private bool $writeable = true,
+    ) {
     }
 
     public function getDeclaringClass(): ClassReflection

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Properties;
 
+use CalebDW\PhpstanLaravel\Reflection\ModelPropertyReflection;
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +26,7 @@ use function str_ends_with;
 
 final class ModelRelationsExtension implements PropertiesClassReflectionExtension
 {
-    /** @var array<string, ModelProperty|false> */
+    /** @var array<string, ModelPropertyReflection|false> */
     private array $properties = [];
 
     private ObjectType $relationObjectType;
@@ -48,7 +49,7 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
         return ($this->properties[$cacheKey] ??= $this->resolveProperty($classReflection, $propertyName)) !== false;
     }
 
-    private function resolveProperty(ClassReflection $classReflection, string $propertyName): ModelProperty|false
+    private function resolveProperty(ClassReflection $classReflection, string $propertyName): ModelPropertyReflection|false
     {
         if ($this->reflectionHelper->hasPropertyTag($classReflection, $propertyName)) {
             return false;
@@ -71,7 +72,7 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
 
             if ($this->relationObjectType->isSuperTypeOf($returnType)->yes()) {
                 if (str_ends_with($propertyName, '_count')) {
-                    return new ModelProperty($classReflection, IntegerRangeType::createAllGreaterThanOrEqualTo(0), new NeverType(), false);
+                    return new ModelPropertyReflection($classReflection, IntegerRangeType::createAllGreaterThanOrEqualTo(0), new NeverType(), false);
                 }
 
                 $relationType = TypeTraverser::map($returnType, function (Type $type, callable $traverse): Type {
@@ -88,7 +89,7 @@ final class ModelRelationsExtension implements PropertiesClassReflectionExtensio
 
                 $relationType = $this->collectionHelper->replaceCollectionsInType($relationType);
 
-                return new ModelProperty($classReflection, $relationType, new NeverType(), false);
+                return new ModelPropertyReflection($classReflection, $relationType, new NeverType(), false);
             }
         }
 

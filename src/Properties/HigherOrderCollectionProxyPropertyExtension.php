@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Properties;
 
+use CalebDW\PhpstanLaravel\Reflection\ModelPropertyReflection;
 use CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
@@ -38,6 +39,6 @@ final class HigherOrderCollectionProxyPropertyExtension implements PropertiesCla
             $templates['collection']->getIterableKeyType(),
         );
 
-        return new ModelProperty($classReflection, $returnType, $returnType, writeable: false);
+        return new ModelPropertyReflection($classReflection, $returnType, $returnType, writeable: false);
     }
 }
