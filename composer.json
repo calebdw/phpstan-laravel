@@ -91,7 +91,7 @@
   "scripts": {
     "test:cs": "phpcs",
     "test:types": "phpstan analyse --ansi --memory-limit 300M",
-    "test:unit": "phpunit --colors=always -d memory_limit=1408M",
+    "test:unit": "phpunit --colors=always",
     "test:application": "tests/analyse.sh laravel",
     "test:e2e": "tests/analyse.sh",
     "test": [
