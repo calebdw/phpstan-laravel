@@ -308,15 +308,9 @@ services:
   - class: CalebDW\PhpstanLaravel\PhpDoc\StubFilesExtension
     tags: [phpstan.stubFilesExtension]
   - class: CalebDW\PhpstanLaravel\Rules\UnusedViewsRule
-  - class: CalebDW\PhpstanLaravel\Collectors\UsedViewFunctionCollector
-    tags: [phpstan.collector]
-  - class: CalebDW\PhpstanLaravel\Collectors\UsedEmailViewCollector
-    tags: [phpstan.collector]
-  - class: CalebDW\PhpstanLaravel\Collectors\UsedViewMakeCollector
-    tags: [phpstan.collector]
-  - class: CalebDW\PhpstanLaravel\Collectors\UsedViewFacadeMakeCollector
-    tags: [phpstan.collector]
-  - class: CalebDW\PhpstanLaravel\Collectors\UsedRouteFacadeViewCollector
+  - class: CalebDW\PhpstanLaravel\Support\TypeHelper
+  - class: CalebDW\PhpstanLaravel\Support\CallHelper
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedViewCollector
     tags: [phpstan.collector]
   - class: CalebDW\PhpstanLaravel\Collectors\UsedViewInAnotherViewCollector
   - class: CalebDW\PhpstanLaravel\Support\ViewFileHelper
@@ -325,11 +319,7 @@ services:
     arguments: {parser: @currentPhpVersionSimpleDirectParser}
   - class: CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule
     arguments: {translationDirectories: %laravel.translationDirectories%}
-  - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationFunctionCollector
-    tags: [phpstan.collector]
-  - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationTranslatorCollector
-    tags: [phpstan.collector]
-  - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationFacadeCollector
+  - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationCollector
     tags: [phpstan.collector]
   - class: CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ApplicationMakeDynamicReturnTypeExtension

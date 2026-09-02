@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
-use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFacadeCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFunctionCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedTranslationTranslatorCollector;
+use CalebDW\PhpstanLaravel\Collectors\UsedTranslationCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use Illuminate\Support\Str;
@@ -18,7 +16,6 @@ use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use SplFileInfo;
 
-use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -57,14 +54,6 @@ final class NoMissingTranslationsRule implements Rule
     {
         $paths = $this->translationDirectories ?: [lang_path()];
 
-        /** @var array<string, array{0: string, 1: int}[]>[] $collectors */
-        $collectors = [
-            $node->get(UsedTranslationFunctionCollector::class),
-            $node->get(UsedTranslationTranslatorCollector::class),
-            $node->get(UsedTranslationFacadeCollector::class),
-            $this->usedTranslationViewCollector->getUsedTranslations(),
-        ];
-
         $availableTranslations = [];
 
         foreach ($paths as $path) {
@@ -80,16 +69,17 @@ final class NoMissingTranslationsRule implements Rule
             $availableTranslations = array_merge($availableTranslations, ...$translations);
         }
 
+        /** @var array<string, list<array{0: string, 1: int}>> $usedTranslations */
         $usedTranslations = [];
 
-        foreach ($collectors as $collector) {
-            foreach ($collector as $file => $translations) {
-                if (! array_key_exists($file, $usedTranslations)) {
-                    $usedTranslations[$file] = [];
-                }
-
-                $usedTranslations[$file] = array_merge($usedTranslations[$file], $translations);
+        foreach ($node->get(UsedTranslationCollector::class) as $file => $batches) {
+            foreach ($batches as $translations) {
+                $usedTranslations[$file] = array_merge($usedTranslations[$file] ?? [], $translations);
             }
+        }
+
+        foreach ($this->usedTranslationViewCollector->getUsedTranslations() as $file => $translations) {
+            $usedTranslations[$file] = array_merge($usedTranslations[$file] ?? [], $translations);
         }
 
         $errors = [];

@@ -9,7 +9,7 @@ use Illuminate\Translation\Translator;
 
 class Translation
 {
-    public function translate(Translator $translator): void
+    public function translate(Translator $translator, bool $flag): void
     {
         __('messages.foo');
         trans('messages.foo');
@@ -22,7 +22,7 @@ class Translation
         $translator->get('messages.bar');
         $translator->choice('messages.bar', 1);
 
-        $translator->get('messages.test');
+        $translator->{'get'}('messages.test');
         $translator->choice('messages.test', 1);
 
         Lang::get('messages.baz');
@@ -37,7 +37,8 @@ class Translation
         __('messages.nested.key');
 
         Lang::get('sub/lines.greeting');
-        Lang::get('sub/lines.farewell');
+        Lang::get(key: 'sub/lines.farewell');
+        Lang::get($flag ? 'messages.ternary_a' : 'messages.ternary_b');
 
         __('vendor::key');
 

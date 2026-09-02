@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Rules;
 
-use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFacadeCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedTranslationFunctionCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedTranslationTranslatorCollector;
+use CalebDW\PhpstanLaravel\Collectors\UsedTranslationCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector;
 use CalebDW\PhpstanLaravel\Rules\NoMissingTranslationsRule;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
@@ -43,9 +41,7 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
     protected function getCollectors(): array
     {
         return [
-            new UsedTranslationFunctionCollector(),
-            new UsedTranslationTranslatorCollector(),
-            new UsedTranslationFacadeCollector(),
+            self::getContainer()->getByType(UsedTranslationCollector::class),
         ];
     }
 
@@ -129,6 +125,14 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
             [
                 'Translation "sub/lines.farewell" has not been found.',
                 40,
+            ],
+            [
+                'Translation "messages.ternary_a" has not been found.',
+                41,
+            ],
+            [
+                'Translation "messages.ternary_b" has not been found.',
+                41,
             ],
         ]);
     }

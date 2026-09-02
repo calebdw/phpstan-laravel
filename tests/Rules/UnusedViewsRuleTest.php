@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Rules;
 
-use CalebDW\PhpstanLaravel\Collectors\UsedEmailViewCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedRouteFacadeViewCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedViewFacadeMakeCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedViewFunctionCollector;
+use CalebDW\PhpstanLaravel\Collectors\UsedViewCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedViewInAnotherViewCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedViewMakeCollector;
 use CalebDW\PhpstanLaravel\Rules\UnusedViewsRule;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
@@ -38,11 +34,7 @@ class UnusedViewsRuleTest extends RuleTestCase
     protected function getCollectors(): array
     {
         return [
-            new UsedViewFunctionCollector(),
-            new UsedEmailViewCollector(),
-            new UsedViewMakeCollector(),
-            new UsedViewFacadeMakeCollector(),
-            new UsedRouteFacadeViewCollector(),
+            self::getContainer()->getByType(UsedViewCollector::class),
         ];
     }
 

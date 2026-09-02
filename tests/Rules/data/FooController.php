@@ -5,8 +5,11 @@ namespace Tests\Rules\Data;
 use Illuminate\Contracts\View\View;
 use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Factory;
+
+const VIEW_FACTORY_MAKE = 'view-factory-make';
 
 class FooController
 {
@@ -35,7 +38,7 @@ class FooMailable extends Mailable
 {
     public function build(): self
     {
-        return $this->markdown('emails.mailable.markdown');
+        return $this->text('emails.mailable.markdown');
     }
 
     public function bar(): self
@@ -48,33 +51,35 @@ class FooMailMessage extends MailMessage
 {
     public function build(): self
     {
-        return $this->markdown('emails.mail-message.markdown');
-    }
-
-    public function bar(): self
-    {
-        return $this->view('emails.mail-message.view');
+        return $this->view(['emails.mail-message.markdown', 'emails.mail-message.view']);
     }
 }
 
 function viewHelper(): View
 {
-    return view()->make('view-helper-make');
+    return view()->make(view: 'view-helper-make');
 }
 
 function viewFactory(Factory $factory): View
 {
-    return $factory->make('view-factory-make');
+    $method = 'make';
+
+    return $factory->$method(VIEW_FACTORY_MAKE);
 }
 
-function viewStaticMake(): View
+function viewStaticMake(bool $flag): View
 {
-    return \Illuminate\Support\Facades\View::make('view-static-make');
+    return \Illuminate\Support\Facades\View::make($flag ? 'view-static-make' : 'index');
 }
 
 function routeView(): void
 {
-    Route::view('/welcome', 'route-view');
+    Route::view('/welcome', view: 'route-view');
+}
+
+function routerView(Router $router): void
+{
+    $router->view('/welcome', 'route-view');
 }
 
 function dummyTranslationView()

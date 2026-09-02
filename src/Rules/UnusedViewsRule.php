@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
-use CalebDW\PhpstanLaravel\Collectors\UsedEmailViewCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedRouteFacadeViewCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedViewFacadeMakeCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedViewFunctionCollector;
+use CalebDW\PhpstanLaravel\Collectors\UsedViewCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedViewInAnotherViewCollector;
-use CalebDW\PhpstanLaravel\Collectors\UsedViewMakeCollector;
 use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use Illuminate\View\Factory;
 use PhpParser\Node;
@@ -49,11 +45,7 @@ final class UnusedViewsRule implements Rule
         }
 
         $usedViews = collect([
-            $node->get(UsedViewFunctionCollector::class),
-            $node->get(UsedEmailViewCollector::class),
-            $node->get(UsedViewMakeCollector::class),
-            $node->get(UsedViewFacadeMakeCollector::class),
-            $node->get(UsedRouteFacadeViewCollector::class),
+            $node->get(UsedViewCollector::class),
             $this->viewsUsedInOtherViews,
         ])->flatten()->unique()->toArray();
 

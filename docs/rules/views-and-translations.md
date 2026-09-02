@@ -38,10 +38,12 @@ parameters:
 ### Supported View Usages
 
 - `view` helper function.
-- `$this->markdown` and `$this->view` methods in Mailables.
+- `$this->markdown`, `$this->view`, and `$this->text` methods in Mailables and mail messages.
 - `Illuminate\View\Factory::make` method.
 - `Illuminate\Support\Facades\View::make` method.
-- `Illuminate\Support\Facades\Route::view` method.
+- `Illuminate\Support\Facades\Route::view` and `Illuminate\Routing\Router::view` methods.
+- `response()->view` and Blade component `view` methods.
+- `assertViewIs` and `InteractsWithViews::view` in tests.
 - `@extends` Blade directive.
 - `@include` Blade directive.
 - `@includeIf` Blade directive.
