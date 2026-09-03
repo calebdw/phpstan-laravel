@@ -33,11 +33,8 @@ final class ModelOnlyDynamicMethodReturnTypeExtension implements DynamicMethodRe
         return $methodReflection->getName() === 'only';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type
+    {
         return $this->getTypeForModel($methodCall, $scope->getType($methodCall->var), $scope);
     }
 
@@ -45,7 +42,7 @@ final class ModelOnlyDynamicMethodReturnTypeExtension implements DynamicMethodRe
     {
         $args = $methodCall->getArgs();
 
-        if (count($args) < 1) {
+        if ($args === []) {
             return new ErrorType();
         }
 

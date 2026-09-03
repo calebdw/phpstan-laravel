@@ -32,17 +32,16 @@ final class RequestRouteExtension implements DynamicMethodReturnTypeExtension
         return $methodReflection->getName() === 'route';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type {
-        if (count($methodCall->getArgs()) === 0) {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type
+    {
+        $args = $methodCall->getArgs();
+
+        if ($args === []) {
             return TypeCombinator::addNull(new ObjectType(Route::class));
         }
 
-        if (count($methodCall->getArgs()) === 2) {
-            $defaultType = $scope->getType($methodCall->getArgs()[1]->value);
+        if (count($args) === 2) {
+            $defaultType = $scope->getType($args[1]->value);
         } else {
             $defaultType = new NullType();
         }

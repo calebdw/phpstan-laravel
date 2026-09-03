@@ -31,11 +31,8 @@ final class ArrGetPullExtension implements DynamicStaticMethodReturnTypeExtensio
         return in_array($methodReflection->getName(), ['get', 'pull'], true);
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
+    {
         $arrayArg = $methodCall->getArg('array', 0);
         $keyArg   = $methodCall->getArg('key', 1);
 

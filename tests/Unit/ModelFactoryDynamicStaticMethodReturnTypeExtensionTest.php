@@ -6,6 +6,8 @@ namespace Unit;
 
 use App\User;
 use CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ModelFactoryDynamicStaticMethodReturnTypeExtension;
+use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use CalebDW\PhpstanLaravel\Types\ModelFactoryType;
 use Generator;
 use PhpParser\Node\Arg;
@@ -49,16 +51,11 @@ class ModelFactoryDynamicStaticMethodReturnTypeExtensionTest extends PHPStanTest
         $class = new Name(User::class);
 
         $scope = $this->createMock(Scope::class);
-        $scope->expects($this->once())->method('resolveName')->willReturnCallback(
-            function (Name $name) use ($class): string {
-                $this->assertSame($class, $name);
-
-                return User::class;
-            },
-        );
+        $scope->expects($this->once())->method('resolveTypeByName')->willReturn(new ObjectType(User::class));
 
         $extension = new ModelFactoryDynamicStaticMethodReturnTypeExtension(
             $this->createReflectionProvider(),
+            new CallHelper(new TypeHelper()),
         );
 
         $type = $extension->getTypeFromStaticMethodCall(
@@ -78,17 +75,12 @@ class ModelFactoryDynamicStaticMethodReturnTypeExtensionTest extends PHPStanTest
         $class = new Name(User::class);
 
         $scope = $this->createMock(Scope::class);
-        $scope->expects($this->once())->method('resolveName')->willReturnCallback(
-            function (Name $name) use ($class): string {
-                $this->assertSame($class, $name);
-
-                return User::class;
-            },
-        );
+        $scope->expects($this->once())->method('resolveTypeByName')->willReturn(new ObjectType(User::class));
         $scope->method('getType')->willReturn($phpstanType);
 
         $extension = new ModelFactoryDynamicStaticMethodReturnTypeExtension(
             $this->createReflectionProvider(),
+            new CallHelper(new TypeHelper()),
         );
 
         $type = $extension->getTypeFromStaticMethodCall(

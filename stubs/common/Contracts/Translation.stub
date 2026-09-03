@@ -2,4 +2,27 @@
 
 namespace Illuminate\Contracts\Translation;
 
-interface Translator {}
+interface Translator
+{
+    /**
+     * @param  string  $key
+     * @param  array<string, (\Closure(string): string)|scalar|null>  $replace
+     * @param  string|null  $locale
+     * @return __benevolent<array<array-key, mixed>|string>
+     */
+    public function get($key, array $replace = [], $locale = null);
+}
+
+namespace Illuminate\Translation;
+
+class Translator
+{
+    /**
+     * @param  string  $key
+     * @param  array<string, (\Closure(string): string)|scalar|null>  $replace
+     * @param  string|null  $locale
+     * @param  bool  $fallback
+     * @return __benevolent<array<array-key, mixed>|string>
+     */
+    public function get($key, array $replace = [], $locale = null, $fallback = true) {}
+}

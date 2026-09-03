@@ -27,11 +27,8 @@ class StorageDynamicStaticMethodReturnTypeExtension implements DynamicStaticMeth
         return in_array($methodReflection->getName(), ['disk', 'drive', 'cloud'], strict: true);
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type {
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type
+    {
         return new ObjectType(FilesystemAdapter::class);
     }
 }

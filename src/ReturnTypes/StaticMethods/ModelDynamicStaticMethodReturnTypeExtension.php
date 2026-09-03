@@ -62,11 +62,8 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
         return $this->reflectionProvider->getClass(Model::class)->hasNativeMethod($name);
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
+    {
         $method = $methodReflection->getDeclaringClass()
             ->getMethod($methodReflection->getName(), $scope);
 

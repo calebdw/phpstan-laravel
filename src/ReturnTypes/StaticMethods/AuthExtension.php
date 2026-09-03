@@ -30,11 +30,8 @@ final class AuthExtension implements DynamicStaticMethodReturnTypeExtension
         return in_array($methodReflection->getName(), ['user', 'authenticate', 'guard'], true);
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
+    {
         if ($methodReflection->getName() === 'guard') {
             return $this->authHelper->getGuardTypeFromArg($methodCall->getArg('name', 0), $scope);
         }

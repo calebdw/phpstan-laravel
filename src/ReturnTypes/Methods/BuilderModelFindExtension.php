@@ -22,7 +22,6 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 use function array_filter;
-use function count;
 use function in_array;
 
 final class BuilderModelFindExtension implements DynamicMethodReturnTypeExtension
@@ -54,12 +53,9 @@ final class BuilderModelFindExtension implements DynamicMethodReturnTypeExtensio
             $this->reflectionProvider->getClass(QueryBuilder::class)->hasNativeMethod($methodName);
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
-        if (count($methodCall->getArgs()) < 1) {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
+        if ($methodCall->getArgs() === []) {
             return null;
         }
 
@@ -102,6 +98,6 @@ final class BuilderModelFindExtension implements DynamicMethodReturnTypeExtensio
 
         $models = array_filter($models);
 
-        return count($models) > 0 ? TypeCombinator::union(...$models) : null;
+        return $models === [] ? null : TypeCombinator::union(...$models);
     }
 }

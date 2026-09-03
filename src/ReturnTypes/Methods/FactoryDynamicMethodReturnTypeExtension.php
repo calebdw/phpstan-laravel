@@ -33,11 +33,8 @@ class FactoryDynamicMethodReturnTypeExtension implements DynamicMethodReturnType
         return true;
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $calledOnType       = $scope->getType($methodCall->var);
         $originalReturnType = ParametersAcceptorSelector::selectFromArgs($scope, $methodCall->getArgs(), $methodReflection->getVariants())->getReturnType();
 

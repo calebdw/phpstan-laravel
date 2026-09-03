@@ -30,11 +30,8 @@ final class ArrPluckExtension implements DynamicStaticMethodReturnTypeExtension
         return $methodReflection->getName() === 'pluck';
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
+    {
         $arrayArg = $methodCall->getArg('array', 0);
         $valueArg = $methodCall->getArg('value', 1);
         $keyArg   = $methodCall->getArg('key', 2);

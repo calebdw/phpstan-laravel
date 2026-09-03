@@ -4,21 +4,26 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Foundation\Testing\TestCase;
+use Mockery\MockInterface;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\ErrorType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-use function count;
+use function array_map;
 use function in_array;
 
 final class TestCaseExtension implements DynamicMethodReturnTypeExtension
 {
+    public function __construct(private TypeHelper $typeHelper)
+    {
+    }
+
     public function getClass(): string
     {
         return TestCase::class;
@@ -26,39 +31,27 @@ final class TestCaseExtension implements DynamicMethodReturnTypeExtension
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return in_array($methodReflection->getName(), [
-            'mock',
-            'partialMock',
-            'spy',
-        ], true);
+        return in_array($methodReflection->getName(), ['mock', 'partialMock', 'spy'], true);
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type {
-        $defaultReturnType = new ObjectType('Mockery\\MockInterface');
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
+        $abstract = $methodCall->getArg('abstract', 0)?->value;
+        $mock     = new ObjectType(MockInterface::class);
 
-        if (count($methodCall->args) === 0) {
-            return new ErrorType();
+        if ($abstract === null) {
+            return null;
         }
 
-        $classType       = $scope->getType($methodCall->getArgs()[0]->value);
-        $constantStrings = $classType->getConstantStrings();
+        $abstracts = $this->typeHelper->constantStrings($scope->getType($abstract));
 
-        if ($constantStrings === []) {
-            return $defaultReturnType;
+        if ($abstracts === []) {
+            return $mock;
         }
 
-        $returnTypes = [];
-
-        foreach ($constantStrings as $constantString) {
-            $objectType = new ObjectType($constantString->getValue());
-
-            $returnTypes[] = TypeCombinator::intersect($defaultReturnType, $objectType);
-        }
-
-        return TypeCombinator::union(...$returnTypes);
+        return TypeCombinator::union(...array_map(
+            static fn ($a) => TypeCombinator::intersect($mock, new ObjectType($a)),
+            $abstracts,
+        ));
     }
 }

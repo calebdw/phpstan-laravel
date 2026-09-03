@@ -31,11 +31,8 @@ class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodR
         return $methodReflection->getName() === 'whereNotNull';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $calledOnType = $scope->getType($methodCall->var);
 
         if ($calledOnType->getObjectClassNames() === []) {

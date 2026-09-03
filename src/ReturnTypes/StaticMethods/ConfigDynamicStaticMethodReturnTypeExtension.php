@@ -30,11 +30,8 @@ final class ConfigDynamicStaticMethodReturnTypeExtension implements DynamicStati
         return in_array($methodReflection->getName(), ['get', 'getMany', 'array', 'collection', 'all'], true);
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
+    {
         return $this->configHelper->determineConfigType($methodReflection, $methodCall, $scope);
     }
 }

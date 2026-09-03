@@ -29,11 +29,8 @@ final class ArrKeyByExtension implements DynamicStaticMethodReturnTypeExtension
         return $methodReflection->getName() === 'keyBy';
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
+    {
         $arrayArg = $methodCall->getArg('array', 0);
         $keyByArg = $methodCall->getArg('keyBy', 1);
 

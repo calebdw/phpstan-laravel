@@ -12,6 +12,8 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
+use function in_array;
+
 final class AppMakeDynamicReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(
@@ -26,7 +28,7 @@ final class AppMakeDynamicReturnTypeExtension implements DynamicStaticMethodRetu
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
     {
-        return $methodReflection->getName() === 'make' || $methodReflection->getName() === 'makeWith';
+        return in_array($methodReflection->getName(), ['make', 'makeWith'], true);
     }
 
     public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null

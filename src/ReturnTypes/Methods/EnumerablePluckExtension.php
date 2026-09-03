@@ -30,11 +30,8 @@ final class EnumerablePluckExtension implements DynamicMethodReturnTypeExtension
         return $methodReflection->getName() === 'pluck';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $calledOnType    = $scope->getType($methodCall->var);
         $collectionClass = null;
         $valueArg        = $methodCall->getArg('value', 0);

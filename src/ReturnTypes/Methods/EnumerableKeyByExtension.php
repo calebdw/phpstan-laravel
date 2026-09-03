@@ -29,11 +29,8 @@ final class EnumerableKeyByExtension implements DynamicMethodReturnTypeExtension
         return $methodReflection->getName() === 'keyBy';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $keyArg = $methodCall->getArg('keyBy', 0);
 
         if ($keyArg === null) {

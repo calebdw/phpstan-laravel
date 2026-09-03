@@ -42,11 +42,8 @@ final class EnumerableGroupByExtension implements DynamicMethodReturnTypeExtensi
         return $methodReflection->getName() === 'groupBy';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $groupByArg = $methodCall->getArg('groupBy', 0);
 
         if ($groupByArg === null) {

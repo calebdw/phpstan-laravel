@@ -130,7 +130,7 @@ function view($view = null, $data = [], $mergeData = []) {}
  * @param  string|null  $key
  * @param  array<string, (\Closure(string): string)|scalar|null>  $replace
  * @param  string|null  $locale
- * @return ($key is null ? \Illuminate\Contracts\Translation\Translator : array<array-key, mixed>|string)
+ * @return ($key is null ? \Illuminate\Contracts\Translation\Translator : __benevolent<array<array-key, mixed>|string>)
  */
 function trans($key = null, $replace = [], $locale = null) {}
 
@@ -140,7 +140,7 @@ function trans($key = null, $replace = [], $locale = null) {}
  * @param  string|null  $key
  * @param  array<string, (\Closure(string): string)|scalar|null>  $replace
  * @param  string|null  $locale
- * @return ($key is null ? null : array<array-key, mixed>|string)
+ * @return ($key is null ? null : __benevolent<array<array-key, mixed>|string>)
  */
 function __($key = null, $replace = [], $locale = null) {}
 

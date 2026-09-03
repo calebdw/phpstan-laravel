@@ -31,22 +31,20 @@ final class RequestFileExtension implements DynamicMethodReturnTypeExtension
         return $methodReflection->getName() === 'file';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type
+    {
         $uploadedFileType      = new ObjectType(UploadedFile::class);
         $uploadedFileArrayType = new ArrayType(new IntegerType(), $uploadedFileType);
+        $args                  = $methodCall->getArgs();
 
-        if (count($methodCall->getArgs()) === 0) {
+        if ($args === []) {
             return new ArrayType(new IntegerType(), $uploadedFileType);
         }
 
-        if (count($methodCall->getArgs()) === 1) {
+        if (count($args) === 1) {
             return new BenevolentUnionType([$uploadedFileArrayType, $uploadedFileType, new NullType()]);
         }
 
-        return new BenevolentUnionType([$uploadedFileArrayType, $uploadedFileType, $scope->getType($methodCall->getArgs()[1]->value)]);
+        return new BenevolentUnionType([$uploadedFileArrayType, $uploadedFileType, $scope->getType($args[1]->value)]);
     }
 }

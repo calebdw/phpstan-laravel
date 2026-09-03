@@ -8,7 +8,9 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container as ContainerContract;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\ConstantTypeHelper;
 use PHPStan\Type\ErrorType;
+use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -70,11 +72,16 @@ final class ContainerHelper
             return new ObjectType($resolved::class);
         }
 
-        if ($resolved === null && $isClassName) {
-            return new ObjectType($abstract);
+        if ($resolved !== null) {
+            // Not everything in the container is an object, e.g. paths. The
+            // value belongs to the environment running the analysis, so only
+            // its shape is kept - 'local' here does not mean the analysed code
+            // always runs in the local environment.
+            return ConstantTypeHelper::getTypeFromValue($resolved)
+                ->generalize(GeneralizePrecision::lessSpecific());
         }
 
-        return new ErrorType();
+        return $isClassName ? new ObjectType($abstract) : new ErrorType();
     }
 
     public function getConfigRepository(): ConfigRepository|null

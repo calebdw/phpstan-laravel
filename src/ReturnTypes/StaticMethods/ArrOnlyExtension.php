@@ -23,11 +23,8 @@ final class ArrOnlyExtension implements DynamicStaticMethodReturnTypeExtension
         return $methodReflection->getName() === 'only';
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
+    {
         $arrayArg = $methodCall->getArg('array', 0);
         $keysArg  = $methodCall->getArg('keys', 1);
 

@@ -32,11 +32,8 @@ final class ManagerDriverExtension implements DynamicMethodReturnTypeExtension
         return $methodReflection->getName() === 'driver';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $managers = $scope->getType($methodCall->var)->getObjectClassReflections();
         $drivers  = $this->getRequestedDrivers($methodCall, $scope);
 

@@ -13,8 +13,6 @@ use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 
-use function count;
-
 class AppFacadeEnvironmentReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string
@@ -27,15 +25,8 @@ class AppFacadeEnvironmentReturnTypeExtension implements DynamicStaticMethodRetu
         return $methodReflection->getName() === 'environment';
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type {
-        if (count($methodCall->getArgs()) === 0) {
-            return new StringType();
-        }
-
-        return new BooleanType();
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type
+    {
+        return $methodCall->getArgs() === [] ? new StringType() : new BooleanType();
     }
 }

@@ -13,8 +13,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
@@ -188,7 +192,7 @@ class NoUnnecessaryCollectionCallRule implements Rule
             // 'contains' can also be called with Model instances or keys as its first argument
             /** @var Arg[] $args */
             $args = $node->args;
-            if (count($args) === 1 && ! ($args[0]->value instanceof Node\FunctionLike)) {
+            if (count($args) === 1 && ! ($args[0]->value instanceof FunctionLike)) {
                 return [$this->formatError($name->toString())];
             }
 
@@ -203,16 +207,16 @@ class NoUnnecessaryCollectionCallRule implements Rule
     /**
      * Determines whether the first argument is a string and references a database column.
      */
-    protected function firstArgIsDatabaseColumn(Node\Expr\StaticCall|MethodCall $node, Scope $scope): bool
+    protected function firstArgIsDatabaseColumn(StaticCall|MethodCall $node, Scope $scope): bool
     {
         /** @var Arg[] $args */
         $args = $node->args;
-        if (count($args) === 0 || ! ($args[0]->value instanceof Node\Scalar\String_)) {
+        if (count($args) === 0 || ! ($args[0]->value instanceof String_)) {
             return false;
         }
 
-        if ($node instanceof Node\Expr\StaticCall) {
-            /** @var Node\Name $class */
+        if ($node instanceof StaticCall) {
+            /** @var Name $class */
             $class = $node->class;
 
             $modelReflection = $this->reflectionProvider->getClass($class->toCodeString());
@@ -260,9 +264,9 @@ class NoUnnecessaryCollectionCallRule implements Rule
     /**
      * Returns whether the method call is a call on a builder instance.
      *
-     * @phpstan-assert-if-true MethodCall|Node\Expr\StaticCall $call
+     * @phpstan-assert-if-true MethodCall|StaticCall $call
      */
-    protected function callIsQuery(Node\Expr $call, Scope $scope): bool
+    protected function callIsQuery(Expr $call, Scope $scope): bool
     {
         if ($call instanceof MethodCall) {
             $calledOn = $scope->getType($call->var);
@@ -270,9 +274,9 @@ class NoUnnecessaryCollectionCallRule implements Rule
             return $this->isBuilder($calledOn);
         }
 
-        if ($call instanceof Node\Expr\StaticCall) {
+        if ($call instanceof StaticCall) {
             $class = $call->class;
-            if ($class instanceof Node\Name) {
+            if ($class instanceof Name) {
                 $modelClassName = $class->toCodeString();
 
                 return (new ObjectType(Model::class))->isSuperTypeOf(new ObjectType($modelClassName))->yes()
@@ -313,7 +317,7 @@ class NoUnnecessaryCollectionCallRule implements Rule
     /**
      * Returns whether the Expr was not called on a Collection instance.
      */
-    protected function isCalledOnCollection(Node\Expr $expr, Scope $scope): bool
+    protected function isCalledOnCollection(Expr $expr, Scope $scope): bool
     {
         $calledOnType = $scope->getType($expr);
 

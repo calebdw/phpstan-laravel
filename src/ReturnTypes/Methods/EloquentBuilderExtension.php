@@ -18,13 +18,14 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 use function collect;
-use function count;
 use function in_array;
 
 final class EloquentBuilderExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private ReflectionProvider $reflectionProvider, private CollectionHelper $collectionHelper)
-    {
+    public function __construct(
+        private ReflectionProvider $reflectionProvider,
+        private CollectionHelper $collectionHelper,
+    ) {
     }
 
     public function getClass(): string
@@ -64,11 +65,8 @@ final class EloquentBuilderExtension implements DynamicMethodReturnTypeExtension
         return $builderReflection->hasNativeMethod($methodReflection->getName());
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $returnType      = ParametersAcceptorSelector::selectFromArgs($scope, $methodCall->getArgs(), $methodReflection->getVariants())->getReturnType();
         $templateTypeMap = $methodReflection->getDeclaringClass()->getActiveTemplateTypeMap();
 
@@ -79,7 +77,7 @@ final class EloquentBuilderExtension implements DynamicMethodReturnTypeExtension
 
         $classNames = $modelType->getObjectClassNames();
 
-        if (count($classNames) === 0) {
+        if ($classNames === []) {
             return null;
         }
 
@@ -89,7 +87,7 @@ final class EloquentBuilderExtension implements DynamicMethodReturnTypeExtension
 
         return TypeCombinator::union(
             ...collect($classNames)
-                ->map(fn ($className) => $this->collectionHelper->determineCollectionType($className, $modelType))
+                ->map(fn ($c) => $this->collectionHelper->determineCollectionType($c, $modelType))
                 ->filter()
                 ->all(),
         );

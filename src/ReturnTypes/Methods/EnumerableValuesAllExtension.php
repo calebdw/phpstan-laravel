@@ -16,6 +16,7 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
+/** Returns a `list<T>` when calling ->values()->all() */
 final class EnumerableValuesAllExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string
@@ -38,10 +39,7 @@ final class EnumerableValuesAllExtension implements DynamicMethodReturnTypeExten
             return null;
         }
 
-        $array = new ArrayType(
-            new IntegerType(),
-            $scope->getType($methodCall->var)->getIterableValueType(),
-        );
+        $array = new ArrayType(new IntegerType(), $scope->getType($methodCall->var)->getIterableValueType());
 
         return TypeCombinator::intersect($array, new AccessoryArrayListType());
     }

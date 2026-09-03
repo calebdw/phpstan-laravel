@@ -47,8 +47,6 @@ final class EloquentValueExtension implements DynamicMethodReturnTypeExtension
         }
 
         // value() returns null when no row matches; the other methods throw instead.
-        return $methodReflection->getName() === 'value'
-            ? TypeCombinator::addNull($type)
-            : $type;
+        return $methodReflection->getName() === 'value' ? TypeCombinator::addNull($type) : $type;
     }
 }

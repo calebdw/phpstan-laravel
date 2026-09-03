@@ -38,27 +38,13 @@ class NewModelQueryDynamicMethodReturnTypeExtension implements DynamicMethodRetu
         ], true);
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
-        $calledOnType     = $scope->getType($methodCall->var);
-        $classReflections = $calledOnType->getObjectClassReflections();
-
-        if ($classReflections === []) {
-            return null;
-        }
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
+        $classReflections = $scope->getType($methodCall->var)->getObjectClassReflections();
 
         return collect($classReflections)
             ->filter(static fn ($r) => $r->is(Model::class))
             ->map(static fn ($r) => $r->getName())
-            ->pipe(function ($models) {
-                if ($models->isEmpty()) {
-                    return null;
-                }
-
-                return $this->builderHelper->getBuilderTypeForModels($models->all());
-            });
+            ->pipe(fn ($m) => $m->isEmpty() ? null : $this->builderHelper->getBuilderTypeForModels($m->all()));
     }
 }

@@ -20,13 +20,11 @@ use PHPStan\Type\Type;
  */
 final class EloquentPluckExtension implements DynamicMethodReturnTypeExtension
 {
-    /**
-     * @param class-string $class        receiver the extension is registered for
-     * @param string       $templateType template parameter naming the model
-     */
     public function __construct(
         private ColumnHelper $columnHelper,
+        /** @var class-string receiver the extension is registered for */
         private string $class,
+        /** @var string template parameter naming the model */
         private string $templateType,
     ) {
     }
@@ -41,11 +39,8 @@ final class EloquentPluckExtension implements DynamicMethodReturnTypeExtension
         return $methodReflection->getName() === 'pluck';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
+    {
         $valueArg = $methodCall->getArg('value', 0);
         $keyArg   = $methodCall->getArg('key', 1);
 

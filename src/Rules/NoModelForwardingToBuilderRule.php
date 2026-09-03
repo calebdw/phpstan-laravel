@@ -12,6 +12,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\TypeCombinator;
 
@@ -29,7 +30,7 @@ final class NoModelForwardingToBuilderRule implements Rule
         return MethodCall::class;
     }
 
-    /** @inheritDoc */
+    /** @return RuleError[] */
     public function processNode(Node $node, Scope $scope): array
     {
         $errors = [];

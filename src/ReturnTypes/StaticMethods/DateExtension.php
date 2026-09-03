@@ -13,7 +13,6 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-use function get_class;
 use function in_array;
 use function now;
 
@@ -51,18 +50,12 @@ class DateExtension implements DynamicStaticMethodReturnTypeExtension
         ], true);
     }
 
-    public function getTypeFromStaticMethodCall(
-        MethodReflection $methodReflection,
-        StaticCall $methodCall,
-        Scope $scope,
-    ): Type {
-        $dateType = new ObjectType(get_class(now()));
+    public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type
+    {
+        $method   = $methodReflection->getName();
+        $dateType = new ObjectType(now()::class);
 
-        if (in_array($methodReflection->getName(), ['getTestNow', 'make'], true)) {
-            return TypeCombinator::addNull($dateType);
-        }
-
-        if (in_array($methodReflection->getName(), ['createFromFormat', 'createSafe'], true)) {
+        if (in_array($method, ['getTestNow', 'make', 'createFromFormat', 'createSafe'], true)) {
             return TypeCombinator::addNull($dateType);
         }
 
