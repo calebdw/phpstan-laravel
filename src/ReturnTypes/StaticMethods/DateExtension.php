@@ -13,11 +13,35 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-use function in_array;
 use function now;
 
 class DateExtension implements DynamicStaticMethodReturnTypeExtension
 {
+    // if true, then method returns nullable type
+    private const array METHODS = [
+        'create' => false,
+        'createFromDate' => false,
+        'createFromFormat' => true,
+        'createFromTime' => false,
+        'createFromTimeString' => false,
+        'createFromTimestamp' => false,
+        'createFromTimestampMs' => false,
+        'createFromTimestampUTC' => false,
+        'createMidnightDate' => false,
+        'createSafe' => true,
+        'fromSerialized' => false,
+        'getTestNow' => true,
+        'instance' => false,
+        'make' => true,
+        'maxValue' => false,
+        'minValue' => false,
+        'now' => false,
+        'parse' => false,
+        'today' => false,
+        'tomorrow' => false,
+        'yesterday' => false,
+    ];
+
     public function getClass(): string
     {
         return Date::class;
@@ -25,37 +49,14 @@ class DateExtension implements DynamicStaticMethodReturnTypeExtension
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
     {
-        return in_array($methodReflection->getName(), [
-            'create',
-            'createFromDate',
-            'createFromTime',
-            'createFromTimeString',
-            'createFromTimestamp',
-            'createFromTimestampMs',
-            'createFromTimestampUTC',
-            'createMidnightDate',
-            'fromSerialized',
-            'getTestNow',
-            'instance',
-            'maxValue',
-            'minValue',
-            'now',
-            'parse',
-            'today',
-            'tomorrow',
-            'yesterday',
-            'createFromFormat',
-            'createSafe',
-            'make',
-        ], true);
+        return isset(self::METHODS[$methodReflection->getName()]);
     }
 
     public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type
     {
-        $method   = $methodReflection->getName();
         $dateType = new ObjectType(now()::class);
 
-        if (in_array($method, ['getTestNow', 'make', 'createFromFormat', 'createSafe'], true)) {
+        if (self::METHODS[$methodReflection->getName()] === true) {
             return TypeCombinator::addNull($dateType);
         }
 
