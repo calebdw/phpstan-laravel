@@ -38,7 +38,7 @@ final class SchemaCache
 
     public function inputHash(): string
     {
-        $context = hash_init('sha256');
+        $context = hash_init('xxh128');
         hash_update($context, $this->compatibilityKey() . "\0");
 
         $files = [];
