@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use CalebDW\PhpstanLaravel\Support\ModelRuleHelper;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use PhpParser\Node;
@@ -20,17 +21,31 @@ use PHPStan\Type\Type;
 
 use function array_map;
 use function array_merge;
-use function count;
 use function explode;
-use function in_array;
 use function sprintf;
 use function str_contains;
 
 /** @implements Rule<Node\Expr\CallLike> */
 class RelationExistenceRule implements Rule
 {
-    public function __construct(private ModelRuleHelper $modelRuleHelper)
-    {
+    private const array METHODS = [
+        'has',
+        'with',
+        'orHas',
+        'doesntHave',
+        'orDoesntHave',
+        'whereHas',
+        'withWhereHas',
+        'orWhereHas',
+        'whereDoesntHave',
+        'orWhereDoesntHave',
+        'whereRelation',
+    ];
+
+    public function __construct(
+        private ModelRuleHelper $modelRuleHelper,
+        private CallHelper $callHelper,
+    ) {
     }
 
     public function getNodeType(): string
@@ -45,35 +60,13 @@ class RelationExistenceRule implements Rule
             return [];
         }
 
-        if (! $node->name instanceof Node\Identifier) {
-            return [];
-        }
-
-        if (
-            ! in_array(
-                $node->name->name,
-                [
-                    'has',
-                    'with',
-                    'orHas',
-                    'doesntHave',
-                    'orDoesntHave',
-                    'whereHas',
-                    'withWhereHas',
-                    'orWhereHas',
-                    'whereDoesntHave',
-                    'orWhereDoesntHave',
-                    'whereRelation',
-                ],
-                true,
-            )
-        ) {
+        if ($this->callHelper->matchingNames($node, $scope, self::METHODS) === []) {
             return [];
         }
 
         $args = $node->getArgs();
 
-        if (count($args) < 1) {
+        if ($args === []) {
             return [];
         }
 

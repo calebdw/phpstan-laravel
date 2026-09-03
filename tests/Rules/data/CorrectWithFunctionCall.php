@@ -17,4 +17,13 @@ class CorrectWithFunctionCall
     {
         return with('foo', 'strtoupper');
     }
+
+    public function variableName(): string
+    {
+        $with = 'with';
+
+        return $with('foo', static function (string $bar) {
+            return strtoupper($bar);
+        });
+    }
 }

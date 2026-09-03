@@ -13,7 +13,7 @@ class OctaneCompatibilityRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new OctaneCompatibilityRule();
+        return self::getContainer()->getByType(OctaneCompatibilityRule::class);
     }
 
     public function testNoContainerInjection(): void
@@ -26,6 +26,9 @@ class OctaneCompatibilityRuleTest extends RuleTestCase
             ['Consider using bind method instead or pass a closure.', 33, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
             ['Consider using bind method instead or pass a closure.', 46, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
             ['Consider using bind method instead or pass a closure.', 51, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 59, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 62, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 66, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
         ]);
     }
 

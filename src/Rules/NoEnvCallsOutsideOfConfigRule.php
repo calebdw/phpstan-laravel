@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
-use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\File\FileHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
-use function count;
+use function array_map;
 use function is_dir;
 use function is_string;
 use function str_starts_with;
@@ -34,11 +34,13 @@ class NoEnvCallsOutsideOfConfigRule implements Rule
         array $configDirectories,
         private FileHelper $fileHelper,
         private ContainerHelper $containerHelper,
+        private CallHelper $callHelper,
     ) {
-        if (count($configDirectories) !== 0) {
-            foreach ($configDirectories as $directory) {
-                $this->configDirectories[] = $this->fileHelper->normalizePath($directory);
-            }
+        if ($configDirectories !== []) {
+            $this->configDirectories = array_map(
+                $this->fileHelper->normalizePath(...),
+                $configDirectories,
+            );
 
             return;
         }
@@ -63,13 +65,7 @@ class NoEnvCallsOutsideOfConfigRule implements Rule
     /** @return array<int, RuleError> */
     public function processNode(Node $node, Scope $scope): array
     {
-        $name = $node->name;
-
-        if (! $name instanceof Name) {
-            return [];
-        }
-
-        if ($scope->resolveName($name) !== 'env') {
+        if ($this->callHelper->matchingNames($node, $scope, 'env') === []) {
             return [];
         }
 

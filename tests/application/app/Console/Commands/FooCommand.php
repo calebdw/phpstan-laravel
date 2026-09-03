@@ -42,4 +42,13 @@ class FooCommand extends Command
         assertType('true', $this->hasOption('v'));
         assertType('false', $this->hasOption('foobar'));
     }
+
+    public function unions(bool $flag): void
+    {
+        $method = $flag ? 'argument' : 'option';
+
+        $this->$method('foobar');
+        $this->argument($flag ? 'argument' : 'missing');
+        $this->option($flag ? 'option' : 'missing');
+    }
 }

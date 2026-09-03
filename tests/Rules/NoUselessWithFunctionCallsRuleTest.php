@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\NoUselessWithFunctionCallsRule;
+use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -30,6 +32,9 @@ class NoUselessWithFunctionCallsRuleTest extends RuleTestCase
             [
                 ["Calling the helper function 'with()' with only one argument simply returns the value itself. If you want to chain methods on a construct, use '(new ClassName())->foo()' instead", 11],
                 ["Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything", 16],
+                ["Calling the helper function 'with()' with only one argument simply returns the value itself. If you want to chain methods on a construct, use '(new ClassName())->foo()' instead", 23],
+                ["Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything", 30],
+                ["Calling the helper function 'with()' with only one argument simply returns the value itself. If you want to chain methods on a construct, use '(new ClassName())->foo()' instead", 35],
             ],
         );
     }
@@ -41,6 +46,6 @@ class NoUselessWithFunctionCallsRuleTest extends RuleTestCase
 
     protected function getRule(): Rule
     {
-        return new NoUselessWithFunctionCallsRule();
+        return new NoUselessWithFunctionCallsRule(new CallHelper(new TypeHelper()));
     }
 }

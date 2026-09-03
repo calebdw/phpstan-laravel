@@ -62,6 +62,12 @@ class NoModelMakeRuleTest extends RuleTestCase
         $this->assertSame(13, $actualErrors[0]->getLine());
     }
 
+    public function testFix(): void
+    {
+        $this->fix(__DIR__ . '/data/ModelMake.php', __DIR__ . '/data/ModelMakeFixed.php');
+        $this->fix(__DIR__ . '/data/ModelMakeSelf.php', __DIR__ . '/data/ModelMakeSelfFixed.php');
+    }
+
     /** @return string[] */
     public static function getAdditionalConfigFiles(): array
     {

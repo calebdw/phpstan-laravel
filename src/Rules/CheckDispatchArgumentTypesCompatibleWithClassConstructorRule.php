@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Events\Dispatchable as EventDispatchable;
 use PhpParser\BuilderFactory;
@@ -14,6 +15,7 @@ use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\TrinaryLogic;
 
@@ -30,6 +32,7 @@ class CheckDispatchArgumentTypesCompatibleWithClassConstructorRule implements Ru
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private FunctionCallParametersCheck $check,
+        private CallHelper $callHelper,
         private string $dispatchableClass,
     ) {
     }
@@ -39,16 +42,12 @@ class CheckDispatchArgumentTypesCompatibleWithClassConstructorRule implements Ru
         return StaticCall::class;
     }
 
-    /** @inheritDoc */
+    /** @return RuleError[] */
     public function processNode(Node $node, Scope $scope): array
     {
-        if (! $node->name instanceof Node\Identifier) {
-            return [];
-        }
+        $methodName = $this->callHelper->matchingNames($node, $scope, $this->getAvailableMethods())[0] ?? null;
 
-        $methodName = $node->name->name;
-
-        if (! in_array($methodName, $this->getAvailableMethods(), true)) {
+        if ($methodName === null) {
             return [];
         }
 

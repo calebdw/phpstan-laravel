@@ -10,4 +10,11 @@ class UselessValueFunctionCall
     {
         return value('foo');
     }
+
+    public function variableName(): string
+    {
+        $value = 'value';
+
+        return $value('foo');
+    }
 }

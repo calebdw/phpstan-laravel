@@ -51,6 +51,22 @@ function foo(Application $app): void
     return new Service($app);
 });
 
+function unions(Application $app, bool $flag): void
+{
+    $method = $flag ? 'singleton' : 'bind';
+
+    $app->$method(Service::class, function ($app) {
+        return new Service($app);
+    });
+
+    $app->singleton(Service::class, fn ($app) => new Service($app));
+
+    $key = $flag ? 'request' : 'config';
+    $app->singleton(Service::class, function ($app) use ($key) {
+        return new Service($app[$key]);
+    });
+}
+
 class Service
 {
     /**

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\CheckDispatchArgumentTypesCompatibleWithClassConstructorRule;
+use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Events\Dispatchable as EventDispatchable;
 use PHPStan\Rules\FunctionCallParametersCheck;
@@ -23,6 +25,7 @@ class CheckDispatchArgumentTypesCompatibleWithClassConstructorRuleTest extends R
         return new CheckDispatchArgumentTypesCompatibleWithClassConstructorRule(
             $broker,
             self::getContainer()->getByType(FunctionCallParametersCheck::class),
+            new CallHelper(new TypeHelper()),
             $this->dispatchableClass,
         );
     }

@@ -27,11 +27,7 @@ class NoPublicModelScopeAndAccessorRule implements Rule
         return InClassMethodNode::class;
     }
 
-    /**
-     * @param InClassMethodNode $node
-     *
-     * @return list<IdentifierRuleError>
-     */
+    /** @return list<IdentifierRuleError> */
     public function processNode(Node $node, AnalyserScope $scope): array
     {
         $classReflection = $node->getClassReflection();
@@ -40,63 +36,56 @@ class NoPublicModelScopeAndAccessorRule implements Rule
             return [];
         }
 
-        $parentClass = $node->getClassReflection()->getParentClass();
+        $parentClass = $classReflection->getParentClass();
 
         if ($parentClass !== null && $parentClass->hasNativeMethod($node->getMethodReflection()->getName())) {
             return [];
         }
 
-        if ($this->isScopeMethod($node)) {
-            if (! $node->getOriginalNode()->isProtected()) {
-                return [
-                    /** @phpstan-ignore method.internal (still experimental) */
-                    RuleErrorBuilder::message(
-                        sprintf(
-                            "Local query scope method '%s' should be declared as protected.",
-                            $node->getMethodReflection()->getName(),
-                        ),
-                    )
-                    ->identifier('laravel.modelMethodVisibility.scope')
-                    ->line($node->getStartLine())
-                    ->file($scope->getFile())
-                    ->fixNode($node->getOriginalNode(), static function (Node $node) {
-                        $node->flags &= ~Modifiers::PUBLIC;
-                        $node->flags &= ~Modifiers::PRIVATE;
-                        $node->flags |= Modifiers::PROTECTED;
-
-                        return $node;
-                    })
-                    ->build(),
-                ];
-            }
+        if ($this->isScopeMethod($node) && ! $node->getOriginalNode()->isProtected()) {
+            return [
+                $this->visibilityError(
+                    $node,
+                    $scope,
+                    "Local query scope method '%s' should be declared as protected.",
+                    'laravel.modelMethodVisibility.scope',
+                ),
+            ];
         }
 
-        if ($this->isAccessorMethod($node)) {
-            if (! $node->getOriginalNode()->isProtected()) {
-                return [
-                    /** @phpstan-ignore method.internal (still experimental) */
-                    RuleErrorBuilder::message(
-                        sprintf(
-                            "Model accessor method '%s' should be declared as protected.",
-                            $node->getMethodReflection()->getName(),
-                        ),
-                    )
-                    ->identifier('laravel.modelMethodVisibility.accessor')
-                    ->line($node->getStartLine())
-                    ->file($scope->getFile())
-                    ->fixNode($node->getOriginalNode(), static function (Node $node) {
-                        $node->flags &= ~Modifiers::PUBLIC;
-                        $node->flags &= ~Modifiers::PRIVATE;
-                        $node->flags |= Modifiers::PROTECTED;
-
-                        return $node;
-                    })
-                    ->build(),
-                ];
-            }
+        if ($this->isAccessorMethod($node) && ! $node->getOriginalNode()->isProtected()) {
+            return [
+                $this->visibilityError(
+                    $node,
+                    $scope,
+                    "Model accessor method '%s' should be declared as protected.",
+                    'laravel.modelMethodVisibility.accessor',
+                ),
+            ];
         }
 
         return [];
+    }
+
+    private function visibilityError(
+        InClassMethodNode $node,
+        AnalyserScope $scope,
+        string $message,
+        string $identifier,
+    ): IdentifierRuleError {
+        /** @phpstan-ignore method.internal (still experimental) */
+        return RuleErrorBuilder::message(sprintf($message, $node->getMethodReflection()->getName()))
+            ->identifier($identifier)
+            ->line($node->getStartLine())
+            ->file($scope->getFile())
+            ->fixNode($node->getOriginalNode(), static function (Node $node) {
+                $node->flags &= ~Modifiers::PUBLIC;
+                $node->flags &= ~Modifiers::PRIVATE;
+                $node->flags |= Modifiers::PROTECTED;
+
+                return $node;
+            })
+            ->build();
     }
 
     private function isScopeMethod(InClassMethodNode $method): bool

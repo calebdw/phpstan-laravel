@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule;
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Illuminate\Foundation\Application;
 use PHPStan\Rules\Rule;
@@ -27,6 +28,7 @@ class NoEnvCallsOutsideOfConfigRuleTest extends RuleTestCase
             [__DIR__ . '/data/config'],
             $this->getFileHelper(),
             self::getContainer()->getByType(ContainerHelper::class),
+            self::getContainer()->getByType(CallHelper::class),
         );
     }
 
@@ -42,6 +44,7 @@ class NoEnvCallsOutsideOfConfigRuleTest extends RuleTestCase
         $this->analyse([__DIR__ . '/data/env-calls.php'], [
             ["Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.", 7],
             ["Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.", 8],
+            ["Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.", 15],
         ]);
     }
 

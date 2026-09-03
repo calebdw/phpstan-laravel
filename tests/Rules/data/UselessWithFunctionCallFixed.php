@@ -15,4 +15,23 @@ class UselessWithFunctionCall
     {
         return 'bar';
     }
+
+    public function variableName(): string
+    {
+        $with = 'with';
+
+        return 'foo';
+    }
+
+    public function variableNameWithNull(): string
+    {
+        $with = 'with';
+
+        return 'bar';
+    }
+
+    public function stringName(): string
+    {
+        return 'foo';
+    }
 }

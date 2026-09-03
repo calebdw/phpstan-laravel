@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
 use function collect;
 
 final class TypeHelper
 {
-    /** @param class-string|list<class-string> $classes */
+    /** @param class-string|array<class-string> $classes */
     public function isCalledOn(Type $type, array|string $classes): bool
     {
-        return collect((array) $classes)
-            ->contains(static fn ($c) => (new ObjectType($c))->isSuperTypeOf($type)->yes());
+        $classes = (array) $classes;
+
+        return collect($type->getObjectClassReflections())
+            ->contains(static fn ($r) => collect($classes)->contains(static fn ($c) => $r->is($c)));
     }
 
     /** @param class-string $trait */

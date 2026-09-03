@@ -13,7 +13,7 @@ class NoAuthFacadeInRequestScopeRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new NoAuthFacadeInRequestScopeRule();
+        return self::getContainer()->getByType(NoAuthFacadeInRequestScopeRule::class);
     }
 
     public function testRule(): void

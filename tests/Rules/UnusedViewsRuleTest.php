@@ -21,13 +21,17 @@ class UnusedViewsRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        $viewParser     = new ViewParser($this->getContainer()->getService('currentPhpVersionSimpleDirectParser'));
-        $viewFileHelper = new ViewFileHelper([
+        $containerHelper            = self::getContainer()->getByType(ContainerHelper::class);
+        $viewFileHelper             = new ViewFileHelper([
             __DIR__ . '/../application/resources/views/',
             __DIR__ . '/../../vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/views',
-        ], new FileHelper($this->getFileHelper()), self::getContainer()->getByType(ContainerHelper::class));
+        ], self::getContainer()->getByType(FileHelper::class), $containerHelper);
+        $usedInAnotherViewCollector = new UsedViewInAnotherViewCollector(
+            self::getContainer()->getByType(ViewParser::class),
+            $viewFileHelper,
+        );
 
-        return new UnusedViewsRule(new UsedViewInAnotherViewCollector($viewParser, $viewFileHelper), $viewFileHelper);
+        return new UnusedViewsRule($viewFileHelper, $usedInAnotherViewCollector, $containerHelper);
     }
 
     /** @return array<Collector<Node, mixed>> */

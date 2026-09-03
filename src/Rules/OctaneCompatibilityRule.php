@@ -4,150 +4,179 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Contracts\Foundation\Application;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\ArrayDimFetch;
+use PhpParser\Node\Expr\ArrowFunction;
+use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Expr\PropertyFetch;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\ObjectType;
 
-use function array_map;
-use function count;
+use function array_intersect;
 use function in_array;
+use function is_string;
 
 /** @implements Rule<MethodCall> */
 class OctaneCompatibilityRule implements Rule
 {
+    private NodeFinder $nodeFinder;
+
+    public function __construct(
+        private CallHelper $callHelper,
+        private TypeHelper $typeHelper,
+    ) {
+        $this->nodeFinder = new NodeFinder();
+    }
+
     public function getNodeType(): string
     {
         return MethodCall::class;
     }
 
+    /** @return RuleError[] */
+    public function processNode(Node $node, Scope $scope): array
+    {
+        $methods = $this->callHelper->matchingNames($node, $scope, ['singleton', 'bind']);
+
+        if ($methods === []) {
+            return [];
+        }
+
+        if (! $this->callHelper->isCalledOn($node, $scope, Application::class)) {
+            return [];
+        }
+
+        $concrete = $node->getArg('concrete', 1)?->value;
+
+        if (! $concrete instanceof Closure && ! $concrete instanceof ArrowFunction) {
+            return [];
+        }
+
+        $params = $concrete->getParams();
+
+        if ($params === []) {
+            return $this->errors($this->thisAppNodes($concrete, $scope));
+        }
+
+        if (! in_array('singleton', $methods, true)) {
+            return [];
+        }
+
+        $container = $params[0]->var;
+
+        if (! $container instanceof Variable) {
+            return [];
+        }
+
+        return $this->errors($this->containerInjectionNodes($concrete, $scope, $container));
+    }
+
+    /** @return Node[] */
+    private function thisAppNodes(Closure|ArrowFunction $concrete, Scope $scope): array
+    {
+        return $this->nodeFinder->find($concrete, function (Node $node) use ($scope): bool {
+            return $node instanceof PropertyFetch
+                && $this->isVariable($node->var, 'this', $scope)
+                && $this->propertyIs($node, 'app', $scope);
+        });
+    }
+
+    /** @return Node[] */
+    private function containerInjectionNodes(Closure|ArrowFunction $concrete, Scope $scope, Variable $container): array
+    {
+        return $this->nodeFinder->find($concrete, function (Node $node) use ($scope, $container): bool {
+            if (! $node instanceof New_) {
+                return false;
+            }
+
+            $args = $node->getArgs();
+
+            if ($args === []) {
+                return false;
+            }
+
+            $value = $args[0]->value;
+
+            if ($value instanceof Variable) {
+                return $this->sameVariable($value, $container, $scope);
+            }
+
+            if (! $value instanceof ArrayDimFetch || $value->dim === null || ! $value->var instanceof Variable) {
+                return false;
+            }
+
+            if (! $this->sameVariable($value->var, $container, $scope)) {
+                return false;
+            }
+
+            return array_intersect($this->typeHelper->constantStrings($scope->getType($value->dim)), ['request', 'config']) !== [];
+        });
+    }
+
     /**
-     * @param MethodCall $node
+     * @param  Node[] $nodes
      *
      * @return RuleError[]
      */
-    public function processNode(Node $node, Scope $scope): array
+    private function errors(array $nodes): array
     {
-        if (! $node->name instanceof Node\Identifier) {
-            return [];
+        $errors = [];
+
+        foreach ($nodes as $node) {
+            $errors[] = $this->dependencyInjectionError($node);
         }
 
-        if (! in_array($node->name->name, ['singleton', 'bind'], true)) {
-            return [];
-        }
-
-        $args = $node->getArgs();
-
-        if (count($args) < 2) {
-            return [];
-        }
-
-        $calledOnType = $scope->getType($node->var);
-
-        $classNames = $calledOnType->getObjectClassNames();
-
-        if (count($classNames) !== 1) {
-            return [];
-        }
-
-        if (
-            $classNames[0] !== Application::class &&
-            ! (new ObjectType(Application::class))->isSuperTypeOf($calledOnType)->yes()
-        ) {
-            return [];
-        }
-
-        if (! $args[1]->value instanceof Node\Expr\Closure) {
-            return [];
-        }
-
-        /** @var Node\Expr\Closure $closure */
-        $closure = $args[1]->value;
-
-        /** @var Node\Param[] $closureParams */
-        $closureParams = $closure->getParams();
-
-        // Closure should have at least one parameter. First param
-        // is container, second is parameters. If no parameter
-        // is given we will check for the usage of `$this->app`
-        if (count($closureParams) < 1) {
-            return $this->checkForThisAppUsage($scope, $closure);
-        }
-
-        // Using `$app` with `bind` is ok, so we return early
-        if ($node->name->name === 'bind') {
-            return [];
-        }
-
-        if (! $closureParams[0]->var instanceof Node\Expr\Variable) {
-            return [];
-        }
-
-        $containerParameterName = $closureParams[0]->var->name;
-
-        $nodes = (new NodeFinder())->find($closure->getStmts(), static function (Node $node) use ($containerParameterName): bool {
-            if (! $node instanceof Node\Expr\New_) {
-                return false;
-            }
-
-            if (count($node->getArgs()) < 1) {
-                return false;
-            }
-
-            if (! $node->getArgs()[0]->value instanceof Node\Expr\Variable && ! $node->getArgs()[0]->value instanceof Node\Expr\ArrayDimFetch) {
-                return false;
-            }
-
-            if ($node->getArgs()[0]->value instanceof Node\Expr\ArrayDimFetch) {
-                /** @var Node\Expr\Variable $var */
-                $var = $node->getArgs()[0]->value->var;
-
-                if ($var->name !== $containerParameterName) {
-                    return false;
-                }
-
-                if ($node->getArgs()[0]->value->dim === null) {
-                    return false;
-                }
-
-                if (! $node->getArgs()[0]->value->dim instanceof Node\Scalar\String_) {
-                    return false;
-                }
-
-                return in_array($node->getArgs()[0]->value->dim->value, ['request', 'config'], true);
-            }
-
-            return $node->getArgs()[0]->value->name === $containerParameterName;
-        });
-
-        if (count($nodes) > 0) {
-            return array_map([$this, 'dependencyInjectionError'], $nodes);
-        }
-
-        return [];
+        return $errors;
     }
 
-    /** @return RuleError[] */
-    private function checkForThisAppUsage(Scope $scope, Node\Expr\Closure $closure): array
+    private function isVariable(Expr $expr, string $name, Scope $scope): bool
     {
-        $nodes = (new NodeFinder())->find($closure->getStmts(), static function (Node $node): bool {
-            return $node instanceof Node\Expr\PropertyFetch &&
-                $node->var instanceof Node\Expr\Variable &&
-                $node->var->name === 'this' &&
-                $node->name instanceof Node\Identifier &&
-                $node->name->name === 'app';
-        });
+        return $expr instanceof Variable && $this->variableIs($expr, $name, $scope);
+    }
 
-        if (count($nodes) > 0) {
-            return array_map([$this, 'dependencyInjectionError'], $nodes);
+    private function sameVariable(Variable $left, Variable $right, Scope $scope): bool
+    {
+        if (is_string($left->name) && is_string($right->name)) {
+            return $left->name === $right->name;
         }
 
-        return [];
+        return $this->variableNames($left, $scope) !== []
+            && array_intersect($this->variableNames($left, $scope), $this->variableNames($right, $scope)) !== [];
+    }
+
+    /** @return list<string> */
+    private function variableNames(Variable $variable, Scope $scope): array
+    {
+        if (is_string($variable->name)) {
+            return [$variable->name];
+        }
+
+        return $this->typeHelper->constantStrings($scope->getType($variable->name));
+    }
+
+    private function variableIs(Variable $variable, string $name, Scope $scope): bool
+    {
+        return in_array($name, $this->variableNames($variable, $scope), true);
+    }
+
+    private function propertyIs(PropertyFetch $fetch, string $name, Scope $scope): bool
+    {
+        if ($fetch->name instanceof Identifier) {
+            return $fetch->name->toString() === $name;
+        }
+
+        return in_array($name, $this->typeHelper->constantStrings($scope->getType($fetch->name)), true);
     }
 
     private function dependencyInjectionError(Node $node): RuleError
@@ -155,7 +184,7 @@ class OctaneCompatibilityRule implements Rule
         return RuleErrorBuilder::message('Consider using bind method instead or pass a closure.')
             ->identifier('laravel.octaneCompatibility')
             ->tip('See: https://laravel.com/docs/octane#dependency-injection-and-octane')
-            ->line($node->getAttribute('startLine'))
+            ->line($node->getStartLine())
             ->build();
     }
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\NoUselessValueFunctionCallsRule;
+use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -29,6 +31,7 @@ class NoUselessValueFunctionCallsRuleTest extends RuleTestCase
             ],
             [
                 ["Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything", 11],
+                ["Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything", 18],
             ],
         );
     }
@@ -40,6 +43,6 @@ class NoUselessValueFunctionCallsRuleTest extends RuleTestCase
 
     protected function getRule(): Rule
     {
-        return new NoUselessValueFunctionCallsRule();
+        return new NoUselessValueFunctionCallsRule(new CallHelper(new TypeHelper()));
     }
 }

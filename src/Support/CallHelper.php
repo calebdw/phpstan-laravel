@@ -16,6 +16,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Type\Type;
 
 use function array_intersect;
+use function array_values;
 use function collect;
 
 /**
@@ -81,6 +82,12 @@ final class CallHelper
             ->first();
     }
 
+    /** @param class-string|array<class-string> $classes */
+    public function isCalledOn(MethodCall|NullsafeMethodCall|StaticCall $node, Scope $scope, string|array $classes): bool
+    {
+        return $this->typeHelper->isCalledOn($this->receiverType($node, $scope), $classes);
+    }
+
     public function receiverType(MethodCall|NullsafeMethodCall|StaticCall $node, Scope $scope): Type
     {
         if ($node instanceof StaticCall) {
@@ -92,6 +99,16 @@ final class CallHelper
         }
 
         return $scope->getType($node->var);
+    }
+
+    /**
+     * @param string|array<string> $names
+     *
+     * @return list<string>
+     */
+    public function matchingNames(CallLike $node, Scope $scope, string|array $names): array
+    {
+        return array_values(array_intersect($this->callNames($node, $scope), (array) $names));
     }
 
     /** @return list<string> */

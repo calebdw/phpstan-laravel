@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
@@ -34,17 +35,14 @@ use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Type;
 
-use function array_intersect;
 use function explode;
 use function in_array;
 use function sprintf;
 use function str_contains;
 
-/** @implements Rule<Node\Expr\CallLike> */
+/** @implements Rule<CallLike> */
 final class UndefinedConfigNameRule implements Rule
 {
-    private const string IDENTIFIER = 'laravel.undefinedConfigName';
-
     private const array LOOKUPS = [
         [
             'receivers' => [Storage::class, FilesystemFactory::class],
@@ -107,7 +105,7 @@ final class UndefinedConfigNameRule implements Rule
 
     public function getNodeType(): string
     {
-        return Node\Expr\CallLike::class;
+        return CallLike::class;
     }
 
     /** @return list<IdentifierRuleError> */
@@ -123,12 +121,11 @@ final class UndefinedConfigNameRule implements Rule
             return [];
         }
 
-        $methods  = $this->callHelper->callNames($node, $scope);
         $receiver = $this->callHelper->receiverType($node, $scope);
         $errors   = [];
 
         foreach (self::LOOKUPS as $lookup) {
-            if (array_intersect($methods, $lookup['methods']) === []) {
+            if ($this->callHelper->matchingNames($node, $scope, $lookup['methods']) === []) {
                 continue;
             }
 
@@ -171,7 +168,7 @@ final class UndefinedConfigNameRule implements Rule
             }
 
             $errors[] = RuleErrorBuilder::message(sprintf($lookup['message'], $name))
-                ->identifier(self::IDENTIFIER)
+                ->identifier('laravel.undefinedConfigName')
                 ->line($line)
                 ->build();
         }

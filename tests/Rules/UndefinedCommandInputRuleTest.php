@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\UndefinedCommandInputRule;
-use CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -14,7 +13,7 @@ class UndefinedCommandInputRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new UndefinedCommandInputRule(self::getContainer()->getByType(ConsoleApplicationResolver::class));
+        return self::getContainer()->getByType(UndefinedCommandInputRule::class);
     }
 
     public function testRule(): void
@@ -31,6 +30,22 @@ class UndefinedCommandInputRuleTest extends RuleTestCase
             [
                 'Command "foo" does not have option "foobar".',
                 36,
+            ],
+            [
+                'Command "foo" does not have argument "foobar".',
+                50,
+            ],
+            [
+                'Command "foo" does not have option "foobar".',
+                50,
+            ],
+            [
+                'Command "foo" does not have argument "missing".',
+                51,
+            ],
+            [
+                'Command "foo" does not have option "missing".',
+                52,
             ],
         ]);
     }

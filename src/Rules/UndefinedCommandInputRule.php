@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver;
-use Illuminate\Console\Command;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\ObjectType;
 
-use function count;
-use function in_array;
 use function sprintf;
 
 /** @implements Rule<MethodCall> */
 final class UndefinedCommandInputRule implements Rule
 {
-    public function __construct(private ConsoleApplicationResolver $consoleApplicationResolver)
-    {
+    public function __construct(
+        private ConsoleApplicationResolver $consoleApplicationResolver,
+        private CallHelper $callHelper,
+        private TypeHelper $typeHelper,
+    ) {
     }
 
     public function getNodeType(): string
@@ -33,62 +34,62 @@ final class UndefinedCommandInputRule implements Rule
     /** @return RuleError[] errors */
     public function processNode(Node $node, Scope $scope): array
     {
-        if (! $node->name instanceof Node\Identifier || ! in_array($node->name->name, ['argument', 'option'], true)) {
+        $methods = $this->callHelper->matchingNames($node, $scope, ['argument', 'option']);
+
+        if ($methods === []) {
             return [];
         }
 
-        if (count($node->getArgs()) !== 1) {
+        $arg = $node->getArg('key', 0)?->value;
+
+        if ($arg === null) {
             return [];
         }
 
-        $classReflection = $scope->getClassReflection();
+        $inputs = $this->typeHelper->constantStrings($scope->getType($arg));
 
-        if ($classReflection === null) {
+        if ($inputs === []) {
             return [];
         }
-
-        $commandType = new ObjectType(Command::class);
-
-        if (! $commandType->isSuperTypeOf($classReflection->getObjectType())->yes()) {
-            return [];
-        }
-
-        if (! $commandType->isSuperTypeOf($scope->getType($node->var))->yes()) {
-            return [];
-        }
-
-        $methodName = $node->name->name;
-
-        $argType = $scope->getType($node->getArgs()[0]->value);
-
-        $argStrings = $argType->getConstantStrings();
-
-        if (count($argStrings) !== 1) {
-            return [];
-        }
-
-        $argName = $argStrings[0]->getValue();
 
         $errors = [];
 
-        foreach ($this->consoleApplicationResolver->findCommands($classReflection) as $name => $command) {
-            $command->mergeApplicationDefinition(); // @phpstan-ignore method.internal (acceptable)
+        foreach ($scope->getType($node->var)->getObjectClassReflections() as $classReflection) {
+            foreach ($this->consoleApplicationResolver->findCommands($classReflection) as $name => $command) {
+                $command->mergeApplicationDefinition(); // @phpstan-ignore method.internal (acceptable)
+                $definition = $command->getDefinition();
 
-            if ($methodName === 'argument') {
-                if (! $command->getDefinition()->hasArgument($argName)) {
-                    $errors[] = RuleErrorBuilder::message(sprintf('Command "%s" does not have argument "%s".', $name, $argName))
-                        ->line($node->getStartLine())
-                        ->identifier('laravel.console.undefinedArgument')
-                        ->build();
+                foreach ($methods as $method) {
+                    foreach ($inputs as $input) {
+                        $exists = $method === 'argument'
+                            ? $definition->hasArgument($input)
+                            : ($definition->hasOption($input) || $definition->hasShortcut($input));
+
+                        if ($exists) {
+                            continue;
+                        }
+
+                        $errors[] = $this->error($method, $name, $input, $node->getStartLine());
+                    }
                 }
-            } elseif (! $command->getDefinition()->hasOption($argName) && ! $command->getDefinition()->hasShortcut($argName)) {
-                $errors[] = RuleErrorBuilder::message(sprintf('Command "%s" does not have option "%s".', $name, $argName))
-                    ->line($node->getStartLine())
-                    ->identifier('laravel.console.undefinedOption')
-                    ->build();
             }
         }
 
         return $errors;
+    }
+
+    private function error(string $method, string $command, string $input, int $line): RuleError
+    {
+        if ($method === 'argument') {
+            return RuleErrorBuilder::message(sprintf('Command "%s" does not have argument "%s".', $command, $input))
+                ->line($line)
+                ->identifier('laravel.console.undefinedArgument')
+                ->build();
+        }
+
+        return RuleErrorBuilder::message(sprintf('Command "%s" does not have option "%s".', $command, $input))
+            ->line($line)
+            ->identifier('laravel.console.undefinedOption')
+            ->build();
     }
 }

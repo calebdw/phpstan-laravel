@@ -15,7 +15,6 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
-use function array_reduce;
 use function sprintf;
 
 /**
@@ -40,7 +39,7 @@ class ModelAppendsRule implements Rule
         return Property::class;
     }
 
-    /** @return array<int, RuleError> */
+    /** @return RuleError[] */
     public function processNode(Node $node, Scope $scope): array
     {
         if ($node->props[0]->name->toString() !== 'appends') {
@@ -59,11 +58,11 @@ class ModelAppendsRule implements Rule
             return [];
         }
 
-        $appends = $value->items;
+        $errors = [];
 
-        return array_reduce($appends, function ($errors, $appended) use ($classReflection, $scope) {
+        foreach ($value->items as $appended) {
             if (! $appended->value instanceof String_) {
-                return $errors;
+                continue;
             }
 
             $name = $appended->value->value;
@@ -77,17 +76,21 @@ class ModelAppendsRule implements Rule
                     ->line($appended->getStartLine())
                     ->file($scope->getFile())
                     ->build();
+
+                continue;
             }
 
-            if (! $hasDatabaseProperty && ! $hasAccessor) {
-                $errors[] = RuleErrorBuilder::message(sprintf("Property '%s' does not exist in model.", $name))
-                    ->identifier('laravel.modelAppends')
-                    ->line($appended->getStartLine())
-                    ->file($scope->getFile())
-                    ->build();
+            if ($hasAccessor) {
+                continue;
             }
 
-            return $errors;
-        }, []);
+            $errors[] = RuleErrorBuilder::message(sprintf("Property '%s' does not exist in model.", $name))
+                ->identifier('laravel.modelAppends')
+                ->line($appended->getStartLine())
+                ->file($scope->getFile())
+                ->build();
+        }
+
+        return $errors;
     }
 }

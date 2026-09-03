@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node;
@@ -30,6 +32,12 @@ use PHPStan\Type\ObjectType;
  */
 final class NoUnnecessaryEnumerableToArrayCallsRule implements Rule
 {
+    public function __construct(
+        private CallHelper $callHelper,
+        private TypeHelper $typeHelper,
+    ) {
+    }
+
     public function getNodeType(): string
     {
         return MethodCall::class;
@@ -38,15 +46,13 @@ final class NoUnnecessaryEnumerableToArrayCallsRule implements Rule
     /** @return RuleError[] */
     public function processNode(Node $node, Scope $scope): array
     {
-        $name = $node->name;
-
-        if (! $name instanceof Identifier || $name->toString() !== 'toArray') {
+        if ($this->callHelper->matchingNames($node, $scope, 'toArray') === []) {
             return [];
         }
 
         $calledOnType = $scope->getType($node->var);
 
-        if (! (new ObjectType(Enumerable::class))->isSuperTypeOf($calledOnType)->yes()) {
+        if (! $this->typeHelper->isCalledOn($calledOnType, Enumerable::class)) {
             return [];
         }
 
@@ -57,12 +63,18 @@ final class NoUnnecessaryEnumerableToArrayCallsRule implements Rule
         }
 
         return [
+            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message(
                 'Called [toArray()] on an Enumerable which does not contain any Arrayables.',
             )
                 ->tip('Use [all()] to get the items as an array.')
                 ->identifier('laravel.unnecessaryEnumerableToArrayCall')
-                ->line($name->getStartLine())
+                ->line($node->name->getStartLine())
+                ->fixNode($node, static function (MethodCall $n) {
+                    $n->name = new Identifier('all');
+
+                    return $n;
+                })
                 ->build(),
         ];
     }

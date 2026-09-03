@@ -20,7 +20,7 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 
-use function array_key_exists;
+use function array_keys;
 use function count;
 use function sprintf;
 
@@ -77,11 +77,7 @@ final class ConfigAccessorRule implements Rule
 
         $errors = [];
 
-        foreach ($this->callHelper->callNames($node, $scope) as $method) {
-            if (! array_key_exists($method, self::REQUIREMENTS)) {
-                continue;
-            }
-
+        foreach ($this->callHelper->matchingNames($node, $scope, array_keys(self::REQUIREMENTS)) as $method) {
             foreach ($this->typeHelper->constantStrings($scope->getType($args[0]->value)) as $key) {
                 $type = $this->configHelper->getKeyType($key, $scope);
 
@@ -121,9 +117,6 @@ final class ConfigAccessorRule implements Rule
 
     private function isConfigCall(MethodCall|StaticCall $node, Scope $scope): bool
     {
-        return $this->typeHelper->isCalledOn(
-            $this->callHelper->receiverType($node, $scope),
-            [Config::class, Repository::class],
-        );
+        return $this->callHelper->isCalledOn($node, $scope, [Config::class, Repository::class]);
     }
 }

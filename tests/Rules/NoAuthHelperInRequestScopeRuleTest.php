@@ -13,7 +13,7 @@ class NoAuthHelperInRequestScopeRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new NoAuthHelperInRequestScopeRule();
+        return self::getContainer()->getByType(NoAuthHelperInRequestScopeRule::class);
     }
 
     public function testRule(): void

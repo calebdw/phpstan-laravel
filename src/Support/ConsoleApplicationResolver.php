@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use Illuminate\Console\Application;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Container\Container;
-use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Console\Kernel;
 use PHPStan\Reflection\ClassReflection;
 
 use function app;
+use function collect;
 use function is_a;
 
 final class ConsoleApplicationResolver
 {
-    private Application|null $application = null;
+    /** @var array<string, Command>|null */
+    private array|null $commands = null;
 
-    /** @var array<string, Command[]> */
+    /** @var array<class-string, array<string, Command>> */
     private array $commandsByClass = [];
 
-    /** @return Command[] */
+    /** @return array<string, Command> */
     public function findCommands(ClassReflection $classReflection): array
     {
         if (! $classReflection->is(Command::class)) {
@@ -29,28 +29,16 @@ final class ConsoleApplicationResolver
 
         $className = $classReflection->getName();
 
-        return $this->commandsByClass[$className] ??= $this->resolveCommands($className);
+        return $this->commandsByClass[$className] ??= collect($this->commands())
+            ->filter(static fn ($c) => is_a($c, $className, true))
+            ->all();
     }
 
-    /** @return Command[] */
-    private function resolveCommands(string $className): array
+    /** @return array<string, Command> */
+    private function commands(): array
     {
-        $commands = [];
-
-        foreach ($this->getApplication()->all() as $name => $command) {
-            if (! $command instanceof Command || ! is_a($command, $className)) {
-                continue;
-            }
-
-            $commands[$name] = $command;
-        }
-
-        return $commands;
-    }
-
-    private function getApplication(): Application
-    {
-        return $this->application ??= (new Application(app(Container::class), app(Dispatcher::class), app()->version()))
-            ->setContainerCommandLoader();
+        return $this->commands ??= collect(app(Kernel::class)->all())
+            ->filter(static fn ($c) => $c instanceof Command)
+            ->all();
     }
 }

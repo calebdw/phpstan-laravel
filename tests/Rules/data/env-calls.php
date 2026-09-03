@@ -10,3 +10,6 @@ env('foo');
 // no report for namespaced calls
 \Foo\Bar\env('bar');
 scopedEnv('foo');
+
+$env = 'env';
+$env('baz');
