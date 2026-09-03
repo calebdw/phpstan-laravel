@@ -199,6 +199,7 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Support\CollectionHelper
   - class: CalebDW\PhpstanLaravel\Support\ContainerHelper
+    arguments: {strictContracts: %laravel.strictContracts%}
   - class: CalebDW\PhpstanLaravel\Support\FacadeHelper
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\AuthExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
@@ -370,7 +371,6 @@ services:
     tags: [phpstan.staticMethodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Support\RelationClosureHelper
   - class: CalebDW\PhpstanLaravel\Support\AppMakeHelper
-    arguments: {strictContracts: %laravel.strictContracts%}
   - class: CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver
   - class: CalebDW\PhpstanLaravel\Support\ConsoleApplicationHelper
   - class: CalebDW\PhpstanLaravel\Support\FileHelper

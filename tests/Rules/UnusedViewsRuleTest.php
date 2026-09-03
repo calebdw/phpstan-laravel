@@ -25,7 +25,7 @@ class UnusedViewsRuleTest extends RuleTestCase
         $viewFileHelper = new ViewFileHelper([
             __DIR__ . '/../application/resources/views/',
             __DIR__ . '/../../vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/views',
-        ], new FileHelper($this->getFileHelper()), new ContainerHelper());
+        ], new FileHelper($this->getFileHelper()), self::getContainer()->getByType(ContainerHelper::class));
 
         return new UnusedViewsRule(new UsedViewInAnotherViewCollector($viewParser, $viewFileHelper), $viewFileHelper);
     }

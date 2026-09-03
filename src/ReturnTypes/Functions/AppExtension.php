@@ -31,6 +31,9 @@ class AppExtension implements DynamicFunctionReturnTypeExtension
             return new ObjectType(Application::class);
         }
 
-        return $this->appMakeHelper->resolveTypeFromCall($functionCall, $scope);
+        return $this->appMakeHelper->resolveType(
+            $functionCall->getArg('abstract', 0) ?? $functionCall->getArg('name', 0),
+            $scope,
+        );
     }
 }

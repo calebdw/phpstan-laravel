@@ -33,6 +33,6 @@ final class ApplicationMakeDynamicReturnTypeExtension implements DynamicMethodRe
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
-        return $this->appMakeHelper->resolveTypeFromCall($methodCall, $scope);
+        return $this->appMakeHelper->resolveType($methodCall->getArg('abstract', 0), $scope);
     }
 }

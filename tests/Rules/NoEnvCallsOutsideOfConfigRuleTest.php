@@ -26,7 +26,7 @@ class NoEnvCallsOutsideOfConfigRuleTest extends RuleTestCase
         return new NoEnvCallsOutsideOfConfigRule(
             [__DIR__ . '/data/config'],
             $this->getFileHelper(),
-            new ContainerHelper(),
+            self::getContainer()->getByType(ContainerHelper::class),
         );
     }
 
@@ -88,5 +88,11 @@ class NoEnvCallsOutsideOfConfigRuleTest extends RuleTestCase
     {
         $app = Application::getInstance();
         $app->useConfigPath($path);
+    }
+
+    /** @return string[] */
+    public static function getAdditionalConfigFiles(): array
+    {
+        return [__DIR__ . '/../../extension.neon'];
     }
 }

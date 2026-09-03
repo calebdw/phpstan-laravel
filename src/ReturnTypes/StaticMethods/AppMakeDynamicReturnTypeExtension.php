@@ -31,6 +31,6 @@ final class AppMakeDynamicReturnTypeExtension implements DynamicStaticMethodRetu
 
     public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
     {
-        return $this->appMakeHelper->resolveTypeFromCall($methodCall, $scope);
+        return $this->appMakeHelper->resolveType($methodCall->getArg('abstract', 0), $scope);
     }
 }

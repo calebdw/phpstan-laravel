@@ -101,7 +101,7 @@ class SchemaCacheTest extends PHPStanTestCase
         $dumpParser      = $this->getSquashedMigrationHelper([], scan: false);
         $cache           = new SchemaCache($migrationParser, $dumpParser, $cacheDirectory);
 
-        return new ModelSchema($dumpParser, $migrationParser, new ContainerHelper(), $cache);
+        return new ModelSchema($dumpParser, $migrationParser, self::getContainer()->getByType(ContainerHelper::class), $cache);
     }
 
     private function cache(string $migrationDirectory, string $cacheDirectory): SchemaCache

@@ -31,7 +31,7 @@ class MacroMethodsClassReflectionExtensionTest extends PHPStanTestCase
         $this->reflectionExtension = new MacroMethodsClassReflectionExtension(
             $this->reflectionProvider,
             self::getContainer()->getByType(ClosureTypeFactory::class),
-            new ContainerHelper(),
+            self::getContainer()->getByType(ContainerHelper::class),
             new FacadeHelper(),
         );
     }

@@ -27,7 +27,7 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
         $viewFileHelper = new ViewFileHelper(
             [],
             new FileHelper($this->getFileHelper()),
-            new ContainerHelper(),
+            self::getContainer()->getByType(ContainerHelper::class),
         );
 
         return new NoMissingTranslationsRule(

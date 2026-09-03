@@ -28,6 +28,12 @@ trait HasDatabaseHelper
         $this->setUpHasDatabaseHelper();
     }
 
+    /** @return string[] */
+    public static function getAdditionalConfigFiles(): array
+    {
+        return [__DIR__ . '/../../../extension.neon'];
+    }
+
     private function setUpHasDatabaseHelper(): void
     {
         $this->modelHelper = new ModelHelper($this->createReflectionProvider());
@@ -35,7 +41,7 @@ trait HasDatabaseHelper
         $this->modelDatabaseHelper = new ModelSchema(
             $this->getSquashedMigrationHelper(),
             $this->getMigrationHelper(),
-            new ContainerHelper(),
+            self::getContainer()->getByType(ContainerHelper::class),
         );
 
         $this->defaultConnection = $this->modelDatabaseHelper->getDefaultConnection();
