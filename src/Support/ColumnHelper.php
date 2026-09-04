@@ -136,7 +136,7 @@ final class ColumnHelper
         $type = $scope->getType($arg->value);
 
         if ($type->isCallable()->yes()) {
-            return $this->getTypeFromCallable($arg->value, $from, $scope);
+            return $this->returnTypeFromCallable($arg->value, [$from], $scope);
         }
 
         $values = $this->getKeysFromType($type);
@@ -153,27 +153,33 @@ final class ColumnHelper
         return TypeCombinator::union(...$types);
     }
 
-    private function getTypeFromCallable(Expr $callable, Type $parameterType, Scope $scope): Type|null
+    /** @param list<Type> $parameterTypes */
+    public function returnTypeFromCallable(Expr $callable, array $parameterTypes, Scope $scope): Type|null
     {
         /** @phpstan-ignore phpstanApi.class */
         if (! $scope instanceof MutatingScope) {
             return null;
         }
 
-        /** @phpstan-ignore phpstanApi.method, phpstanApi.constructor */
-        $scopeWithContext = $scope->pushInFunctionCall(null, new DummyParameter(
-            'callback',
-            new CallableType([
+        $parameters = array_map(
+            static function (Type $parameterType): NativeParameterReflection {
                 /** @phpstan-ignore phpstanApi.constructor */
-                new NativeParameterReflection(
+                return new NativeParameterReflection(
                     'param',
                     false,
                     $parameterType,
                     PassedByReference::createNo(),
                     false,
                     null,
-                ),
-            ], new MixedType()),
+                );
+            },
+            $parameterTypes,
+        );
+
+        /** @phpstan-ignore phpstanApi.method, phpstanApi.constructor */
+        $scopeWithContext = $scope->pushInFunctionCall(null, new DummyParameter(
+            'callback',
+            new CallableType($parameters, new MixedType()),
             false,
             PassedByReference::createNo(),
             false,
