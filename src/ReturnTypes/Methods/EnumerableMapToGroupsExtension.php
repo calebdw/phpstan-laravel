@@ -6,7 +6,6 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use CalebDW\PhpstanLaravel\Support\ColumnHelper;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -14,9 +13,11 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
+use function array_map;
 use function count;
 use function in_array;
 
@@ -60,23 +61,29 @@ final class EnumerableMapToGroupsExtension implements DynamicMethodReturnTypeExt
             return null;
         }
 
-        $class = $calledOnType->getObjectClassNames()[0] ?? Collection::class;
-        $key   = $this->columnHelper->normalizeKey($pair['key']);
-        $inner = new ArrayType(new IntegerType(), $pair['value']);
+        $classes = $calledOnType->getObjectClassNames();
 
-        if ($methodReflection->getName() === 'mapToDictionary') {
-            // new static(), so the receiver's class is kept even when the
-            // values are arrays rather than models.
-            return $this->collectionHelper->generic($class, $key, $inner);
+        if ($classes === []) {
+            return null;
         }
 
-        // mapToGroups() wraps each group with make(), then map()s that. Eloquent's
-        // map() calls toBase() when the items are collections rather than models.
-        return $this->collectionHelper->toBase(
-            $calledOnType,
-            $key,
-            $this->collectionHelper->generic($class, new IntegerType(), $pair['value']),
-        );
+        $key = $this->columnHelper->normalizeKey($pair['key']);
+
+        return TypeCombinator::union(...array_map(function (string $class) use ($methodReflection, $key, $pair): Type {
+            if ($methodReflection->getName() === 'mapToDictionary') {
+                return $this->collectionHelper->generic(
+                    $class,
+                    $key,
+                    new ArrayType(new IntegerType(), $pair['value']),
+                );
+            }
+
+            return $this->collectionHelper->toBase(
+                new ObjectType($class),
+                $key,
+                $this->collectionHelper->generic($class, new IntegerType(), $pair['value']),
+            );
+        }, $classes));
     }
 
     /**

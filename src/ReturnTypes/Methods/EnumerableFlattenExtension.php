@@ -40,9 +40,8 @@ final class EnumerableFlattenExtension implements DynamicMethodReturnTypeExtensi
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
         $calledOnType = $scope->getType($methodCall->var);
-        $class        = $calledOnType->getObjectClassNames()[0] ?? null;
 
-        if ($class === null) {
+        if ($calledOnType->getObjectClassNames() === []) {
             return null;
         }
 

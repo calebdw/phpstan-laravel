@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
+use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Closure;
@@ -14,12 +15,10 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-use function array_map;
 use function assert;
 use function count;
 use function in_array;
@@ -28,6 +27,10 @@ use function is_string;
 class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     private const array SUPPORTED_METHOD_NAMES = ['filter', 'reject', 'where'];
+
+    public function __construct(private CollectionHelper $collectionHelper)
+    {
+    }
 
     public function getClass(): string
     {
@@ -86,12 +89,7 @@ class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodR
                 return null;
             }
 
-            $itemType = $modifiedType;
-
-            return TypeCombinator::union(...array_map(
-                static fn (string $class): Type => new GenericObjectType($class, [$keyType, $itemType]),
-                $calledOnType->getObjectClassNames(),
-            ));
+            return $this->collectionHelper->of($calledOnType, $keyType, $modifiedType);
         }
 
         $callbackArg = $methodCall->getArgs()[0]->value;
@@ -130,9 +128,6 @@ class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodR
             $valueType = $scope->getVariableType($itemVariableName);
         }
 
-        return TypeCombinator::union(...array_map(
-            static fn (string $class): Type => new GenericObjectType($class, [$keyType, $valueType]),
-            $calledOnType->getObjectClassNames(),
-        ));
+        return $this->collectionHelper->of($calledOnType, $keyType, $valueType);
     }
 }

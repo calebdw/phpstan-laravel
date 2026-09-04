@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
+use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -11,7 +12,6 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\FloatType;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
@@ -21,6 +21,10 @@ use function count;
 
 class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
+    public function __construct(private CollectionHelper $collectionHelper)
+    {
+    }
+
     public function getClass(): string
     {
         return Enumerable::class;
@@ -50,7 +54,7 @@ class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodR
         $nonFalseyTypes = TypeCombinator::removeNull($valueType);
 
         if (! $this->argumentIsString($methodCall, $scope)) {
-            return new GenericObjectType($calledOnType->getObjectClassNames()[0], [$keyType, $nonFalseyTypes]);
+            return $this->collectionHelper->of($calledOnType, $keyType, $nonFalseyTypes);
         }
 
         $scalarTypes = TypeCombinator::union(
@@ -62,7 +66,7 @@ class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodR
 
         $nonFalseyTypes = TypeCombinator::remove($nonFalseyTypes, $scalarTypes);
 
-        return new GenericObjectType($calledOnType->getObjectClassNames()[0], [$keyType, $nonFalseyTypes]);
+        return $this->collectionHelper->of($calledOnType, $keyType, $nonFalseyTypes);
     }
 
     public function argumentIsString(MethodCall $methodCall, Scope $scope): bool

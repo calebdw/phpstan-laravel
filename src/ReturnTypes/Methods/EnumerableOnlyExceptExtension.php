@@ -44,9 +44,7 @@ final class EnumerableOnlyExceptExtension implements DynamicMethodReturnTypeExte
             return null;
         }
 
-        $class = $calledOnType->getObjectClassNames()[0] ?? null;
-
-        if ($class === null) {
+        if ($calledOnType->getObjectClassNames() === []) {
             return null;
         }
 
@@ -66,11 +64,11 @@ final class EnumerableOnlyExceptExtension implements DynamicMethodReturnTypeExte
         if ($methodReflection->getName() === 'only') {
             $result = $items->intersectKeyArray($keys);
 
-            return $this->collectionHelper->generic($class, $result->getIterableKeyType(), $result->getIterableValueType());
+            return $this->collectionHelper->of($calledOnType, $result->getIterableKeyType(), $result->getIterableValueType());
         }
 
-        return $this->collectionHelper->generic(
-            $class,
+        return $this->collectionHelper->of(
+            $calledOnType,
             TypeCombinator::remove($items->getIterableKeyType(), $keys->getIterableKeyType()),
             $items->getIterableValueType(),
         );

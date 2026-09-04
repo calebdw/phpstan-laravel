@@ -32,6 +32,7 @@ use Traversable;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
+use function array_unique;
 use function array_values;
 use function count;
 use function in_array;
@@ -49,6 +50,17 @@ final class CollectionHelper
     }
 
     /**
+     * A collection of this type, one generic per receiver class.
+     *
+     * A union of collection classes becomes a union of results. Taking [0]
+     * would keep only the first class.
+     */
+    public function of(Type $calledOn, Type $keyType, Type $valueType): Type
+    {
+        return $this->ofClasses($calledOn->getObjectClassNames(), $keyType, $valueType);
+    }
+
+    /**
      * The class toBase() returns on this collection, with the given templates.
      *
      * Support Collection's toBase() is `new self()`, so subclasses that do not
@@ -57,18 +69,49 @@ final class CollectionHelper
      */
     public function toBase(Type $calledOn, Type $keyType, Type $valueType): Type
     {
-        $fallback = $calledOn->getObjectClassNames()[0] ?? Collection::class;
+        $reflections = $calledOn->getObjectClassReflections();
 
-        if (! $calledOn->hasMethod('toBase')->yes()) {
-            return $this->generic($fallback, $keyType, $valueType);
+        if ($reflections === []) {
+            return $this->generic(Collection::class, $keyType, $valueType);
         }
 
-        $class = $calledOn->getMethod('toBase', new OutOfClassScope())
+        return TypeCombinator::union(...array_map(
+            fn ($r) => $this->toBaseFor($r, $keyType, $valueType),
+            $reflections,
+        ));
+    }
+
+    /** @param list<string> $classes */
+    public function ofClasses(array $classes, Type $keyType, Type $valueType): Type
+    {
+        $classes = array_values(array_unique($classes));
+
+        if ($classes === []) {
+            return $this->generic(Collection::class, $keyType, $valueType);
+        }
+
+        return TypeCombinator::union(...array_map(
+            fn (string $c) => $this->generic($c, $keyType, $valueType),
+            $classes,
+        ));
+    }
+
+    private function toBaseFor(ClassReflection $reflection, Type $keyType, Type $valueType): Type
+    {
+        if (! $reflection->hasMethod('toBase')) {
+            return $this->generic($reflection->getName(), $keyType, $valueType);
+        }
+
+        $classes = $reflection->getMethod('toBase', new OutOfClassScope())
             ->getVariants()[0]
             ->getReturnType()
-            ->getObjectClassNames()[0] ?? $fallback;
+            ->getObjectClassNames();
 
-        return $this->generic($class, $keyType, $valueType);
+        return $this->ofClasses(
+            $classes === [] ? [$reflection->getName()] : $classes,
+            $keyType,
+            $valueType,
+        );
     }
 
     public function generic(string $className, Type $keyType, Type $valueType): Type

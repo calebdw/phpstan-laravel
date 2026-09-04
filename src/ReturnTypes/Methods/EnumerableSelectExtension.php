@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
+use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use CalebDW\PhpstanLaravel\Support\SelectHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
@@ -11,16 +12,15 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
-use function count;
-
 final class EnumerableSelectExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private SelectHelper $selectHelper)
-    {
+    public function __construct(
+        private SelectHelper $selectHelper,
+        private CollectionHelper $collectionHelper,
+    ) {
     }
 
     public function getClass(): string
@@ -35,10 +35,10 @@ final class EnumerableSelectExtension implements DynamicMethodReturnTypeExtensio
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
-        $classNames = $scope->getType($methodCall->var)->getObjectClassNames();
-        $keysArg    = $methodCall->getArg('keys', 0);
+        $calledOnType = $scope->getType($methodCall->var);
+        $keysArg      = $methodCall->getArg('keys', 0);
 
-        if (count($classNames) !== 1 || $keysArg === null) {
+        if ($calledOnType->getObjectClassNames() === [] || $keysArg === null) {
             return null;
         }
 
@@ -60,7 +60,7 @@ final class EnumerableSelectExtension implements DynamicMethodReturnTypeExtensio
             return null;
         }
 
-        return new GenericObjectType($classNames[0], [$keyType, $selectedType]);
+        return $this->collectionHelper->of($calledOnType, $keyType, $selectedType);
     }
 
     /** select() takes the keys out of an Enumerable, but leaves anything else alone. */

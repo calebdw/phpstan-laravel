@@ -35,9 +35,8 @@ final class EnumerableCollapseExtension implements DynamicMethodReturnTypeExtens
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
         $calledOnType = $scope->getType($methodCall->var);
-        $class        = $calledOnType->getObjectClassNames()[0] ?? null;
 
-        if ($class === null) {
+        if ($calledOnType->getObjectClassNames() === []) {
             return null;
         }
 
@@ -66,6 +65,6 @@ final class EnumerableCollapseExtension implements DynamicMethodReturnTypeExtens
             return $this->collectionHelper->toBase($calledOnType, $keyType, $innerValue);
         }
 
-        return $this->collectionHelper->generic($class, $keyType, $innerValue);
+        return $this->collectionHelper->of($calledOnType, $keyType, $innerValue);
     }
 }

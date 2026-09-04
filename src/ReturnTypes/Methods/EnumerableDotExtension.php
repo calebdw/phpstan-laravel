@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\MixedType;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -43,9 +39,8 @@ final class EnumerableDotExtension implements DynamicMethodReturnTypeExtension
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
         $calledOnType = $scope->getType($methodCall->var);
-        $class        = $calledOnType->getObjectClassNames()[0] ?? null;
 
-        if ($class === null) {
+        if ($calledOnType->getObjectClassNames() === []) {
             return null;
         }
 
@@ -74,14 +69,7 @@ final class EnumerableDotExtension implements DynamicMethodReturnTypeExtension
             return null;
         }
 
-        if (
-            (new ObjectType(EloquentCollection::class))->isSuperTypeOf($calledOnType)->yes()
-            && ! (new ObjectType(Model::class))->isSuperTypeOf($leafType)->yes()
-        ) {
-            $class = Collection::class;
-        }
-
-        return $this->collectionHelper->generic($class, new StringType(), $leafType);
+        return $this->collectionHelper->toBase($calledOnType, new StringType(), $leafType);
     }
 
     private function leaves(Type $type, float $depth): Type

@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
+use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\Type;
 
 final class EnumerableKeyByExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private ColumnHelper $columnHelper)
-    {
+    public function __construct(
+        private ColumnHelper $columnHelper,
+        private CollectionHelper $collectionHelper,
+    ) {
     }
 
     public function getClass(): string
@@ -38,9 +40,8 @@ final class EnumerableKeyByExtension implements DynamicMethodReturnTypeExtension
         }
 
         $calledOnType = $scope->getType($methodCall->var);
-        $class        = $calledOnType->getObjectClassNames()[0] ?? null;
 
-        if ($class === null) {
+        if ($calledOnType->getObjectClassNames() === []) {
             return null;
         }
 
@@ -48,11 +49,12 @@ final class EnumerableKeyByExtension implements DynamicMethodReturnTypeExtension
         // the collection class both carry over unchanged.
         $valueType = $calledOnType->getTemplateType(Enumerable::class, 'TValue');
 
-        return new GenericObjectType($class, [
+        return $this->collectionHelper->of(
+            $calledOnType,
             $this->columnHelper->normalizeKey(
                 $this->columnHelper->getKeyType($valueType, $keyArg, $scope),
             ),
             $valueType,
-        ]);
+        );
     }
 }
