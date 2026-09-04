@@ -1477,10 +1477,12 @@ elsewhere:</p>
 <h3 id="supported-view-usages">Supported View Usages<a class="headerlink" href="#supported-view-usages" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>view</code> helper function.</li>
-<li><code>$this-&gt;markdown</code> and <code>$this-&gt;view</code> methods in Mailables.</li>
+<li><code>$this-&gt;markdown</code>, <code>$this-&gt;view</code>, and <code>$this-&gt;text</code> methods in Mailables and mail messages.</li>
 <li><code>Illuminate\View\Factory::make</code> method.</li>
 <li><code>Illuminate\Support\Facades\View::make</code> method.</li>
-<li><code>Illuminate\Support\Facades\Route::view</code> method.</li>
+<li><code>Illuminate\Support\Facades\Route::view</code> and <code>Illuminate\Routing\Router::view</code> methods.</li>
+<li><code>response()-&gt;view</code> and Blade component <code>view</code> methods.</li>
+<li><code>assertViewIs</code> and <code>InteractsWithViews::view</code> in tests.</li>
 <li><code>@extends</code> Blade directive.</li>
 <li><code>@include</code> Blade directive.</li>
 <li><code>@includeIf</code> Blade directive.</li>
