@@ -60,7 +60,7 @@ function redirect($to = null, $status = 302, $headers = [], $secure = null) {}
  *
  * @param  string[]|string|null  $key
  * @param  mixed  $default
- * @return ($key is null ? \Illuminate\Http\Request : ($key is array ? string[] : mixed))
+ * @return ($key is null ? \Illuminate\Http\Request : ($key is array ? array<string, mixed> : mixed))
  */
 function request($key = null, $default = null) {}
 
@@ -200,3 +200,17 @@ function blank($value) {}
  * @return bool|string|TDefault
  */
 function env($key, $default = null) {}
+
+/**
+ * @template TValue
+ * @param  array<array-key, TValue>  $array
+ * @return TValue|false
+ */
+function head($array) {}
+
+/**
+ * @template TValue
+ * @param  array<array-key, TValue>  $array
+ * @return TValue|false
+ */
+function last($array) {}

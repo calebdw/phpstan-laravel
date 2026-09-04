@@ -41,3 +41,12 @@ function test(
     assertType('Illuminate\Support\Collection<int, App\User>', $eloquent->flatten());
     assertType('Illuminate\Support\LazyCollection<int, App\User>', $lazy->flatten());
 }
+
+/**
+ * @phpstan-type Nested array<int, Nested>
+ * @param  Collection<int, Nested>  $recursive
+ */
+function testRecursive(Collection $recursive): void
+{
+    $recursive->flatten();
+}

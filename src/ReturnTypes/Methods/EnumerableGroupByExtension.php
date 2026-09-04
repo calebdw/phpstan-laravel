@@ -6,7 +6,9 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use CalebDW\PhpstanLaravel\Support\ColumnHelper;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
+use Illuminate\Support\LazyCollection;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\MethodCall;
@@ -16,9 +18,10 @@ use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\UnionType;
 
-use function array_map;
 use function array_reverse;
+use function count;
 
 /**
  * groupBy() returns a collection of collections, nested one level per grouper.
@@ -54,32 +57,37 @@ final class EnumerableGroupByExtension implements DynamicMethodReturnTypeExtensi
         }
 
         $calledOnType = $scope->getType($methodCall->var);
-        $classes      = $calledOnType->getObjectClassNames();
 
-        if ($classes === []) {
+        if ($calledOnType->getObjectClassNames() === []) {
             return null;
         }
 
-        $valueType = $calledOnType->getTemplateType(Enumerable::class, 'TValue');
-        $innerKey  = $this->getInnerKeyType($calledOnType, $methodCall, $scope);
-        $groupers  = array_reverse($this->getGroupers($groupByArg, $scope));
+        $calledOnTypes = $calledOnType instanceof UnionType ? $calledOnType->getTypes() : [$calledOnType];
+        $groupers      = array_reverse($this->getGroupers($groupByArg, $scope));
+        $results       = [];
 
-        // groupBy() builds each group with newInstance(), so every level is the
-        // same class as that receiver. A union of collection classes nests
-        // each class inside itself, then the results are unioned.
-        return TypeCombinator::union(...array_map(function (string $class) use ($scope, $valueType, $innerKey, $groupers): Type {
-            $type = $this->collectionHelper->generic($class, $innerKey, $valueType);
+        foreach ($calledOnTypes as $receiver) {
+            $valueType = $receiver->getTemplateType(Enumerable::class, 'TValue');
+            $innerKey  = $this->getInnerKeyType($receiver, $methodCall, $scope);
 
-            foreach ($groupers as $grouper) {
-                $type = $this->collectionHelper->generic(
-                    $class,
-                    $this->getGroupKeyType($valueType, $grouper, $scope),
-                    $type,
-                );
+            foreach ($receiver->getObjectClassReflections() as $reflection) {
+                $class       = $reflection->getName();
+                $nestedClass = $reflection->is(LazyCollection::class) ? Collection::class : $class;
+                $type        = $this->collectionHelper->generic($nestedClass, $innerKey, $valueType);
+
+                foreach ($groupers as $index => $grouper) {
+                    $type = $this->collectionHelper->generic(
+                        $index === count($groupers) - 1 ? $class : $nestedClass,
+                        $this->getGroupKeyType($valueType, $grouper, $scope),
+                        $type,
+                    );
+                }
+
+                $results[] = $type;
             }
+        }
 
-            return $type;
-        }, $classes));
+        return $results === [] ? null : TypeCombinator::union(...$results);
     }
 
     /**

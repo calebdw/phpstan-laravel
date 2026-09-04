@@ -8,6 +8,7 @@ use App\Post;
 use App\User;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use Stringable;
 
 use function PHPStan\Testing\assertType;
@@ -34,11 +35,13 @@ final class Grouped
  * @param  EloquentCollection<int, User>  $users
  * @param  EloquentCollection<int, Post>  $posts
  * @param  Collection<string, User>  $keyed
+ * @param  LazyCollection<string, User>  $lazy
  */
 function test(
     EloquentCollection $users,
     EloquentCollection $posts,
     Collection $keyed,
+    LazyCollection $lazy,
 ): void {
     // One grouper, key resolved from the column.
     assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy('name'));
@@ -70,6 +73,8 @@ function test(
     // preserveKeys keeps the original keys on the innermost collection.
     assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User>>', $keyed->groupBy('id'));
     assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<string, App\User>>', $keyed->groupBy('id', true));
+    assertType('Illuminate\Support\LazyCollection<int, Illuminate\Support\Collection<int, App\User>>', $lazy->groupBy('id'));
+    assertType('Illuminate\Support\LazyCollection<string, Illuminate\Support\Collection<int, Illuminate\Support\Collection<string, App\User>>>', $lazy->groupBy(['name', 'id'], true));
 }
 
 /**

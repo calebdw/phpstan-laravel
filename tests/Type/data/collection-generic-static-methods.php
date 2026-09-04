@@ -137,7 +137,7 @@ function test(
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $collection->split(1));
     assertType('App\TransactionCollection<int, App\TransactionCollection<int, App\Transaction>>', $customEloquentCollection->split(2));
     assertType('App\UserCollection', $secondCustomEloquentCollection->split(2));
-    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<string, int>>', $items->split(3));
+    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, int>>', $items->split(3));
 
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $collection->splitIn(1));
     assertType('App\TransactionCollection<int, App\TransactionCollection<int, App\Transaction>>', $customEloquentCollection->splitIn(2));
@@ -168,10 +168,10 @@ function test(
     assertType('list<App\User>', $enumerableStringUsers->values()->all());
     assertType('array<string, int>', $items->all());
 
-    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User|int>>', $collection->zip([1]));
-    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\Transaction|string>>', $customEloquentCollection->zip(['foo']));
-    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User|string>>', $secondCustomEloquentCollection->zip(['foo']));
-    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, int|string>>', $items->zip(['foo', 'bar']));
+    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User|int|null>>', $collection->zip([1]));
+    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\Transaction|string|null>>', $customEloquentCollection->zip(['foo']));
+    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User|string|null>>', $secondCustomEloquentCollection->zip(['foo']));
+    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, int|string|null>>', $items->zip(['foo', 'bar']));
 
     assertType('Illuminate\Support\Collection<int<0, 1>, Illuminate\Database\Eloquent\Collection<int, App\User>>', $collection->partition('foo'));
     assertType('Illuminate\Support\Collection<int<0, 1>, App\TransactionCollection<int, App\Transaction>>', $customEloquentCollection->partition('foo'));
@@ -181,7 +181,7 @@ function test(
     assertType('Illuminate\Support\Collection<int, App\User|int>', $collection->pad(10, 10));
     assertType('Illuminate\Support\Collection<int, App\Transaction|string>', $customEloquentCollection->pad(10, 'foo'));
     assertType('Illuminate\Support\Collection<int, App\User|string>', $secondCustomEloquentCollection->pad(10, 'foo'));
-    assertType('Illuminate\Support\Collection<int, int|string>', $items->pad(1, 'bar'));
+    assertType('Illuminate\Support\Collection<int|string, int|string>', $items->pad(1, 'bar'));
 
     assertType('Illuminate\Support\Collection<string, int>', $collection->countBy('email'));
     assertType('Illuminate\Support\Collection<(int|string), int>', $customEloquentCollection->countBy('foo'));
@@ -191,7 +191,7 @@ function test(
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $collection->concat([new User()]));
     assertType('App\TransactionCollection<int, App\Transaction|App\User>', $customEloquentCollection->concat([new User()]));
     assertType('App\UserCollection', $secondCustomEloquentCollection->concat([new User()]));
-    assertType('Illuminate\Support\Collection<string, App\User|int>', $items->concat([new User()]));
+    assertType('Illuminate\Support\Collection<int|string, App\User|int>', $items->concat([new User()]));
 
     ////////////////////////////
     // EnumeratesValues Trait //

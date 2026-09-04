@@ -36,3 +36,12 @@ function test(
     assertType('array<int, array<string, mixed>>', $users->jsonSerialize());
     assertType('array<int, array<string, array<string, mixed>>>', $nested->jsonSerialize());
 }
+
+/**
+ * @phpstan-type Nested array<int, Nested>
+ * @param  Collection<int, Nested>  $recursive
+ */
+function testRecursive(Collection $recursive): void
+{
+    $recursive->toArray();
+}

@@ -12,6 +12,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -46,16 +47,23 @@ final class EnumerableToArrayExtension implements DynamicMethodReturnTypeExtensi
      * toArray() and jsonSerialize() both map Arrayable items through toArray().
      * Nested enumerables recurse; a plain array does not.
      */
-    private function itemToArray(Type $type): Type
+    private function itemToArray(Type $type, int $depth = 16): Type
     {
         if ($type instanceof UnionType) {
-            return TypeCombinator::union(...array_map($this->itemToArray(...), $type->getTypes()));
+            return TypeCombinator::union(...array_map(
+                fn (Type $t): Type => $this->itemToArray($t, $depth),
+                $type->getTypes(),
+            ));
         }
 
         if ((new ObjectType(Enumerable::class))->isSuperTypeOf($type)->yes()) {
+            if ($depth <= 0) {
+                return new ArrayType($type->getIterableKeyType(), new MixedType());
+            }
+
             return new ArrayType(
                 $type->getIterableKeyType(),
-                $this->itemToArray($type->getTemplateType(Enumerable::class, 'TValue')),
+                $this->itemToArray($type->getTemplateType(Enumerable::class, 'TValue'), $depth - 1),
             );
         }
 

@@ -14,6 +14,23 @@ use Illuminate\Support\Collection as BaseCollection;
 class Collection extends BaseCollection implements QueueableCollection
 {
     /**
+     * @template TPadValue
+     *
+     * @param  int  $size
+     * @param  TPadValue  $value
+     * @return \Illuminate\Support\Collection<TKey|int, TModel|TPadValue>
+     */
+    public function pad($size, $value);
+
+    /**
+     * @template TZipValue
+     *
+     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, TZipValue>|iterable<array-key, TZipValue>  ...$items
+     * @return \Illuminate\Support\Collection<int, \Illuminate\Support\Collection<int, TModel|TZipValue|null>>
+     */
+    public function zip(...$items);
+
+    /**
      * Find a model in the collection by key.
      *
      * @template TFindDefault

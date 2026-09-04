@@ -159,6 +159,8 @@ services:
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\AuthManagerExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrExceptExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrGetPullExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ManagerDriverExtension
@@ -190,6 +192,8 @@ services:
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\AuthExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\CollectExtension
+    tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\DataGetExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Functions\ConfigDynamicFunctionReturnTypeExtension
     tags: [phpstan.broker.dynamicFunctionReturnTypeExtension]
@@ -315,6 +319,8 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrKeyByExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrMapExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrOnlyExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrPluckExtension
@@ -338,6 +344,8 @@ services:
     arguments: {class: Illuminate\Database\Eloquent\Collection, templateType: TModel}
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableAggregateExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableStructureExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableCollapseExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]

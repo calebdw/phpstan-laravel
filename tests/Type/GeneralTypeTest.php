@@ -18,7 +18,9 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/abstract-manager.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/app-make.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/application-make.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/arr-except.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-get-pull.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/arr-map.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-only.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-pluck.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-select.php');
@@ -36,6 +38,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-helper.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-map-spread.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-map-to-groups.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-method-correctness.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-pipe-through.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-reduce-spread.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-only-except.php');
@@ -59,6 +62,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/custom-model-collection-make.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/custom-model-collection-unique.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/custom-support-collection.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/data-get.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/database-transaction.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/date-extension.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder-pluck.php');

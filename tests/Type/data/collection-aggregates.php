@@ -16,6 +16,7 @@ use function PHPStan\Testing\assertType;
  * @param  Collection<int, int>  $ints
  * @param  Collection<int, float>  $floats
  * @param  Collection<int, string>  $names
+ * @param  Collection<int, float|int>  $numbers
  */
 function test(
     EloquentCollection $users,
@@ -23,7 +24,11 @@ function test(
     Collection $ints,
     Collection $floats,
     Collection $names,
+    Collection $numbers,
 ): void {
+    assertType('int', $ints->sum());
+    assertType('float|int', $floats->sum());
+    assertType('float|int', $numbers->sum());
     assertType('int', $users->sum('id'));
     assertType('int', $rows->sum('price'));
     assertType('int', $users->sum(fn ($u) => $u->id));

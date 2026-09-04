@@ -20,7 +20,7 @@ function test(Collection|LazyCollection $either): void
         $either->keyBy('email'),
     );
     assertType(
-        'Illuminate\Support\Collection<string, Illuminate\Support\Collection<int, App\User>>|Illuminate\Support\LazyCollection<string, Illuminate\Support\LazyCollection<int, App\User>>',
+        'Illuminate\Support\Collection<string, Illuminate\Support\Collection<int, App\User>>|Illuminate\Support\LazyCollection<string, Illuminate\Support\Collection<int, App\User>>',
         $either->groupBy('email'),
     );
     assertType(

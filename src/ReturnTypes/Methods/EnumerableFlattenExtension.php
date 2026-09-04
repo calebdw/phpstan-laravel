@@ -23,6 +23,8 @@ use const INF;
 
 final class EnumerableFlattenExtension implements DynamicMethodReturnTypeExtension
 {
+    private const int MAX_DEPTH = 16;
+
     public function __construct(private CollectionHelper $collectionHelper)
     {
     }
@@ -58,6 +60,10 @@ final class EnumerableFlattenExtension implements DynamicMethodReturnTypeExtensi
             $depth = (float) $values[0];
         }
 
+        if ($depth === INF) {
+            $depth = self::MAX_DEPTH;
+        }
+
         $valueType = $this->flattenValue(
             $calledOnType->getTemplateType(Enumerable::class, 'TValue'),
             $depth,
@@ -89,7 +95,7 @@ final class EnumerableFlattenExtension implements DynamicMethodReturnTypeExtensi
 
             $parts[] = $depth === 1.0
                 ? $inner
-                : $this->flattenValue($inner, $depth === INF ? INF : $depth - 1);
+                : $this->flattenValue($inner, $depth - 1);
         }
 
         return TypeCombinator::union(...$parts);

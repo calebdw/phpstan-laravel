@@ -136,7 +136,7 @@ final class ColumnHelper
             $values,
         ));
 
-        return TypeCombinator::union(...$types);
+        return $types === [] ? null : TypeCombinator::union(...$types);
     }
 
     /** @param list<Type> $parameterTypes */

@@ -64,7 +64,7 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
 
     assertType('Illuminate\Http\Request', request());
     assertType('mixed', request('foo'));
-    assertType('array<string>', request(['foo', 'bar']));
+    assertType('array<string, mixed>', request(['foo', 'bar']));
 
     assertType('\'ok\'|null', rescue(function () {
         if (mt_rand(0, 1)) {
@@ -265,3 +265,13 @@ function testUnion($parameter): int {
 
     return 0;
 };
+
+/**
+ * @param list<int> $ints
+ * @param array<string, string> $map
+ */
+function testHeadLast(array $ints, array $map): void
+{
+    assertType('int|false', head($ints));
+    assertType('string|false', last($map));
+}
