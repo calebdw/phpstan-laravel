@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Parameters;
 
+use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\Native\NativeParameterReflection;
 use PHPStan\Reflection\ParameterReflection;
-use PHPStan\Reflection\PassedByReference;
 use PHPStan\Type\ClosureType;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\MethodParameterClosureTypeExtension;
@@ -28,19 +27,15 @@ final class EnumerableReduceSpreadParameterExtension implements MethodParameterC
             && $parameter->getName() === 'callback';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        ParameterReflection $parameter,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, ParameterReflection $parameter, Scope $scope): Type|null
+    {
         $slots = $this->slots($methodCall, $scope);
 
         if ($slots === null) {
             return null;
         }
 
-        return new ClosureType(array_map($this->parameter(...), $slots), new MixedType());
+        return new ClosureType(array_map(static fn ($t) => new SimpleParameterReflection('item', $t), $slots), new MixedType());
     }
 
     /**
@@ -92,18 +87,5 @@ final class EnumerableReduceSpreadParameterExtension implements MethodParameterC
         }
 
         return $i === 0;
-    }
-
-    private function parameter(Type $type): NativeParameterReflection
-    {
-        /** @phpstan-ignore phpstanApi.constructor */
-        return new NativeParameterReflection(
-            'item',
-            false,
-            $type,
-            PassedByReference::createNo(),
-            false,
-            null,
-        );
     }
 }

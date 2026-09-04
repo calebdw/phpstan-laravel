@@ -8,7 +8,6 @@ use PHPStan\Reflection\ClassMemberReflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\FunctionVariant;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\PassedByReference;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Generic\TemplateTypeMap;
 use PHPStan\Type\MixedType;
@@ -25,7 +24,7 @@ final class DynamicWithMethodReflection implements MethodReflection
             new FunctionVariant(
                 TemplateTypeMap::createEmpty(),
                 TemplateTypeMap::createEmpty(),
-                [new SimpleParameterReflection('dynamic-with', new MixedType(), false, PassedByReference::createNo(), false)],
+                [new SimpleParameterReflection('dynamic-with', new MixedType())],
                 false,
                 $this->declaringClass->getObjectType(),
             ),

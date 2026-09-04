@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use Illuminate\Support\Collection;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\Native\NativeParameterReflection;
-use PHPStan\Reflection\PassedByReference;
-use PHPStan\Reflection\Php\DummyParameter;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\CallableType;
@@ -35,12 +33,8 @@ use function explode;
 
 final class ColumnHelper
 {
-    public function getArrayType(
-        Type $from,
-        Arg $valueArg,
-        Arg|null $keyArg,
-        Scope $scope,
-    ): ArrayType {
+    public function getArrayType(Type $from, Arg $valueArg, Arg|null $keyArg, Scope $scope): ArrayType
+    {
         $valueType = $this->getTypeFromArg($from, $valueArg, $scope);
         $keyType   = $keyArg === null ? new IntegerType() : $this->getTypeFromArg($from, $keyArg, $scope);
 
@@ -50,19 +44,11 @@ final class ColumnHelper
         return new ArrayType($this->normalizeKey($keyType), $valueType);
     }
 
-    public function getCollectionType(
-        Type $from,
-        Arg $valueArg,
-        Arg|null $keyArg,
-        Scope $scope,
-        string|null $collectionClass = null,
-    ): GenericObjectType {
+    public function getCollectionType(Type $from, Arg $valueArg, Arg|null $keyArg, Scope $scope, string|null $collectionClass = null): GenericObjectType
+    {
         $type = $this->getArrayType($from, $valueArg, $keyArg, $scope);
 
-        return new GenericObjectType(
-            $collectionClass ?? Collection::class,
-            [$type->getKeyType(), $type->getItemType()],
-        );
+        return new GenericObjectType($collectionClass ?? Collection::class, [$type->getKeyType(), $type->getItemType()]);
     }
 
     /**
@@ -161,30 +147,14 @@ final class ColumnHelper
             return null;
         }
 
-        $parameters = array_map(
-            static function (Type $parameterType): NativeParameterReflection {
-                /** @phpstan-ignore phpstanApi.constructor */
-                return new NativeParameterReflection(
-                    'param',
-                    false,
-                    $parameterType,
-                    PassedByReference::createNo(),
-                    false,
-                    null,
-                );
-            },
-            $parameterTypes,
-        );
+        $parameters = array_map(static fn ($t) => new SimpleParameterReflection('param', $t), $parameterTypes);
 
-        /** @phpstan-ignore phpstanApi.method, phpstanApi.constructor */
-        $scopeWithContext = $scope->pushInFunctionCall(null, new DummyParameter(
-            'callback',
-            new CallableType($parameters, new MixedType()),
-            false,
-            PassedByReference::createNo(),
-            false,
+        /** @phpstan-ignore phpstanApi.method */
+        $scopeWithContext = $scope->pushInFunctionCall(
             null,
-        ), false);
+            new SimpleParameterReflection('callback', new CallableType($parameters, new MixedType())),
+            false,
+        );
 
         $callableType = $scopeWithContext->getType($callable);
 

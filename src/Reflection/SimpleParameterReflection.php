@@ -10,14 +10,17 @@ use PHPStan\Type\Type;
 
 final class SimpleParameterReflection implements ParameterReflection
 {
+    private PassedByReference $passedByReference;
+
     public function __construct(
         private string $name,
         private Type $type,
-        private bool $optional,
-        private PassedByReference $passedByReference,
-        private bool $variadic,
+        private bool $optional = false,
+        PassedByReference|null $passedByReference = null,
+        private bool $variadic = false,
         private Type|null $defaultValue = null,
     ) {
+        $this->passedByReference = $passedByReference ?? PassedByReference::createNo();
     }
 
     public function getName(): string

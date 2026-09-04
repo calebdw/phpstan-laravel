@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Parameters;
 
+use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\Native\NativeParameterReflection;
 use PHPStan\Reflection\ParameterReflection;
-use PHPStan\Reflection\PassedByReference;
 use PHPStan\Type\ClosureType;
 use PHPStan\Type\MethodParameterClosureTypeExtension;
 use PHPStan\Type\MixedType;
@@ -29,12 +28,8 @@ final class EnumerableMapSpreadParameterExtension implements MethodParameterClos
             && $parameter->getName() === 'callback';
     }
 
-    public function getTypeFromMethodCall(
-        MethodReflection $methodReflection,
-        MethodCall $methodCall,
-        ParameterReflection $parameter,
-        Scope $scope,
-    ): Type|null {
+    public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, ParameterReflection $parameter, Scope $scope): Type|null
+    {
         $calledOnType = $scope->getType($methodCall->var);
         $slots        = $this->slots(
             $calledOnType->getTemplateType(Enumerable::class, 'TValue'),
@@ -45,7 +40,7 @@ final class EnumerableMapSpreadParameterExtension implements MethodParameterClos
             return null;
         }
 
-        return new ClosureType(array_map($this->parameter(...), $slots), new MixedType());
+        return new ClosureType(array_map(static fn ($t) => new SimpleParameterReflection('item', $t), $slots), new MixedType());
     }
 
     /** @return list<Type>|null */
@@ -60,19 +55,6 @@ final class EnumerableMapSpreadParameterExtension implements MethodParameterClos
         $slots[] = $keyType;
 
         return $slots;
-    }
-
-    private function parameter(Type $type): NativeParameterReflection
-    {
-        /** @phpstan-ignore phpstanApi.constructor */
-        return new NativeParameterReflection(
-            'item',
-            false,
-            $type,
-            PassedByReference::createNo(),
-            false,
-            null,
-        );
     }
 
     /**
