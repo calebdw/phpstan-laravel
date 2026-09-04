@@ -344,6 +344,27 @@ $keyed->groupBy('id', true);  // Collection<int, Collection<string, User>>
     and `keyBy` it is the segments of a single key, so `['user', 'name']` reads
     `user.name`. For `groupBy` it is successive grouping levels.
 
+### countBy, value, sum, min, max, collapse
+
+The same column lookup drives these. `countBy` keys the counts, `value` reads
+the first item, and the aggregates stop being `mixed` the moment a column or
+callback is involved:
+
+```php
+$users->countBy('email'); // Collection<string, int>
+$users->value('name');    // string|null
+$users->sum('id');        // int
+$users->min('email');     // string|null
+```
+
+`collapse` unwraps one level instead of widening to `mixed`:
+
+```php
+/** @var Collection<int, Collection<string, User>> $nested */
+$nested->collapse();         // Collection<int, User>
+$nested->collapseWithKeys(); // Collection<string, User>
+```
+
 ### Higher order proxies agree with the argument forms
 
 `$users->groupBy->email` and `$users->groupBy('email')` resolve the same key

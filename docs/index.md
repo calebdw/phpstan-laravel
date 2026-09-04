@@ -23,6 +23,8 @@ $user->accounts;                        // App\AccountCollection<int, App\Accoun
 User::query()->pluck('name');           // Collection<int, string>
 $user->accounts()->pluck('name');       // Collection<int, string>
 User::all()->groupBy('email');          // Collection<string, Collection<int, App\User>>
+User::all()->countBy('email');          // Collection<string, int>
+User::all()->value('name');             // string|null
 
 config('auth.defaults.guard');          // string|null
 Config::string('auth.defaults.guard');  // string

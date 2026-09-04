@@ -25,6 +25,14 @@ class Collection extends BaseCollection implements QueueableCollection
     public function find($key, $default = null);
 
     /**
+     * Find a model in the collection by key or throw an exception.
+     *
+     * @param  mixed  $key
+     * @phpstan-return ($key is (\Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>) ? static<TKey, TModel> : TModel)
+     */
+    public function findOrFail($key);
+
+    /**
      * Run a map over each of the items.
      *
      * @template TMapValue

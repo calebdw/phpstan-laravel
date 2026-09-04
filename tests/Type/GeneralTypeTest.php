@@ -26,6 +26,9 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/auth.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/belongs-to-many-generics.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/benchmark.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-aggregates.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-collapse.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-count-by.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-filter.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-helper.php');
@@ -34,6 +37,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-reject.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-select.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-stubs.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-value.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-where-not-null.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-where.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/conditionable.php');

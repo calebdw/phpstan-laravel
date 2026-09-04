@@ -77,6 +77,51 @@ Arr::only($map, ['a', 'b']);  // array<'a'|'b', int>
 differently for a key that is not there. See
 [reading a subset of attributes](model-properties.md#reading-a-subset-of-attributes).
 
+## value
+
+`value` reads a column off the first matching item, the same lookup `pluck`
+uses, including nested paths:
+
+```php
+$users->value('name');        // string|null
+$posts->value('user.name');   // string|null
+$users->value('name', 'n/a'); // string
+```
+
+## countBy
+
+`countBy` rewrites the keys the same way `groupBy` does, and the values are
+the counts:
+
+```php
+$users->countBy('email');           // Collection<string, int>
+$users->countBy(fn ($u) => $u->id); // Collection<int, int>
+```
+
+An Eloquent collection becomes a support collection, because the values are
+no longer models.
+
+## sum, min, max
+
+A column or callback is resolved rather than left as `mixed`:
+
+```php
+$users->sum('id');    // int
+$users->min('email'); // string|null
+$users->max(fn ($u) => $u->id); // int|null
+```
+
+## collapse
+
+`collapse` unwraps one level of collections or arrays. `collapseWithKeys`
+keeps the inner keys instead of reindexing:
+
+```php
+/** @var Collection<int, Collection<string, User>> $nested */
+$nested->collapse();            // Collection<int, User>
+$nested->collapseWithKeys();    // Collection<string, User>
+```
+
 ## groupBy
 
 `groupBy` nests one level per grouper, and an array argument means successive

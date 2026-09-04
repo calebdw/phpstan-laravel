@@ -128,7 +128,10 @@ class HigherOrderCollectionProxyHelper
                 $returnType = new FloatType();
                 break;
             case 'contains':
+            case 'doesntContain':
             case 'every':
+            case 'hasMany':
+            case 'hasSole':
             case 'some':
                 $returnType = new BooleanType();
                 break;
@@ -152,6 +155,7 @@ class HigherOrderCollectionProxyHelper
                 );
                 break;
             case 'first':
+            case 'last':
                 $returnType = TypeCombinator::addNull($valueType);
                 break;
             case 'flatMap':
@@ -180,6 +184,9 @@ class HigherOrderCollectionProxyHelper
             case 'max':
             case 'min':
                 $returnType = $methodOrPropertyReturnType;
+                break;
+            case 'percentage':
+                $returnType = TypeCombinator::addNull(new FloatType());
                 break;
             case 'sum':
                 if ($methodOrPropertyReturnType->accepts(new IntegerType(), true)->yes()) {

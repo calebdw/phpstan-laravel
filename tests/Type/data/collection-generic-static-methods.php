@@ -45,11 +45,16 @@ function test(
     assertType('App\User|null', $collection->find(1));
     assertType('App\User|false', $collection->find(1, false));
 
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $collection->findOrFail([1]));
+    assertType('App\User', $collection->findOrFail(1));
+
     assertType('App\TransactionCollection<int, App\Transaction>', $customEloquentCollection->find($items));
     assertType('App\TransactionCollection<int, App\Transaction>', $customEloquentCollection->find([1]));
     assertType('App\Transaction|null', $customEloquentCollection->find($user));
     assertType('App\Transaction|null', $customEloquentCollection->find(1));
     assertType('App\Transaction|false', $customEloquentCollection->find(1, false));
+    assertType('App\TransactionCollection<int, App\Transaction>', $customEloquentCollection->findOrFail([1]));
+    assertType('App\Transaction', $customEloquentCollection->findOrFail(1));
 
     assertType('App\UserCollection', $secondCustomEloquentCollection->find($items));
     assertType('App\UserCollection', $secondCustomEloquentCollection->find([1]));
@@ -178,7 +183,7 @@ function test(
     assertType('Illuminate\Support\Collection<int, App\User|string>', $secondCustomEloquentCollection->pad(10, 'foo'));
     assertType('Illuminate\Support\Collection<int, int|string>', $items->pad(1, 'bar'));
 
-    assertType('Illuminate\Support\Collection<(int|string), int>', $collection->countBy('email'));
+    assertType('Illuminate\Support\Collection<string, int>', $collection->countBy('email'));
     assertType('Illuminate\Support\Collection<(int|string), int>', $customEloquentCollection->countBy('foo'));
     assertType('Illuminate\Support\Collection<(int|string), int>', $secondCustomEloquentCollection->countBy('foo'));
     assertType('Illuminate\Support\Collection<(int|string), int>', $items->countBy('bar'));

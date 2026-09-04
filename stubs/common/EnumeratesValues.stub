@@ -11,17 +11,22 @@ use Illuminate\Support\HigherOrderCollectionProxy;
  * @property-read HigherOrderCollectionProxy<'average', TValue, static> $average
  * @property-read HigherOrderCollectionProxy<'avg', TValue, static> $avg
  * @property-read HigherOrderCollectionProxy<'contains', TValue, static> $contains
+ * @property-read HigherOrderCollectionProxy<'doesntContain', TValue, static> $doesntContain
  * @property-read HigherOrderCollectionProxy<'each', TValue, static> $each
  * @property-read HigherOrderCollectionProxy<'every', TValue, static> $every
  * @property-read HigherOrderCollectionProxy<'filter', TValue, static> $filter
  * @property-read HigherOrderCollectionProxy<'first', TValue, static> $first
  * @property-read HigherOrderCollectionProxy<'flatMap', TValue, static> $flatMap
  * @property-read HigherOrderCollectionProxy<'groupBy', TValue, static> $groupBy
+ * @property-read HigherOrderCollectionProxy<'hasMany', TValue, static> $hasMany
+ * @property-read HigherOrderCollectionProxy<'hasSole', TValue, static> $hasSole
  * @property-read HigherOrderCollectionProxy<'keyBy', TValue, static> $keyBy
+ * @property-read HigherOrderCollectionProxy<'last', TValue, static> $last
  * @property-read HigherOrderCollectionProxy<'map', TValue, static> $map
  * @property-read HigherOrderCollectionProxy<'max', TValue, static> $max
  * @property-read HigherOrderCollectionProxy<'min', TValue, static> $min
  * @property-read HigherOrderCollectionProxy<'partition', TValue, static> $partition
+ * @property-read HigherOrderCollectionProxy<'percentage', TValue, static> $percentage
  * @property-read HigherOrderCollectionProxy<'reject', TValue, static> $reject
  * @property-read HigherOrderCollectionProxy<'some', TValue, static> $some
  * @property-read HigherOrderCollectionProxy<'sortBy', TValue, static> $sortBy

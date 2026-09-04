@@ -32,10 +32,12 @@ function test(
 ): void {
     assertType('float', $users->avg->id() + $users->average->id());
     assertType('bool', $users->contains->isActive());
+    assertType('bool', $users->doesntContain->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->each->delete());
     assertType('bool', $users->every->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->filter->isActive());
     assertType('App\User|null', $users->first->isActive());
+    assertType('App\User|null', $users->last->isActive());
     assertType('Illuminate\Support\Collection<int, mixed>', $users->flatMap->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->keyBy->isActive());
@@ -47,7 +49,10 @@ function test(
     assertType('array<int, array<string, mixed>>', $user->accounts->map->getAttributes()->all());
     assertType('int', $users->max->id());
     assertType('int', $users->min->id());
+    assertType('bool', $users->hasMany->isActive());
+    assertType('bool', $users->hasSole->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->partition->isActive());
+    assertType('float|null', $users->percentage->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->reject->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->skipUntil->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->skipWhile->isActive());
@@ -61,11 +66,13 @@ function test(
 
     assertType('float', $users->avg->id + $users->average->id);
     assertType('bool', $users->contains->email);
+    assertType('bool', $users->doesntContain->email);
     assertType('bool', $users->every->email);
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->each->email);
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->filter->email);
     assertType('Illuminate\Support\Collection<int, mixed>', $users->flatMap->email);
     assertType('App\User|null', $users->first->email);
+    assertType('App\User|null', $users->last->email);
     assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy->email);
     assertType('Illuminate\Database\Eloquent\Collection<string, App\User>', $users->keyBy->email);
     assertType('Illuminate\Support\Collection<int, string>', $users->map->email);
@@ -76,7 +83,10 @@ function test(
     assertType('int', $users->max->id);
     assertType('string', $users->min->email);
     assertType('int', $users->min->id);
+    assertType('bool', $users->hasMany->email);
+    assertType('bool', $users->hasSole->email);
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->partition->email);
+    assertType('float|null', $users->percentage->email);
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->reject->email);
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->skipUntil->email);
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->skipWhile->email);

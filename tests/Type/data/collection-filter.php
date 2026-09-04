@@ -65,4 +65,6 @@ function test(User $user, SupportCollection $users, SupportCollection $mixedColl
     });
 
     assertType("Illuminate\Support\Collection<int, mixed~(0|0.0|''|'0'|array{}|false|null)>", $mixedCollection->pluck('foo')->filter());
+
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->whereInstanceOf(User::class));
 }
