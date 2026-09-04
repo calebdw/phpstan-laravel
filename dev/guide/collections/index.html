@@ -718,6 +718,105 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#value" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        value
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#countby" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        countBy
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sum-min-max" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        sum, min, max
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        collapse
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maptogroups" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        mapToGroups
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        transform
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#toarray" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        toArray
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flatten" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        flatten
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dot" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        dot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#groupby" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1380,6 +1479,105 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#value" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        value
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#countby" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        countBy
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sum-min-max" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        sum, min, max
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        collapse
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maptogroups" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        mapToGroups
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        transform
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#toarray" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        toArray
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flatten" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        flatten
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dot" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        dot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#groupby" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1489,52 +1687,123 @@ when you want a path, or <code>pluck</code>, which does resolve one.</p>
 <p><code>Model::only</code> builds a shape too, but out of a model's attributes, and answers
 differently for a key that is not there. See
 <a href="../model-properties/#reading-a-subset-of-attributes">reading a subset of attributes</a>.</p>
+<h2 id="value">value<a class="headerlink" href="#value" title="Permanent link">&para;</a></h2>
+<p><code>value</code> reads a column off the first matching item, the same lookup <code>pluck</code>
+uses, including nested paths:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>        <span class="c1">// string|null</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">$posts</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">(</span><span class="s1">'user.name'</span><span class="p">);</span>   <span class="c1">// string|null</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'n/a'</span><span class="p">);</span> <span class="c1">// string</span>
+</span></code></pre></div>
+<h2 id="countby">countBy<a class="headerlink" href="#countby" title="Permanent link">&para;</a></h2>
+<p><code>countBy</code> rewrites the keys the same way <code>groupBy</code> does, and the values are
+the counts:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">countBy</span><span class="p">(</span><span class="s1">'email'</span><span class="p">);</span>           <span class="c1">// Collection&lt;string, int&gt;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">countBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span> <span class="c1">// Collection&lt;int, int&gt;</span>
+</span></code></pre></div>
+<p>An Eloquent collection becomes a support collection, because the values are
+no longer models.</p>
+<h2 id="sum-min-max">sum, min, max<a class="headerlink" href="#sum-min-max" title="Permanent link">&para;</a></h2>
+<p>A column or callback is resolved rather than left as <code>mixed</code>:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">sum</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>    <span class="c1">// int</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">min</span><span class="p">(</span><span class="s1">'email'</span><span class="p">);</span> <span class="c1">// string|null</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">max</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span> <span class="c1">// int|null</span>
+</span></code></pre></div>
+<h2 id="collapse">collapse<a class="headerlink" href="#collapse" title="Permanent link">&para;</a></h2>
+<p><code>collapse</code> unwraps one level of collections or arrays. <code>collapseWithKeys</code>
+keeps the inner keys instead of reindexing:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="sd">/** @var Collection&lt;int, Collection&lt;string, User&gt;&gt; $nested */</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nv">$nested</span><span class="o">-&gt;</span><span class="na">collapse</span><span class="p">();</span>            <span class="c1">// Collection&lt;int, User&gt;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nv">$nested</span><span class="o">-&gt;</span><span class="na">collapseWithKeys</span><span class="p">();</span>    <span class="c1">// Collection&lt;string, User&gt;</span>
+</span></code></pre></div>
+<h2 id="maptogroups">mapToGroups<a class="headerlink" href="#maptogroups" title="Permanent link">&para;</a></h2>
+<p>The callback returns one key/value pair per item. The key is the group, the
+value goes into it. A literal stays a literal, because that callback can only
+ever produce that group; a property or a branch is the union of what it can
+actually return. Runtime only reads the first pair, so a second key in the
+same array is ignored.</p>
+<p><code>mapToDictionary</code> is the same pair, but the values stay arrays. Eloquent
+collections keep their class there (<code>new static()</code>), and <code>toBase()</code> the outer
+collection for <code>mapToGroups</code> because those items are groups rather than
+models:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">mapToGroups</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="nv">$u</span><span class="o">-&gt;</span><span class="na">email</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="p">]);</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1">// Collection&lt;string, EloquentCollection&lt;int, User&gt;&gt;</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">mapToGroups</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">'foo'</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">]);</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1">// Collection&lt;'foo', EloquentCollection&lt;int, int&gt;&gt;</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">mapToDictionary</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="nv">$u</span><span class="o">-&gt;</span><span class="na">email</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="p">]);</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="c1">// EloquentCollection&lt;string, array&lt;int, User&gt;&gt;</span>
+</span></code></pre></div>
+<h2 id="transform">transform<a class="headerlink" href="#transform" title="Permanent link">&para;</a></h2>
+<p><code>transform</code> is <code>map</code> in place. <code>@phpstan-this-out</code> rewrites <code>$this</code> after the
+call:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">transform</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nx">User</span> <span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">);</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1">// $users is Collection&lt;int, string&gt;</span>
+</span></code></pre></div>
+<h2 id="toarray">toArray<a class="headerlink" href="#toarray" title="Permanent link">&para;</a></h2>
+<p><code>toArray</code> walks Arrayable items, including nested collections, instead of
+widening to <code>mixed</code>:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nx">collect</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">-&gt;</span><span class="na">toArray</span><span class="p">();</span>          <span class="c1">// array&lt;int, int&gt;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">toArray</span><span class="p">();</span>                      <span class="c1">// array&lt;int, array&lt;string, mixed&gt;&gt;</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'email'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">toArray</span><span class="p">();</span>    <span class="c1">// array&lt;string, array&lt;int, array&lt;string, mixed&gt;&gt;&gt;</span>
+</span></code></pre></div>
+<h2 id="flatten">flatten<a class="headerlink" href="#flatten" title="Permanent link">&para;</a></h2>
+<p>A known depth unwraps that many levels. Omitted, it unwraps all the way:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="sd">/** @var Collection&lt;int, Collection&lt;int, Collection&lt;int, User&gt;&gt;&gt; $deep */</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nv">$deep</span><span class="o">-&gt;</span><span class="na">flatten</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// Collection&lt;int, Collection&lt;int, User&gt;&gt;</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="nv">$deep</span><span class="o">-&gt;</span><span class="na">flatten</span><span class="p">();</span>  <span class="c1">// Collection&lt;int, User&gt;</span>
+</span></code></pre></div>
+<h2 id="dot">dot<a class="headerlink" href="#dot" title="Permanent link">&para;</a></h2>
+<p>Nested arrays become string keys and a union of the leaves:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="sd">/** @var Collection&lt;string, array{name: string, age: int}&gt; $rows */</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nv">$rows</span><span class="o">-&gt;</span><span class="na">dot</span><span class="p">();</span> <span class="c1">// Collection&lt;string, int|string&gt;</span>
+</span></code></pre></div>
 <h2 id="groupby">groupBy<a class="headerlink" href="#groupby" title="Permanent link">&para;</a></h2>
 <p><code>groupBy</code> nests one level per grouper, and an array argument means successive
 levels rather than a nested path:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">// Collection&lt;string, Collection&lt;int, App\User&gt;&gt;</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">]);</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1">// Collection&lt;string, Collection&lt;int, Collection&lt;int, App\User&gt;&gt;&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="c1">// Collection&lt;string, Collection&lt;int, App\User&gt;&gt;</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">]);</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="c1">// Collection&lt;string, Collection&lt;int, Collection&lt;int, App\User&gt;&gt;&gt;</span>
 </span></code></pre></div>
 <p><code>preserveKeys</code> decides the innermost keys:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="sd">/** @var Collection&lt;string, App\User&gt; $keyed */</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">$keyed</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>       <span class="c1">// Collection&lt;int, Collection&lt;int, App\User&gt;&gt;</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nv">$keyed</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span> <span class="c1">// Collection&lt;int, Collection&lt;string, App\User&gt;&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="sd">/** @var Collection&lt;string, App\User&gt; $keyed */</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="nv">$keyed</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>       <span class="c1">// Collection&lt;int, Collection&lt;int, App\User&gt;&gt;</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nv">$keyed</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span> <span class="c1">// Collection&lt;int, Collection&lt;string, App\User&gt;&gt;</span>
 </span></code></pre></div>
 <h2 id="precision-and-widening-it-where-you-want-it">Precision, and widening it where you want it<a class="headerlink" href="#precision-and-widening-it-where-you-want-it" title="Permanent link">&para;</a></h2>
 <p>Keys and values are resolved as precisely as the input allows. A grouper
 returning a backed enum's value gives the literal union, and an interpolated key
 gives the product of its parts:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">$items</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$i</span><span class="o">-&gt;</span><span class="na">priority</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">);</span>          <span class="c1">// Collection&lt;10|20, ...&gt;</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nv">$items</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">"</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">a</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">b</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2">"</span><span class="p">);</span> <span class="c1">// Collection&lt;'10|x'|'10|y'|..., ...&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nv">$items</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$i</span><span class="o">-&gt;</span><span class="na">priority</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">);</span>          <span class="c1">// Collection&lt;10|20, ...&gt;</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nv">$items</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">"</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">a</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">b</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2">"</span><span class="p">);</span> <span class="c1">// Collection&lt;'10|x'|'10|y'|..., ...&gt;</span>
 </span></code></pre></div>
 <p>That precision is not decoration. It survives to wherever you consume the
 collection, so a refined key still reads as refined:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">foreach</span> <span class="p">(</span><span class="nv">$items</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">"row-</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$item</span><span class="p">)</span> <span class="p">{</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="c1">// $key is non-falsy-string, not string</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">foreach</span> <span class="p">(</span><span class="nv">$items</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">"row-</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$item</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>    <span class="c1">// $key is non-falsy-string, not string</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="p">}</span>
 </span></code></pre></div>
 <p><code>Collection</code> declares <code>TKey</code> and <code>TValue</code> invariantly, so an exact type is what
 an annotation has to match. Where you would rather accept the general type, ask
 for it at the annotation with <code>covariant</code>:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="sd">/** @return Collection&lt;covariant string, Item&gt; */</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">keyed</span><span class="p">()</span><span class="o">:</span> <span class="nx">Collection</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="p">{</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">items</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">"</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">a</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">b</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2">"</span><span class="p">);</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="sd">/** @return Collection&lt;covariant string, Item&gt; */</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">keyed</span><span class="p">()</span><span class="o">:</span> <span class="nx">Collection</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="p">{</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">items</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">"</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">a</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="nv">$i</span><span class="o">-&gt;</span><span class="na">b</span><span class="o">-&gt;</span><span class="na">value</span><span class="si">}</span><span class="s2">"</span><span class="p">);</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>That is use-site variance, and it applies to values the same way:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="sd">/** @return Collection&lt;int, covariant string&gt; */</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="sd">/** @return Collection&lt;int, covariant string&gt; */</span>
 </span></code></pre></div>
 <p><code>array-key</code> also works for a key, being a benevolent union. A plain
 <code>int|string</code> does not, despite reading like the safer choice: it is matched
 invariantly and accepts neither <code>int</code> nor <code>string</code>.</p>
 <h2 id="higher-order-proxies">Higher order proxies<a class="headerlink" href="#higher-order-proxies" title="Permanent link">&para;</a></h2>
 <p>The proxy forms resolve the same way as the argument forms:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span> <span class="c1">// Collection&lt;string, Collection&lt;int, App\User&gt;&gt;</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>   <span class="c1">// Collection&lt;string, App\User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span> <span class="c1">// Collection&lt;string, Collection&lt;int, App\User&gt;&gt;</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>   <span class="c1">// Collection&lt;string, App\User&gt;</span>
 </span></code></pre></div>
 
 

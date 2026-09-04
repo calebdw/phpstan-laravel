@@ -1342,6 +1342,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#countby-value-sum-min-max-collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        countBy, value, sum, min, max, collapse
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#higher-order-proxies-agree-with-the-argument-forms" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1728,6 +1739,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         groupBy
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#countby-value-sum-min-max-collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        countBy, value, sum, min, max, collapse
       </span>
     </span>
   </a>
@@ -2166,11 +2188,38 @@ only where the collection's own keys are not already <code>int</code>:</p>
 and <code>keyBy</code> it is the segments of a single key, so <code>['user', 'name']</code> reads
 <code>user.name</code>. For <code>groupBy</code> it is successive grouping levels.</p>
 </div>
+<h3 id="countby-value-sum-min-max-collapse">countBy, value, sum, min, max, collapse<a class="headerlink" href="#countby-value-sum-min-max-collapse" title="Permanent link">&para;</a></h3>
+<p>The same column lookup drives these. <code>countBy</code> keys the counts, <code>value</code> reads
+the first item, and the aggregates stop being <code>mixed</code> the moment a column or
+callback is involved:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">countBy</span><span class="p">(</span><span class="s1">'email'</span><span class="p">);</span> <span class="c1">// Collection&lt;string, int&gt;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>    <span class="c1">// string|null</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">sum</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>        <span class="c1">// int</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">min</span><span class="p">(</span><span class="s1">'email'</span><span class="p">);</span>     <span class="c1">// string|null</span>
+</span></code></pre></div>
+<p><code>mapToGroups</code> uses the same callback inference, and Eloquent collections
+<code>toBase()</code> the outer collection the way they do at runtime:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">mapToGroups</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">'foo'</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">]);</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="c1">// Collection&lt;'foo', EloquentCollection&lt;int, int&gt;&gt;</span>
+</span></code></pre></div>
+<p><code>transform</code> rewrites <code>$this</code> through <code>@phpstan-this-out</code>. <code>toArray</code> walks
+Arrayable items instead of <code>array&lt;TKey, mixed&gt;</code>. <code>flatten</code> respects a known
+depth, and <code>dot</code> collapses nested arrays to <code>Collection&lt;string, leaf&gt;</code>:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">transform</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nx">User</span> <span class="nv">$u</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$u</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">);</span> <span class="c1">// $users is Collection&lt;int, string&gt;</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">toArray</span><span class="p">();</span>                           <span class="c1">// array&lt;int, array&lt;string, mixed&gt;&gt;</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="nv">$nested</span><span class="o">-&gt;</span><span class="na">flatten</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>                         <span class="c1">// one level unwrapped</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="nv">$rows</span><span class="o">-&gt;</span><span class="na">dot</span><span class="p">();</span>                                <span class="c1">// Collection&lt;string, int|string&gt;</span>
+</span></code></pre></div>
+<p><code>collapse</code> unwraps one level instead of widening to <code>mixed</code>:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="sd">/** @var Collection&lt;int, Collection&lt;string, User&gt;&gt; $nested */</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="nv">$nested</span><span class="o">-&gt;</span><span class="na">collapse</span><span class="p">();</span>         <span class="c1">// Collection&lt;int, User&gt;</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="nv">$nested</span><span class="o">-&gt;</span><span class="na">collapseWithKeys</span><span class="p">();</span> <span class="c1">// Collection&lt;string, User&gt;</span>
+</span></code></pre></div>
 <h3 id="higher-order-proxies-agree-with-the-argument-forms">Higher order proxies agree with the argument forms<a class="headerlink" href="#higher-order-proxies-agree-with-the-argument-forms" title="Permanent link">&para;</a></h3>
 <p><code>$users-&gt;groupBy-&gt;email</code> and <code>$users-&gt;groupBy('email')</code> resolve the same key
 type, rather than the proxy form falling back to <code>array-key</code>:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>  <span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>    <span class="c1">// Collection&lt;string, User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>  <span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">keyBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span>    <span class="c1">// Collection&lt;string, User&gt;</span>
 </span></code></pre></div>
 <h3 id="template-types">Template types<a class="headerlink" href="#template-types" title="Permanent link">&para;</a></h3>
 <p>Collection template parameters are no longer overwritten when chaining through
@@ -2178,54 +2227,54 @@ methods that should preserve them, and a collection typed as an intersection
 keeps both halves rather than collapsing to one. That second one matters if you
 return a collection that both extends <code>Collection</code> and implements an interface
 of your own:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="p">{</span>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>    <span class="sd">/** @return Collection&lt;int, static&gt;&amp;TreeLikeCollection&lt;static&gt; */</span>
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">newCollection</span><span class="p">(</span><span class="k">array</span> <span class="nv">$models</span> <span class="o">=</span> <span class="p">[])</span><span class="o">:</span> <span class="nx">Collection</span><span class="o">&amp;</span><span class="nx">TreeLikeCollection</span>
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="p">{</span>
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>        <span class="k">return</span> <span class="k">new</span> <span class="nx">TreeCollection</span><span class="p">(</span><span class="nv">$models</span><span class="p">);</span>
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>    <span class="p">}</span>
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="p">}</span>
-</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
-</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>
-</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="c1">// Collection&lt;int, User&gt;&amp;TreeLikeCollection&lt;User&gt;</span>
-</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>
-</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getTree</span><span class="p">();</span>
-</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="c1">// Collection&lt;int, User&gt;&amp;TreeLikeCollection&lt;User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="p">{</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>    <span class="sd">/** @return Collection&lt;int, static&gt;&amp;TreeLikeCollection&lt;static&gt; */</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">newCollection</span><span class="p">(</span><span class="k">array</span> <span class="nv">$models</span> <span class="o">=</span> <span class="p">[])</span><span class="o">:</span> <span class="nx">Collection</span><span class="o">&amp;</span><span class="nx">TreeLikeCollection</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>    <span class="p">{</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>        <span class="k">return</span> <span class="k">new</span> <span class="nx">TreeCollection</span><span class="p">(</span><span class="nv">$models</span><span class="p">);</span>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>    <span class="p">}</span>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="p">}</span>
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a><span class="c1">// Collection&lt;int, User&gt;&amp;TreeLikeCollection&lt;User&gt;</span>
+</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a>
+</span><span id="__span-25-13"><a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a><span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getTree</span><span class="p">();</span>
+</span><span id="__span-25-14"><a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a><span class="c1">// Collection&lt;int, User&gt;&amp;TreeLikeCollection&lt;User&gt;</span>
 </span></code></pre></div>
 <p>Calling <code>getTree()</code>, which comes from the interface half, does not cost you the
 collection half.</p>
 <h3 id="paginators">Paginators<a class="headerlink" href="#paginators" title="Permanent link">&para;</a></h3>
 <p>A paginator over models hands back an Eloquent collection:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">paginate</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getCollection</span><span class="p">();</span>
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="c1">// Illuminate\Database\Eloquent\Collection&lt;int, App\User&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">paginate</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getCollection</span><span class="p">();</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="c1">// Illuminate\Database\Eloquent\Collection&lt;int, App\User&gt;</span>
 </span></code></pre></div>
 <h2 id="managers">Managers<a class="headerlink" href="#managers" title="Permanent link">&para;</a></h2>
 <p>An <code>Illuminate\Support\Manager</code> subclass forwards unknown calls to its driver,
 so the driver decides what the manager can do. Which driver that is, and what
 type it has, is read from the <code>create{Driver}Driver()</code> method rather than taken
 from the object the container happens to build:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="k">class</span> <span class="nc">NotifierManager</span> <span class="k">extends</span> <span class="nx">Manager</span>
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="p">{</span>
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">getDefaultDriver</span><span class="p">()</span><span class="o">:</span> <span class="nx">string</span>
-</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="p">{</span>
-</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>        <span class="k">return</span> <span class="nx">config</span><span class="p">(</span><span class="s1">'notifier.default'</span><span class="p">);</span>
-</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    <span class="p">}</span>
-</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>
-</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>    <span class="k">protected</span> <span class="k">function</span> <span class="nf">createSlackDriver</span><span class="p">()</span><span class="o">:</span> <span class="nx">Notifier</span>
-</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>    <span class="p">{</span>
-</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>        <span class="k">return</span> <span class="k">new</span> <span class="nx">SlackNotifier</span><span class="p">();</span>
-</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>    <span class="p">}</span>
-</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="p">}</span>
-</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>
-</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">();</span>
-</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="c1">// App\Notifier</span>
-</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a>
-</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">(</span><span class="s1">'slack'</span><span class="p">);</span>
-</span><span id="__span-23-18"><a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a><span class="c1">// App\Notifier</span>
-</span><span id="__span-23-19"><a id="__codelineno-23-19" name="__codelineno-23-19" href="#__codelineno-23-19"></a>
-</span><span id="__span-23-20"><a id="__codelineno-23-20" name="__codelineno-23-20" href="#__codelineno-23-20"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
-</span><span id="__span-23-21"><a id="__codelineno-23-21" name="__codelineno-23-21" href="#__codelineno-23-21"></a><span class="c1">// checked against Notifier, not against SlackNotifier</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="k">class</span> <span class="nc">NotifierManager</span> <span class="k">extends</span> <span class="nx">Manager</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="p">{</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">getDefaultDriver</span><span class="p">()</span><span class="o">:</span> <span class="nx">string</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="p">{</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>        <span class="k">return</span> <span class="nx">config</span><span class="p">(</span><span class="s1">'notifier.default'</span><span class="p">);</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>    <span class="p">}</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>    <span class="k">protected</span> <span class="k">function</span> <span class="nf">createSlackDriver</span><span class="p">()</span><span class="o">:</span> <span class="nx">Notifier</span>
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>    <span class="p">{</span>
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>        <span class="k">return</span> <span class="k">new</span> <span class="nx">SlackNotifier</span><span class="p">();</span>
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a>    <span class="p">}</span>
+</span><span id="__span-27-12"><a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a><span class="p">}</span>
+</span><span id="__span-27-13"><a id="__codelineno-27-13" name="__codelineno-27-13" href="#__codelineno-27-13"></a>
+</span><span id="__span-27-14"><a id="__codelineno-27-14" name="__codelineno-27-14" href="#__codelineno-27-14"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">();</span>
+</span><span id="__span-27-15"><a id="__codelineno-27-15" name="__codelineno-27-15" href="#__codelineno-27-15"></a><span class="c1">// App\Notifier</span>
+</span><span id="__span-27-16"><a id="__codelineno-27-16" name="__codelineno-27-16" href="#__codelineno-27-16"></a>
+</span><span id="__span-27-17"><a id="__codelineno-27-17" name="__codelineno-27-17" href="#__codelineno-27-17"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">(</span><span class="s1">'slack'</span><span class="p">);</span>
+</span><span id="__span-27-18"><a id="__codelineno-27-18" name="__codelineno-27-18" href="#__codelineno-27-18"></a><span class="c1">// App\Notifier</span>
+</span><span id="__span-27-19"><a id="__codelineno-27-19" name="__codelineno-27-19" href="#__codelineno-27-19"></a>
+</span><span id="__span-27-20"><a id="__codelineno-27-20" name="__codelineno-27-20" href="#__codelineno-27-20"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="nv">$message</span><span class="p">);</span>
+</span><span id="__span-27-21"><a id="__codelineno-27-21" name="__codelineno-27-21" href="#__codelineno-27-21"></a><span class="c1">// checked against Notifier, not against SlackNotifier</span>
 </span></code></pre></div>
 <p>Two things follow from reading the declared type. The driver is never
 constructed, so one that needs credentials, a connection or a config key absent
@@ -2239,13 +2288,13 @@ implementation is callable.</p>
 <p>A creator with no declared return type still falls back to resolving the driver
 from the container, so managers written before the framework had return types
 keep working:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">createSlackDriver</span><span class="p">()</span>
-</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="p">{</span>
-</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>    <span class="k">return</span> <span class="k">new</span> <span class="nx">SlackNotifier</span><span class="p">();</span>
-</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="p">}</span>
-</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>
-</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">();</span>
-</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="c1">// App\SlackNotifier</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">createSlackDriver</span><span class="p">()</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="p">{</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>    <span class="k">return</span> <span class="k">new</span> <span class="nx">SlackNotifier</span><span class="p">();</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="p">}</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a><span class="nv">$manager</span><span class="o">-&gt;</span><span class="na">driver</span><span class="p">();</span>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="c1">// App\SlackNotifier</span>
 </span></code></pre></div>
 <p>The driver's name is the one part that still comes from the manager itself,
 since <code>getDefaultDriver()</code> usually reads config. When it cannot be determined,
@@ -2259,28 +2308,28 @@ its <code>checkConfigTypes</code> option. Two things differ.</p>
 not useful to anybody. Where the application boots, the container answers, and
 file parsing fills in only what the container could not, which is what makes it
 work for packages that have no application to boot.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>
-</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="c1">// array{guard: string, passwords: string}</span>
-</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
-</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>
-</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="c1">// string|null</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults'</span><span class="p">);</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="c1">// array{guard: string, passwords: string}</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="nx">config</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="c1">// string|null</span>
 </span></code></pre></div>
 <h3 id="the-typed-accessors-are-checked">The typed accessors are checked<a class="headerlink" href="#the-typed-accessors-are-checked" title="Permanent link">&para;</a></h3>
 <p><code>string()</code>, <code>integer()</code>, <code>float()</code>, <code>boolean()</code>, <code>array()</code> and <code>collection()</code>
 each throw when the value is not already of that type: none of them coerce.
 Reading a key of the wrong type is a guaranteed runtime failure, and is now
 reported:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// fine</span>
-</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>  <span class="c1">// error: is string, requires an array</span>
-</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">float</span><span class="p">(</span><span class="s1">'auth.password_timeout'</span><span class="p">);</span> <span class="c1">// error: is int, requires a float</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nx">Config</span><span class="o">::</span><span class="na">string</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span> <span class="c1">// fine</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="nx">Config</span><span class="o">::</span><span class="na">array</span><span class="p">(</span><span class="s1">'auth.defaults.guard'</span><span class="p">);</span>  <span class="c1">// error: is string, requires an array</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="nx">Config</span><span class="o">::</span><span class="na">float</span><span class="p">(</span><span class="s1">'auth.password_timeout'</span><span class="p">);</span> <span class="c1">// error: is int, requires a float</span>
 </span></code></pre></div>
 <h2 id="paths-and-scanning">Paths and scanning<a class="headerlink" href="#paths-and-scanning" title="Permanent link">&para;</a></h2>
 <p>Migration and schema paths accept wildcards, which modular applications need:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>parameters:
-</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>    laravel:
-</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>        migrationDirectories:
-</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>            - database/migrations
-</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>            - modules/*/database/migrations
+<div class="language-text highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>parameters:
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>    laravel:
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>        migrationDirectories:
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>            - database/migrations
+</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>            - modules/*/database/migrations
 </span></code></pre></div>
 <p>A configured list replaces the conventional directory. Including
 <code>database/migrations</code> above retains application migrations while adding the
@@ -2307,9 +2356,9 @@ prefixed identifier, so you can ignore a category precisely. See
   lets code drift onto methods only one implementation happens to have. Enable
   it to take the contract at face value:</li>
 </ul>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
-</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="c1">// off: Illuminate\Config\Repository</span>
-</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="c1">// on:  Illuminate\Contracts\Config\Repository</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nx">resolve</span><span class="p">(</span><span class="nx">Repository</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="c1">// off: Illuminate\Config\Repository</span>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="c1">// on:  Illuminate\Contracts\Config\Repository</span>
 </span></code></pre></div>
 <h2 id="packaging">Packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
 <ul>
