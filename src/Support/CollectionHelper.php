@@ -47,6 +47,31 @@ final class CollectionHelper
     {
     }
 
+    public function generic(string $className, Type $keyType, Type $valueType): Type
+    {
+        if (! $this->reflectionProvider->hasClass($className)) {
+            return new GenericObjectType(Collection::class, [$keyType, $valueType]);
+        }
+
+        $reflection = $this->reflectionProvider->getClass($className);
+
+        if (! $reflection->isGeneric()) {
+            return new ObjectType($className);
+        }
+
+        $typeMap = $reflection->getActiveTemplateTypeMap();
+
+        if ($typeMap->count() === 2) {
+            return new GenericObjectType($className, [$keyType, $valueType]);
+        }
+
+        if ($typeMap->count() === 1 && $typeMap->hasType('TModel')) {
+            return new GenericObjectType($className, [$valueType]);
+        }
+
+        return new GenericObjectType($className, [$keyType, $valueType]);
+    }
+
     public function determineGenericCollectionTypeFromType(Type $type): Type|null
     {
         $classReflections = $type->getObjectClassReflections();
@@ -141,7 +166,7 @@ final class CollectionHelper
             return null;
         }
 
-        return TypeTraverser::map($collectionType, static function (Type $type, callable $traverse) use ($modelType): Type {
+        return TypeTraverser::map($collectionType, function (Type $type, callable $traverse) use ($modelType): Type {
             if ($type instanceof UnionType || $type instanceof IntersectionType) {
                 return $traverse($type);
             }
@@ -161,18 +186,11 @@ final class CollectionHelper
             $keyType = new IntegerType();
             $typeMap = $classReflection->getActiveTemplateTypeMap();
 
-            // Specifies key and value
-            if ($typeMap->count() === 2) {
-                return new GenericObjectType($classReflection->getName(), [$keyType, $modelType]);
+            if ($typeMap->count() === 1 && ! $typeMap->hasType('TModel')) {
+                return new GenericObjectType($classReflection->getName(), [$keyType]);
             }
 
-            // Specifies only value
-            if (($typeMap->count() === 1) && $typeMap->hasType('TModel')) {
-                return new GenericObjectType($classReflection->getName(), [$modelType]);
-            }
-
-            // Specifies only key
-            return new GenericObjectType($classReflection->getName(), [$keyType]);
+            return $this->generic($classReflection->getName(), $keyType, $modelType);
         });
     }
 

@@ -8,15 +8,12 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\HigherOrderCollectionProxy;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -27,7 +24,7 @@ class HigherOrderCollectionProxyHelper
     private array $members = [];
 
     public function __construct(
-        private ReflectionProvider $reflectionProvider,
+        private CollectionHelper $collectionHelper,
         private ColumnHelper $columnHelper,
         private TypeHelper $typeHelper,
     ) {
@@ -145,10 +142,10 @@ class HigherOrderCollectionProxyHelper
             case 'takeUntil':
             case 'takeWhile':
             case 'unique':
-                $returnType = $this->getCollectionType($collectionType, $integerType, $valueType);
+                $returnType = $this->collectionHelper->generic($collectionType, $integerType, $valueType);
                 break;
             case 'keyBy':
-                $returnType = $this->getCollectionType(
+                $returnType = $this->collectionHelper->generic(
                     $collectionType,
                     $this->columnHelper->normalizeKey($methodOrPropertyReturnType),
                     $valueType,
@@ -159,21 +156,25 @@ class HigherOrderCollectionProxyHelper
                 $returnType = TypeCombinator::addNull($valueType);
                 break;
             case 'flatMap':
-                $returnType = $this->getCollectionType(SupportCollection::class, $integerType, new MixedType());
+                $returnType = $this->collectionHelper->generic(SupportCollection::class, $integerType, new MixedType());
                 break;
             case 'groupBy':
-                $returnType = $this->getCollectionType(
+                $returnType = $this->collectionHelper->generic(
                     $collectionType,
                     $this->columnHelper->normalizeGroupKey($methodOrPropertyReturnType),
-                    $this->getCollectionType($collectionType, $integerType, $valueType),
+                    $this->collectionHelper->generic($collectionType, $integerType, $valueType),
                 );
                 break;
             case 'partition':
                 // Always exactly two groups, keyed 0 and 1.
-                $returnType = $this->getCollectionType($collectionType, $integerType, $this->getCollectionType($collectionType, $integerType, $valueType));
+                $returnType = $this->collectionHelper->generic(
+                    $collectionType,
+                    $integerType,
+                    $this->collectionHelper->generic($collectionType, $integerType, $valueType),
+                );
                 break;
             case 'map':
-                $returnType = $this->getCollectionType(
+                $returnType = $this->collectionHelper->generic(
                     SupportCollection::class,
                     $collectionKeyType instanceof MixedType
                         ? new BenevolentUnionType([new IntegerType(), new StringType()])
@@ -202,27 +203,5 @@ class HigherOrderCollectionProxyHelper
         }
 
         return $returnType;
-    }
-
-    private function getCollectionType(string $collectionClassName, Type $keyType, Type $valueType): Type
-    {
-        $collectionReflection = $this->reflectionProvider->getClass($collectionClassName);
-
-        if ($collectionReflection->isGeneric()) {
-            $typeMap = $collectionReflection->getActiveTemplateTypeMap();
-
-            // Specifies key and value
-            if ($typeMap->count() === 2) {
-                return new GenericObjectType($collectionClassName, [$keyType, $valueType]);
-            }
-
-            // Specifies only value
-            if (($typeMap->count() === 1) && $typeMap->hasType('TModel')) {
-                return new GenericObjectType($collectionClassName, [$valueType]);
-            }
-        }
-
-        // Not generic. So return the type as is
-        return new ObjectType($collectionClassName);
     }
 }

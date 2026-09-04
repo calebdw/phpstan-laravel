@@ -98,7 +98,19 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      * @param  callable(TValue, TKey, static<TKey, TValue>): bool  $callback
      * @return static<int, static<TKey, TValue>>
      */
-    public function chunkWhile(callable $callback);
+     public function chunkWhile(callable $callback);
+
+    /**
+     * Transform each item in the collection using a callback.
+     *
+     * @template TMapValue
+     *
+     * @param  callable(TValue, TKey): TMapValue  $callback
+     * @return $this
+     *
+     * @phpstan-this-out static<TKey, TMapValue>
+     */
+    public function transform(callable $callback);
 }
 
 /**

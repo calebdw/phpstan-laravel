@@ -357,6 +357,25 @@ $users->sum('id');        // int
 $users->min('email');     // string|null
 ```
 
+`mapToGroups` uses the same callback inference, and Eloquent collections
+`toBase()` the outer collection the way they do at runtime:
+
+```php
+$users->mapToGroups(fn ($u) => ['foo' => $u->id]);
+// Collection<'foo', EloquentCollection<int, int>>
+```
+
+`transform` rewrites `$this` through `@phpstan-this-out`. `toArray` walks
+Arrayable items instead of `array<TKey, mixed>`. `flatten` respects a known
+depth, and `dot` collapses nested arrays to `Collection<string, leaf>`:
+
+```php
+$users->transform(fn (User $u) => $u->email); // $users is Collection<int, string>
+$users->toArray();                           // array<int, array<string, mixed>>
+$nested->flatten(1);                         // one level unwrapped
+$rows->dot();                                // Collection<string, int|string>
+```
+
 `collapse` unwraps one level instead of widening to `mixed`:
 
 ```php

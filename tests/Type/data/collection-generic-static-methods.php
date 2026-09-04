@@ -62,8 +62,8 @@ function test(
     assertType('App\User|null', $secondCustomEloquentCollection->find(1));
     assertType('App\User|false', $secondCustomEloquentCollection->find(1, false));
 
-    assertType('Illuminate\Support\Collection<int, mixed>', $collection->flatten());
-    assertType('Illuminate\Support\Collection<int, mixed>', $items->flatten());
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $collection->flatten());
+    assertType('Illuminate\Support\Collection<int, int>', $items->flatten());
 
     assertType('Illuminate\Support\Collection<App\User, int>', $collection->flip());
     assertType('Illuminate\Support\Collection<int, string>', $items->flip());
@@ -209,13 +209,6 @@ function test(
     assertType('App\TransactionCollection<int, App\Transaction>', TransactionCollection::times(10, fn ($int) => new Transaction()));
     assertType('Illuminate\Support\Collection<int, int>', SupportCollection::times(10, fn ($int) => 5));
     assertType('Illuminate\Support\LazyCollection<int, int>', LazyCollection::times(10, fn ($int) => 5));
-
-    // In runtime it returns `Illuminate\Support\Collection<string, Illuminate\Database\Eloquent\Collection<int, int>>`
-    // Might be fixed in Laravel or needs a separate extension
-    assertType(
-        'Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, int>>',
-        $collection->mapToGroups(fn (User $user, int $key): array => ['foo' => $user->id])
-    );
 
     assertType(
         'Illuminate\Database\Eloquent\Collection<int, int>',

@@ -122,6 +122,66 @@ $nested->collapse();            // Collection<int, User>
 $nested->collapseWithKeys();    // Collection<string, User>
 ```
 
+## mapToGroups
+
+The callback returns one key/value pair per item. The key is the group, the
+value goes into it. A literal stays a literal, because that callback can only
+ever produce that group; a property or a branch is the union of what it can
+actually return. Runtime only reads the first pair, so a second key in the
+same array is ignored.
+
+Eloquent collections `toBase()` the outer collection, because the items are
+groups rather than models. The inner collections are still `make()` of the
+receiver:
+
+```php
+$users->mapToGroups(fn ($u) => [$u->email => $u]);
+// Collection<string, EloquentCollection<int, User>>
+
+$users->mapToGroups(fn ($u) => ['foo' => $u->id]);
+// Collection<'foo', EloquentCollection<int, int>>
+```
+
+## transform
+
+`transform` is `map` in place. `@phpstan-this-out` rewrites `$this` after the
+call:
+
+```php
+$users->transform(fn (User $u) => $u->email);
+// $users is Collection<int, string>
+```
+
+## toArray
+
+`toArray` walks Arrayable items, including nested collections, instead of
+widening to `mixed`:
+
+```php
+collect([1, 2, 3])->toArray();          // array<int, int>
+$users->toArray();                      // array<int, array<string, mixed>>
+$users->groupBy('email')->toArray();    // array<string, array<int, array<string, mixed>>>
+```
+
+## flatten
+
+A known depth unwraps that many levels. Omitted, it unwraps all the way:
+
+```php
+/** @var Collection<int, Collection<int, Collection<int, User>>> $deep */
+$deep->flatten(1); // Collection<int, Collection<int, User>>
+$deep->flatten();  // Collection<int, User>
+```
+
+## dot
+
+Nested arrays become string keys and a union of the leaves:
+
+```php
+/** @var Collection<string, array{name: string, age: int}> $rows */
+$rows->dot(); // Collection<string, int|string>
+```
+
 ## groupBy
 
 `groupBy` nests one level per grouper, and an array argument means successive
