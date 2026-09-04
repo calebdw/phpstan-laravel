@@ -31,4 +31,8 @@ function test(
     assertType('array<int, array<string, array<string, mixed>>>', $nested->toArray());
     assertType('array<string, array<string, int>>', $foos->toArray());
     assertType('array<int, array<string, mixed>>', $lazy->toArray());
+
+    assertType('array<int, int>', $ints->jsonSerialize());
+    assertType('array<int, array<string, mixed>>', $users->jsonSerialize());
+    assertType('array<int, array<string, array<string, mixed>>>', $nested->jsonSerialize());
 }

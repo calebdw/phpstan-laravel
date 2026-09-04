@@ -38,6 +38,6 @@ function test(
     assertType('Illuminate\Support\Collection<int, array<string, bool>>', $nestedArrays->flatten(1));
     assertType('Illuminate\Support\Collection<int, bool>', $nestedArrays->flatten(2));
 
-    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $eloquent->flatten());
+    assertType('Illuminate\Support\Collection<int, App\User>', $eloquent->flatten());
     assertType('Illuminate\Support\LazyCollection<int, App\User>', $lazy->flatten());
 }

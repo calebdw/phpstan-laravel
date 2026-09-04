@@ -31,4 +31,8 @@ function test(
     assertType('array<int, int|null>', $userCollection->modelKeys());
     assertType('array<int, string|null>', $uuidCollection->modelKeys());
     assertType('array<string, int|null>', $keyedUserCollection->modelKeys());
+
+    assertType('array<int, App\User>', $userCollection->getDictionary());
+    assertType('array<string, App\UuidModel>', $uuidCollection->getDictionary());
+    assertType('array<int, App\User>', $keyedUserCollection->getDictionary());
 }

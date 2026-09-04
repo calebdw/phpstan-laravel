@@ -28,7 +28,7 @@ function test(
     assertType('Illuminate\Support\Collection<int, App\User>', $nested->collapse());
     assertType('Illuminate\Support\Collection<int, App\User>', $keyed->collapse());
     assertType('Illuminate\Support\Collection<int, int>', $arrays->collapse());
-    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $eloquent->collapse());
+    assertType('Illuminate\Support\Collection<int, App\User>', $eloquent->collapse());
     assertType('Illuminate\Support\LazyCollection<int, App\User>', $lazy->collapse());
 
     assertType('Illuminate\Support\Collection<int, App\User>', $nested->collapseWithKeys());

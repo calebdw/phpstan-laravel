@@ -130,9 +130,10 @@ ever produce that group; a property or a branch is the union of what it can
 actually return. Runtime only reads the first pair, so a second key in the
 same array is ignored.
 
-Eloquent collections `toBase()` the outer collection, because the items are
-groups rather than models. The inner collections are still `make()` of the
-receiver:
+`mapToDictionary` is the same pair, but the values stay arrays. Eloquent
+collections keep their class there (`new static()`), and `toBase()` the outer
+collection for `mapToGroups` because those items are groups rather than
+models:
 
 ```php
 $users->mapToGroups(fn ($u) => [$u->email => $u]);
@@ -140,6 +141,9 @@ $users->mapToGroups(fn ($u) => [$u->email => $u]);
 
 $users->mapToGroups(fn ($u) => ['foo' => $u->id]);
 // Collection<'foo', EloquentCollection<int, int>>
+
+$users->mapToDictionary(fn ($u) => [$u->email => $u]);
+// EloquentCollection<string, array<int, User>>
 ```
 
 ## transform

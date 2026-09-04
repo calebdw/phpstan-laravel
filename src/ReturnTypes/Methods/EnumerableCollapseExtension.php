@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
+use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
@@ -18,6 +18,10 @@ use function in_array;
 
 final class EnumerableCollapseExtension implements DynamicMethodReturnTypeExtension
 {
+    public function __construct(private CollectionHelper $collectionHelper)
+    {
+    }
+
     public function getClass(): string
     {
         return Enumerable::class;
@@ -52,12 +56,16 @@ final class EnumerableCollapseExtension implements DynamicMethodReturnTypeExtens
         }
 
         // collapse() uses array_merge, so keys are reindexed. collapseWithKeys()
-        // uses array_replace, so the inner keys survive. Both build the result
-        // with newInstance(), so the receiver's class is kept.
+        // uses array_replace, so the inner keys survive. Eloquent collections
+        // toBase() collapse() but not collapseWithKeys().
         $keyType = $methodReflection->getName() === 'collapseWithKeys'
             ? $valueType->getIterableKeyType()
             : new IntegerType();
 
-        return new GenericObjectType($class, [$keyType, $innerValue]);
+        if ($methodReflection->getName() === 'collapse') {
+            return $this->collectionHelper->toBase($calledOnType, $keyType, $innerValue);
+        }
+
+        return $this->collectionHelper->generic($class, $keyType, $innerValue);
     }
 }

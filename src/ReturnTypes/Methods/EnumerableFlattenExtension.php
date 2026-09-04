@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -71,16 +68,7 @@ final class EnumerableFlattenExtension implements DynamicMethodReturnTypeExtensi
             return null;
         }
 
-        // flatten() reindexes. Eloquent collections can only stay Eloquent when
-        // the flattened values are still models.
-        if (
-            (new ObjectType(EloquentCollection::class))->isSuperTypeOf($calledOnType)->yes()
-            && ! (new ObjectType(Model::class))->isSuperTypeOf($valueType)->yes()
-        ) {
-            $class = Collection::class;
-        }
-
-        return $this->collectionHelper->generic($class, new IntegerType(), $valueType);
+        return $this->collectionHelper->toBase($calledOnType, new IntegerType(), $valueType);
     }
 
     private function flattenValue(Type $type, float $depth): Type

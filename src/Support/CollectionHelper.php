@@ -13,6 +13,7 @@ use Iterator;
 use IteratorAggregate;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Name;
+use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\BenevolentUnionType;
@@ -45,6 +46,29 @@ final class CollectionHelper
 
     public function __construct(private ReflectionProvider $reflectionProvider)
     {
+    }
+
+    /**
+     * The class toBase() returns on this collection, with the given templates.
+     *
+     * Support Collection's toBase() is `new self()`, so subclasses that do not
+     * override it still become a support collection. A custom toBase() is
+     * honoured. Types without toBase() (LazyCollection) keep their class.
+     */
+    public function toBase(Type $calledOn, Type $keyType, Type $valueType): Type
+    {
+        $fallback = $calledOn->getObjectClassNames()[0] ?? Collection::class;
+
+        if (! $calledOn->hasMethod('toBase')->yes()) {
+            return $this->generic($fallback, $keyType, $valueType);
+        }
+
+        $class = $calledOn->getMethod('toBase', new OutOfClassScope())
+            ->getVariants()[0]
+            ->getReturnType()
+            ->getObjectClassNames()[0] ?? $fallback;
+
+        return $this->generic($class, $keyType, $valueType);
     }
 
     public function generic(string $className, Type $keyType, Type $valueType): Type

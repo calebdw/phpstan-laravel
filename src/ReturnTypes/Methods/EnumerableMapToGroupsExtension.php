@@ -6,19 +6,19 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use CalebDW\PhpstanLaravel\Support\ColumnHelper;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 use function count;
+use function in_array;
 
 final class EnumerableMapToGroupsExtension implements DynamicMethodReturnTypeExtension
 {
@@ -35,7 +35,7 @@ final class EnumerableMapToGroupsExtension implements DynamicMethodReturnTypeExt
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return $methodReflection->getName() === 'mapToGroups';
+        return in_array($methodReflection->getName(), ['mapToGroups', 'mapToDictionary'], true);
     }
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
@@ -61,19 +61,21 @@ final class EnumerableMapToGroupsExtension implements DynamicMethodReturnTypeExt
         }
 
         $class = $calledOnType->getObjectClassNames()[0] ?? Collection::class;
-        $inner = $this->collectionHelper->generic($class, new IntegerType(), $pair['value']);
+        $key   = $this->columnHelper->normalizeKey($pair['key']);
+        $inner = new ArrayType(new IntegerType(), $pair['value']);
+
+        if ($methodReflection->getName() === 'mapToDictionary') {
+            // new static(), so the receiver's class is kept even when the
+            // values are arrays rather than models.
+            return $this->collectionHelper->generic($class, $key, $inner);
+        }
 
         // mapToGroups() wraps each group with make(), then map()s that. Eloquent's
-        // map() calls toBase() when the items are collections rather than models,
-        // so the outer collection is always a support collection in that case.
-        $outerClass = (new ObjectType(EloquentCollection::class))->isSuperTypeOf($calledOnType)->yes()
-            ? Collection::class
-            : $class;
-
-        return $this->collectionHelper->generic(
-            $outerClass,
-            $this->columnHelper->normalizeKey($pair['key']),
-            $inner,
+        // map() calls toBase() when the items are collections rather than models.
+        return $this->collectionHelper->toBase(
+            $calledOnType,
+            $key,
+            $this->collectionHelper->generic($class, new IntegerType(), $pair['value']),
         );
     }
 

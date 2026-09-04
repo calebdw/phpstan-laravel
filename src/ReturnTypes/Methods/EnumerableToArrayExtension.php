@@ -18,6 +18,7 @@ use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 
 use function array_map;
+use function in_array;
 
 final class EnumerableToArrayExtension implements DynamicMethodReturnTypeExtension
 {
@@ -28,7 +29,7 @@ final class EnumerableToArrayExtension implements DynamicMethodReturnTypeExtensi
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return $methodReflection->getName() === 'toArray';
+        return in_array($methodReflection->getName(), ['toArray', 'jsonSerialize'], true);
     }
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type
@@ -37,24 +38,24 @@ final class EnumerableToArrayExtension implements DynamicMethodReturnTypeExtensi
 
         return new ArrayType(
             $calledOnType->getIterableKeyType(),
-            $this->arrayableToArray($calledOnType->getTemplateType(Enumerable::class, 'TValue')),
+            $this->itemToArray($calledOnType->getTemplateType(Enumerable::class, 'TValue')),
         );
     }
 
     /**
-     * Collection::toArray() maps Arrayable items through their own toArray().
-     * Nested enumerables are Arrayable, so they recurse; a plain array does not.
+     * toArray() and jsonSerialize() both map Arrayable items through toArray().
+     * Nested enumerables recurse; a plain array does not.
      */
-    private function arrayableToArray(Type $type): Type
+    private function itemToArray(Type $type): Type
     {
         if ($type instanceof UnionType) {
-            return TypeCombinator::union(...array_map($this->arrayableToArray(...), $type->getTypes()));
+            return TypeCombinator::union(...array_map($this->itemToArray(...), $type->getTypes()));
         }
 
         if ((new ObjectType(Enumerable::class))->isSuperTypeOf($type)->yes()) {
             return new ArrayType(
                 $type->getIterableKeyType(),
-                $this->arrayableToArray($type->getTemplateType(Enumerable::class, 'TValue')),
+                $this->itemToArray($type->getTemplateType(Enumerable::class, 'TValue')),
             );
         }
 

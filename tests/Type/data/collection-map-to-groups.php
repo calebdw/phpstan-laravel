@@ -76,4 +76,19 @@ function test(
         "Illuminate\Support\Collection<'foo', Illuminate\Database\Eloquent\Collection<int, int>>",
         $users->mapToGroups(fn (User $u): array => ['foo' => $u->id, 'bar' => $u->email]),
     );
+
+    // mapToDictionary is the same pair, but the values stay arrays. Eloquent
+    // keeps its class because it is new static(), not map()->toBase().
+    assertType(
+        'Illuminate\Database\Eloquent\Collection<string, array<int, App\User>>',
+        $users->mapToDictionary(fn ($u) => [$u->email => $u]),
+    );
+    assertType(
+        "Illuminate\Database\Eloquent\Collection<'foo', array<int, int>>",
+        $users->mapToDictionary(fn (User $u): array => ['foo' => $u->id]),
+    );
+    assertType(
+        'Illuminate\Support\Collection<string, array<int, int>>',
+        $rows->mapToDictionary(fn ($row) => [$row['type'] => $row['n']]),
+    );
 }

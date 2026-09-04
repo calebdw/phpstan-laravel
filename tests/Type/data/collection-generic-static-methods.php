@@ -62,7 +62,7 @@ function test(
     assertType('App\User|null', $secondCustomEloquentCollection->find(1));
     assertType('App\User|false', $secondCustomEloquentCollection->find(1, false));
 
-    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $collection->flatten());
+    assertType('Illuminate\Support\Collection<int, App\User>', $collection->flatten());
     assertType('Illuminate\Support\Collection<int, int>', $items->flatten());
 
     assertType('Illuminate\Support\Collection<App\User, int>', $collection->flip());
@@ -89,9 +89,9 @@ function test(
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $collection->map(fn (User $user): User => $user));
 
     assertType('Illuminate\Database\Eloquent\Collection<int, array<int, int>>', $collection->mapToDictionary(fn (User $u) => [$u->id => $u->id]));
-    assertType('App\TransactionCollection<string, array<int, int>>', $customEloquentCollection->mapToDictionary(fn (Transaction $t) => ['foo'=> $t->id]));
+    assertType("App\TransactionCollection<'foo', array<int, int>>", $customEloquentCollection->mapToDictionary(fn (Transaction $t) => ['foo'=> $t->id]));
     assertType('App\UserCollection', $secondCustomEloquentCollection->mapToDictionary(fn (User $t) => ['foo'=> $t->id]));
-    assertType('Illuminate\Support\Collection<string, array<int, int>>', $items->mapToDictionary(fn (int $v) => ['foo' => $v]));
+    assertType("Illuminate\Support\Collection<'foo', array<int, int>>", $items->mapToDictionary(fn (int $v) => ['foo' => $v]));
 
     assertType('Illuminate\Support\Collection<int, string>', $customEloquentCollection->mapWithKeys(fn (Transaction $transaction): array => [$transaction->id => 'foo']));
     assertType('Illuminate\Support\Collection<int, string>', $secondCustomEloquentCollection->mapWithKeys(fn (User $user): array => [$user->id => 'foo']));
