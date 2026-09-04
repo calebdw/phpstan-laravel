@@ -49,6 +49,14 @@ interface Enumerable extends \Countable, \IteratorAggregate, \JsonSerializable, 
    public function chunkWhile(callable $callback);
 
    /**
+    * Chunk the collection by comparing adjacent values using the given key or callback.
+    *
+    * @param  (callable(TValue, TKey): mixed)|string  $key
+    * @return static<int, static<TKey, TValue>>
+    */
+   public function chunkBy($key);
+
+   /**
     * Get the values of a given key.
     *
     * @template TPluckValueReturn = mixed

@@ -353,6 +353,8 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableMapSpreadExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableReduceSpreadExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableMapToGroupsExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableOnlyExceptExtension
@@ -368,6 +370,8 @@ services:
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableValueExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\EnumerableMapSpreadParameterExtension
+    tags: [phpstan.methodParameterClosureTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Parameters\EnumerableReduceSpreadParameterExtension
     tags: [phpstan.methodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\EloquentBuilderRelationParameterExtension
     tags: [phpstan.methodParameterClosureTypeExtension]
