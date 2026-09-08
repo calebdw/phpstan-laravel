@@ -25,10 +25,28 @@ parameters:
 			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CalDAV/CalDAVBackend.php
 
 		-
-			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
-			identifier: laravel.unnecessaryEnumerableToArrayCall
+			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CalDAV\\CalDAVDates\:\:getDeletedObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<int, App\\Models\\ContactImportantDate\>\.$#'
+			identifier: return.type
 			count: 1
-			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/AddressBookHome.php
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CalDAV/CalDAVDates.php
+
+		-
+			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CalDAV\\CalDAVDates\:\:getObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<int, App\\Models\\ContactImportantDate\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CalDAV/CalDAVDates.php
+
+		-
+			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CalDAV\\CalDAVTasks\:\:getDeletedObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<int, App\\Models\\ContactTask\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CalDAV/CalDAVTasks.php
+
+		-
+			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CalDAV\\CalDAVTasks\:\:getObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<int, App\\Models\\ContactTask\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CalDAV/CalDAVTasks.php
 
 		-
 			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
@@ -37,13 +55,13 @@ parameters:
 			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/CardDAVBackend.php
 
 		-
-			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CardDAV\\CardDAVBackend\:\:getDeletedObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<TKey of \(int\|string\), TValue\>\.$#'
+			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CardDAV\\CardDAVBackend\:\:getDeletedObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<int, App\\Models\\Contact\|App\\Models\\Group\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/CardDAVBackend.php
 
 		-
-			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CardDAV\\CardDAVBackend\:\:getObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<TKey of \(int\|string\), TValue\>\.$#'
+			message: '#^Method App\\Domains\\Contact\\Dav\\Web\\Backend\\CardDAV\\CardDAVBackend\:\:getObjects\(\) should return Illuminate\\Support\\Collection\<\(int\|string\), App\\Domains\\Contact\\Dav\\IDavResource\> but returns Illuminate\\Support\\Collection\<int, App\\Models\\Contact\|App\\Models\\Group\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../build/e2e/monicahq-monica/app/Domains/Contact/Dav/Web/Backend/CardDAV/CardDAVBackend.php
@@ -53,12 +71,6 @@ parameters:
 			identifier: laravel.unnecessaryEnumerableToArrayCall
 			count: 1
 			path: ../build/e2e/monicahq-monica/app/Domains/Contact/ManageContact/Dav/ExportLabels.php
-
-		-
-			message: '#^Call to static method route\(\) on an unknown class Redirect\.$#'
-			identifier: class.notFound
-			count: 1
-			path: ../build/e2e/monicahq-monica/app/Domains/Contact/ManageContact/Web/Controllers/ContactMoveController.php
 
 		-
 			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
@@ -89,24 +101,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../build/e2e/monicahq-monica/app/Domains/Settings/ManageNotificationChannels/Web/Controllers/TelegramWebhookController.php
-
-		-
-			message: '#^Call to static method route\(\) on an unknown class Redirect\.$#'
-			identifier: class.notFound
-			count: 3
-			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageJournals/Web/Controllers/JournalController.php
-
-		-
-			message: '#^Call to static method route\(\) on an unknown class Redirect\.$#'
-			identifier: class.notFound
-			count: 1
-			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageJournals/Web/Controllers/PostController.php
-
-		-
-			message: '#^Call to static method route\(\) on an unknown class Redirect\.$#'
-			identifier: class.notFound
-			count: 2
-			path: ../build/e2e/monicahq-monica/app/Domains/Vault/ManageJournals/Web/Controllers/SliceOfLifeController.php
 
 		-
 			message: '#^Called \[toArray\(\)\] on an Enumerable which does not contain any Arrayables\.$#'
