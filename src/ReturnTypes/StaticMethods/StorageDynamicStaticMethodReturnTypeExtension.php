@@ -15,7 +15,7 @@ use PHPStan\Type\Type;
 
 use function in_array;
 
-class StorageDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
+final class StorageDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string
     {

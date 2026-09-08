@@ -24,7 +24,7 @@ use function count;
 use function in_array;
 use function is_string;
 
-class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
+final class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     private const array SUPPORTED_METHOD_NAMES = ['filter', 'reject', 'where'];
 

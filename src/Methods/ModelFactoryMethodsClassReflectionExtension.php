@@ -13,7 +13,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Type\ErrorType;
 
-class ModelFactoryMethodsClassReflectionExtension implements MethodsClassReflectionExtension
+final class ModelFactoryMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, bool> */
     private array $methods = [];

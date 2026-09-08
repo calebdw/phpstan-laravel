@@ -9,7 +9,7 @@ use PHPStan\Reflection;
 
 use function str_starts_with;
 
-class RedirectResponseMethodsClassReflectionExtension implements Reflection\MethodsClassReflectionExtension
+final class RedirectResponseMethodsClassReflectionExtension implements Reflection\MethodsClassReflectionExtension
 {
     public function hasMethod(Reflection\ClassReflection $classReflection, string $methodName): bool
     {

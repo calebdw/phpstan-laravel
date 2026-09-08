@@ -13,7 +13,7 @@ use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
-class AppExtension implements DynamicFunctionReturnTypeExtension
+final class AppExtension implements DynamicFunctionReturnTypeExtension
 {
     public function __construct(
         private AppMakeHelper $appMakeHelper,

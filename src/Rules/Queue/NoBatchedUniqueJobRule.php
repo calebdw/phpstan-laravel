@@ -29,7 +29,7 @@ use function sprintf;
  *
  * @implements Rule<StaticCall>
  */
-class NoBatchedUniqueJobRule implements Rule
+final class NoBatchedUniqueJobRule implements Rule
 {
     private const array BULK_METHODS = ['batch', 'bulk'];
 

@@ -26,7 +26,7 @@ use function sprintf;
 use function str_contains;
 
 /** @implements Rule<Node\Expr\CallLike> */
-class RelationExistenceRule implements Rule
+final class RelationExistenceRule implements Rule
 {
     private const array METHODS = [
         'has',

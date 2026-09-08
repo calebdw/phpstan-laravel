@@ -27,7 +27,7 @@ use function sprintf;
  *
  * @implements Rule<StaticCall>
  */
-class BatchedJobIsBatchableRule implements Rule
+final class BatchedJobIsBatchableRule implements Rule
 {
     public function __construct(
         private CallHelper $callHelper,

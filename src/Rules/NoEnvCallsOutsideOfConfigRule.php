@@ -24,7 +24,7 @@ use function str_starts_with;
  *
  * @implements Rule<FuncCall>
  */
-class NoEnvCallsOutsideOfConfigRule implements Rule
+final class NoEnvCallsOutsideOfConfigRule implements Rule
 {
     /** @var list<string> */
     private array $configDirectories = [];

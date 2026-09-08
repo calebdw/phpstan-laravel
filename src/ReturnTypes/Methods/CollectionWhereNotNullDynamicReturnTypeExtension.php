@@ -21,7 +21,7 @@ use PHPStan\Type\TypeCombinator;
 use function count;
 use function in_array;
 
-class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
+final class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private CollectionHelper $collectionHelper)
     {

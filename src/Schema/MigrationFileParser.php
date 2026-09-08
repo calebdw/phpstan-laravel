@@ -14,7 +14,7 @@ use SplFileInfo;
 
 use function uasort;
 
-class MigrationFileParser
+final class MigrationFileParser
 {
     /** @var array<string, SplFileInfo>|null */
     private array|null $files = null;

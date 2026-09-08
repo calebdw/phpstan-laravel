@@ -21,7 +21,7 @@ use function array_unique;
 use function count;
 use function in_array;
 
-class CommandOptionDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
+final class CommandOptionDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(
         private ConsoleApplicationResolver $consoleApplicationResolver,

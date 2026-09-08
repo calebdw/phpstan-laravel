@@ -27,7 +27,7 @@ use function str_replace;
 use function ucfirst;
 
 /** @implements Rule<StaticCall> */
-class CheckDispatchArgumentTypesCompatibleWithClassConstructorRule implements Rule
+final class CheckDispatchArgumentTypesCompatibleWithClassConstructorRule implements Rule
 {
     public function __construct(
         private ReflectionProvider $reflectionProvider,

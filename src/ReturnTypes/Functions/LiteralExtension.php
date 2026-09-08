@@ -19,7 +19,7 @@ use stdClass;
 use function count;
 use function in_array;
 
-class LiteralExtension implements DynamicFunctionReturnTypeExtension
+final class LiteralExtension implements DynamicFunctionReturnTypeExtension
 {
     public function isFunctionSupported(FunctionReflection $functionReflection): bool
     {

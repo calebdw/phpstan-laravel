@@ -21,7 +21,7 @@ use PHPStan\Type\TypeCombinator;
 
 use function in_array;
 
-class FactoryDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
+final class FactoryDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string
     {

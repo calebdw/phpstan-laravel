@@ -15,7 +15,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 use function count;
 
 /** @implements Rule<FuncCall> */
-class NoUselessWithFunctionCallsRule implements Rule
+final class NoUselessWithFunctionCallsRule implements Rule
 {
     public function __construct(private CallHelper $callHelper)
     {

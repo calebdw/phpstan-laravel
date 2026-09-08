@@ -15,7 +15,7 @@ use PHPStan\Type\TypeCombinator;
 
 use function now;
 
-class DateExtension implements DynamicStaticMethodReturnTypeExtension
+final class DateExtension implements DynamicStaticMethodReturnTypeExtension
 {
     // if true, then method returns nullable type
     private const array METHODS = [

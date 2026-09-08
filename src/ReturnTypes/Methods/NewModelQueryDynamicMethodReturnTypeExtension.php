@@ -17,7 +17,7 @@ use PHPStan\Type\Type;
 use function collect;
 use function in_array;
 
-class NewModelQueryDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
+final class NewModelQueryDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private BuilderHelper $builderHelper)
     {

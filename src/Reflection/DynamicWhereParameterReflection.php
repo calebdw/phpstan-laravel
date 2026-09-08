@@ -9,7 +9,7 @@ use PHPStan\Reflection\PassedByReference;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 
-class DynamicWhereParameterReflection implements ParameterReflection
+final class DynamicWhereParameterReflection implements ParameterReflection
 {
     public function getName(): string
     {

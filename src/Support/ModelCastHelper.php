@@ -52,7 +52,7 @@ use function class_exists;
 use function explode;
 use function str_replace;
 
-class ModelCastHelper
+final class ModelCastHelper
 {
     /** @var array<string, array<string, string>> */
     private array $modelCasts = [];

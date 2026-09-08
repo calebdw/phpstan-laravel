@@ -20,7 +20,7 @@ use function str_ends_with;
 use function str_starts_with;
 
 /** @implements Rule<InClassMethodNode> */
-class NoPublicModelScopeAndAccessorRule implements Rule
+final class NoPublicModelScopeAndAccessorRule implements Rule
 {
     public function getNodeType(): string
     {

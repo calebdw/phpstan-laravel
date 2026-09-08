@@ -33,7 +33,7 @@ use function sprintf;
  *
  * @implements Rule<InClassNode>
  */
-class BatchableJobChecksCancellationRule implements Rule
+final class BatchableJobChecksCancellationRule implements Rule
 {
     private const array GUARD_METHODS = ['handle', 'middleware'];
 

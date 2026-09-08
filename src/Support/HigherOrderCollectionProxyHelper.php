@@ -19,7 +19,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-class HigherOrderCollectionProxyHelper
+final class HigherOrderCollectionProxyHelper
 {
     /** @var array<string, bool> */
     private array $members = [];

@@ -24,7 +24,7 @@ use function sprintf;
  *
  * @implements Rule<InClassNode>
  */
-class UniqueJobDeclaresUniqueIdRule implements Rule
+final class UniqueJobDeclaresUniqueIdRule implements Rule
 {
     public function __construct(private QueuedJobHelper $queuedJobHelper)
     {

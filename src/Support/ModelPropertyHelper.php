@@ -25,7 +25,7 @@ use function count;
 use function in_array;
 use function method_exists;
 
-class ModelPropertyHelper
+final class ModelPropertyHelper
 {
     /** @var array<string, ModelPropertyReflection|false> */
     private array $accessors = [];

@@ -15,7 +15,7 @@ use PHPStan\Type\ClosureType;
 use PHPStan\Type\MixedType;
 
 /** @implements Rule<FuncCall> */
-class NoUselessValueFunctionCallsRule implements Rule
+final class NoUselessValueFunctionCallsRule implements Rule
 {
     public function __construct(private CallHelper $callHelper)
     {

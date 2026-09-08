@@ -40,7 +40,7 @@ use function sprintf;
  *
  * @implements Rule<StaticCall>
  */
-class JobDispatchedInTransactionUsesAfterCommitRule implements Rule
+final class JobDispatchedInTransactionUsesAfterCommitRule implements Rule
 {
     /** @var array<string, bool> */
     private array $afterCommitByConnection = [];

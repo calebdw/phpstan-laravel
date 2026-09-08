@@ -28,7 +28,7 @@ use function in_array;
 use function is_string;
 
 /** @implements Rule<MethodCall> */
-class OctaneCompatibilityRule implements Rule
+final class OctaneCompatibilityRule implements Rule
 {
     private NodeFinder $nodeFinder;
 
