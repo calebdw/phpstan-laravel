@@ -12,8 +12,11 @@ use Illuminate\Support\Str;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\Constant\ConstantStringType;
+use PHPStan\Type\MixedType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 use function array_map;
@@ -155,7 +158,11 @@ class ModelPropertyHelper
                 if ((new ObjectType(Attribute::class))->isSuperTypeOf($returnType)->yes()) {
                     return new ModelPropertyReflection(
                         $classReflection,
-                        $returnType->getTemplateType(Attribute::class, 'TGet'),
+                        $this->resolveReadableType(
+                            $returnType->getTemplateType(Attribute::class, 'TGet'),
+                            $classReflection,
+                            $propertyName,
+                        ),
                         $returnType->getTemplateType(Attribute::class, 'TSet'),
                     );
                 }
@@ -171,6 +178,28 @@ class ModelPropertyHelper
         $returnType = $classReflection->getNativeMethod($methodName)->getVariants()[0]->getReturnType();
 
         return new ModelPropertyReflection($classReflection, $returnType, $returnType);
+    }
+
+    /**
+     * A mutator declared with Attribute::set() leaves TGet as never, but
+     * Laravel still hands back the underlying attribute on read. never is a
+     * subtype of everything, so it silently absorbs any misuse of the value;
+     * defer to the column instead.
+     */
+    private function resolveReadableType(
+        Type $readableType,
+        ClassReflection $classReflection,
+        string $propertyName,
+    ): Type {
+        if (! $readableType instanceof NeverType) {
+            return $readableType;
+        }
+
+        if (! $this->hasDatabaseProperty($classReflection, $propertyName)) {
+            return new MixedType();
+        }
+
+        return $this->getDatabaseProperty($classReflection, $propertyName)->getReadableType();
     }
 
     private function hasDate(Model $modelInstance, string $propertyName): bool
