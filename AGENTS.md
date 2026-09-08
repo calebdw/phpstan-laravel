@@ -26,6 +26,14 @@ passes `User|Post` or `'name'|'email'`.
 A union handled member-by-member works for a single type for free. The
 reverse is not true.
 
+## Cheap checks first
+
+Rules and extensions run on a lot of nodes. Return early on cheap
+syntactic tests (identifier name, argument present, `instanceof`,
+abstract/interface/trait flags) before type resolution, reflection
+walks, file parsing, or container lookups. Short-circuit `&&` / `||`
+counts: put the cheaper operand first.
+
 ## Helpers, not copies
 
 Logic that more than one extension needs lives in `src/Support/`. Use it.
