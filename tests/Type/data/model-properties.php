@@ -46,6 +46,11 @@ function test(
     assertType('array', $user->allowed_ips);
     assertType('numeric-string', $user->floatButRoundedDecimalString);
 
+    // A set-only Attribute leaves TGet as never, but the attribute is still
+    // readable: fall back to the column, or mixed when there is no column.
+    assertType('float', $user->mutated_only);
+    assertType('mixed', $user->mutated_without_column);
+
     // Model Casts
     assertType('int', $user->int);
     assertType('int', $user->integer);

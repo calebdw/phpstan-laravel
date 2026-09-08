@@ -312,4 +312,20 @@ class User extends Authenticatable
             fn ($value) => 5,
         );
     }
+
+    /** @return Attribute<never, float|string> */
+    protected function mutatedOnly(): Attribute
+    {
+        return Attribute::set(
+            fn (float|string $value): float => (float) $value,
+        );
+    }
+
+    /** @return Attribute<never, string> */
+    protected function mutatedWithoutColumn(): Attribute
+    {
+        return Attribute::set(
+            fn (string $value): array => ['name' => $value],
+        );
+    }
 }

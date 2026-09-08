@@ -18,6 +18,7 @@ use function PHPStan\Testing\assertType;
  * @param  Collection<int, Collection<string, User>>  $nested
  * @param  Collection<string, Foo>  $foos
  * @param  LazyCollection<int, User>  $lazy
+ * @param  Collection<int, never>  $nevers
  */
 function test(
     Collection $ints,
@@ -25,7 +26,12 @@ function test(
     Collection $nested,
     Collection $foos,
     LazyCollection $lazy,
+    Collection $nevers,
 ): void {
+    // never is a subtype of Enumerable/Arrayable, so it must not recurse.
+    assertType('array<int, never>', $nevers->toArray());
+    assertType('array<int, never>', $nevers->jsonSerialize());
+
     assertType('array<int, int>', $ints->toArray());
     assertType('array<int, array<string, mixed>>', $users->toArray());
     assertType('array<int, array<string, array<string, mixed>>>', $nested->toArray());

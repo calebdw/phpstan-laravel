@@ -13,6 +13,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -49,6 +50,12 @@ final class EnumerableToArrayExtension implements DynamicMethodReturnTypeExtensi
      */
     private function itemToArray(Type $type, int $depth = 16): Type
     {
+        // never is a subtype of every class, so the Enumerable/Arrayable
+        // checks below would match it and recurse until the depth runs out.
+        if ($type instanceof NeverType) {
+            return $type;
+        }
+
         if ($type instanceof UnionType) {
             return TypeCombinator::union(...array_map(
                 fn (Type $t): Type => $this->itemToArray($t, $depth),
