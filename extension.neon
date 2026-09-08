@@ -12,8 +12,13 @@ parameters:
   laravel:
     rules:
       authInRequestScope: false
+      batchableJobChecksCancellation: false
+      batchedJobIsBatchable: false
+      batchedUniqueJob: false
       configAccessor: true
+      dispatchInTransactionAfterCommit: false
       envCallOutsideConfig: true
+      jobSerializesModels: false
       missingTranslation: false
       modelAppends: true
       modelForwardingToBuilder: false
@@ -22,6 +27,8 @@ parameters:
       modelStaticForwardingToBuilder: false
       octaneCompatibility: false
       undefinedConfigName: false
+      uniqueJobUniqueFor: false
+      uniqueJobUniqueId: false
       unnecessaryCollectionCall:
         enabled: true
         only: []
@@ -49,8 +56,13 @@ parametersSchema:
   laravel: structure([
     rules: structure([
       authInRequestScope: bool()
+      batchableJobChecksCancellation: bool()
+      batchedJobIsBatchable: bool()
+      batchedUniqueJob: bool()
       configAccessor: bool()
+      dispatchInTransactionAfterCommit: bool()
       envCallOutsideConfig: bool()
+      jobSerializesModels: bool()
       missingTranslation: bool()
       modelAppends: bool()
       modelForwardingToBuilder: bool()
@@ -59,6 +71,8 @@ parametersSchema:
       modelStaticForwardingToBuilder: bool()
       octaneCompatibility: bool()
       undefinedConfigName: bool()
+      uniqueJobUniqueFor: bool()
+      uniqueJobUniqueId: bool()
       unnecessaryCollectionCall: structure([
         enabled: bool()
         only: listOf(string())
@@ -103,6 +117,13 @@ conditionalTags:
   CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule: {phpstan.rules.rule: %laravel.rules.authInRequestScope%}
   CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilderRule: {phpstan.rules.rule: %laravel.rules.modelForwardingToBuilder%}
   CalebDW\PhpstanLaravel\Rules\NoModelStaticForwardingToBuilderRule: {phpstan.rules.rule: %laravel.rules.modelStaticForwardingToBuilder%}
+  CalebDW\PhpstanLaravel\Rules\Queue\UniqueJobDeclaresUniqueForRule: {phpstan.rules.rule: %laravel.rules.uniqueJobUniqueFor%}
+  CalebDW\PhpstanLaravel\Rules\Queue\UniqueJobDeclaresUniqueIdRule: {phpstan.rules.rule: %laravel.rules.uniqueJobUniqueId%}
+  CalebDW\PhpstanLaravel\Rules\Queue\NoBatchedUniqueJobRule: {phpstan.rules.rule: %laravel.rules.batchedUniqueJob%}
+  CalebDW\PhpstanLaravel\Rules\Queue\JobWithModelPropertyDeclaresSerializesModelsRule: {phpstan.rules.rule: %laravel.rules.jobSerializesModels%}
+  CalebDW\PhpstanLaravel\Rules\Queue\BatchedJobIsBatchableRule: {phpstan.rules.rule: %laravel.rules.batchedJobIsBatchable%}
+  CalebDW\PhpstanLaravel\Rules\Queue\BatchableJobChecksCancellationRule: {phpstan.rules.rule: %laravel.rules.batchableJobChecksCancellation%}
+  CalebDW\PhpstanLaravel\Rules\Queue\JobDispatchedInTransactionUsesAfterCommitRule: {phpstan.rules.rule: %laravel.rules.dispatchInTransactionAfterCommit%}
 
 services:
   - class: CalebDW\PhpstanLaravel\Methods\RelationForwardsCallsExtension
@@ -297,6 +318,15 @@ services:
   - class: CalebDW\PhpstanLaravel\Support\TypeHelper
   - class: CalebDW\PhpstanLaravel\Support\ReflectionHelper
   - class: CalebDW\PhpstanLaravel\Support\CallHelper
+  - class: CalebDW\PhpstanLaravel\Support\QueuedJobHelper
+  - class: CalebDW\PhpstanLaravel\Rules\Queue\UniqueJobDeclaresUniqueForRule
+  - class: CalebDW\PhpstanLaravel\Rules\Queue\UniqueJobDeclaresUniqueIdRule
+  - class: CalebDW\PhpstanLaravel\Rules\Queue\NoBatchedUniqueJobRule
+  - class: CalebDW\PhpstanLaravel\Rules\Queue\JobWithModelPropertyDeclaresSerializesModelsRule
+  - class: CalebDW\PhpstanLaravel\Rules\Queue\BatchedJobIsBatchableRule
+  - class: CalebDW\PhpstanLaravel\Rules\Queue\BatchableJobChecksCancellationRule
+    arguments: {parser: @currentPhpVersionSimpleDirectParser}
+  - class: CalebDW\PhpstanLaravel\Rules\Queue\JobDispatchedInTransactionUsesAfterCommitRule
   - class: CalebDW\PhpstanLaravel\Collectors\UsedViewCollector
     tags: [phpstan.collector]
   - class: CalebDW\PhpstanLaravel\Collectors\UsedViewInAnotherViewCollector

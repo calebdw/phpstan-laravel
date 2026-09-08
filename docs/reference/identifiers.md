@@ -24,12 +24,16 @@ identifiers share a stem: `laravel.modelMethodVisibility.scope` and
 | --- | --- | --- |
 | [`laravel.authInRequestScope.facade`](../rules/framework.md#auth-in-request-scope) | `Auth::user()` is used where a `$request` is already in scope | `rules.authInRequestScope` |
 | [`laravel.authInRequestScope.helper`](../rules/framework.md#auth-in-request-scope) | `auth()->user()` is used where a `$request` is already in scope | `rules.authInRequestScope` |
+| [`laravel.batchableJob.missingCancellationCheck`](../rules/queue.md#batchable-job-checks-cancellation) | A Batchable job never checks whether its batch was cancelled | `rules.batchableJobChecksCancellation` |
+| [`laravel.batchedJob.missingBatchable`](../rules/queue.md#batched-job-is-batchable) | A queued job is passed to `Bus::batch()` without `Batchable` | `rules.batchedJobIsBatchable` |
 | [`laravel.configAccessor`](../rules/config.md#config-accessor) | A typed config accessor is called for a key of another type | `rules.configAccessor` |
 | [`laravel.console.undefinedArgument`](../rules/framework.md#undefined-console-argument-or-option) | A command reads an argument its signature does not define | always |
 | [`laravel.console.undefinedOption`](../rules/framework.md#undefined-console-argument-or-option) | A command reads an option its signature does not define | always |
 | [`laravel.deferrableServiceProvider.missingProvides`](../rules/framework.md#deferrable-service-provider-without-provides) | A deferrable provider does not implement `provides()` | always |
+| [`laravel.dispatchInTransaction.missingAfterCommit`](../rules/queue.md#dispatch-in-transaction-aftercommit) | A queued job is dispatched inside `DB::transaction()` without deferring | `rules.dispatchInTransactionAfterCommit` |
 | [`laravel.envCallOutsideConfig`](../rules/config.md#env-call-outside-config) | `env()` is called outside the config directory | `rules.envCallOutsideConfig` |
 | [`laravel.events.noConstructor`](../rules/framework.md#dispatch-argument-types) | An event with no constructor is dispatched with arguments | always |
+| [`laravel.job.missingSerializesModels`](../rules/queue.md#job-serializesmodels) | A queued job holds a public model property without `SerializesModels` | `rules.jobSerializesModels` |
 | [`laravel.jobs.noConstructor`](../rules/framework.md#dispatch-argument-types) | A job with no constructor is dispatched with arguments | always |
 | [`laravel.missingTranslation`](../rules/views-and-translations.md#missing-translation) | A translation key has no translation | `rules.missingTranslation` |
 | [`laravel.modelAppends`](../rules/eloquent.md#model-appends) | `$appends` names something that is not a computed property | `rules.modelAppends` |
@@ -41,6 +45,9 @@ identifiers share a stem: `laravel.modelMethodVisibility.scope` and
 | [`laravel.octaneCompatibility`](../rules/framework.md#octane-compatibility) | A binding captures the container in a way Octane cannot reuse | `rules.octaneCompatibility` |
 | [`laravel.relationExistence`](../rules/eloquent.md#relation-existence) | A builder method names a relation that does not exist | always |
 | [`laravel.undefinedConfigName`](../rules/config.md#undefined-config-name) | A named Laravel service is not defined in its configuration | `rules.undefinedConfigName` |
+| [`laravel.uniqueJob.batched`](../rules/queue.md#batched-unique-job) | A `ShouldBeUnique` job is dispatched via `batch()` or `bulk()` | `rules.batchedUniqueJob` |
+| [`laravel.uniqueJob.missingUniqueFor`](../rules/queue.md#unique-job-uniquefor) | A `ShouldBeUnique` job does not declare `uniqueFor` | `rules.uniqueJobUniqueFor` |
+| [`laravel.uniqueJob.missingUniqueId`](../rules/queue.md#unique-job-uniqueid) | A parameterized unique job does not declare `uniqueId` | `rules.uniqueJobUniqueId` |
 | [`laravel.unnecessaryCollectionCall`](../rules/collections.md#unnecessary-collection-call) | A collection method could have been a query instead | `rules.unnecessaryCollectionCall.enabled` |
 | [`laravel.unnecessaryEnumerableToArrayCall`](../rules/collections.md#unnecessary-enumerable-toarray-call) | `toArray()` is called where `all()` would do the same | `rules.unnecessaryEnumerableToArrayCall` |
 | [`laravel.unusedView`](../rules/views-and-translations.md#unused-view) | A Blade view is never referenced | `rules.unusedView` |

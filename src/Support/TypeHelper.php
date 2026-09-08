@@ -4,12 +4,27 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\Type;
 
 use function collect;
 
 final class TypeHelper
 {
+    /**
+     * @param callable(ClassReflection): bool $filter
+     *
+     * @return list<string>
+     */
+    public function classNames(Type $type, callable $filter): array
+    {
+        return collect($type->getObjectClassReflections())
+            ->filter($filter)
+            ->map(static fn ($c) => $c->getDisplayName())
+            ->values()
+            ->all();
+    }
+
     /** @param class-string|array<class-string> $classes */
     public function isCalledOn(Type $type, array|string $classes): bool
     {

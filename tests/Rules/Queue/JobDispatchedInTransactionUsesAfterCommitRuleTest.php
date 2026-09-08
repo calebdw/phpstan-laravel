@@ -1,0 +1,64 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Rules\Queue;
+
+use CalebDW\PhpstanLaravel\Rules\Queue\JobDispatchedInTransactionUsesAfterCommitRule;
+use Illuminate\Container\Container;
+use PHPStan\Rules\Rule;
+use PHPStan\Testing\RuleTestCase;
+
+use function str_replace;
+
+/** @extends RuleTestCase<JobDispatchedInTransactionUsesAfterCommitRule> */
+class JobDispatchedInTransactionUsesAfterCommitRuleTest extends RuleTestCase
+{
+    protected function getRule(): Rule
+    {
+        return self::getContainer()->getByType(JobDispatchedInTransactionUsesAfterCommitRule::class);
+    }
+
+    public function testRule(): void
+    {
+        $message = "Job Tests\\Rules\\Queue\\Data\\NotifyOwner is dispatched inside a transaction without deferring until commit.\n    💡 Call afterCommit() on the dispatch or implement ShouldQueueAfterCommit.";
+
+        $this->analyse([__DIR__ . '/data/transaction-dispatch.php'], [
+            [$message, 40],
+            [$message, 44],
+            [$message, 48],
+            [$message, 51],
+            [str_replace('NotifyOwner', 'QueueableNotifyOwner', $message), 107],
+            [str_replace('NotifyOwner', 'QueueableNotifyOwnerAfterCommit', $message), 109],
+        ]);
+    }
+
+    public function testSkipsWhenConnectionAfterCommitIsEnabled(): void
+    {
+        Container::getInstance()->make('config')
+            ->set('queue.connections.after_commit_test.after_commit', true);
+
+        $this->analyse([__DIR__ . '/data/transaction-dispatch-after-commit-connection.php'], []);
+    }
+
+    public function testFix(): void
+    {
+        $this->fix(__DIR__ . '/data/transaction-dispatch-fix.php', __DIR__ . '/data/transaction-dispatch-fix-expected.php');
+    }
+
+    public function testAfterCommitContract(): void
+    {
+        $message = "Job Tests\\Rules\\Queue\\Data\\AfterCommitContractJob is dispatched inside a transaction without deferring until commit.\n    💡 Call afterCommit() on the dispatch or implement ShouldQueueAfterCommit.";
+
+        $this->analyse([__DIR__ . '/data/transaction-aftercommit-contract.php'], [
+            [$message, 25],
+            [str_replace('AfterCommitContractJob', 'BeforeCommitContractJob', $message), 27],
+        ]);
+    }
+
+    /** @return string[] */
+    public static function getAdditionalConfigFiles(): array
+    {
+        return [__DIR__ . '/../../phpstan-tests.neon'];
+    }
+}

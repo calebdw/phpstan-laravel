@@ -33,6 +33,7 @@ nav = [
     { "Configuration" = "rules/config.md" },
     { "Views and translations" = "rules/views-and-translations.md" },
     { "Framework" = "rules/framework.md" },
+    { "Queue" = "rules/queue.md" },
   ]},
   { "Reference" = [
     { "Configuration options" = "reference/configuration.md" },

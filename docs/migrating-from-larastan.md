@@ -112,6 +112,13 @@ and the name of a rule is not the place to restate whether you want it.
 | `noUnnecessaryCollectionCallOnly` | `unnecessaryCollectionCall.only` |
 | `noUnnecessaryCollectionCallExcept` | `unnecessaryCollectionCall.except` |
 | `noUnnecessaryEnumerableToArrayCalls` | `unnecessaryEnumerableToArrayCall` |
+| `checkUniqueJobUniqueFor` | `uniqueJobUniqueFor` |
+| `checkUniqueJobUniqueId` | `uniqueJobUniqueId` |
+| `noBatchedUniqueJob` | `batchedUniqueJob` |
+| `checkJobSerializesModels` | `jobSerializesModels` |
+| `checkBatchedJobIsBatchable` | `batchedJobIsBatchable` |
+| `checkBatchableJobChecksCancellation` | `batchableJobChecksCancellation` |
+| `checkDispatchInTransactionAfterCommit` | `dispatchInTransactionAfterCommit` |
 
 Two more came from the `calebdw/larastan` fork rather than from Larastan itself,
 so they only apply if that is where you are coming from:
@@ -231,6 +238,13 @@ more than one kind of error, the identifiers are grouped under a common stem.
 | `rules.modelAppends` | `laravel.modelAppends` |
 | `larastan.jobs.noConstructor` | `laravel.jobs.noConstructor` |
 | `larastan.events.noConstructor` | `laravel.events.noConstructor` |
+| `larastan.uniqueJobUniqueFor` | `laravel.uniqueJob.missingUniqueFor` |
+| `larastan.uniqueJobUniqueId` | `laravel.uniqueJob.missingUniqueId` |
+| `larastan.noBatchedUniqueJob` | `laravel.uniqueJob.batched` |
+| `larastan.jobSerializesModels` | `laravel.job.missingSerializesModels` |
+| `larastan.batchedJobIsBatchable` | `laravel.batchedJob.missingBatchable` |
+| `larastan.batchableJobChecksCancellation` | `laravel.batchableJob.missingCancellationCheck` |
+| `larastan.dispatchInTransactionAfterCommit` | `laravel.dispatchInTransaction.missingAfterCommit` |
 
 The rest are a plain prefix swap: `larastan.octaneCompatibility` becomes
 `laravel.octaneCompatibility`, and so on for `relationExistence`,
@@ -276,6 +290,13 @@ sed -i -E \
   -e 's/\blarastan\.noPublicModelAccessorMethod\b/laravel.modelMethodVisibility.accessor/g' \
   -e 's/\blarastan\.unusedViews\b/laravel.unusedView/g' \
   -e 's/\blarastan\.missingTranslations\b/laravel.missingTranslation/g' \
+  -e 's/\blarastan\.uniqueJobUniqueFor\b/laravel.uniqueJob.missingUniqueFor/g' \
+  -e 's/\blarastan\.uniqueJobUniqueId\b/laravel.uniqueJob.missingUniqueId/g' \
+  -e 's/\blarastan\.noBatchedUniqueJob\b/laravel.uniqueJob.batched/g' \
+  -e 's/\blarastan\.jobSerializesModels\b/laravel.job.missingSerializesModels/g' \
+  -e 's/\blarastan\.batchedJobIsBatchable\b/laravel.batchedJob.missingBatchable/g' \
+  -e 's/\blarastan\.batchableJobChecksCancellation\b/laravel.batchableJob.missingCancellationCheck/g' \
+  -e 's/\blarastan\.dispatchInTransactionAfterCommit\b/laravel.dispatchInTransaction.missingAfterCommit/g' \
   -e 's/\blarastan\.no([A-Z])/laravel.\l\1/g' \
   -e 's/\blarastan\./laravel./g' \
   -e 's/\brules\.modelAppends\b/laravel.modelAppends/g' \

@@ -56,6 +56,13 @@ which case the gap shows up as a false positive rather than as silence.
 | [Model static forwarding to builder](eloquent.md#model-static-forwarding-to-builder) | `laravel.modelStaticForwardingToBuilder` | style |
 | [Octane compatibility](framework.md#octane-compatibility) | `laravel.octaneCompatibility` | only applies under Octane |
 | [Auth in request scope](framework.md#auth-in-request-scope) | `laravel.authInRequestScope.facade`, `….helper` | style |
+| [Unique job uniqueFor](queue.md#unique-job-uniquefor) | `laravel.uniqueJob.missingUniqueFor` | style |
+| [Unique job uniqueId](queue.md#unique-job-uniqueid) | `laravel.uniqueJob.missingUniqueId` | style |
+| [Batched unique job](queue.md#batched-unique-job) | `laravel.uniqueJob.batched` | style |
+| [Job SerializesModels](queue.md#job-serializesmodels) | `laravel.job.missingSerializesModels` | style |
+| [Batched job is Batchable](queue.md#batched-job-is-batchable) | `laravel.batchedJob.missingBatchable` | style |
+| [Batchable job checks cancellation](queue.md#batchable-job-checks-cancellation) | `laravel.batchableJob.missingCancellationCheck` | style |
+| [Dispatch in transaction afterCommit](queue.md#dispatch-in-transaction-aftercommit) | `laravel.dispatchInTransaction.missingAfterCommit` | style |
 | [Undefined config name](config.md#undefined-config-name) | `laravel.undefinedConfigName` | names can be registered at runtime |
 | [Unused view](views-and-translations.md#unused-view) | `laravel.unusedView` | scan can be incomplete |
 | [Missing translation](views-and-translations.md#missing-translation) | `laravel.missingTranslation` | scan can be incomplete |

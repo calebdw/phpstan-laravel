@@ -28,8 +28,13 @@ reports, its error identifier, and its own options.
 | Option under `laravel.rules` | Default | Rule |
 | --- | --- | --- |
 | `authInRequestScope` | `false` | [Auth in request scope](../rules/framework.md#auth-in-request-scope) |
+| `batchableJobChecksCancellation` | `false` | [Batchable job checks cancellation](../rules/queue.md#batchable-job-checks-cancellation) |
+| `batchedJobIsBatchable` | `false` | [Batched job is Batchable](../rules/queue.md#batched-job-is-batchable) |
+| `batchedUniqueJob` | `false` | [Batched unique job](../rules/queue.md#batched-unique-job) |
 | `configAccessor` | `true` | [Config accessor](../rules/config.md#config-accessor) |
+| `dispatchInTransactionAfterCommit` | `false` | [Dispatch in transaction afterCommit](../rules/queue.md#dispatch-in-transaction-aftercommit) |
 | `envCallOutsideConfig` | `true` | [Env call outside config](../rules/config.md#env-call-outside-config) |
+| `jobSerializesModels` | `false` | [Job SerializesModels](../rules/queue.md#job-serializesmodels) |
 | `missingTranslation` | `false` | [Missing translation](../rules/views-and-translations.md#missing-translation) |
 | `modelAppends` | `true` | [Model appends](../rules/eloquent.md#model-appends) |
 | `modelForwardingToBuilder` | `false` | [Model forwarding to builder](../rules/eloquent.md#model-forwarding-to-builder) |
@@ -38,6 +43,8 @@ reports, its error identifier, and its own options.
 | `modelStaticForwardingToBuilder` | `false` | [Model static forwarding to builder](../rules/eloquent.md#model-static-forwarding-to-builder) |
 | `octaneCompatibility` | `false` | [Octane compatibility](../rules/framework.md#octane-compatibility) |
 | `undefinedConfigName` | `false` | [Undefined config name](../rules/config.md#undefined-config-name) |
+| `uniqueJobUniqueFor` | `false` | [Unique job uniqueFor](../rules/queue.md#unique-job-uniquefor) |
+| `uniqueJobUniqueId` | `false` | [Unique job uniqueId](../rules/queue.md#unique-job-uniqueid) |
 | `unnecessaryCollectionCall` | `true` | [Unnecessary collection call](../rules/collections.md#unnecessary-collection-call) |
 | `unnecessaryEnumerableToArrayCall` | `true` | [Unnecessary enumerable toArray call](../rules/collections.md#unnecessary-enumerable-toarray-call) |
 | `unusedView` | `false` | [Unused view](../rules/views-and-translations.md#unused-view) |
