@@ -23,7 +23,7 @@ use PHPStan\ShouldNotHappenException;
 use function sprintf;
 
 /** @implements Rule<StaticCall> */
-class NoAuthFacadeInRequestScopeRule implements Rule
+final class NoAuthFacadeInRequestScopeRule implements Rule
 {
     public function __construct(
         private CallHelper $callHelper,

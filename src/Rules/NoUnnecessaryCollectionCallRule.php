@@ -52,7 +52,7 @@ use function sprintf;
  *
  * @implements Rule<MethodCall>
  */
-class NoUnnecessaryCollectionCallRule implements Rule
+final class NoUnnecessaryCollectionCallRule implements Rule
 {
     /**
      * The method names that can be applied on a Collection, but should be applied on a Builder.

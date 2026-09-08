@@ -38,7 +38,7 @@ use function is_callable;
 use function is_string;
 use function str_contains;
 
-class MacroMethodsClassReflectionExtension implements MethodsClassReflectionExtension
+final class MacroMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection|false> */
     private array $methods = [];

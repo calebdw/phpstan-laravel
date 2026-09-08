@@ -32,7 +32,7 @@ use function sprintf;
  *
  * @implements Rule<InClassNode>
  */
-class JobWithModelPropertyDeclaresSerializesModelsRule implements Rule
+final class JobWithModelPropertyDeclaresSerializesModelsRule implements Rule
 {
     public function __construct(
         private QueuedJobHelper $queuedJobHelper,

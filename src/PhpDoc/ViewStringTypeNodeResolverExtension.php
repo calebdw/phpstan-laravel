@@ -14,7 +14,7 @@ use PHPStan\Type\Type;
 /**
  * Ensures a 'view-string' type in PHPDoc is recognised to be of type ViewStringType.
  */
-class ViewStringTypeNodeResolverExtension implements TypeNodeResolverExtension
+final class ViewStringTypeNodeResolverExtension implements TypeNodeResolverExtension
 {
     public function resolve(TypeNode $typeNode, NameScope $nameScope): Type|null
     {

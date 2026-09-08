@@ -9,7 +9,7 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
-class ModelFactoryType extends ObjectType
+final class ModelFactoryType extends ObjectType
 {
     private TrinaryLogic $isSingleModel;
 

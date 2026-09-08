@@ -38,6 +38,7 @@
     "webmozart/assert": "^2.4"
   },
   "require-dev": {
+    "boundwize/structarmed": "^0.17.2",
     "calebdw/pg-schema-parser": "^1.0",
     "doctrine/coding-standard": "^14.0",
     "iamcal/sql-parser": "^0.7.0",
@@ -91,6 +92,7 @@
   "scripts": {
     "test:cs": "phpcs",
     "test:types": "phpstan analyse --ansi --memory-limit 300M",
+    "test:architecture": "structarmed analyze",
     "test:unit": "phpunit --colors=always",
     "test:application": "tests/analyse.sh laravel",
     "test:e2e": "tests/analyse.sh",

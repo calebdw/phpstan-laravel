@@ -30,7 +30,7 @@ use function explode;
 use function sprintf;
 use function str_contains;
 
-class GenericModelPropertyType extends StringType
+final class GenericModelPropertyType extends StringType
 {
     public function __construct(
         private Type $type,

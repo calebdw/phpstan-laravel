@@ -27,7 +27,7 @@ use function sprintf;
  *
  * @implements Rule<Property>
  */
-class ModelAppendsRule implements Rule
+final class ModelAppendsRule implements Rule
 {
     public function __construct(
         private ModelPropertyHelper $modelPropertyHelper,

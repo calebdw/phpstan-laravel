@@ -11,7 +11,7 @@ use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Type;
 
-class StaticMethodReflection implements MethodReflection
+final class StaticMethodReflection implements MethodReflection
 {
     public function __construct(private MethodReflection $methodReflection)
     {

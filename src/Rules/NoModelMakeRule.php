@@ -25,7 +25,7 @@ use PHPStan\Rules\RuleErrorBuilder;
  *
  * @implements Rule<StaticCall>
  */
-class NoModelMakeRule implements Rule
+final class NoModelMakeRule implements Rule
 {
     public function __construct(
         private CallHelper $callHelper,

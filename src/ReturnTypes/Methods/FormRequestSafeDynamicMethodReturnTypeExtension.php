@@ -17,7 +17,7 @@ use PHPStan\Type\Type;
 use function assert;
 use function count;
 
-class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
+final class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string
     {

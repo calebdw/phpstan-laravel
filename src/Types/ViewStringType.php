@@ -19,7 +19,7 @@ use function view;
  * The custom 'view-string' type class. It's a subset of the string type. Every string that passes the
  * view()->exists($string) test is a valid view-string type.
  */
-class ViewStringType extends StringType
+final class ViewStringType extends StringType
 {
     public function describe(VerbosityLevel $level): string
     {

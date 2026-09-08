@@ -33,7 +33,7 @@ use function count;
  * @see https://gist.github.com/ondrejmirtes/56af016d0595788d5400b8dfb6520adc
  *      for the original sketch of this approach
  */
-class GenericEloquentCollectionTypeNodeResolverExtension implements TypeNodeResolverExtension
+final class GenericEloquentCollectionTypeNodeResolverExtension implements TypeNodeResolverExtension
 {
     public function __construct(private TypeNodeResolver $typeNodeResolver)
     {

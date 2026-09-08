@@ -13,7 +13,7 @@ use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 
-class AppFacadeEnvironmentReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
+final class AppFacadeEnvironmentReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string
     {

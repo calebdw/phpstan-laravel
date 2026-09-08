@@ -12,7 +12,7 @@ use PHPStan\Reflection\MethodsClassReflectionExtension;
 use function in_array;
 use function str_starts_with;
 
-class ViewWithMethodsClassReflectionExtension implements MethodsClassReflectionExtension
+final class ViewWithMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
