@@ -69,8 +69,9 @@ Run the relevant type tests, not the whole suite:
 vendor/bin/phpunit tests/Type/GeneralTypeTest.php --filter collection-map-to-groups
 ```
 
-`phpcbf` and `composer test:types` (`phpstan analyse src`) after
-PHP changes. Doctrine Coding Standard
+`phpcbf`, `composer test:types` (`phpstan analyse src`) and
+`composer test:architecture` (`structarmed analyse`, layer rules in
+`structarmed.php`) after PHP changes. Doctrine Coding Standard
 
 ## Closures
 
