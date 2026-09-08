@@ -52,7 +52,7 @@ final class EnumerableAggregateExtension implements DynamicMethodReturnTypeExten
 
         return match ($methodReflection->getName()) {
             // min/max skip an empty collection (and null items). sum() starts from 0.
-            'sum' => $callbackArg === null ? $this->sumType($type) : $type,
+            'sum' => $this->sumType($type),
             'min', 'max' => $callbackArg === null ? null : TypeCombinator::addNull($type),
             'avg', 'average' => $this->averageType($type),
             'median' => $this->medianType($type),
@@ -61,15 +61,26 @@ final class EnumerableAggregateExtension implements DynamicMethodReturnTypeExten
         };
     }
 
+    /**
+     * sum() reduces with `+` starting from int 0, so an empty collection is
+     * always int, null items count as zero, and numeric strings (decimal
+     * columns) widen to int|float.
+     */
     private function sumType(Type $type): Type|null
     {
+        $type = TypeCombinator::removeNull($type);
+
         if ($type->isInteger()->yes()) {
             return new IntegerType();
         }
 
         $numeric = TypeCombinator::union(new IntegerType(), new FloatType());
 
-        return $numeric->isSuperTypeOf($type)->yes() ? $numeric : null;
+        if ($numeric->isSuperTypeOf($type)->yes() || $type->isString()->yes()) {
+            return $numeric;
+        }
+
+        return null;
     }
 
     /**

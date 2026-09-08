@@ -17,6 +17,7 @@ use function PHPStan\Testing\assertType;
  * @param  Collection<int, float>  $floats
  * @param  Collection<int, string>  $names
  * @param  Collection<int, float|int>  $numbers
+ * @param  Collection<int, array{amount: numeric-string|null, qty: int|null}>  $nullables
  */
 function test(
     EloquentCollection $users,
@@ -25,6 +26,7 @@ function test(
     Collection $floats,
     Collection $names,
     Collection $numbers,
+    Collection $nullables,
 ): void {
     assertType('int', $ints->sum());
     assertType('float|int', $floats->sum());
@@ -32,6 +34,13 @@ function test(
     assertType('int', $users->sum('id'));
     assertType('int', $rows->sum('price'));
     assertType('int', $users->sum(fn ($u) => $u->id));
+
+    // sum() reduces with `+` from int 0: it is never null, never a string,
+    // and null items count as zero.
+    assertType('float|int', $names->sum());
+    assertType('float|int', $nullables->sum('amount'));
+    assertType('int', $nullables->sum('qty'));
+    assertType('float|int', $nullables->sum(fn ($r) => $r['amount']));
 
     assertType('int|null', $users->min('id'));
     assertType('string|null', $users->max('email'));
