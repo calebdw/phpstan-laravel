@@ -1570,6 +1570,12 @@ the getter's return type, the second the setter's argument type.</p>
 </span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="p">);</span>
 </span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="p">}</span>
 </span></code></pre></div>
+<p><code>Attribute::get()</code> leaves <code>TSet</code> as <code>never</code>, and <code>Attribute::set()</code> leaves
+<code>TGet</code> as <code>never</code>. That describes the hooks, not the model property. A
+database-backed attribute is still readable or writable through the column:
+a get-only accessor on a string column reads as <code>TGet</code> and accepts <code>string</code>
+on write. A computed property with no column stays <code>never</code> on the missing
+side.</p>
 <p>The older <code>getFooAttribute()</code> style is supported as well, and its return type is
 used directly. It is still found when a method of the same camel case name
 exists alongside it:</p>
