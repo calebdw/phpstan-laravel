@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('stringButInt');
             $table->float('floatButRoundedDecimalString');
             $table->float('mutated_only');
+            $table->string('accessed_only');
             $table->json('allowed_ips');
             $table->json('meta');
             $table->json('options');

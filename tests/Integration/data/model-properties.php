@@ -90,3 +90,9 @@ function testInboundCast(User $user): void
 {
     $user->secret = 'secret';
 }
+
+function testGetOnlyAttributeWrite(User $user): void
+{
+    $user->accessed_only = '42';
+    $user->mutated_only  = 1.5;
+}

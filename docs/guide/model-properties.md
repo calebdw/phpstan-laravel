@@ -170,6 +170,13 @@ protected function isTrue(): Attribute
 }
 ```
 
+`Attribute::get()` leaves `TSet` as `never`, and `Attribute::set()` leaves
+`TGet` as `never`. That describes the hooks, not the model property. A
+database-backed attribute is still readable or writable through the column:
+a get-only accessor on a string column reads as `TGet` and accepts `string`
+on write. A computed property with no column stays `never` on the missing
+side.
+
 The older `getFooAttribute()` style is supported as well, and its return type is
 used directly. It is still found when a method of the same camel case name
 exists alongside it:

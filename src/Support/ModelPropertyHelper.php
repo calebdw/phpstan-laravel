@@ -163,7 +163,11 @@ class ModelPropertyHelper
                             $classReflection,
                             $propertyName,
                         ),
-                        $returnType->getTemplateType(Attribute::class, 'TSet'),
+                        $this->resolveWritableType(
+                            $returnType->getTemplateType(Attribute::class, 'TSet'),
+                            $classReflection,
+                            $propertyName,
+                        ),
                     );
                 }
             }
@@ -186,11 +190,8 @@ class ModelPropertyHelper
      * subtype of everything, so it silently absorbs any misuse of the value;
      * defer to the column instead.
      */
-    private function resolveReadableType(
-        Type $readableType,
-        ClassReflection $classReflection,
-        string $propertyName,
-    ): Type {
+    private function resolveReadableType(Type $readableType, ClassReflection $classReflection, string $propertyName): Type
+    {
         if (! $readableType instanceof NeverType) {
             return $readableType;
         }
@@ -200,6 +201,24 @@ class ModelPropertyHelper
         }
 
         return $this->getDatabaseProperty($classReflection, $propertyName)->getReadableType();
+    }
+
+    /**
+     * An accessor declared with Attribute::get() leaves TSet as never, but
+     * Laravel still stores a raw assignment on a database-backed attribute.
+     * Computed properties (no column) stay never so writes are rejected.
+     */
+    private function resolveWritableType(Type $writableType, ClassReflection $classReflection, string $propertyName): Type
+    {
+        if (! $writableType instanceof NeverType) {
+            return $writableType;
+        }
+
+        if (! $this->hasDatabaseProperty($classReflection, $propertyName)) {
+            return $writableType;
+        }
+
+        return $this->getDatabaseProperty($classReflection, $propertyName)->getWritableType();
     }
 
     private function hasDate(Model $modelInstance, string $propertyName): bool

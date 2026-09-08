@@ -313,6 +313,14 @@ class User extends Authenticatable
         );
     }
 
+    /** @return Attribute<int, never> */
+    protected function accessedOnly(): Attribute
+    {
+        return Attribute::get(
+            fn (string $value): int => (int) $value,
+        );
+    }
+
     /** @return Attribute<never, float|string> */
     protected function mutatedOnly(): Attribute
     {

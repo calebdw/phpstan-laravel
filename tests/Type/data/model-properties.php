@@ -51,6 +51,11 @@ function test(
     assertType('float', $user->mutated_only);
     assertType('mixed', $user->mutated_without_column);
 
+    // A get-only Attribute leaves TSet as never. Reads stay TGet; writes to a
+    // column fall back to the column type. Computed properties stay never.
+    assertType('int', $user->accessed_only);
+    assertType('int', $user->computed);
+
     // Model Casts
     assertType('int', $user->int);
     assertType('int', $user->integer);
