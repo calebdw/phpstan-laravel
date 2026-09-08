@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
+use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\ReflectionProvider;
 use SplFileInfo;
 
@@ -26,6 +27,7 @@ class MigrationFileParser
         private bool $scanMigrations,
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
+        private InitializerExprTypeResolver $initializerExprTypeResolver,
         string $currentWorkingDirectory = '',
     ) {
         if ($this->databaseMigrationPath !== []) {
@@ -37,7 +39,12 @@ class MigrationFileParser
 
     public function parseMigrations(ModelSchema &$modelSchema): void
     {
-        $schemaParser = new MigrationSchemaParser($modelSchema, $this->modelHelper, $this->reflectionProvider);
+        $schemaParser = new MigrationSchemaParser(
+            $modelSchema,
+            $this->modelHelper,
+            $this->reflectionProvider,
+            $this->initializerExprTypeResolver,
+        );
 
         foreach ($this->files() as $file) {
             try {

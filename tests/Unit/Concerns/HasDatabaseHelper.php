@@ -14,6 +14,7 @@ use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
+use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Testing\PHPStanTestCase;
 
 /** @mixin PHPStanTestCase */
@@ -59,6 +60,7 @@ trait HasDatabaseHelper
             $scan,
             $this->modelHelper,
             self::createReflectionProvider(),
+            self::getContainer()->getByType(InitializerExprTypeResolver::class),
         );
     }
 

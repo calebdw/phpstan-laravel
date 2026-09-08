@@ -30,6 +30,8 @@ use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\NodeFinder;
+use PHPStan\Reflection\InitializerExprContext;
+use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 
@@ -63,6 +65,7 @@ final class MigrationSchemaParser
         private ModelSchema $modelSchema,
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
+        private InitializerExprTypeResolver $initializerExprTypeResolver,
     ) {
         $this->nodeFinder       = new NodeFinder();
         $this->schemaFacadeType = new ObjectType(Schema::class);
@@ -269,12 +272,18 @@ final class MigrationSchemaParser
                 return;
             }
 
-            $class = $this->reflectionProvider->getClass($className);
+            $class    = $this->reflectionProvider->getClass($className);
+            $constant = $class->getConstant($value->name->toString());
 
-            $constantValueType = $class->getConstant($value->name->toString())->getValueType();
+            $constantValueType = $this->initializerExprTypeResolver->getType(
+                $constant->getValueExpr(),
+                InitializerExprContext::fromClassReflection($constant->getDeclaringClass()),
+            );
 
-            if ($constantValueType->getConstantStrings() !== []) {
-                $tableName = $constantValueType->getConstantStrings()[0]->getValue();
+            $constantStrings = $constantValueType->getConstantStrings();
+
+            if (count($constantStrings) === 1) {
+                $tableName = $constantStrings[0]->getValue();
             }
         }
 
