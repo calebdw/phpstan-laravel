@@ -27,5 +27,24 @@ class Arr
      * @param  string|array<array-key, string>|(\Closure(TValue): TPluckKeyReturn)|null  $key
      * @return array<TPluckKeyReturn, TPluckValueReturn>
      */
-    public function pluck($array, $value, $key = null);
+     public function pluck($array, $value, $key = null);
+
+    /**
+     * @template TKey of array-key
+     * @template TValue
+     * @param  array<TKey, TValue>  $array
+     * @param  int|null  $number
+     * @param  bool  $preserveKeys
+     * @return ($number is null ? TValue : ($preserveKeys is true ? array<TKey, TValue> : list<TValue>))
+     */
+    public static function random($array, $number = null, $preserveKeys = false);
+
+    /**
+     * @template TKey of array-key
+     * @template TValue
+     * @param  array<TKey, TValue>  $array
+     * @param  (callable(TValue, TKey): bool)|null  $callback
+     * @return TValue
+     */
+    public static function sole($array, $callback = null);
 }

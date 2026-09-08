@@ -40,15 +40,15 @@ Logic that more than one extension needs lives in `src/Support/`. Use it.
 
 | Helper | Use it for |
 | --- | --- |
-| `ColumnHelper` | Column / callback / dotted path resolution |
-| `CollectionHelper` | `generic()`, `toBase()`, model collection class |
+| `ColumnHelper` | Column / callback / dotted path / `mapSpread` slots |
+| `CollectionHelper` | `generic()`, `toBase()`, `flattenValue()`, `dottedLeaves()` |
 | `TypeHelper` | `isCalledOn`, constant strings, hasMethod/hasProperty |
 | `ModelHelper` | Instantiated model, key type |
 | `SelectHelper` | `Arr::select` / `Collection::select` shapes |
 
-
 Keep methods short. If an extension is growing a second copy of normalize /
-generic / column lookup, it belongs on a helper.
+generic / column lookup, it belongs on a helper. Do not inject one extension
+into another.
 
 ## Stubs vs extensions
 

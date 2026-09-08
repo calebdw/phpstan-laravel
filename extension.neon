@@ -351,6 +351,10 @@ services:
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrMapExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrMapSpreadExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrNestingExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrOnlyExtension
     tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ArrPluckExtension
@@ -380,6 +384,8 @@ services:
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableCollapseExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableCountByExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableDuplicatesExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\EnumerableDotExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -414,6 +420,8 @@ services:
   - class: CalebDW\PhpstanLaravel\Parameters\EloquentBuilderRelationParameterExtension
     tags: [phpstan.methodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\ModelRelationParameterExtension
+    tags: [phpstan.staticMethodParameterClosureTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Parameters\ArrMapSpreadParameterExtension
     tags: [phpstan.staticMethodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Support\RelationClosureHelper
   - class: CalebDW\PhpstanLaravel\Support\AppMakeHelper

@@ -167,6 +167,18 @@ $users->toArray();                      // array<int, array<string, mixed>>
 $users->groupBy('email')->toArray();    // array<string, array<int, array<string, mixed>>>
 ```
 
+## duplicates
+
+`duplicates` maps through a column or callback the way `pluck` does, then
+keeps the original keys of the values that appear more than once:
+
+```php
+$users->duplicates('email');       // Collection<int, string>
+$users->duplicates(fn ($u) => $u->id); // Collection<int, int>
+```
+
+No argument leaves the value type alone. `duplicatesStrict` is the same map.
+
 ## flatten
 
 A known depth unwraps that many levels. Omitted, it unwraps all the way:
@@ -185,6 +197,22 @@ Nested arrays become string keys and a union of the leaves:
 /** @var Collection<string, array{name: string, age: int}> $rows */
 $rows->dot(); // Collection<string, int|string>
 ```
+
+## Arr collapse, flatten, and dot
+
+The array helpers unwrap the same way the collection methods do:
+
+```php
+/** @var list<list<User>> $nested */
+Arr::collapse($nested);  // list<User>
+Arr::flatten($nested);   // list<User>
+
+/** @var array<string, array{name: string, age: int}> $rows */
+Arr::dot($rows);         // array<string, int|string>
+```
+
+`Arr::random` and `Arr::sole` keep the array's value type. `Arr::mapSpread`
+spreads each nested chunk into the callback, the same as `Collection::mapSpread`.
 
 ## groupBy
 

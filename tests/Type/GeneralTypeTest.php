@@ -21,8 +21,11 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-except.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-get-pull.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-map.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/arr-map-spread.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/arr-nesting.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-only.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-pluck.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/arr-random.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arr-select.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/arrayable.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/auth.php');
@@ -32,6 +35,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-collapse.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-count-by.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-dot.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-duplicates.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-flatten.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-filter.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-generic-static-methods.php');

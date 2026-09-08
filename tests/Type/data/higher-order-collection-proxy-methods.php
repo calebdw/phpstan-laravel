@@ -39,6 +39,7 @@ function test(
     assertType('App\User|null', $users->first->isActive());
     assertType('App\User|null', $users->last->isActive());
     assertType('Illuminate\Support\Collection<int, mixed>', $users->flatMap->isActive());
+    assertType('Illuminate\Support\Collection<int, App\Account>', $users->flatMap->accounts());
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy->isActive());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->keyBy->isActive());
     assertType('Illuminate\Support\Collection<int, bool>', $users->map->isActive());

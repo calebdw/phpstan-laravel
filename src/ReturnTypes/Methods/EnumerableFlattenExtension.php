@@ -12,10 +12,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
-use PHPStan\Type\UnionType;
 
 use function is_numeric;
 
@@ -23,8 +20,6 @@ use const INF;
 
 final class EnumerableFlattenExtension implements DynamicMethodReturnTypeExtension
 {
-    private const int MAX_DEPTH = 16;
-
     public function __construct(private CollectionHelper $collectionHelper)
     {
     }
@@ -61,10 +56,10 @@ final class EnumerableFlattenExtension implements DynamicMethodReturnTypeExtensi
         }
 
         if ($depth === INF) {
-            $depth = self::MAX_DEPTH;
+            $depth = CollectionHelper::MAX_NESTING;
         }
 
-        $valueType = $this->flattenValue(
+        $valueType = $this->collectionHelper->flattenValue(
             $calledOnType->getTemplateType(Enumerable::class, 'TValue'),
             $depth,
         );
@@ -74,42 +69,5 @@ final class EnumerableFlattenExtension implements DynamicMethodReturnTypeExtensi
         }
 
         return $this->collectionHelper->toBase($calledOnType, new IntegerType(), $valueType);
-    }
-
-    private function flattenValue(Type $type, float $depth): Type
-    {
-        if ($depth <= 0) {
-            return $type;
-        }
-
-        $parts = [];
-
-        foreach ($this->members($type) as $member) {
-            if (! $this->isNested($member)) {
-                $parts[] = $member;
-
-                continue;
-            }
-
-            $inner = $member->getIterableValueType();
-
-            $parts[] = $depth === 1.0
-                ? $inner
-                : $this->flattenValue($inner, $depth - 1);
-        }
-
-        return TypeCombinator::union(...$parts);
-    }
-
-    /** @return list<Type> */
-    private function members(Type $type): array
-    {
-        return $type instanceof UnionType ? $type->getTypes() : [$type];
-    }
-
-    private function isNested(Type $type): bool
-    {
-        return $type->isArray()->yes()
-            || (new ObjectType(Enumerable::class))->isSuperTypeOf($type)->yes();
     }
 }

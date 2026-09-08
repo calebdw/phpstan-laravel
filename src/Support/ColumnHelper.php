@@ -28,6 +28,7 @@ use UnitEnum;
 
 use function array_filter;
 use function array_map;
+use function array_values;
 use function collect;
 use function explode;
 
@@ -115,6 +116,40 @@ final class ColumnHelper
             $type->isObject()->yes() => new StringType(),
             default => $type,
         };
+    }
+
+    /**
+     * mapSpread() does $callback(...$chunk) after appending the key.
+     * Only a known list of slots (a constant array / array shape) can be
+     * spread into named parameters.
+     *
+     * @return list<Type>|null
+     */
+    public function spreadSlots(Type $chunkType, Type $keyType): array|null
+    {
+        $arrays = $chunkType->getConstantArrays();
+
+        if ($arrays === []) {
+            return null;
+        }
+
+        $slots = [];
+
+        foreach ($arrays as $array) {
+            foreach (array_values($array->getValueTypes()) as $i => $valueType) {
+                $slots[$i] = isset($slots[$i])
+                    ? TypeCombinator::union($slots[$i], $valueType)
+                    : $valueType;
+            }
+        }
+
+        if ($slots === []) {
+            return null;
+        }
+
+        $slots[] = $keyType;
+
+        return array_values($slots);
     }
 
     public function getTypeFromArg(Type $from, Arg $arg, Scope $scope): Type|null

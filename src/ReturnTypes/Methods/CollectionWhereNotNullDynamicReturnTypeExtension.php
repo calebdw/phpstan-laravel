@@ -13,11 +13,13 @@ use PHPStan\Type\BooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\IntegerType;
+use PHPStan\Type\NullType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 use function count;
+use function in_array;
 
 class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -32,7 +34,7 @@ class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodR
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return $methodReflection->getName() === 'whereNotNull';
+        return in_array($methodReflection->getName(), ['whereNotNull', 'whereNull'], true);
     }
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
@@ -49,6 +51,18 @@ class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodR
 
         if ($keyType === null || $valueType === null) {
             return null;
+        }
+
+        if ($methodReflection->getName() === 'whereNull') {
+            if ($this->argumentIsString($methodCall, $scope)) {
+                return null;
+            }
+
+            return $this->collectionHelper->of(
+                $calledOnType,
+                $keyType,
+                TypeCombinator::intersect($valueType, new NullType()),
+            );
         }
 
         $nonFalseyTypes = TypeCombinator::removeNull($valueType);

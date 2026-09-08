@@ -39,6 +39,8 @@ use function in_array;
 
 final class CollectionHelper
 {
+    public const int MAX_NESTING = 16;
+
     /** @var array<string, Type|null> */
     private array $originalCollectionTypes = [];
 
@@ -137,6 +139,62 @@ final class CollectionHelper
         }
 
         return new GenericObjectType($className, [$keyType, $valueType]);
+    }
+
+    public function flattenValue(Type $type, float $depth): Type
+    {
+        if ($depth <= 0) {
+            return $type;
+        }
+
+        $parts = [];
+
+        foreach ($type instanceof UnionType ? $type->getTypes() : [$type] as $member) {
+            if (! $this->isNested($member)) {
+                $parts[] = $member;
+
+                continue;
+            }
+
+            $inner = $member->getIterableValueType();
+
+            $parts[] = $depth === 1.0
+                ? $inner
+                : $this->flattenValue($inner, $depth - 1);
+        }
+
+        return TypeCombinator::union(...$parts);
+    }
+
+    public function dottedLeaves(Type $type, float $depth): Type
+    {
+        if ($depth <= 0) {
+            return $type;
+        }
+
+        $parts = [];
+
+        foreach ($type instanceof UnionType ? $type->getTypes() : [$type] as $member) {
+            if ($member->isArray()->no()) {
+                $parts[] = $member;
+
+                continue;
+            }
+
+            $inner = $member->getIterableValueType();
+
+            $parts[] = $depth === 1.0
+                ? $inner
+                : $this->dottedLeaves($inner, $depth - 1);
+        }
+
+        return TypeCombinator::union(...$parts);
+    }
+
+    private function isNested(Type $type): bool
+    {
+        return $type->isArray()->yes()
+            || (new ObjectType(Enumerable::class))->isSuperTypeOf($type)->yes();
     }
 
     public function determineGenericCollectionTypeFromType(Type $type): Type|null

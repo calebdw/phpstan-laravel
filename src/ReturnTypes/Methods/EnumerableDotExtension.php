@@ -13,8 +13,6 @@ use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
-use PHPStan\Type\UnionType;
 
 use function is_numeric;
 
@@ -22,8 +20,6 @@ use const INF;
 
 final class EnumerableDotExtension implements DynamicMethodReturnTypeExtension
 {
-    private const int MAX_DEPTH = 16;
-
     public function __construct(private CollectionHelper $collectionHelper)
     {
     }
@@ -66,40 +62,15 @@ final class EnumerableDotExtension implements DynamicMethodReturnTypeExtension
         }
 
         if ($depth === INF) {
-            $depth = self::MAX_DEPTH;
+            $depth = CollectionHelper::MAX_NESTING;
         }
 
-        $leafType = $this->leaves($valueType, $depth);
+        $leafType = $this->collectionHelper->dottedLeaves($valueType, $depth);
 
         if ($leafType instanceof MixedType) {
             return null;
         }
 
         return $this->collectionHelper->toBase($calledOnType, new StringType(), $leafType);
-    }
-
-    private function leaves(Type $type, float $depth): Type
-    {
-        if ($depth <= 0) {
-            return $type;
-        }
-
-        $parts = [];
-
-        foreach ($type instanceof UnionType ? $type->getTypes() : [$type] as $member) {
-            if ($member->isArray()->no()) {
-                $parts[] = $member;
-
-                continue;
-            }
-
-            $inner = $member->getIterableValueType();
-
-            $parts[] = $depth === 1.0
-                ? $inner
-                : $this->leaves($inner, $depth - 1);
-        }
-
-        return TypeCombinator::union(...$parts);
     }
 }

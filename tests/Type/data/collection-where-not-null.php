@@ -19,4 +19,7 @@ function test(EloquentCollection $foo): void
     assertType("Illuminate\Database\Eloquent\Collection<int, App\User>", $foo->whereNotNull('blocked'));
     assertType("Illuminate\Database\Eloquent\Collection<int, App\User>", $foo->whereNotNull('blocked'));
     assertType("Illuminate\Database\Eloquent\Collection<int, App\User>", $foo->whereNotNull());
+    assertType('Illuminate\Support\Collection<int, null>', collect([1, 2, null, '', 'hello'])->whereNull());
+    assertType('Illuminate\Database\Eloquent\Collection<int, null>', $foo->whereNull());
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\User|null>', $foo->whereNull('blocked'));
 }

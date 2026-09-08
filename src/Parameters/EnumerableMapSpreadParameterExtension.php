@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Parameters;
 
 use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
+use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -14,14 +15,16 @@ use PHPStan\Type\ClosureType;
 use PHPStan\Type\MethodParameterClosureTypeExtension;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
 
 use function array_map;
-use function array_values;
 use function in_array;
 
 final class EnumerableMapSpreadParameterExtension implements MethodParameterClosureTypeExtension
 {
+    public function __construct(private ColumnHelper $columnHelper)
+    {
+    }
+
     public function isMethodSupported(MethodReflection $methodReflection, ParameterReflection $parameter): bool
     {
         return in_array($methodReflection->getName(), ['mapSpread', 'eachSpread'], true)
@@ -31,7 +34,7 @@ final class EnumerableMapSpreadParameterExtension implements MethodParameterClos
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, ParameterReflection $parameter, Scope $scope): Type|null
     {
         $calledOnType = $scope->getType($methodCall->var);
-        $slots        = $this->slots(
+        $slots        = $this->columnHelper->spreadSlots(
             $calledOnType->getTemplateType(Enumerable::class, 'TValue'),
             $calledOnType->getTemplateType(Enumerable::class, 'TKey'),
         );
@@ -41,47 +44,5 @@ final class EnumerableMapSpreadParameterExtension implements MethodParameterClos
         }
 
         return new ClosureType(array_map(static fn ($t) => new SimpleParameterReflection('item', $t), $slots), new MixedType());
-    }
-
-    /** @return list<Type>|null */
-    public function slots(Type $chunkType, Type $keyType): array|null
-    {
-        $slots = $this->spreadSlots($chunkType);
-
-        if ($slots === null) {
-            return null;
-        }
-
-        $slots[] = $keyType;
-
-        return $slots;
-    }
-
-    /**
-     * mapSpread() does $callback(...$chunk) after appending the key.
-     * Only a known list of slots (a constant array / array shape) can be
-     * spread into named parameters.
-     *
-     * @return list<Type>|null
-     */
-    private function spreadSlots(Type $chunkType): array|null
-    {
-        $arrays = $chunkType->getConstantArrays();
-
-        if ($arrays === []) {
-            return null;
-        }
-
-        $slots = [];
-
-        foreach ($arrays as $array) {
-            foreach (array_values($array->getValueTypes()) as $i => $valueType) {
-                $slots[$i] = isset($slots[$i])
-                    ? TypeCombinator::union($slots[$i], $valueType)
-                    : $valueType;
-            }
-        }
-
-        return $slots === [] ? null : array_values($slots);
     }
 }

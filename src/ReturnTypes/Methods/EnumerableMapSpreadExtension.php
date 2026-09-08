@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
-use CalebDW\PhpstanLaravel\Parameters\EnumerableMapSpreadParameterExtension;
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Enumerable;
@@ -19,7 +18,6 @@ final class EnumerableMapSpreadExtension implements DynamicMethodReturnTypeExten
     public function __construct(
         private CollectionHelper $collectionHelper,
         private ColumnHelper $columnHelper,
-        private EnumerableMapSpreadParameterExtension $spreadParameters,
     ) {
     }
 
@@ -43,7 +41,7 @@ final class EnumerableMapSpreadExtension implements DynamicMethodReturnTypeExten
 
         $calledOnType = $scope->getType($methodCall->var);
         $keyType      = $calledOnType->getTemplateType(Enumerable::class, 'TKey');
-        $slots        = $this->spreadParameters->slots(
+        $slots        = $this->columnHelper->spreadSlots(
             $calledOnType->getTemplateType(Enumerable::class, 'TValue'),
             $keyType,
         );
