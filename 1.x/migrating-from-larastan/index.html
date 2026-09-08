@@ -1104,6 +1104,33 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rules/queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Queue
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1739,6 +1766,34 @@ and the name of a rule is not the place to restate whether you want it.</p>
 <td><code>noUnnecessaryEnumerableToArrayCalls</code></td>
 <td><code>unnecessaryEnumerableToArrayCall</code></td>
 </tr>
+<tr>
+<td><code>checkUniqueJobUniqueFor</code></td>
+<td><code>uniqueJobUniqueFor</code></td>
+</tr>
+<tr>
+<td><code>checkUniqueJobUniqueId</code></td>
+<td><code>uniqueJobUniqueId</code></td>
+</tr>
+<tr>
+<td><code>noBatchedUniqueJob</code></td>
+<td><code>batchedUniqueJob</code></td>
+</tr>
+<tr>
+<td><code>checkJobSerializesModels</code></td>
+<td><code>jobSerializesModels</code></td>
+</tr>
+<tr>
+<td><code>checkBatchedJobIsBatchable</code></td>
+<td><code>batchedJobIsBatchable</code></td>
+</tr>
+<tr>
+<td><code>checkBatchableJobChecksCancellation</code></td>
+<td><code>batchableJobChecksCancellation</code></td>
+</tr>
+<tr>
+<td><code>checkDispatchInTransactionAfterCommit</code></td>
+<td><code>dispatchInTransactionAfterCommit</code></td>
+</tr>
 </tbody>
 </table>
 <p>Two more came from the <code>calebdw/larastan</code> fork rather than from Larastan itself,
@@ -1928,6 +1983,34 @@ more than one kind of error, the identifiers are grouped under a common stem.</p
 <td><code>larastan.events.noConstructor</code></td>
 <td><code>laravel.events.noConstructor</code></td>
 </tr>
+<tr>
+<td><code>larastan.uniqueJobUniqueFor</code></td>
+<td><code>laravel.uniqueJob.missingUniqueFor</code></td>
+</tr>
+<tr>
+<td><code>larastan.uniqueJobUniqueId</code></td>
+<td><code>laravel.uniqueJob.missingUniqueId</code></td>
+</tr>
+<tr>
+<td><code>larastan.noBatchedUniqueJob</code></td>
+<td><code>laravel.uniqueJob.batched</code></td>
+</tr>
+<tr>
+<td><code>larastan.jobSerializesModels</code></td>
+<td><code>laravel.job.missingSerializesModels</code></td>
+</tr>
+<tr>
+<td><code>larastan.batchedJobIsBatchable</code></td>
+<td><code>laravel.batchedJob.missingBatchable</code></td>
+</tr>
+<tr>
+<td><code>larastan.batchableJobChecksCancellation</code></td>
+<td><code>laravel.batchableJob.missingCancellationCheck</code></td>
+</tr>
+<tr>
+<td><code>larastan.dispatchInTransactionAfterCommit</code></td>
+<td><code>laravel.dispatchInTransaction.missingAfterCommit</code></td>
+</tr>
 </tbody>
 </table>
 <p>The rest are a plain prefix swap: <code>larastan.octaneCompatibility</code> becomes
@@ -1977,10 +2060,17 @@ general ones. Review the diff before committing:</p>
 </span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelAccessorMethod\b/laravel.modelMethodVisibility.accessor/g'</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.unusedViews\b/laravel.unusedView/g'</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.missingTranslations\b/laravel.missingTranslation/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.no([A-Z])/laravel.\l\1/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\./laravel./g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\brules\.modelAppends\b/laravel.modelAppends/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span>phpstan-baseline.neon
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.uniqueJobUniqueFor\b/laravel.uniqueJob.missingUniqueFor/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.uniqueJobUniqueId\b/laravel.uniqueJob.missingUniqueId/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noBatchedUniqueJob\b/laravel.uniqueJob.batched/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.jobSerializesModels\b/laravel.job.missingSerializesModels/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.batchedJobIsBatchable\b/laravel.batchedJob.missingBatchable/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.batchableJobChecksCancellation\b/laravel.batchableJob.missingCancellationCheck/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.dispatchInTransactionAfterCommit\b/laravel.dispatchInTransaction.missingAfterCommit/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.no([A-Z])/laravel.\l\1/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\./laravel./g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\brules\.modelAppends\b/laravel.modelAppends/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">  </span>phpstan-baseline.neon
 </span></code></pre></div>
 <p>Inline ignore comments have to be updated in your source as well. The same script works
 on them, with the file list swapped:</p>

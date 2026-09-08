@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://phpstan-laravel.dev/1.x/reference/configuration/">
       
       
-        <link rel="prev" href="../../rules/framework/">
+        <link rel="prev" href="../../rules/queue/">
       
       
         <link rel="next" href="../identifiers/">
@@ -894,6 +894,33 @@
     
   
   Framework
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rules/queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Queue
 
     
   </span>
@@ -2003,14 +2030,39 @@ reports, its error identifier, and its own options.</p>
 <td><a href="../../rules/framework/#auth-in-request-scope">Auth in request scope</a></td>
 </tr>
 <tr>
+<td><code>batchableJobChecksCancellation</code></td>
+<td><code>false</code></td>
+<td><a href="../../rules/queue/#batchable-job-checks-cancellation">Batchable job checks cancellation</a></td>
+</tr>
+<tr>
+<td><code>batchedJobIsBatchable</code></td>
+<td><code>false</code></td>
+<td><a href="../../rules/queue/#batched-job-is-batchable">Batched job is Batchable</a></td>
+</tr>
+<tr>
+<td><code>batchedUniqueJob</code></td>
+<td><code>false</code></td>
+<td><a href="../../rules/queue/#batched-unique-job">Batched unique job</a></td>
+</tr>
+<tr>
 <td><code>configAccessor</code></td>
 <td><code>true</code></td>
 <td><a href="../../rules/config/#config-accessor">Config accessor</a></td>
 </tr>
 <tr>
+<td><code>dispatchInTransactionAfterCommit</code></td>
+<td><code>false</code></td>
+<td><a href="../../rules/queue/#dispatch-in-transaction-aftercommit">Dispatch in transaction afterCommit</a></td>
+</tr>
+<tr>
 <td><code>envCallOutsideConfig</code></td>
 <td><code>true</code></td>
 <td><a href="../../rules/config/#env-call-outside-config">Env call outside config</a></td>
+</tr>
+<tr>
+<td><code>jobSerializesModels</code></td>
+<td><code>false</code></td>
+<td><a href="../../rules/queue/#job-serializesmodels">Job SerializesModels</a></td>
 </tr>
 <tr>
 <td><code>missingTranslation</code></td>
@@ -2051,6 +2103,16 @@ reports, its error identifier, and its own options.</p>
 <td><code>undefinedConfigName</code></td>
 <td><code>false</code></td>
 <td><a href="../../rules/config/#undefined-config-name">Undefined config name</a></td>
+</tr>
+<tr>
+<td><code>uniqueJobUniqueFor</code></td>
+<td><code>false</code></td>
+<td><a href="../../rules/queue/#unique-job-uniquefor">Unique job uniqueFor</a></td>
+</tr>
+<tr>
+<td><code>uniqueJobUniqueId</code></td>
+<td><code>false</code></td>
+<td><a href="../../rules/queue/#unique-job-uniqueid">Unique job uniqueId</a></td>
 </tr>
 <tr>
 <td><code>unnecessaryCollectionCall</code></td>
