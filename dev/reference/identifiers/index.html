@@ -906,6 +906,33 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rules/queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Queue
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1371,6 +1398,16 @@ identifiers share a stem: <code>laravel.modelMethodVisibility.scope</code> and
 <td><code>rules.authInRequestScope</code></td>
 </tr>
 <tr>
+<td><a href="../../rules/queue/#batchable-job-checks-cancellation"><code>laravel.batchableJob.missingCancellationCheck</code></a></td>
+<td>A Batchable job never checks whether its batch was cancelled</td>
+<td><code>rules.batchableJobChecksCancellation</code></td>
+</tr>
+<tr>
+<td><a href="../../rules/queue/#batched-job-is-batchable"><code>laravel.batchedJob.missingBatchable</code></a></td>
+<td>A queued job is passed to <code>Bus::batch()</code> without <code>Batchable</code></td>
+<td><code>rules.batchedJobIsBatchable</code></td>
+</tr>
+<tr>
 <td><a href="../../rules/config/#config-accessor"><code>laravel.configAccessor</code></a></td>
 <td>A typed config accessor is called for a key of another type</td>
 <td><code>rules.configAccessor</code></td>
@@ -1391,6 +1428,11 @@ identifiers share a stem: <code>laravel.modelMethodVisibility.scope</code> and
 <td>always</td>
 </tr>
 <tr>
+<td><a href="../../rules/queue/#dispatch-in-transaction-aftercommit"><code>laravel.dispatchInTransaction.missingAfterCommit</code></a></td>
+<td>A queued job is dispatched inside <code>DB::transaction()</code> without deferring</td>
+<td><code>rules.dispatchInTransactionAfterCommit</code></td>
+</tr>
+<tr>
 <td><a href="../../rules/config/#env-call-outside-config"><code>laravel.envCallOutsideConfig</code></a></td>
 <td><code>env()</code> is called outside the config directory</td>
 <td><code>rules.envCallOutsideConfig</code></td>
@@ -1399,6 +1441,11 @@ identifiers share a stem: <code>laravel.modelMethodVisibility.scope</code> and
 <td><a href="../../rules/framework/#dispatch-argument-types"><code>laravel.events.noConstructor</code></a></td>
 <td>An event with no constructor is dispatched with arguments</td>
 <td>always</td>
+</tr>
+<tr>
+<td><a href="../../rules/queue/#job-serializesmodels"><code>laravel.job.missingSerializesModels</code></a></td>
+<td>A queued job holds a public model property without <code>SerializesModels</code></td>
+<td><code>rules.jobSerializesModels</code></td>
 </tr>
 <tr>
 <td><a href="../../rules/framework/#dispatch-argument-types"><code>laravel.jobs.noConstructor</code></a></td>
@@ -1454,6 +1501,21 @@ identifiers share a stem: <code>laravel.modelMethodVisibility.scope</code> and
 <td><a href="../../rules/config/#undefined-config-name"><code>laravel.undefinedConfigName</code></a></td>
 <td>A named Laravel service is not defined in its configuration</td>
 <td><code>rules.undefinedConfigName</code></td>
+</tr>
+<tr>
+<td><a href="../../rules/queue/#batched-unique-job"><code>laravel.uniqueJob.batched</code></a></td>
+<td>A <code>ShouldBeUnique</code> job is dispatched via <code>batch()</code> or <code>bulk()</code></td>
+<td><code>rules.batchedUniqueJob</code></td>
+</tr>
+<tr>
+<td><a href="../../rules/queue/#unique-job-uniquefor"><code>laravel.uniqueJob.missingUniqueFor</code></a></td>
+<td>A <code>ShouldBeUnique</code> job does not declare <code>uniqueFor</code></td>
+<td><code>rules.uniqueJobUniqueFor</code></td>
+</tr>
+<tr>
+<td><a href="../../rules/queue/#unique-job-uniqueid"><code>laravel.uniqueJob.missingUniqueId</code></a></td>
+<td>A parameterized unique job does not declare <code>uniqueId</code></td>
+<td><code>rules.uniqueJobUniqueId</code></td>
 </tr>
 <tr>
 <td><a href="../../rules/collections/#unnecessary-collection-call"><code>laravel.unnecessaryCollectionCall</code></a></td>

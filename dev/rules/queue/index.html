@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://phpstan-laravel.dev/dev/about/troubleshooting/">
+        <link rel="canonical" href="https://phpstan-laravel.dev/dev/rules/queue/">
       
       
-        <link rel="prev" href="../faq/">
+        <link rel="prev" href="../framework/">
       
       
-        <link rel="next" href="../differences-from-larastan/">
+        <link rel="next" href="../../reference/configuration/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Troubleshooting - phpstan-laravel</title>
+        <title>Queue rules - phpstan-laravel</title>
       
     
     
@@ -85,7 +85,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#troubleshooting" class="md-skip">
+        <a href="#queue-rules" class="md-skip">
           Skip to content
         </a>
       
@@ -124,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Troubleshooting
+              Queue rules
             
           </span>
         </div>
@@ -703,18 +703,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -734,7 +736,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -751,7 +753,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../rules/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -778,7 +780,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../rules/eloquent/" class="md-nav__link">
+      <a href="../eloquent/" class="md-nav__link">
         
   
   
@@ -805,7 +807,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../rules/collections/" class="md-nav__link">
+      <a href="../collections/" class="md-nav__link">
         
   
   
@@ -832,7 +834,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../rules/config/" class="md-nav__link">
+      <a href="../config/" class="md-nav__link">
         
   
   
@@ -859,7 +861,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../rules/views-and-translations/" class="md-nav__link">
+      <a href="../views-and-translations/" class="md-nav__link">
         
   
   
@@ -886,7 +888,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../rules/framework/" class="md-nav__link">
+      <a href="../framework/" class="md-nav__link">
         
   
   
@@ -910,10 +912,36 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../rules/queue/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Queue
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -928,6 +956,223 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unique-job-uniquefor" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Unique job uniqueFor
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unique job uniqueFor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unique-job-uniqueid" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Unique job uniqueId
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unique job uniqueId">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batched-unique-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Batched unique job
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batched unique job">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#job-serializesmodels" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Job SerializesModels
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Job SerializesModels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batched-job-is-batchable" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Batched job is Batchable
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batched job is Batchable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batchable-job-checks-cancellation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Batchable job checks cancellation
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batchable job checks cancellation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dispatch-in-transaction-aftercommit" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Dispatch in transaction afterCommit
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dispatch in transaction afterCommit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1050,20 +1295,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -1083,7 +1326,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1100,7 +1343,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../faq/" class="md-nav__link">
+      <a href="../../about/faq/" class="md-nav__link">
         
   
   
@@ -1124,36 +1367,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Troubleshooting
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../about/troubleshooting/" class="md-nav__link">
         
   
   
@@ -1168,115 +1385,6 @@
   
 
       </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#ignoring-what-cannot-be-fixed" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Ignoring what cannot be fixed
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#higher-order-messages-on-a-support-collection" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Higher order messages on a support collection
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#collection-value-types-are-invariant" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Collection value types are invariant
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#macros" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Macros
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#models-without-resolvable-columns" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Models without resolvable columns
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#analysis-is-quiet-on-a-package" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Analysis is quiet on a package
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-run-fails-while-booting" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        The run fails while booting
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#a-schema-dump-cannot-be-parsed" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        A schema dump cannot be parsed
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1289,7 +1397,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../differences-from-larastan/" class="md-nav__link">
+      <a href="../../about/differences-from-larastan/" class="md-nav__link">
         
   
   
@@ -1316,7 +1424,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../backward-compatibility/" class="md-nav__link">
+      <a href="../../about/backward-compatibility/" class="md-nav__link">
         
   
   
@@ -1384,90 +1492,198 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#ignoring-what-cannot-be-fixed" class="md-nav__link">
+  <a href="#unique-job-uniquefor" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Ignoring what cannot be fixed
+        Unique job uniqueFor
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unique job uniqueFor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
       </span>
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#higher-order-messages-on-a-support-collection" class="md-nav__link">
+  <a href="#unique-job-uniqueid" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Higher order messages on a support collection
+        Unique job uniqueId
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unique job uniqueId">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
       </span>
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#collection-value-types-are-invariant" class="md-nav__link">
+  <a href="#batched-unique-job" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Collection value types are invariant
+        Batched unique job
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batched unique job">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
       </span>
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#macros" class="md-nav__link">
+  <a href="#job-serializesmodels" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Macros
+        Job SerializesModels
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Job SerializesModels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
       </span>
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#models-without-resolvable-columns" class="md-nav__link">
+  <a href="#batched-job-is-batchable" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Models without resolvable columns
+        Batched job is Batchable
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batched job is Batchable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
       </span>
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#analysis-is-quiet-on-a-package" class="md-nav__link">
+  <a href="#batchable-job-checks-cancellation" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Analysis is quiet on a package
+        Batchable job checks cancellation
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Batchable job checks cancellation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
       </span>
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#the-run-fails-while-booting" class="md-nav__link">
+  <a href="#dispatch-in-transaction-aftercommit" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        The run fails while booting
+        Dispatch in transaction afterCommit
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dispatch in transaction afterCommit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Examples
       </span>
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#a-schema-dump-cannot-be-parsed" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        A schema dump cannot be parsed
-      </span>
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1486,7 +1702,7 @@
                 
                   
   
-    <a href="https://github.com/calebdw/phpstan-laravel/edit/master/docs/about/troubleshooting.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/calebdw/phpstan-laravel/edit/master/docs/rules/queue.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
     </a>
@@ -1494,99 +1710,142 @@
   
 
 
-<h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h1>
-<p>Parts of Laravel remain genuinely too dynamic to analyse. This page collects
-the known limits and what to do about each. If your problem is a property or
-relation that is not resolving, start with the <a href="../faq/">FAQ</a> instead.</p>
-<h2 id="ignoring-what-cannot-be-fixed">Ignoring what cannot be fixed<a class="headerlink" href="#ignoring-what-cannot-be-fixed" title="Permanent link">&para;</a></h2>
-<p>Where a limit is real, ignore it <a href="https://phpstan.org/user-guide/ignoring-errors#ignoring-by-identifier">by identifier</a> rather than by
-message or by line. Identifiers are covered by the <a href="../../about/backward-compatibility/">backward compatibility
-policy</a> and message wording is not, so a
-message-based ignore can silently stop matching in any release and start
-failing your build.</p>
+<h1 id="queue-rules">Queue rules<a class="headerlink" href="#queue-rules" title="Permanent link">&para;</a></h1>
+<p>Opt-in checks for queued jobs. Each one is off by default because it
+enforces a style of writing jobs rather than catching a type error.</p>
+<p>Enable only the ones you want:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>parameters:
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    ignoreErrors:
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        - identifier: laravel.modelMake
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    laravel:
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        rules:
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>            uniqueJobUniqueFor: true
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>            uniqueJobUniqueId: true
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>            batchedUniqueJob: true
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>            jobSerializesModels: true
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>            batchedJobIsBatchable: true
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>            batchableJobChecksCancellation: true
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>            dispatchInTransactionAfterCommit: true
 </span></code></pre></div>
-<p>Leave <a href="https://phpstan.org/user-guide/ignoring-errors#reporting-unused-ignores"><code>reportUnmatchedIgnoredErrors</code></a> at its default of <code>true</code>, so
-that an ignore which no longer matches is reported rather than left to rot. The
-cost is that a release which <em>fixes</em> a false positive fails your build until you
-delete the now-unused entry, which is the right trade in most projects.
-<a href="../backward-compatibility/">Backward compatibility</a> covers when to turn it off.</p>
-<h2 id="higher-order-messages-on-a-support-collection">Higher order messages on a support collection<a class="headerlink" href="#higher-order-messages-on-a-support-collection" title="Permanent link">&para;</a></h2>
-<p>The <a href="https://laravel.com/docs/collections#higher-order-messages">higher order proxy</a>
-is understood, but only as far as the collection's value type is known. On an
-<code>Eloquent\Collection</code> that is a model and everything resolves. On a plain
-<code>Support\Collection</code> whose values are <code>mixed</code>, the proxy has nothing to look the
-method up on:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>parameters:
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    ignoreErrors:
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        - '#Call to an undefined method Illuminate\\Support\\HigherOrder#'
+<h2 id="unique-job-uniquefor">Unique job uniqueFor<a class="headerlink" href="#unique-job-uniquefor" title="Permanent link">&para;</a></h2>
+<p><code>laravel.uniqueJob.missingUniqueFor</code> &middot; option <code>rules.uniqueJobUniqueFor</code> &middot; off by default</p>
+<p>A <code>ShouldBeUnique</code> job must declare <code>uniqueFor</code>, as a property or a method.
+Without it Laravel holds the uniqueness lock until the job finishes, so a
+worker that dies mid-job never releases the lock.</p>
+<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span> <span class="nc">FetchSocialAvatar</span> <span class="k">implements</span> <span class="nx">ShouldQueue</span><span class="p">,</span> <span class="nx">ShouldBeUnique</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p">{</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">handle</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span> <span class="p">{}</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">}</span>
 </span></code></pre></div>
-<p>The better fix is to give the collection a value type, which resolves it
-properly rather than hiding it:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="sd">/** @var Collection&lt;int, User&gt; $users */</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">$users</span><span class="o">-&gt;</span><span class="na">groupBy</span><span class="o">-&gt;</span><span class="na">email</span><span class="p">;</span> <span class="c1">// Collection&lt;string, Collection&lt;int, User&gt;&gt;</span>
+<p>Will result in the following error:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Job App\Jobs\FetchSocialAvatar implements ShouldBeUnique but does not declare uniqueFor.
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>💡 Declare a $uniqueFor property or a uniqueFor() method.
 </span></code></pre></div>
-<h2 id="collection-value-types-are-invariant">Collection value types are invariant<a class="headerlink" href="#collection-value-types-are-invariant" title="Permanent link">&para;</a></h2>
-<p><code>Collection</code> declares <code>TValue</code> invariantly, so a collection of a narrower value
-type is not accepted where a wider one is annotated, even though reading from it
-would be perfectly safe:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">/** @param Collection&lt;int, string|null&gt; $values */</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">accept</span><span class="p">(</span><span class="nx">Collection</span> <span class="nv">$values</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span> <span class="p">{}</span>
+<h2 id="unique-job-uniqueid">Unique job uniqueId<a class="headerlink" href="#unique-job-uniqueid" title="Permanent link">&para;</a></h2>
+<p><code>laravel.uniqueJob.missingUniqueId</code> &middot; option <code>rules.uniqueJobUniqueId</code> &middot; off by default</p>
+<p>A parameterized <code>ShouldBeUnique</code> job must declare <code>uniqueId</code>. Laravel keys
+the lock as class + uniqueId and falls back to an empty uniqueId, so every
+dispatch of a parameterized job shares one lock unless you scope it.</p>
+<p>A job with no constructor parameters is left alone: the class-wide lock is
+correct.</p>
+<h3 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span> <span class="nc">SyncCompany</span> <span class="k">implements</span> <span class="nx">ShouldQueue</span><span class="p">,</span> <span class="nx">ShouldBeUnique</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="p">{</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="k">public</span> <span class="nx">int</span> <span class="nv">$uniqueFor</span> <span class="o">=</span> <span class="mi">3600</span><span class="p">;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="k">public</span> <span class="nx">int</span> <span class="nv">$companyId</span><span class="p">)</span> <span class="p">{}</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">}</span>
 </span></code></pre></div>
-<p>The error is easy to misread, because PHPStan prints the widened description on
-both sides and the two types look identical. The <code>Tip</code> about <code>TValue</code> not being
-covariant is the only part that tells you what happened. If you find yourself
-suspecting a broken return type extension, check for that line first.</p>
-<p>The fix is use-site variance, not an ignore:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="sd">/** @param Collection&lt;int, covariant string|null&gt; $values */</span>
+<p>Will result in the following error:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Unique job App\Jobs\SyncCompany has constructor parameters but does not declare uniqueId.
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>💡 Declare a uniqueId() method or a $uniqueId property to identify distinct jobs.
 </span></code></pre></div>
-<p><code>covariant</code> on a parameter says you only read from the collection. Prefer it to
-suppressing <code>argument.type</code>, which would hide real mismatches in the same
-signature. For keys, <code>array-key</code> does the same job, being a benevolent union;
-a plain <code>int|string</code> does not, since it is matched invariantly.</p>
-<p>This is a genuine limit rather than a missing feature. <code>Collection::push()</code>,
-<code>put()</code>, <code>prepend()</code>, <code>add()</code> and <code>offsetSet()</code> all take a <code>TValue</code>, so the
-collection consumes its own value type and cannot be covariant in it. The
-framework annotates it as covariant anyway, but nothing enforces that annotation
-against the framework's own source&mdash;see
-<a href="../faq/#why-is-a-collections-value-type-invariant">the FAQ</a> for why the stubs
-cannot repeat it.</p>
-<h2 id="macros">Macros<a class="headerlink" href="#macros" title="Permanent link">&para;</a></h2>
-<p>Macros registered while the application boots are discovered automatically. A
-registration that does not run during analysis needs an <code>@method</code> annotation.
-The <a href="../../guide/macros/">macros guide</a> covers discovery, static and instance
-macros, and classes whose macros have a static-facing API.</p>
-<h2 id="models-without-resolvable-columns">Models without resolvable columns<a class="headerlink" href="#models-without-resolvable-columns" title="Permanent link">&para;</a></h2>
-<p>A model whose table this extension cannot see, because the table belongs to
-another service or is created outside migrations, will have every column
-reported as missing once
-<a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a> is
-on. Annotate those models with <code>@property</code> and they behave normally.</p>
-<h2 id="analysis-is-quiet-on-a-package">Analysis is quiet on a package<a class="headerlink" href="#analysis-is-quiet-on-a-package" title="Permanent link">&para;</a></h2>
-<p>If no application is found and Testbench is not installed, analysis runs but
-every container lookup returns nothing, so config types, <code>app()</code> resolution and
-view names all fall back to their widest types. Nothing errors, which makes it
-look like the extension is doing very little. See <a href="../../getting-started/packages/">analysing a
-package</a>.</p>
-<h2 id="the-run-fails-while-booting">The run fails while booting<a class="headerlink" href="#the-run-fails-while-booting" title="Permanent link">&para;</a></h2>
-<p>Booting is fatal by design: nothing useful can be analysed once a service
-provider has failed, so the underlying exception is reported rather than a wall
-of unrelated errors. The message points at the real failure, which is usually a
-missing environment variable or a provider that expects a service the analysis
-environment does not have. <a href="../../guide/booting/">Booting your
-application</a> covers what runs and what to keep out of it.</p>
-<h2 id="a-schema-dump-cannot-be-parsed">A schema dump cannot be parsed<a class="headerlink" href="#a-schema-dump-cannot-be-parsed" title="Permanent link">&para;</a></h2>
-<p>An unreadable dump fails the run rather than being skipped, because the tables
-it defines would otherwise go missing from your model properties with nothing
-to say so. Options, in order of preference: fix the dump, choose the other
-parser with <a href="../../reference/configuration/#sqlparser"><code>sqlParser</code></a>, or set
-<code>scanSchema: false</code> to opt out of dumps entirely.</p>
-<p>The <code>iamcal</code> and <code>phpmyadmin</code> drivers parse MySQL dumps. PostgreSQL plain-text
-dumps require <code>calebdw/pg-schema-parser</code>; use <code>sqlParser: postgres</code> when a MySQL
-parser is also installed. Custom and directory-format dumps cannot be scanned.</p>
-<!-- links -->
+<h2 id="batched-unique-job">Batched unique job<a class="headerlink" href="#batched-unique-job" title="Permanent link">&para;</a></h2>
+<p><code>laravel.uniqueJob.batched</code> &middot; option <code>rules.batchedUniqueJob</code> &middot; off by default</p>
+<p>A <code>ShouldBeUnique</code> job must not be dispatched through <code>Bus::batch()</code>,
+<code>Bus::bulk()</code>, or <code>Queue::bulk()</code>. Bulk dispatch skips the uniqueness lock;
+batching a unique job can leave the batch hanging when a duplicate is
+dropped.</p>
+<h3 id="examples_2">Examples<a class="headerlink" href="#examples_2" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nx">Bus</span><span class="o">::</span><span class="na">batch</span><span class="p">([</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="k">new</span> <span class="nx">SyncCompany</span><span class="p">(</span><span class="nv">$companyId</span><span class="p">),</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="p">]);</span>
+</span></code></pre></div>
+<p>Will result in the following error:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Unique job App\Jobs\SyncCompany is dispatched via batch().
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>💡 Dispatch unique jobs individually to preserve uniqueness.
+</span></code></pre></div>
+<h2 id="job-serializesmodels">Job SerializesModels<a class="headerlink" href="#job-serializesmodels" title="Permanent link">&para;</a></h2>
+<p><code>laravel.job.missingSerializesModels</code> &middot; option <code>rules.jobSerializesModels</code> &middot; off by default</p>
+<p>A queued job with a public Eloquent model property must use
+<code>SerializesModels</code>. Without it the model is serialized whole onto the queue
+and rehydrated from a stale dispatch-time snapshot.</p>
+<p>Only public properties are checked, including inherited and nullable model
+types. Abstract classes are skipped.</p>
+<h3 id="examples_3">Examples<a class="headerlink" href="#examples_3" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">class</span> <span class="nc">SendInvoice</span> <span class="k">implements</span> <span class="nx">ShouldQueue</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="p">{</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="k">public</span> <span class="nx">Invoice</span> <span class="nv">$invoice</span><span class="p">)</span> <span class="p">{}</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Will result in the following error:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Job App\Jobs\SendInvoice has model properties ($invoice) but does not use SerializesModels.
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>💡 Use the Illuminate\Queue\SerializesModels trait.
+</span></code></pre></div>
+<h2 id="batched-job-is-batchable">Batched job is Batchable<a class="headerlink" href="#batched-job-is-batchable" title="Permanent link">&para;</a></h2>
+<p><code>laravel.batchedJob.missingBatchable</code> &middot; option <code>rules.batchedJobIsBatchable</code> &middot; off by default</p>
+<p>Every queued job passed to <code>Bus::batch()</code> must use the <code>Batchable</code> trait,
+including jobs nested in chains. Only array literals are inspected.</p>
+<h3 id="examples_4">Examples<a class="headerlink" href="#examples_4" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nx">Bus</span><span class="o">::</span><span class="na">batch</span><span class="p">([</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="k">new</span> <span class="nx">RegularJob</span><span class="p">(),</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="p">]);</span>
+</span></code></pre></div>
+<p>Will result in the following error:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Job App\Jobs\RegularJob is batched but does not use Batchable.
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>💡 Use the Illuminate\Bus\Batchable trait.
+</span></code></pre></div>
+<h2 id="batchable-job-checks-cancellation">Batchable job checks cancellation<a class="headerlink" href="#batchable-job-checks-cancellation" title="Permanent link">&para;</a></h2>
+<p><code>laravel.batchableJob.missingCancellationCheck</code> &middot; option <code>rules.batchableJobChecksCancellation</code> &middot; off by default</p>
+<p>A queued job that uses <code>Batchable</code> must check <code>$this-&gt;batch()?-&gt;cancelled()</code>
+or register the <code>SkipIfBatchCancelled</code> middleware. Cancelling a batch only
+stops future jobs; jobs already on the queue still run unless they check.</p>
+<p>Each concrete job is checked using its effective methods, including methods
+inherited from parents and traits. Overriding a guarded method requires the
+subclass to provide its own check.</p>
+<h3 id="examples_5">Examples<a class="headerlink" href="#examples_5" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">class</span> <span class="nc">GenerateReport</span> <span class="k">implements</span> <span class="nx">ShouldQueue</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="p">{</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="k">use</span> <span class="nx">Batchable</span><span class="p">;</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">handle</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span> <span class="p">{}</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Will result in the following error:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Batchable job App\Jobs\GenerateReport does not check for batch cancellation.
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>💡 Check $this-&gt;batch()?-&gt;cancelled() or use the SkipIfBatchCancelled middleware.
+</span></code></pre></div>
+<h2 id="dispatch-in-transaction-aftercommit">Dispatch in transaction afterCommit<a class="headerlink" href="#dispatch-in-transaction-aftercommit" title="Permanent link">&para;</a></h2>
+<p><code>laravel.dispatchInTransaction.missingAfterCommit</code> &middot; option <code>rules.dispatchInTransactionAfterCommit</code> &middot; off by default</p>
+<p>A queued job dispatched inside <code>DB::transaction(...)</code> must defer until
+commit, by chaining <code>afterCommit()</code>, declaring <code>$afterCommit = true</code>, or
+implementing <code>ShouldQueueAfterCommit</code>. The last <code>afterCommit()</code> or
+<code>beforeCommit()</code> call in a dispatch chain takes precedence over the property
+default.</p>
+<p>If the job's queue connection has <code>after_commit</code> set in
+<code>config/queue.php</code>, Laravel already defers every job on that connection and
+the rule stays quiet. <code>onConnection()</code> and a job <code>$connection</code> property are
+honoured when they are constant.</p>
+<p>Only the <code>DB::transaction(Closure)</code> form is inspected. Synchronous dispatch
+(<code>dispatchSync</code>) and the Bus/Queue facades are left alone.</p>
+<h3 id="examples_6">Examples<a class="headerlink" href="#examples_6" title="Permanent link">&para;</a></h3>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nx">DB</span><span class="o">::</span><span class="na">transaction</span><span class="p">(</span><span class="k">function</span> <span class="p">()</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$product</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>    <span class="nx">NotifyOwner</span><span class="o">::</span><span class="na">dispatch</span><span class="p">(</span><span class="nv">$product</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">);</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="p">});</span>
+</span></code></pre></div>
+<p>Will result in the following error:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Job App\Jobs\NotifyOwner is dispatched inside a transaction without deferring until commit.
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>💡 Call afterCommit() on the dispatch or implement ShouldQueueAfterCommit.
+</span></code></pre></div>
 
 
 

@@ -58,6 +58,9 @@
         <loc>https://phpstan-laravel.dev/dev/rules/framework/</loc>
       </url>
       <url>
+        <loc>https://phpstan-laravel.dev/dev/rules/queue/</loc>
+      </url>
+      <url>
         <loc>https://phpstan-laravel.dev/dev/reference/configuration/</loc>
       </url>
       <url>
