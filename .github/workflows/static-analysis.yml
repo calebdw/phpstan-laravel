@@ -55,8 +55,8 @@ jobs:
         if: "matrix.dependencies == 'lowest'"
         run: "composer update --with='laravel/framework:${{ matrix.laravel }}' --no-interaction --no-progress --prefer-lowest"
 
-      - name: "Execute static analysis:types"
+      - name: "Execute static analysis types"
         run: "composer run-script test:types"
 
-      - name: "Execute static analysis:architecture"
+      - name: "Execute static analysis architecture"
         run: "composer run-script test:architecture"
