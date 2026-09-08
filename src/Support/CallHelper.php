@@ -8,11 +8,13 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\NullsafeMethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 
 use function array_intersect;
@@ -83,13 +85,25 @@ final class CallHelper
     }
 
     /** @param class-string|array<class-string> $classes */
-    public function isCalledOn(MethodCall|NullsafeMethodCall|StaticCall $node, Scope $scope, string|array $classes): bool
+    public function isCalledOn(MethodCall|New_|NullsafeMethodCall|StaticCall $node, Scope $scope, string|array $classes): bool
     {
         return $this->typeHelper->isCalledOn($this->receiverType($node, $scope), $classes);
     }
 
-    public function receiverType(MethodCall|NullsafeMethodCall|StaticCall $node, Scope $scope): Type
+    public function receiverType(MethodCall|New_|NullsafeMethodCall|StaticCall $node, Scope $scope): Type
     {
+        if ($node instanceof New_) {
+            if ($node->class instanceof Name) {
+                return $scope->resolveTypeByName($node->class)->getObjectTypeOrClassStringObjectType();
+            }
+
+            if (! $node->class instanceof Expr) {
+                return new MixedType();
+            }
+
+            return $scope->getType($node->class)->getObjectTypeOrClassStringObjectType();
+        }
+
         if ($node instanceof StaticCall) {
             $type = $node->class instanceof Name
                 ? $scope->resolveTypeByName($node->class)
@@ -99,6 +113,19 @@ final class CallHelper
         }
 
         return $scope->getType($node->var);
+    }
+
+    /** @return list<Expr> */
+    public function argValues(CallLike $node): array
+    {
+        if ($node->isFirstClassCallable()) {
+            return [];
+        }
+
+        return collect($node->getArgs())
+            ->map(static fn ($a) => $a->value)
+            ->values()
+            ->all();
     }
 
     /**

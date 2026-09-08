@@ -39,3 +39,17 @@ $post->enum('status', PostStatus::class); // PostStatus|null
 `$request->foo` is typed like `validated()['foo']` for keys in `rules()`.
 Runtime `__get` reads `all()` (unvalidated input and route params too); the
 type is the useful shape, not that bag.
+
+Inline `$request->validate($rules)` on `Illuminate\Http\Request` uses the
+same rule parser. The return value is the shape; after the call,
+`$request->title` is too.
+
+```php
+$data = $request->validate([
+    'title' => ['required', 'string'],
+    'age' => 'integer',
+]);
+// array{title: string, age?: int|numeric-string}
+
+$request->title; // string
+```

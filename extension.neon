@@ -442,6 +442,10 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\FormRequestSafeDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\RequestValidateExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Types\RequestValidateTypeSpecifyingExtension
+    tags: [phpstan.typeSpecifier.methodTypeSpecifyingExtension]
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthHelperInRequestScopeRule
   - class: CalebDW\PhpstanLaravel\Rules\NoModelForwardingToBuilderRule

@@ -23,6 +23,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
+use PHPStan\Analyser\Scope;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Reflection\ClassReflection;
@@ -38,6 +39,7 @@ use PHPStan\Type\FloatType;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\NullType;
+use PHPStan\Type\ObjectShapeType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
@@ -67,6 +69,8 @@ final class FormRequestHelper
     public function __construct(
         private Parser $parser,
         private ReflectionProvider $reflectionProvider,
+        private TypeHelper $typeHelper,
+        private CallHelper $callHelper,
     ) {
     }
 
@@ -99,6 +103,24 @@ final class FormRequestHelper
         $this->validatedShape($class);
 
         return $this->properties[$class->getCacheKey()][$name] ?? null;
+    }
+
+    public function shapeFromRulesExpr(Expr $expr, Scope $scope): Type|null
+    {
+        if (! $expr instanceof Array_) {
+            return null;
+        }
+
+        $fields = $this->fieldsFromArray($expr, $scope->getClassReflection(), $scope);
+
+        return $fields === [] ? null : $this->shape($fields);
+    }
+
+    public function objectShape(Type $shape): ObjectShapeType|null
+    {
+        $properties = $this->topLevel($shape);
+
+        return $properties === [] ? null : new ObjectShapeType($properties, []);
     }
 
     /** @param list<string> $keys */
@@ -179,7 +201,7 @@ final class FormRequestHelper
     }
 
     /** @return array<string, array{required: bool, nullable: bool, type: Type}> */
-    private function fieldsFromArray(Array_ $array, ClassReflection $class): array
+    private function fieldsFromArray(Array_ $array, ClassReflection|null $class, Scope|null $scope = null): array
     {
         $fields = [];
 
@@ -194,16 +216,16 @@ final class FormRequestHelper
                 continue;
             }
 
-            $fields[$path] = $this->fieldFromRules($item->value, $class);
+            $fields[$path] = $this->fieldFromRules($item->value, $class, $scope);
         }
 
         return $fields;
     }
 
     /** @return array{required: bool, nullable: bool, type: Type} */
-    private function fieldFromRules(Expr $expr, ClassReflection $class): array
+    private function fieldFromRules(Expr $expr, ClassReflection|null $class, Scope|null $scope = null): array
     {
-        $tokens   = $this->ruleTokens($expr, $class);
+        $tokens   = $this->ruleTokens($expr, $class, $scope);
         $required = in_array('required', $tokens['names'], true);
         $nullable = in_array('nullable', $tokens['names'], true);
 
@@ -215,7 +237,7 @@ final class FormRequestHelper
     }
 
     /** @return array{names: list<string>, enum: string|null, min: int|null, max: int|null, in: list<Type>} */
-    private function ruleTokens(Expr $expr, ClassReflection $class): array
+    private function ruleTokens(Expr $expr, ClassReflection|null $class, Scope|null $scope = null): array
     {
         $names = [];
         $enum  = null;
@@ -260,14 +282,14 @@ final class FormRequestHelper
                 continue;
             }
 
-            $enumClass = $this->enumClass($rule, $class);
+            $enumClass = $this->enumClass($rule, $class, $scope);
 
             if ($enumClass !== null) {
                 $names[] = 'enum';
                 $enum    = $enumClass;
             }
 
-            foreach ($this->inValues($rule, $class) as $value) {
+            foreach ($this->inValues($rule, $class, $scope) as $value) {
                 $names[] = 'in';
                 $in[]    = $value;
             }
@@ -292,10 +314,24 @@ final class FormRequestHelper
         return $rules;
     }
 
-    private function enumClass(Expr $expr, ClassReflection $inClass): string|null
+    private function enumClass(Expr $expr, ClassReflection|null $inClass, Scope|null $scope = null): string|null
     {
-        $args = $this->ruleCallArgs($expr, $inClass, Enum::class, 'enum');
+        $args = $this->ruleCallArgs($expr, $inClass, Enum::class, 'enum', $scope);
         $arg  = $args[0] ?? null;
+
+        if ($arg === null) {
+            return null;
+        }
+
+        if ($scope !== null) {
+            foreach ($this->typeHelper->constantStrings($scope->getType($arg)) as $class) {
+                if ($this->reflectionProvider->hasClass($class)) {
+                    return $this->reflectionProvider->getClass($class)->getName();
+                }
+            }
+
+            return null;
+        }
 
         if (! $arg instanceof ClassConstFetch || ! $arg->class instanceof Name || ! $arg->name instanceof Identifier || $arg->name->toString() !== 'class') {
             return null;
@@ -307,9 +343,9 @@ final class FormRequestHelper
     }
 
     /** @return list<Type> */
-    private function inValues(Expr $expr, ClassReflection $inClass): array
+    private function inValues(Expr $expr, ClassReflection|null $inClass, Scope|null $scope = null): array
     {
-        $args = $this->ruleCallArgs($expr, $inClass, In::class, 'in');
+        $args = $this->ruleCallArgs($expr, $inClass, In::class, 'in', $scope);
 
         if ($args === []) {
             return [];
@@ -318,6 +354,14 @@ final class FormRequestHelper
         $values = [];
 
         foreach ($args as $arg) {
+            if ($scope !== null) {
+                foreach ($this->typeHelper->constantValues($scope->getType($arg)) as $value) {
+                    $values[] = $value;
+                }
+
+                continue;
+            }
+
             foreach ($this->constantScalars($arg) as $value) {
                 $values[] = $value;
             }
@@ -326,9 +370,17 @@ final class FormRequestHelper
         return $values;
     }
 
-    /** @return list<Expr> */
-    private function ruleCallArgs(Expr $expr, ClassReflection $inClass, string $objectClass, string $staticMethod): array
+    /**
+     * @param class-string $objectClass
+     *
+     * @return list<Expr>
+     */
+    private function ruleCallArgs(Expr $expr, ClassReflection|null $inClass, string $objectClass, string $staticMethod, Scope|null $scope = null): array
     {
+        if ($scope !== null) {
+            return $this->scopedRuleCallArgs($expr, $objectClass, $staticMethod, $scope);
+        }
+
         if ($expr instanceof StaticCall) {
             if (! $expr->class instanceof Name || ! $expr->name instanceof Identifier) {
                 return [];
@@ -345,16 +397,32 @@ final class FormRequestHelper
             return [];
         }
 
-        $args = [];
-
-        foreach ($expr->getArgs() as $arg) {
-            $args[] = $arg->value;
-        }
-
-        return $args;
+        return $this->callHelper->argValues($expr);
     }
 
-    private function isClass(Name $name, ClassReflection $inClass, string $class): bool
+    /**
+     * @param class-string $objectClass
+     *
+     * @return list<Expr>
+     */
+    private function scopedRuleCallArgs(Expr $expr, string $objectClass, string $staticMethod, Scope $scope): array
+    {
+        if ($expr instanceof StaticCall) {
+            if ($this->callHelper->matchingNames($expr, $scope, $staticMethod) === [] || ! $this->callHelper->isCalledOn($expr, $scope, Rule::class)) {
+                return [];
+            }
+
+            return $this->callHelper->argValues($expr);
+        }
+
+        if (! $expr instanceof New_ || ! $this->callHelper->isCalledOn($expr, $scope, $objectClass)) {
+            return [];
+        }
+
+        return $this->callHelper->argValues($expr);
+    }
+
+    private function isClass(Name $name, ClassReflection|null $inClass, string $class): bool
     {
         $resolved = $this->resolveName($name, $inClass);
 
@@ -397,7 +465,7 @@ final class FormRequestHelper
         return (int) $value;
     }
 
-    private function resolveName(Name $name, ClassReflection $inClass): string
+    private function resolveName(Name $name, ClassReflection|null $inClass): string
     {
         if ($name->isFullyQualified()) {
             return $name->toString();
@@ -413,6 +481,10 @@ final class FormRequestHelper
 
         if ($this->reflectionProvider->hasClass($short)) {
             return $this->reflectionProvider->getClass($short)->getName();
+        }
+
+        if ($inClass === null) {
+            return $short;
         }
 
         $namespaced = $inClass->getNativeReflection()->getNamespaceName();

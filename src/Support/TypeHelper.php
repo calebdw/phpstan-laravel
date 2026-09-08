@@ -59,16 +59,25 @@ final class TypeHelper
         return collect($type->getObjectClassReflections())->every(static fn ($c) => $c->hasNativeProperty($name));
     }
 
-    /** @return list<string> */
-    public function constantStrings(Type $type): array
+    /** @return list<Type> */
+    public function constantValues(Type $type): array
     {
-        return collect($type->getConstantStrings())
-            ->map(static fn ($s) => $s->getValue())
+        return collect($type->getConstantScalarTypes())
             ->concat(
                 collect($type->getConstantArrays())
                     ->flatMap(static fn ($a) => $a->getValueTypes())
-                    ->flatMap($this->constantStrings(...)),
+                    ->flatMap($this->constantValues(...)),
             )
+            ->values()
+            ->all();
+    }
+
+    /** @return list<string> */
+    public function constantStrings(Type $type): array
+    {
+        return collect($this->constantValues($type))
+            ->flatMap(static fn ($t) => $t->getConstantStrings())
+            ->map(static fn ($s) => $s->getValue())
             ->values()
             ->all();
     }
