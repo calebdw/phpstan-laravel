@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Boundwize\StructArmed\Architecture;
 use Boundwize\StructArmed\Preset\Preset;
 use Boundwize\StructArmed\Preset\Presets\Psr4Preset;
+use Boundwize\StructArmed\Rule\Rules\Class_\MustBeFinalRule;
 
 return Architecture::define()
     ->skip([
@@ -19,7 +20,7 @@ return Architecture::define()
 
     ->rule(
         'source.must_be_final',
-        new \Boundwize\StructArmed\Rule\Rules\Class_\MustBeFinalRule('Source')
+        new MustBeFinalRule('Source'),
     )
 
     ->layer('Collectors', 'src/Collectors/')
