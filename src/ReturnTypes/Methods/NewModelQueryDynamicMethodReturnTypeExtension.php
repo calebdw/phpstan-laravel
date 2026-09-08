@@ -10,6 +10,8 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\StaticType;
+use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 
 use function collect;
@@ -40,9 +42,21 @@ class NewModelQueryDynamicMethodReturnTypeExtension implements DynamicMethodRetu
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
-        $classReflections = $scope->getType($methodCall->var)->getObjectClassReflections();
+        $calledOnType = $scope->getType($methodCall->var);
 
-        return collect($classReflections)
+        if ($calledOnType instanceof StaticType) {
+            if (! $calledOnType->getClassReflection()->is(Model::class)) {
+                return null;
+            }
+
+            return $this->builderHelper->getBuilderTypeForModels(
+                $calledOnType instanceof ThisType
+                    ? new StaticType($calledOnType->getClassReflection())
+                    : $calledOnType,
+            );
+        }
+
+        return collect($calledOnType->getObjectClassReflections())
             ->filter(static fn ($r) => $r->is(Model::class))
             ->map(static fn ($r) => $r->getName())
             ->pipe(fn ($m) => $m->isEmpty() ? null : $this->builderHelper->getBuilderTypeForModels($m->all()));

@@ -23,9 +23,35 @@ class AbstractModel extends Model
         assertType('static(Model\AbstractModel)', static::query()->create());
         return static::query()->create();
     }
+
+    public function newQueryKeepsStatic(): void
+    {
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', $this->newQuery());
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', $this->newModelQuery());
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', $this->newQueryWithoutRelationships());
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', $this->newQueryWithoutScopes());
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', $this->newQueryWithoutScope('foo'));
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', $this->newQueryForRestoration([1]));
+    }
+
+    /** @param static $model */
+    public function newQueryOnStaticReceiver($model): void
+    {
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', $model->newQuery());
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', $model->newModelQuery());
+    }
 }
 
 class Child extends AbstractModel {}
+
+final class FinalModel extends Model
+{
+    public function newQueryOnFinalModel(): void
+    {
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\FinalModel)>', $this->newQuery());
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\FinalModel)>', $this->newModelQuery());
+    }
+}
 
 class Foo
 {
@@ -43,6 +69,7 @@ class Bar extends Model
     {
         assertType('Illuminate\Database\Eloquent\Builder<Model\Bar>', self::query());
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', static::query());
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', $this->newQuery());
 
         assertType('Model\Bar|null', self::query()->first());
         assertType('static(Model\Bar)|null', static::query()->first());

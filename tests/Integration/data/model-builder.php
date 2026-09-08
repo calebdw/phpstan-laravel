@@ -18,6 +18,23 @@ class User extends Model
         return static::query();
     }
 
+    /** @param Builder<static> $query */
+    public function testNewQuerySatisfiesStatic(Builder $query): void
+    {
+    }
+
+    public function testPassNewQuery(): void
+    {
+        $this->testNewQuerySatisfiesStatic($this->newQuery());
+        $this->testNewQuerySatisfiesStatic($this->newModelQuery());
+    }
+
+    /** @return Builder<static> */
+    public function testReturnNewQuery(): Builder
+    {
+        return $this->newQuery();
+    }
+
     public static function testCreateStatic(): static
     {
         return static::query()->create();
