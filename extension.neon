@@ -164,6 +164,8 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Properties\ModelRelationsExtension
     tags: [phpstan.broker.propertiesClassReflectionExtension]
+  - class: CalebDW\PhpstanLaravel\Properties\FormRequestPropertyExtension
+    tags: [phpstan.broker.propertiesClassReflectionExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ModelOnlyDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ModelFactoryDynamicStaticMethodReturnTypeExtension
@@ -434,6 +436,10 @@ services:
     arguments: {configDirectories: %laravel.configDirectories%, parser: @currentPhpVersionSimpleDirectParser, treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%}
   - class: CalebDW\PhpstanLaravel\Support\ColumnHelper
   - class: CalebDW\PhpstanLaravel\Support\SelectHelper
+  - class: CalebDW\PhpstanLaravel\Support\FormRequestHelper
+    arguments: {parser: @currentPhpVersionSimpleDirectParser}
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\FormRequestValidatedExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\FormRequestSafeDynamicMethodReturnTypeExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule

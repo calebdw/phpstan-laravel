@@ -2,4 +2,19 @@
 
 namespace Illuminate\Support;
 
-class ValidatedInput {}
+/**
+ * @template TData of array = array<string, mixed>
+ */
+class ValidatedInput
+{
+    /**
+     * @param  mixed  $keys
+     * @return TData
+     */
+    public function all($keys = null);
+
+    /**
+     * @return TData
+     */
+    public function toArray();
+}
