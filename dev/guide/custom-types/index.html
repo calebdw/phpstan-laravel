@@ -781,6 +781,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#builder-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        builder-of
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1366,6 +1377,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#builder-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        builder-of
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1411,6 +1433,9 @@ the given string is a valid blade view.</p>
 <p>If the string is not an existing blade view, the following error will be displayed by this extension.
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Parameter #1 $view of method TestClass::renderView() expects view-string, string given.  
 </span></code></pre></div></p>
+<p>The <code>view</code>, <code>html</code>, <code>text</code>, and <code>markdown</code> constructor arguments of
+<code>Illuminate\Mail\Mailables\Content</code> are also <code>view-string|null</code>, including named
+arguments. <code>htmlString</code> is rendered HTML and is not checked as a view name.</p>
 <p>When working with packages, all vendor-prefixed paths like <code>acme::example</code> may fail. As packages don't contain a Laravel app, the default skeleton from <code>orchestra/testbench</code> is used. This instance doesn't know about the package so views are not registered. Create a <code>testbench.yaml</code> file to <a href="https://packages.tools/testbench#package-service-providers">register</a> your service provider to solve this issue.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">providers</span><span class="p">:</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Acme\AcmeServiceProvider</span>
@@ -1419,6 +1444,52 @@ the given string is a valid blade view.</p>
 <p><code>model-property</code> extends the built-in <code>string</code> type and acts like a string in the type level. But during the analysis if this extension finds that an argument of the method or a function has a <code>model-property&lt;ModelName&gt;</code>, it'll try to check that the given argument value is actually a property of the model.</p>
 <p>All of the Laravel core methods have this type thanks to the stubs. So whenever you use a Eloquent builder, relation or a model method that expects a column, it'll be checked by this extension if the column actually exists. But you can also typehint any argument with <code>model-property</code> in your code.</p>
 <p>The type is only active when <a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a> is enabled. With it off, <code>model-property&lt;Model&gt;</code> behaves as a plain <code>string</code> and nothing is checked. There is no rule behind it: once the type is active, the mismatches are reported by PHPStan's ordinary argument checks, so they carry core identifiers such as <code>argument.type</code>. See <a href="../model-properties/#checking-column-names">checking column names</a> for a worked example.</p>
+<h2 id="builder-of">builder-of<a class="headerlink" href="#builder-of" title="Permanent link">&para;</a></h2>
+<p>The <code>builder-of&lt;Model&gt;</code> type resolves to the Eloquent builder for that model. A custom
+builder from <code>newEloquentBuilder()</code> or <code>#[UseEloquentBuilder]</code> is used when the model
+has one; otherwise it is <code>Illuminate\Database\Eloquent\Builder&lt;Model&gt;</code>.</p>
+<p>A union of models becomes a union of their builders. Generic arguments, <code>static</code>,
+<code>$this</code>, and intersections on the model are kept. Model query methods,
+<code>Collection::toQuery()</code>, and relation query builders use it so custom builders
+are retained.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">use</span> <span class="nx">App\User</span><span class="p">;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">use</span> <span class="nx">App\Post</span><span class="p">;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Builder</span><span class="p">;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="sd">/**</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="sd"> * @phpstan-return builder-of&lt;User&gt;</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="sd"> */</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">function</span> <span class="nf">getActiveUsers</span><span class="p">()</span><span class="o">:</span> <span class="nx">Builder</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="p">{</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="k">return</span> <span class="nx">User</span><span class="o">::</span><span class="na">query</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">'active'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="sd">/**</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="sd"> * @phpstan-param builder-of&lt;Post&gt; $postQuery</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="sd"> */</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="k">function</span> <span class="nf">publishPosts</span><span class="p">(</span><span class="nx">Builder</span> <span class="nv">$postQuery</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="p">{</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="nv">$postQuery</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">each</span><span class="p">(</span><span class="nx">fn</span> <span class="p">(</span><span class="nv">$post</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nv">$post</span><span class="o">-&gt;</span><span class="na">publish</span><span class="p">());</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>It also works with generic templates:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">use</span> <span class="nx">Illuminate\Database\Eloquent\Builder</span><span class="p">;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="sd">/**</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="sd"> * @template TModel of \Illuminate\Database\Eloquent\Model</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="sd"> */</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="k">class</span> <span class="nc">ModelRepository</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">{</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="sd">/**</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="sd">     * @phpstan-param class-string&lt;TModel&gt; $modelClass</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="sd">     * @phpstan-return builder-of&lt;TModel&gt;</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="sd">     */</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">getQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$modelClass</span><span class="p">)</span><span class="o">:</span> <span class="nx">Builder</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="p">{</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        <span class="k">return</span> <span class="nv">$modelClass</span><span class="o">::</span><span class="na">query</span><span class="p">();</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    <span class="p">}</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="p">}</span>
+</span></code></pre></div>
 
 
 

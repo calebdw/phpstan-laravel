@@ -2299,9 +2299,15 @@ of your own:</p>
 <p>Calling <code>getTree()</code>, which comes from the interface half, does not cost you the
 collection half.</p>
 <h3 id="paginators">Paginators<a class="headerlink" href="#paginators" title="Permanent link">&para;</a></h3>
-<p>A paginator over models hands back an Eloquent collection:</p>
+<p>A paginator over models hands back that model's collection, including a
+custom <code>newCollection()</code> / <code>CollectedBy</code> class. Non-model items stay a
+Support collection. Keys stay the paginator's <code>TKey</code> (typically <code>int</code>)
+rather than a benevolent <code>int|string</code>.</p>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">paginate</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getCollection</span><span class="p">();</span>
 </span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="c1">// Illuminate\Database\Eloquent\Collection&lt;int, App\User&gt;</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="nx">Account</span><span class="o">::</span><span class="na">paginate</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getCollection</span><span class="p">();</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="c1">// App\AccountCollection&lt;int, App\Account&gt;</span>
 </span></code></pre></div>
 <h2 id="managers">Managers<a class="headerlink" href="#managers" title="Permanent link">&para;</a></h2>
 <p>An <code>Illuminate\Support\Manager</code> subclass forwards unknown calls to its driver,
@@ -2403,7 +2409,8 @@ prefixed identifier, so you can ignore a category precisely. See
 <ul>
 <li><strong><code>modelForwardingToBuilder</code></strong> and <strong><code>modelStaticForwardingToBuilder</code></strong>
   (both off) for codebases that prefer <code>User::query()-&gt;where(...)</code> to
-  <code>User::where(...)</code>.</li>
+  <code>User::where(...)</code>. Larastan's later <code>noImplicitQueryBuilderCall</code> is the
+  same idea as one toggle; here instance and static stay separate.</li>
 <li><strong><code>configAccessor</code></strong> (on), described above.</li>
 <li><strong><code>strictContracts</code></strong> (off). By default <code>resolve(SomeContract::class)</code>
   infers the concrete class the container is bound to, which is convenient but

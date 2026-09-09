@@ -1778,6 +1778,10 @@ and the name of a rule is not the place to restate whether you want it.</p>
 <td><code>modelMake</code></td>
 </tr>
 <tr>
+<td><code>noImplicitQueryBuilderCall</code></td>
+<td><code>modelForwardingToBuilder</code> and <code>modelStaticForwardingToBuilder</code></td>
+</tr>
+<tr>
 <td><code>noUnnecessaryCollectionCall</code></td>
 <td><code>unnecessaryCollectionCall.enabled</code></td>
 </tr>
@@ -1823,8 +1827,10 @@ and the name of a rule is not the place to restate whether you want it.</p>
 </tr>
 </tbody>
 </table>
-<p>Two more came from the <code>calebdw/larastan</code> fork rather than from Larastan itself,
-so they only apply if that is where you are coming from:</p>
+<p>Larastan's <code>noImplicitQueryBuilderCall</code> is one toggle for both instance and
+static calls. Here they are two, both off by default. Enable both to match
+Larastan. The same pair existed in the <code>calebdw/larastan</code> fork under the names
+below, so they only need renaming if that is where you are coming from:</p>
 <table>
 <thead>
 <tr>
@@ -1843,7 +1849,7 @@ so they only apply if that is where you are coming from:</p>
 </tr>
 </tbody>
 </table>
-<p>Both stay off by default. See <a href="../rules/eloquent/#model-forwarding-to-builder">rules</a>.</p>
+<p>See <a href="../rules/eloquent/#model-forwarding-to-builder">rules</a>.</p>
 <p>The three <code>noUnnecessaryCollectionCall*</code> options are one rule with two filters, so they
 are now one structure:</p>
 <div class="language-diff highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="w"> </span>parameters:
@@ -1967,6 +1973,10 @@ more than one kind of error, the identifiers are grouped under a common stem.</p
 <td><code>laravel.modelMake</code></td>
 </tr>
 <tr>
+<td><code>larastan.noImplicitQueryBuilderCall</code></td>
+<td><code>laravel.modelForwardingToBuilder</code> / <code>laravel.modelStaticForwardingToBuilder</code></td>
+</tr>
+<tr>
 <td><code>larastan.noEnvCallsOutsideOfConfig</code></td>
 <td><code>laravel.envCallOutsideConfig</code></td>
 </tr>
@@ -2046,6 +2056,10 @@ more than one kind of error, the identifiers are grouped under a common stem.</p
 <code>deferrableServiceProvider.missingProvides</code>.</p>
 <p>Two plurals became singular&mdash;<code>unusedViews</code> and <code>missingTranslations</code>&mdash;because each
 error is about one view or one translation.</p>
+<p><code>larastan.noImplicitQueryBuilderCall</code> is one identifier covering instance and
+static calls. Here those are <code>laravel.modelForwardingToBuilder</code> and
+<code>laravel.modelStaticForwardingToBuilder</code>. Regenerating the baseline is the
+reliable split; a mechanical rewrite cannot know which call was which.</p>
 <p>Two identifiers came from the <code>calebdw/larastan</code> fork rather than from upstream.
 The script below rewrites them along with the rest, since they follow the same
 shape:</p>
@@ -2080,24 +2094,25 @@ covering every typed accessor, and reports under <code>laravel.configAccessor</c
 names lose a plural, and four are regrouped. The specific cases have to run before the
 general ones. Review the diff before committing:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sed<span class="w"> </span>-i<span class="w"> </span>-E<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noEnvCallsOutsideOfConfig\b/laravel.envCallOutsideConfig/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noAuthFacadeInRequestScope\b/laravel.authInRequestScope.facade/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noAuthHelperInRequestScope\b/laravel.authInRequestScope.helper/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelScopeMethod\b/laravel.modelMethodVisibility.scope/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelAccessorMethod\b/laravel.modelMethodVisibility.accessor/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.unusedViews\b/laravel.unusedView/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.missingTranslations\b/laravel.missingTranslation/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.uniqueJobUniqueFor\b/laravel.uniqueJob.missingUniqueFor/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.uniqueJobUniqueId\b/laravel.uniqueJob.missingUniqueId/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noBatchedUniqueJob\b/laravel.uniqueJob.batched/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.jobSerializesModels\b/laravel.job.missingSerializesModels/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.batchedJobIsBatchable\b/laravel.batchedJob.missingBatchable/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.batchableJobChecksCancellation\b/laravel.batchableJob.missingCancellationCheck/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.dispatchInTransactionAfterCommit\b/laravel.dispatchInTransaction.missingAfterCommit/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.no([A-Z])/laravel.\l\1/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\./laravel./g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\brules\.modelAppends\b/laravel.modelAppends/g'</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">  </span>phpstan-baseline.neon
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noImplicitQueryBuilderCall\b/laravel.modelForwardingToBuilder/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noEnvCallsOutsideOfConfig\b/laravel.envCallOutsideConfig/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noAuthFacadeInRequestScope\b/laravel.authInRequestScope.facade/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noAuthHelperInRequestScope\b/laravel.authInRequestScope.helper/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelScopeMethod\b/laravel.modelMethodVisibility.scope/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noPublicModelAccessorMethod\b/laravel.modelMethodVisibility.accessor/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.unusedViews\b/laravel.unusedView/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.missingTranslations\b/laravel.missingTranslation/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.uniqueJobUniqueFor\b/laravel.uniqueJob.missingUniqueFor/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.uniqueJobUniqueId\b/laravel.uniqueJob.missingUniqueId/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.noBatchedUniqueJob\b/laravel.uniqueJob.batched/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.jobSerializesModels\b/laravel.job.missingSerializesModels/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.batchedJobIsBatchable\b/laravel.batchedJob.missingBatchable/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.batchableJobChecksCancellation\b/laravel.batchableJob.missingCancellationCheck/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.dispatchInTransactionAfterCommit\b/laravel.dispatchInTransaction.missingAfterCommit/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\.no([A-Z])/laravel.\l\1/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\blarastan\./laravel./g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">  </span>-e<span class="w"> </span><span class="s1">'s/\brules\.modelAppends\b/laravel.modelAppends/g'</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="w">  </span>phpstan-baseline.neon
 </span></code></pre></div>
 <p>Inline ignore comments have to be updated in your source as well. The same script works
 on them, with the file list swapped:</p>

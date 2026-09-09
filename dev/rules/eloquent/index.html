@@ -1915,18 +1915,19 @@ It helps prevent hidden coupling and unexpected behaviors by ensuring you explic
 </span></code></pre></div>
 <h2 id="relation-existence">Relation existence<a class="headerlink" href="#relation-existence" title="Permanent link">&para;</a></h2>
 <p><code>laravel.relationExistence</code> &middot; always enabled</p>
-<p>Checks that the relations passed to the Eloquent builder methods below exist.
-Nested relations are supported.</p>
-<p>Supported Eloquent builder methods are:
-- <code>has</code>
-- <code>orHas</code>
-- <code>doesntHave</code>
-- <code>orDoesntHave</code>
-- <code>whereHas</code>
-- <code>withWhereHas</code>
-- <code>orWhereHas</code>
-- <code>whereDoesntHave</code>
-- <code>orWhereDoesntHave</code></p>
+<p>Checks relation names on Eloquent models, builders, and relations. It also
+checks <code>load*</code> on Eloquent collections and model <code>$with</code> / <code>$withCount</code> defaults.</p>
+<p>Supported methods include:</p>
+<ul>
+<li><code>has</code>, <code>orHas</code>, <code>doesntHave</code>, <code>orDoesntHave</code>, and their <code>*Morph</code> variants</li>
+<li><code>whereHas</code>, <code>orWhereHas</code>, <code>whereDoesntHave</code>, <code>orWhereDoesntHave</code>, and their <code>*Morph</code> variants</li>
+<li><code>whereRelation</code>, <code>orWhereRelation</code>, <code>whereDoesntHaveRelation</code>, <code>orWhereDoesntHaveRelation</code>, and their morph variants</li>
+<li><code>withWhereHas</code>, <code>withWhereRelation</code>, <code>with</code>, <code>withOnly</code>, <code>load</code>, and <code>loadMissing</code></li>
+<li><code>withAggregate</code>, <code>withCount</code>, <code>withMax</code>, <code>withMin</code>, <code>withSum</code>, <code>withAvg</code>, <code>withExists</code>, and the matching <code>load*</code> methods</li>
+</ul>
+<p>Eager loading supports dotted paths, constraint arrays, nested arrays, and
+column selectors such as <code>accounts.transactions:id</code>. Aggregate methods and
+<code>$withCount</code> accept aliases such as <code>accounts as total</code>.</p>
 <h3 id="examples_5">Examples<a class="headerlink" href="#examples_5" title="Permanent link">&para;</a></h3>
 <p>For the following code:
 <div class="language-php highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nx">\App\User</span><span class="o">::</span><span class="na">query</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">has</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
