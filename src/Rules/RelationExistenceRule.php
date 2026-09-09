@@ -5,45 +5,77 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Rules;
 
 use CalebDW\PhpstanLaravel\Support\CallHelper;
-use CalebDW\PhpstanLaravel\Support\ModelRuleHelper;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use CalebDW\PhpstanLaravel\Support\RelationExistenceHelper;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\NullsafeMethodCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
-use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\Type;
 
-use function array_map;
 use function array_merge;
-use function explode;
-use function sprintf;
-use function str_contains;
+use function in_array;
+use function str_starts_with;
+use function strtolower;
 
 /** @implements Rule<Node\Expr\CallLike> */
 final class RelationExistenceRule implements Rule
 {
     private const array METHODS = [
-        'has',
-        'with',
-        'orHas',
-        'doesntHave',
-        'orDoesntHave',
-        'whereHas',
-        'withWhereHas',
-        'orWhereHas',
-        'whereDoesntHave',
-        'orWhereDoesntHave',
-        'whereRelation',
+        'has'                            => 1,
+        'orhas'                          => 1,
+        'doesnthave'                     => 1,
+        'ordoesnthave'                   => 1,
+        'wherehas'                       => 1,
+        'withwherehas'                   => 1,
+        'orwherehas'                     => 1,
+        'wheredoesnthave'                => 1,
+        'orwheredoesnthave'              => 1,
+        'whererelation'                  => 1,
+        'orwhererelation'                => 1,
+        'withwhererelation'              => 1,
+        'wheredoesnthaverelation'        => 1,
+        'orwheredoesnthaverelation'      => 1,
+        'hasmorph'                       => 1,
+        'orhasmorph'                     => 1,
+        'doesnthavemorph'                => 1,
+        'ordoesnthavemorph'              => 1,
+        'wherehasmorph'                  => 1,
+        'orwherehasmorph'                => 1,
+        'wheredoesnthavemorph'           => 1,
+        'orwheredoesnthavemorph'         => 1,
+        'wheremorphrelation'             => 1,
+        'orwheremorphrelation'           => 1,
+        'wheremorphdoesnthaverelation'   => 1,
+        'orwheremorphdoesnthaverelation' => 1,
+        'with'                           => 1,
+        'withonly'                       => 1,
+        'load'                           => 1,
+        'loadmissing'                    => 1,
+    ];
+
+    private const array AGGREGATES = [
+        'withaggregate' => 1,
+        'withcount'     => 1,
+        'withmax'       => 1,
+        'withmin'       => 1,
+        'withsum'       => 1,
+        'withavg'       => 1,
+        'withexists'    => 1,
+        'loadaggregate' => 1,
+        'loadcount'     => 1,
+        'loadmax'       => 1,
+        'loadmin'       => 1,
+        'loadsum'       => 1,
+        'loadavg'       => 1,
+        'loadexists'    => 1,
     ];
 
     public function __construct(
-        private ModelRuleHelper $modelRuleHelper,
+        private RelationExistenceHelper $relationExistenceHelper,
         private CallHelper $callHelper,
     ) {
     }
@@ -56,129 +88,53 @@ final class RelationExistenceRule implements Rule
     /** @return RuleError[] */
     public function processNode(Node $node, Scope $scope): array
     {
-        if (! $node instanceof MethodCall && ! $node instanceof Node\Expr\StaticCall) {
+        if ((! $node instanceof MethodCall && ! $node instanceof NullsafeMethodCall && ! $node instanceof Node\Expr\StaticCall) || ! $node->name instanceof Node\Identifier || $node->isFirstClassCallable() || $node->getAttribute('virtualNullsafeMethodCall', false)) {
             return [];
         }
 
-        if ($this->callHelper->matchingNames($node, $scope, self::METHODS) === []) {
+        $method = strtolower($node->name->name);
+
+        if (! isset(self::METHODS[$method]) && ! isset(self::AGGREGATES[$method])) {
             return [];
         }
+
+        $aggregate = isset(self::AGGREGATES[$method]);
 
         $args = $node->getArgs();
 
-        if ($args === []) {
+        if ($args === [] || $args[0]->unpack) {
             return [];
         }
 
-        $valueType = $scope->getType($args[0]->value);
-
-        /** @var ConstantStringType[] $relations */
-        $relations = [];
-
-        if ($valueType->isConstantArray()->yes()) {
-            $arrays = $valueType->getConstantArrays();
-
-            foreach ($arrays as $array) {
-                $relations = array_merge(
-                    $relations,
-                    ...array_map(static function (Type $type) {
-                        return $type->getConstantStrings();
-                    }, $array->getKeyTypes()),
-                    ...array_map(static function (Type $type) {
-                        return $type->getConstantStrings();
-                    }, $array->getValueTypes()),
-                );
+        foreach ($args as $arg) {
+            if ($arg->name !== null && in_array($arg->name->toString(), ['relation', 'relations'], true)) {
+                $args = [$arg];
+                break;
             }
-        } else {
-            $constants = $valueType->getConstantStrings();
-
-            if ($constants === []) {
-                return [];
-            }
-
-            $relations = $constants;
         }
 
-        $errors = [];
+        $type       = $this->callHelper->receiverType($node, $scope);
+        $collection = (new ObjectType(Collection::class))->isSuperTypeOf($type)->yes();
 
-        foreach ($relations as $relationType) {
-            $relationName = explode(':', $relationType->getValue())[0];
+        if ($collection && str_starts_with($method, 'load')) {
+            $type = $type->getTemplateType(Collection::class, 'TModel');
+        } elseif ($collection) {
+            return [];
+        }
 
-            $calledOnNode = $node instanceof MethodCall ? $node->var : $node->class;
+        $variadic = in_array($method, ['with', 'load', 'loadmissing', 'withcount'], true)
+            || ($method === 'loadcount' && ! $collection && (new ObjectType(Model::class))->isSuperTypeOf($type)->yes());
+        $args     = $variadic && $scope->getType($args[0]->value)->isString()->yes() ? $args : [$args[0]];
+        $errors   = [];
 
-            if ($calledOnNode instanceof Node\Name) {
-                $calledOnType = new ObjectType($calledOnNode->toString());
-            } else {
-                $calledOnType = $scope->getType($calledOnNode);
+        foreach ($args as $arg) {
+            if ($arg->unpack) {
+                continue;
             }
 
-            $closure = function (Type $calledOnType, string $relationName, Node\Expr\CallLike $node) use ($scope): array {
-                $modelReflection = $this->modelRuleHelper->findModelReflectionFromType($calledOnType);
-
-                if ($modelReflection === null) {
-                    return [];
-                }
-
-                if (! $modelReflection->hasMethod($relationName)) {
-                    return [
-                        $this->getRuleError($relationName, $modelReflection, $node),
-                    ];
-                }
-
-                $relationMethod = $modelReflection->getMethod($relationName, $scope);
-
-                if (! (new ObjectType(Relation::class))->isSuperTypeOf(ParametersAcceptorSelector::selectFromArgs($scope, $node->getArgs(), $relationMethod->getVariants())->getReturnType())->yes()) {
-                    return [
-                        $this->getRuleError($relationName, $modelReflection, $node),
-                    ];
-                }
-
-                return [];
-            };
-
-            if (str_contains($relationName, '.')) {
-                // Nested relations
-                $relations = explode('.', $relationName);
-
-                foreach ($relations as $relation) {
-                    $result = $closure($calledOnType, $relation, $node);
-
-                    if ($result !== []) {
-                        return $result;
-                    }
-
-                    $modelReflection = $this->modelRuleHelper->findModelReflectionFromType($calledOnType);
-
-                    if ($modelReflection === null) {
-                        return [];
-                    }
-
-                    // Dynamic method return type extensions are not taken into account here.
-                    // So we simulate a method call to the relation here to get the return type.
-                    $calledOnType = $scope->getType(new MethodCall(new Node\Expr\New_(new Node\Name($modelReflection->getName())), new Node\Identifier($relation)));
-                }
-
-                return [];
-            }
-
-            $errors = array_merge($errors, $closure($calledOnType, $relationName, $node));
+            $errors = array_merge($errors, $this->relationExistenceHelper->check($scope->getType($arg->value), $type, $node, $scope, $aggregate));
         }
 
         return $errors;
-    }
-
-    private function getRuleError(
-        string $relationName,
-        ClassReflection $modelReflection,
-        Node $node,
-    ): RuleError {
-        return RuleErrorBuilder::message(sprintf(
-            "Relation '%s' is not found in %s model.",
-            $relationName,
-            $modelReflection->getName(),
-        ))
-            ->identifier('laravel.relationExistence')
-            ->line($node->getAttribute('startLine'))
-            ->build();
     }
 }

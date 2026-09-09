@@ -197,19 +197,20 @@ parameters:
 
 `laravel.relationExistence` &middot; always enabled
 
-Checks that the relations passed to the Eloquent builder methods below exist.
-Nested relations are supported.
+Checks relation names on Eloquent models, builders, and relations. It also
+checks `load*` on Eloquent collections and model `$with` / `$withCount` defaults.
 
-Supported Eloquent builder methods are:
-- `has`
-- `orHas`
-- `doesntHave`
-- `orDoesntHave`
-- `whereHas`
-- `withWhereHas`
-- `orWhereHas`
-- `whereDoesntHave`
-- `orWhereDoesntHave`
+Supported methods include:
+
+- `has`, `orHas`, `doesntHave`, `orDoesntHave`, and their `*Morph` variants
+- `whereHas`, `orWhereHas`, `whereDoesntHave`, `orWhereDoesntHave`, and their `*Morph` variants
+- `whereRelation`, `orWhereRelation`, `whereDoesntHaveRelation`, `orWhereDoesntHaveRelation`, and their morph variants
+- `withWhereHas`, `withWhereRelation`, `with`, `withOnly`, `load`, and `loadMissing`
+- `withAggregate`, `withCount`, `withMax`, `withMin`, `withSum`, `withAvg`, `withExists`, and the matching `load*` methods
+
+Eager loading supports dotted paths, constraint arrays, nested arrays, and
+column selectors such as `accounts.transactions:id`. Aggregate methods and
+`$withCount` accept aliases such as `accounts as total`.
 
 ### Examples
 

@@ -21,7 +21,8 @@ final class ModelRuleHelper
         $this->modelType = new ObjectType(Model::class);
     }
 
-    public function findModelReflectionFromType(Type $type): ClassReflection|null
+    /** @return list<ClassReflection> */
+    public function findModelReflectionsFromType(Type $type): array
     {
         $type = TypeCombinator::removeNull($type);
 
@@ -32,22 +33,26 @@ final class ModelRuleHelper
             : $this->builderHelper->getModelType($type);
 
         if ($modelType === null) {
-            return null;
+            return [];
         }
 
-        $classReflections = TypeCombinator::removeNull($modelType)->getObjectClassReflections();
+        $models = [];
 
-        if (count($classReflections) !== 1) {
-            return null;
+        foreach (TypeCombinator::removeNull($modelType)->getObjectClassReflections() as $class) {
+            if ($class->getName() === Model::class || $class->isAbstract() || ! $class->is(Model::class)) {
+                continue;
+            }
+
+            $models[] = $class;
         }
 
-        $modelReflection = $classReflections[0];
+        return $models;
+    }
 
-        // A bare Model is the unresolved template bound, not a real model.
-        if ($modelReflection->getName() === Model::class || $modelReflection->isAbstract()) {
-            return null;
-        }
+    public function findModelReflectionFromType(Type $type): ClassReflection|null
+    {
+        $models = $this->findModelReflectionsFromType($type);
 
-        return $modelReflection;
+        return count($models) === 1 ? $models[0] : null;
     }
 }

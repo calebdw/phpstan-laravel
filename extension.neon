@@ -306,7 +306,10 @@ services:
   - class: CalebDW\PhpstanLaravel\Support\ModelRuleHelper
   - class: CalebDW\PhpstanLaravel\Support\BuilderHelper
     arguments: {checkProperties: %laravel.modelPropertyType%}
+  - class: CalebDW\PhpstanLaravel\Support\RelationExistenceHelper
   - class: CalebDW\PhpstanLaravel\Rules\RelationExistenceRule
+    tags: [phpstan.rules.rule]
+  - class: CalebDW\PhpstanLaravel\Rules\ModelRelationDefaultsRule
     tags: [phpstan.rules.rule]
   - class: CalebDW\PhpstanLaravel\Rules\CheckDispatchArgumentTypesCompatibleWithClassConstructorRule
     arguments: {dispatchableClass: Illuminate\Foundation\Bus\Dispatchable}
