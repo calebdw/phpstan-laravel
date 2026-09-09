@@ -111,3 +111,9 @@ class UniqueUntilProcessingJob implements ShouldQueue, ShouldBeUniqueUntilProces
     {
     }
 }
+
+#[\Illuminate\Queue\Attributes\UniqueFor(3600)]
+class UniqueJobWithUniqueForAttribute implements ShouldQueue, ShouldBeUnique
+{
+
+}
