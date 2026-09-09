@@ -4,63 +4,47 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use CalebDW\PhpstanLaravel\Reflection\ClosureQueryParameterReflection;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Name;
-use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\ClosureType;
-use PHPStan\Type\MixedType;
-use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\StringType;
+use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\TypeTraverser;
+use PHPStan\Type\TypeUtils;
 
-use function array_push;
-use function array_shift;
-use function collect;
-use function count;
-use function explode;
 use function in_array;
 
 final class RelationClosureHelper
 {
-    /** @var list<string> */
-    private array $methods = [
-        'has',
-        'doesntHave',
-        'whereHas',
-        'withWhereHas',
-        'orWhereHas',
-        'whereDoesntHave',
-        'orWhereDoesntHave',
-        'whereRelation',
-        'orWhereRelation',
+    private const array CALLBACK = [
+        'with'                 => 1,
+        'withWhereHas'         => 1,
+        'hasMorph'             => 1,
+        'doesntHaveMorph'      => 1,
+        'whereHasMorph'        => 1,
+        'orWhereHasMorph'      => 1,
+        'whereDoesntHaveMorph' => 1,
+        'orWhereDoesntHaveMorph' => 1,
     ];
 
-    /** @var list<string> */
-    private array $morphMethods = [
-        'hasMorph',
-        'doesntHaveMorph',
-        'whereHasMorph',
-        'orWhereHasMorph',
-        'whereDoesntHaveMorph',
-        'orWhereDoesntHaveMorph',
-        'whereMorphRelation',
-        'orWhereMorphRelation',
+    private const array COLUMN = [
+        'withWhereRelation'                => 1,
+        'whereMorphRelation'               => 1,
+        'orWhereMorphRelation'             => 1,
+        'whereMorphDoesntHaveRelation'     => 1,
+        'orWhereMorphDoesntHaveRelation'   => 1,
     ];
 
-    public function __construct(
-        private BuilderHelper $builderHelper,
-        private TypeHelper $typeHelper,
-    ) {
+    public function __construct(private BuilderHelper $builderHelper)
+    {
     }
 
     public function isMethodSupported(MethodReflection $methodReflection, ParameterReflection $parameter): bool
@@ -69,7 +53,13 @@ final class RelationClosureHelper
             return false;
         }
 
-        return in_array($methodReflection->getName(), [...$this->methods, ...$this->morphMethods], strict: true);
+        $method = $methodReflection->getName();
+
+        return match ($parameter->getName()) {
+            'callback' => isset(self::CALLBACK[$method]),
+            'column'   => isset(self::COLUMN[$method]),
+            default    => false,
+        };
     }
 
     public function getTypeFromMethodCall(
@@ -78,153 +68,104 @@ final class RelationClosureHelper
         ParameterReflection $parameter,
         Scope $scope,
     ): Type|null {
-        $method        = $methodReflection->getName();
-        $isMorphMethod = in_array($method, $this->morphMethods, strict: true);
-        $models        = [];
-        $relations     = [];
+        $arguments = [];
 
-        if ($isMorphMethod) {
-            $models = $this->getMorphModels($methodCall, $scope);
-        } else {
-            $relations = $this->getRelationsFromMethodCall($methodCall, $scope);
-            $models    = $this->getModelsFromRelations($relations);
+        foreach ($methodCall->getArgs() as $position => $argument) {
+            $arguments[$argument->name?->toString() ?? $position] = $argument->value;
         }
 
-        if (count($models) === 0) {
+        $method   = $methodReflection->getName();
+        $relation = $arguments[$method === 'with' ? 'relations' : 'relation'] ?? $arguments[0] ?? null;
+        $types    = $arguments['types'] ?? $arguments[1] ?? null;
+        $model    = $methodReflection->getDeclaringClass()->getActiveTemplateTypeMap()->getType('TModel');
+
+        if ($relation === null || $model === null) {
             return null;
         }
 
-        $type = $this->builderHelper->getBuilderTypeForModels($models);
+        if (in_array($method, ['with', 'withWhereHas', 'withWhereRelation'], true)) {
+            $queryType = $this->eagerCallbackType($model, $scope->getType($relation), $method !== 'with');
 
-        if ($method === 'withWhereHas') {
-            $type = TypeCombinator::union($type, ...$relations);
+            if ($queryType === null) {
+                return null;
+            }
+        } else {
+            if ($types === null) {
+                return null;
+            }
+
+            $fallback = [];
+
+            foreach (TypeUtils::flattenTypes($scope->getType($relation)) as $relationType) {
+                $fallback[] = $relationType->isString()->yes()
+                    ? $this->builderHelper->determineBuilderType($model, $relationType)
+                    : $this->builderHelper->determineBuilderType($relationType->getTemplateType(Relation::class, 'TRelatedModel'));
+            }
+
+            $fallback = TypeCombinator::union(...$fallback);
+            $builders = [];
+
+            foreach (TypeUtils::flattenTypes($scope->getType($types)) as $type) {
+                if ($type->isArray()->yes()) {
+                    $type = $type->getIterableValueType();
+                }
+
+                foreach (TypeUtils::flattenTypes($type) as $target) {
+                    $objectType = $target->getClassStringObjectType();
+                    $builders[] = $target->isClassString()->yes() && (new ObjectType(Model::class))->isSuperTypeOf($objectType)->yes()
+                        ? $this->builderHelper->determineBuilderType($objectType)
+                        : $fallback;
+                }
+            }
+
+            $queryType = TypeCombinator::union(...$builders);
         }
 
-        return new ClosureType([
-            new ClosureQueryParameterReflection('query', $type),
-            new ClosureQueryParameterReflection('type', $isMorphMethod ? new StringType() : new NeverType()),
-        ], new MixedType());
+        return TypeTraverser::map($parameter->getType(), static function (Type $type, callable $traverse) use ($queryType): Type {
+            if ($type instanceof ClosureType) {
+                return $type->traverse(static fn (Type $parameterType): Type => TypeCombinator::union(new ObjectType(EloquentBuilder::class), new ObjectType(Relation::class))->isSuperTypeOf($parameterType)->yes()
+                    ? $queryType
+                    : $parameterType);
+            }
+
+            return $traverse($type);
+        });
     }
 
-    /** @return array<int, string> */
-    private function getMorphModels(MethodCall|StaticCall $methodCall, Scope $scope): array
+    private function eagerCallbackType(Type $modelType, Type $relationNames, bool $includeBuilder): Type|null
     {
-        $models = null;
-
-        foreach ($methodCall->args as $i => $arg) {
-            if ($arg instanceof VariadicPlaceholder) {
-                continue;
-            }
-
-            if (($i === 1 && $arg->name === null) || $arg->name?->toString() === 'types') {
-                $models = $scope->getType($arg->value);
-                break;
-            }
-        }
-
-        if ($models === null) {
-            return [];
-        }
-
-        return collect($this->typeHelper->constantStrings($models))
-            ->map(static fn (string $v) => $v === '*' ? Model::class : $v)
-            ->values()
-            ->all();
-    }
-
-    /**
-     * @param array<int, Type> $relations
-     *
-     * @return array<int, string>
-     */
-    private function getModelsFromRelations(array $relations): array
-    {
-        return collect($relations)
-            ->flatMap(
-                static fn (Type $relation) => $relation
-                    ->getTemplateType(Relation::class, 'TRelatedModel')
-                    ->getObjectClassNames(),
-            )
-            ->values()
-            ->all();
-    }
-
-    /** @return array<int, Type> */
-    public function getRelationsFromMethodCall(MethodCall|StaticCall $methodCall, Scope $scope): array
-    {
-        $relationType = null;
-
-        foreach ($methodCall->args as $arg) {
-            if ($arg instanceof VariadicPlaceholder) {
-                continue;
-            }
-
-            if ($arg->name === null || $arg->name->toString() === 'relation') {
-                $relationType = $scope->getType($arg->value);
-                break;
-            }
-        }
+        $relationType = $relationNames->isConstantScalarValue()->yes()
+            ? $this->builderHelper->relationType($modelType, $relationNames)
+            : $this->relationObjectType($relationNames);
 
         if ($relationType === null) {
-            return [];
+            return null;
         }
 
-        if ($methodCall instanceof MethodCall) {
-            $callerType     = $scope->getType($methodCall->var);
-            $calledOnModels = $callerType->getTemplateType(EloquentBuilder::class, 'TModel')->getObjectClassNames()
-                ?: $callerType->getTemplateType(Relation::class, 'TRelatedModel')->getObjectClassNames();
-        } else {
-            $calledOnModels = $methodCall->class instanceof Name
-                ? [$scope->resolveName($methodCall->class)]
-                : $scope->getType($methodCall->class)->getReferencedClasses();
-        }
+        $relationType = TypeTraverser::map(
+            $relationType,
+            static fn (Type $type, callable $traverse): Type => $type instanceof StaticType ? $type->getStaticObjectType() : $traverse($type),
+        );
 
-        return collect($this->typeHelper->constantStrings($relationType))
-            ->flatMap(fn ($relation) => $this->getRelationTypeFromString($calledOnModels, explode('.', $relation), $scope))
-            ->merge([$relationType])
-            ->filter(fn ($r) => $this->typeHelper->isCalledOn($r, Relation::class))
-            ->values()
-            ->all();
+        $builderType = $relationNames->isConstantScalarValue()->yes()
+            ? $this->builderHelper->determineBuilderType($modelType, $relationNames)
+            : $this->builderHelper->determineBuilderType($relationType->getTemplateType(Relation::class, 'TRelatedModel'));
+
+        return $includeBuilder ? TypeCombinator::union($builderType, $relationType) : $relationType;
     }
 
-    /**
-     * @param list<string> $calledOnModels
-     * @param list<string> $relationParts
-     *
-     * @return list<Type>
-     */
-    public function getRelationTypeFromString(
-        array $calledOnModels,
-        array $relationParts,
-        Scope $scope,
-    ): array {
+    private function relationObjectType(Type $type): Type|null
+    {
         $relations = [];
 
-        while ($relationName = array_shift($relationParts)) {
-            $relations     = [];
-            $relatedModels = [];
-
-            foreach ($calledOnModels as $model) {
-                $modelType = new ObjectType($model);
-
-                if (! $this->typeHelper->hasMethod($modelType, $relationName)) {
-                    continue;
-                }
-
-                $relationType = $modelType->getMethod($relationName, $scope)->getVariants()[0]->getReturnType();
-
-                if (! $this->typeHelper->isCalledOn($relationType, Relation::class)) {
-                    continue;
-                }
-
-                $relations[] = $relationType;
-
-                array_push($relatedModels, ...$relationType->getTemplateType(Relation::class, 'TRelatedModel')->getObjectClassNames());
+        foreach (TypeUtils::flattenTypes($type) as $member) {
+            if (! (new ObjectType(Relation::class))->isSuperTypeOf($member)->yes()) {
+                continue;
             }
 
-            $calledOnModels = $relatedModels;
+            $relations[] = $member;
         }
 
-        return $relations;
+        return $relations === [] ? null : TypeCombinator::union(...$relations);
     }
 }

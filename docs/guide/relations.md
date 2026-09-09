@@ -19,3 +19,9 @@ public function posts(): HasMany
     return $this->hasMany(Post::class);
 }
 ```
+
+`whereHas`, `whereRelation`, and the morph variants type the query callback as
+the related model's builder, including custom builders. `withWhereHas` and
+`with()` include the relation object as well. See
+[`builder-of`](custom-types.md#builder-of) for the `builder-of<User, 'posts'>`
+phpdoc form.

@@ -103,4 +103,21 @@ class ModelRepository
 }
 ```
 
+An optional second argument selects a relationship on the first model:
+
+```php
+/** @param builder-of<User, 'accounts'> $query */
+function filterAccounts(Builder $query): void
+{
+    $query->where('active', true);
+}
+```
+
+If `User::accounts()` relates to `Account`, this resolves to that model's
+builder, including a custom builder. Dotted paths such as
+`builder-of<User, 'posts.comments'>` resolve to the final related model.
+Unions of models or relation names become unions of builders. Paths that
+cannot resolve are discarded; if none resolve, the type falls back to
+`builder-of<User>`.
+
 

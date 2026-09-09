@@ -277,10 +277,10 @@ function test(
 
     $relation = random_int(0, 1) ? 'accounts' : 'address';
     User::whereHas($relation, function (Builder $query) {
-        assertType('Illuminate\Database\Eloquent\Builder<App\Account|App\Address>', $query);
+        assertType('Illuminate\Database\Eloquent\Builder<App\Account>|Illuminate\Database\Eloquent\Builder<App\Address>', $query);
     });
     User::withWhereHas($relation, function (Builder|Relation $query) {
-        assertType('Illuminate\Database\Eloquent\Builder<App\Account|App\Address>|Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>|Illuminate\Database\Eloquent\Relations\MorphMany<App\Address, App\User>', $query);
+        assertType('Illuminate\Database\Eloquent\Builder<App\Account>|Illuminate\Database\Eloquent\Builder<App\Address>|Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>|Illuminate\Database\Eloquent\Relations\MorphMany<App\Address, App\User>', $query);
     });
 
     $relation = random_int(0, 1) ? 'accounts.posts' : 'address';
@@ -293,10 +293,10 @@ function test(
 
     $relation = random_int(0, 1) ? $user->accounts() : $user->address();
     User::whereHas($relation, function (Builder $query) {
-        assertType('Illuminate\Database\Eloquent\Builder<App\Account|App\Address>', $query);
+        assertType('Illuminate\Database\Eloquent\Builder<App\Account>|Illuminate\Database\Eloquent\Builder<App\Address>', $query);
     });
     User::withWhereHas($relation, function (Builder|Relation $query) {
-        assertType('Illuminate\Database\Eloquent\Builder<App\Account|App\Address>|Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>|Illuminate\Database\Eloquent\Relations\MorphMany<App\Address, App\User>', $query);
+        assertType('Illuminate\Database\Eloquent\Builder<App\Account>|Illuminate\Database\Eloquent\Builder<App\Address>|Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>|Illuminate\Database\Eloquent\Relations\MorphMany<App\Address, App\User>', $query);
     });
 
     // currently a bug in PHPStan: https://github.com/phpstan/phpstan/issues/11742
@@ -316,7 +316,7 @@ function test(
         // assertType('Illuminate\Database\Eloquent\Builder<App\Transaction>', $query);
     });
 
-    Address::hasMorph('addressable', [User::class, Team::class], callable: function ($query) {
+    Address::hasMorph('addressable', [User::class, Team::class], callback: function ($query) {
         assertType('App\ChildTeamBuilder|Illuminate\Database\Eloquent\Builder<App\User>', $query);
     });
 
@@ -328,7 +328,7 @@ function test(
         assertType('Illuminate\Database\Eloquent\Builder<Illuminate\Database\Eloquent\Model>', $query);
     });
 
-    Address::doesntHaveMorph('addressable', [User::class], function (Builder $query) {
+    Address::doesntHaveMorph('addressable', [User::class], callback: function (Builder $query) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
     });
 

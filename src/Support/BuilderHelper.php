@@ -15,9 +15,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Str;
+use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
@@ -36,6 +38,7 @@ use function array_key_exists;
 use function array_shift;
 use function collect;
 use function count;
+use function explode;
 use function in_array;
 use function is_array;
 use function is_string;
@@ -316,8 +319,67 @@ final class BuilderHelper
             ->pipe(static fn ($types) => TypeCombinator::union(...$types));
     }
 
-    public function determineBuilderType(Type $modelType): Type
+    public function relationType(Type $modelType, Type $relationNames): Type|null
     {
+        if (TypeUtils::containsTemplateType($relationNames) || ! $relationNames->isConstantScalarValue()->yes()) {
+            return null;
+        }
+
+        $results = [];
+
+        foreach ($relationNames->getConstantStrings() as $relation) {
+            $relatedType  = $modelType;
+            $relationType = $modelType;
+
+            foreach (explode('.', explode(':', $relation->getValue(), 2)[0]) as $name) {
+                if ($name === '') {
+                    continue 2;
+                }
+
+                $relations = [];
+
+                foreach (TypeUtils::flattenTypes($relatedType) as $type) {
+                    if (! $type->hasMethod($name)->yes()) {
+                        continue;
+                    }
+
+                    $returnType = ParametersAcceptorSelector::selectFromTypes(
+                        [],
+                        $type->getMethod($name, new OutOfClassScope())->getVariants(),
+                        false,
+                    )->getReturnType();
+
+                    if (! (new ObjectType(Relation::class))->isSuperTypeOf($returnType)->yes()) {
+                        continue;
+                    }
+
+                    $relations[] = $returnType;
+                }
+
+                if ($relations === []) {
+                    continue 2;
+                }
+
+                $relationType = TypeCombinator::union(...$relations);
+                $relatedType  = $relationType->getTemplateType(Relation::class, 'TRelatedModel');
+            }
+
+            $results[] = $relationType;
+        }
+
+        return $results === [] ? null : TypeCombinator::union(...$results);
+    }
+
+    public function determineBuilderType(Type $modelType, Type|null $relationNames = null): Type
+    {
+        if ($relationNames !== null) {
+            $related = $this->relationType($modelType, $relationNames)?->getTemplateType(Relation::class, 'TRelatedModel');
+
+            if ($related !== null) {
+                $modelType = $related;
+            }
+        }
+
         $results = [];
 
         foreach (TypeUtils::flattenTypes($modelType) as $type) {

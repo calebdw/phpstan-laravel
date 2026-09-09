@@ -31,7 +31,7 @@ final class BuilderOfTypeNodeResolverExtension implements TypeNodeResolverExtens
             return null;
         }
 
-        if (count($typeNode->genericTypes) !== 1) {
+        if (count($typeNode->genericTypes) < 1 || count($typeNode->genericTypes) > 2) {
             return null;
         }
 
@@ -45,6 +45,14 @@ final class BuilderOfTypeNodeResolverExtension implements TypeNodeResolverExtens
             return null;
         }
 
-        return new BuilderOfType($genericType, $this->builderHelper);
+        $relationNames = isset($typeNode->genericTypes[1])
+            ? $this->typeNodeResolver->resolve($typeNode->genericTypes[1], $nameScope)
+            : null;
+
+        if ($relationNames !== null && (! $relationNames->isString()->yes() || $relationNames instanceof NeverType)) {
+            return null;
+        }
+
+        return new BuilderOfType($genericType, $this->builderHelper, $relationNames);
     }
 }
