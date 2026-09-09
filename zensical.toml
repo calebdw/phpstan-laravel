@@ -23,6 +23,7 @@ nav = [
     { "Builders, factories and collections" = "guide/eloquent.md" },
     { "Relations" = "guide/relations.md" },
     { "Collections" = "guide/collections.md" },
+    { "Cache return types" = "guide/cache.md" },
     { "Configuration types" = "guide/config-types.md" },
     { "Custom types" = "guide/custom-types.md" },
   ]},
