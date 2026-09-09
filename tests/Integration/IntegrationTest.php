@@ -131,6 +131,15 @@ class IntegrationTest extends PHPStanTestCase
             ],
         ];
 
+        yield 'builder-of-type' => [
+            __DIR__ . '/data/builder-of-type.php',
+            [
+                37 => ['Parameter #1 $accountQuery of method BuilderOfType\BuilderOfTypeTest::acceptsAccountBuilder() expects Illuminate\Database\Eloquent\Builder<App\Account>, Illuminate\Database\Eloquent\Builder<App\User> given.'],
+                38 => ['Parameter #1 $userQuery of method BuilderOfType\BuilderOfTypeTest::acceptsUserBuilder() expects Illuminate\Database\Eloquent\Builder<App\User>, Illuminate\Database\Eloquent\Builder<App\Account> given.'],
+                39 => ['Parameter #1 $userQuery of method BuilderOfType\BuilderOfTypeTest::acceptsUserBuilder() expects Illuminate\Database\Eloquent\Builder<App\User>, App\ChildTeamBuilder given.'],
+            ],
+        ];
+
         yield [
             __DIR__ . '/data/model-property-mutator-and-casting.php',
             [

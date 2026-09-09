@@ -15,6 +15,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BelongsToMany extends Relation
 {
+    /**
+     * Prepare the query builder for query execution.
+     *
+     * @return builder-of<TRelatedModel>
+     */
+    protected function prepareQueryBuilder();
 
     /**
      * Specify the custom pivot model to use for the relationship.

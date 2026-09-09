@@ -5,20 +5,28 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\BuilderHelper;
+use CalebDW\PhpstanLaravel\Types\BuilderOfType;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 
-use function collect;
-use function in_array;
-
 final class NewModelQueryDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
+    private const array METHODS = [
+        'newQuery'                       => 1,
+        'newModelQuery'                  => 1,
+        'newQueryWithoutRelationships'   => 1,
+        'newQueryWithoutScopes'          => 1,
+        'newQueryWithoutScope'           => 1,
+        'newQueryForRestoration'         => 1,
+    ];
+
     public function __construct(private BuilderHelper $builderHelper)
     {
     }
@@ -30,35 +38,21 @@ final class NewModelQueryDynamicMethodReturnTypeExtension implements DynamicMeth
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return in_array($methodReflection->getName(), [
-            'newQuery',
-            'newModelQuery',
-            'newQueryWithoutRelationships',
-            'newQueryWithoutScopes',
-            'newQueryWithoutScope',
-            'newQueryForRestoration',
-        ], true);
+        return isset(self::METHODS[$methodReflection->getName()]);
     }
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
         $calledOnType = $scope->getType($methodCall->var);
 
-        if ($calledOnType instanceof StaticType) {
-            if (! $calledOnType->getClassReflection()->is(Model::class)) {
-                return null;
-            }
-
-            return $this->builderHelper->getBuilderTypeForModels(
-                $calledOnType instanceof ThisType
-                    ? new StaticType($calledOnType->getClassReflection())
-                    : $calledOnType,
-            );
+        if ($calledOnType instanceof ThisType) {
+            $calledOnType = new StaticType($calledOnType->getClassReflection());
         }
 
-        return collect($calledOnType->getObjectClassReflections())
-            ->filter(static fn ($r) => $r->is(Model::class))
-            ->map(static fn ($r) => $r->getName())
-            ->pipe(fn ($m) => $m->isEmpty() ? null : $this->builderHelper->getBuilderTypeForModels($m->all()));
+        if (! (new ObjectType(Model::class))->isSuperTypeOf($calledOnType)->yes()) {
+            return null;
+        }
+
+        return new BuilderOfType($calledOnType, $this->builderHelper);
     }
 }

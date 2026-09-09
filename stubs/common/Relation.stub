@@ -35,10 +35,24 @@ abstract class Relation
      *
      * Essentially, these queries compare on column names like whereColumn.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<TRelatedModel>  $query
-     * @param  \Illuminate\Database\Eloquent\Builder<TDeclaringModel>  $parentQuery
+     * @param  builder-of<TRelatedModel>  $query
+     * @param  builder-of<TDeclaringModel>  $parentQuery
      * @param  array<model-property<TRelatedModel>>|model-property<TRelatedModel>  $columns
-     * @return \Illuminate\Database\Eloquent\Builder<TRelatedModel>
+     * @return builder-of<TRelatedModel>
      */
     public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*']);
+
+    /**
+     * Get the underlying query for the relation.
+     *
+     * @return builder-of<TRelatedModel>
+     */
+    public function getQuery();
+
+    /**
+     * Get the query builder that will contain the relationship constraints.
+     *
+     * @return builder-of<TRelatedModel>
+     */
+    protected function getRelationQuery();
 }

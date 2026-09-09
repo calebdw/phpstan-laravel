@@ -68,8 +68,9 @@ Every type above is what the analyser actually reports, not an aspiration.
 
     ---
 
-    `view-string` verifies a Blade view exists and `model-property<Model>`
-    verifies a column exists, both applied throughout the core stubs.
+    `view-string` verifies a Blade view exists, `model-property<Model>`
+    verifies a column exists, and `builder-of<Model>` resolves to that
+    model's Eloquent builder.
 
     [:octicons-arrow-right-24: Custom types](guide/custom-types.md)
 

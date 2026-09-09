@@ -13,7 +13,9 @@ use App\Tag;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 use function PHPStan\Testing\assertType;
@@ -338,4 +340,35 @@ interface TeamContract
 function testRelationDeclaredOnInterface(UserContract $user): void
 {
     assertType('*ERROR*', $user->teams()->whereKey($user->getKey()));
+}
+
+/** @extends HasMany<Post, User> */
+class CustomBuilderHasMany extends HasMany
+{
+    public function testBuilder(): void
+    {
+        assertType('App\PostBuilder<App\Post>', $this->getRelationQuery());
+        assertType('App\PostBuilder<App\Post>', $this->getQuery());
+        assertType('Illuminate\Database\Query\Builder', $this->getBaseQuery());
+    }
+}
+
+/** @extends BelongsToMany<\App\Team, User> */
+class CustomBuilderBelongsToMany extends BelongsToMany
+{
+    public function testBuilder(): void
+    {
+        assertType('App\ChildTeamBuilder', $this->prepareQueryBuilder());
+        assertType('App\ChildTeamBuilder', $this->getRelationQuery());
+    }
+}
+
+/** @extends HasManyThrough<Post, User, \App\Team> */
+class CustomBuilderHasManyThrough extends HasManyThrough
+{
+    public function testBuilder(): void
+    {
+        assertType('App\PostBuilder<App\Post>', $this->prepareQueryBuilder());
+        assertType('App\PostBuilder<App\Post>', $this->getRelationQuery());
+    }
 }

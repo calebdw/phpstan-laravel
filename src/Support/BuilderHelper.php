@@ -23,9 +23,11 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\GenericObjectType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\TypeUtils;
 use PHPStan\Type\TypeWithClassName;
 use PHPStan\Type\VerbosityLevel;
 
@@ -312,6 +314,35 @@ final class BuilderHelper
             ->map(fn ($models, $builder) => $this->getBuilderType($builder, TypeCombinator::union(...$models)))
             ->values()
             ->pipe(static fn ($types) => TypeCombinator::union(...$types));
+    }
+
+    public function determineBuilderType(Type $modelType): Type
+    {
+        $results = [];
+
+        foreach (TypeUtils::flattenTypes($modelType) as $type) {
+            foreach ($type->getObjectClassNames() as $className) {
+                if (! $this->reflectionProvider->hasClass($className)) {
+                    continue;
+                }
+
+                $class = $this->reflectionProvider->getClass($className);
+
+                if (! $class->is(Model::class)) {
+                    continue;
+                }
+
+                try {
+                    $builderClass = $this->determineBuilderName($className);
+                } catch (MissingMethodFromReflectionException) {
+                    $builderClass = EloquentBuilder::class;
+                }
+
+                $results[] = $this->getBuilderType($builderClass, $type);
+            }
+        }
+
+        return $results === [] ? new NeverType() : TypeCombinator::union(...$results);
     }
 
     public function methodIsBuilderPassthru(string $methodName): bool

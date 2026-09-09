@@ -6,10 +6,10 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods;
 
 use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
+use CalebDW\PhpstanLaravel\Types\BuilderOfType;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Str;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
@@ -18,14 +18,13 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
+use PHPStan\Type\NeverType;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 use function array_filter;
-use function array_intersect;
-use function collect;
-use function count;
 use function in_array;
 
 final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
@@ -69,36 +68,23 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
 
         $returnType = ParametersAcceptorSelector::selectFromArgs($scope, $methodCall->getArgs(), $method->getVariants())->getReturnType();
 
-        if (count(array_intersect([EloquentBuilder::class, QueryBuilder::class, Collection::class], $returnType->getReferencedClasses())) === 0) {
+        if ($returnType instanceof NeverType) {
             return null;
         }
 
-        if (count(array_intersect([EloquentBuilder::class], $returnType->getReferencedClasses())) > 0) {
-            if ($methodCall->class instanceof Name) {
-                $type = $scope->resolveTypeByName($methodCall->class);
+        if ((new ObjectType(EloquentBuilder::class))->isSuperTypeOf($returnType)->yes()) {
+            $modelType = $methodCall->class instanceof Name
+                ? $scope->resolveTypeByName($methodCall->class)
+                : $scope->getType($methodCall->class)->getObjectTypeOrClassStringObjectType();
 
-                return $this->builderHelper->getBuilderTypeForModels(
-                    $type instanceof ThisType ? $type->getStaticObjectType() : $type,
-                );
+            if (! (new ObjectType(Model::class))->isSuperTypeOf($modelType)->yes()) {
+                return null;
             }
 
-            $type = $scope->getType($methodCall->class);
-
-            return collect($type->getObjectTypeOrClassStringObjectType()->getObjectClassNames())
-                ->filter(function ($class) {
-                    if (! $this->reflectionProvider->hasClass($class)) {
-                        return false;
-                    }
-
-                    return $this->reflectionProvider->getClass($class)->is(Model::class);
-                })
-                ->pipe(function ($models) use ($returnType) {
-                    if ($models->isEmpty()) {
-                        return $returnType;
-                    }
-
-                    return $this->builderHelper->getBuilderTypeForModels($models->all());
-                });
+            return new BuilderOfType(
+                $modelType instanceof ThisType ? $modelType->getStaticObjectType() : $modelType,
+                $this->builderHelper,
+            );
         }
 
         if (in_array(Collection::class, $returnType->getReferencedClasses(), true)) {

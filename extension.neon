@@ -285,6 +285,8 @@ services:
   - class: CalebDW\PhpstanLaravel\PhpDoc\ModelPropertyTypeNodeResolverExtension
     arguments: {active: %laravel.modelPropertyType%}
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\Types\BuilderOfTypeNodeResolverExtension
+    tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Support\ModelHelper
   - class: CalebDW\PhpstanLaravel\Support\ManagerHelper
   - class: CalebDW\PhpstanLaravel\Support\AuthHelper

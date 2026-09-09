@@ -1,0 +1,68 @@
+<?php
+
+namespace BuilderOfType;
+
+use App\Account;
+use App\ChildTeamBuilder;
+use App\Team;
+use App\User;
+use Illuminate\Database\Eloquent\Builder;
+
+class BuilderOfTypeTest
+{
+    /** @phpstan-param builder-of<User> $userQuery */
+    public function acceptsUserBuilder(Builder $userQuery): void
+    {
+    }
+
+    /** @phpstan-param builder-of<Account> $accountQuery */
+    public function acceptsAccountBuilder(Builder $accountQuery): void
+    {
+    }
+
+    /** @phpstan-param builder-of<Team> $teamQuery */
+    public function acceptsTeamBuilder(ChildTeamBuilder $teamQuery): void
+    {
+    }
+
+    public function testValidUsage(): void
+    {
+        $this->acceptsUserBuilder(User::query());
+        $this->acceptsAccountBuilder(Account::query());
+        $this->acceptsTeamBuilder(Team::query());
+    }
+
+    public function testInvalidUsage(): void
+    {
+        $this->acceptsAccountBuilder(User::query());
+        $this->acceptsUserBuilder(Account::query());
+        $this->acceptsUserBuilder(Team::query());
+    }
+}
+
+class StaticBuilderQueries extends \Illuminate\Database\Eloquent\Model
+{
+    /** @return builder-of<static> */
+    public function builder(): Builder
+    {
+        return $this->newQuery();
+    }
+
+    /** @return Builder<static> */
+    public function queryKeepingStatic(): Builder
+    {
+        return $this->builder();
+    }
+}
+
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ *
+ * @param TModel $model
+ *
+ * @return builder-of<TModel>
+ */
+function queryFromModel($model): Builder
+{
+    return $model->newQuery();
+}

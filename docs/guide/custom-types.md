@@ -45,3 +45,58 @@ All of the Laravel core methods have this type thanks to the stubs. So whenever 
 
 The type is only active when [`modelPropertyType`](../reference/configuration.md#modelpropertytype) is enabled. With it off, `model-property<Model>` behaves as a plain `string` and nothing is checked. There is no rule behind it: once the type is active, the mismatches are reported by PHPStan's ordinary argument checks, so they carry core identifiers such as `argument.type`. See [checking column names](model-properties.md#checking-column-names) for a worked example.
 
+## builder-of
+
+The `builder-of<Model>` type resolves to the Eloquent builder for that model. A custom
+builder from `newEloquentBuilder()` or `#[UseEloquentBuilder]` is used when the model
+has one; otherwise it is `Illuminate\Database\Eloquent\Builder<Model>`.
+
+A union of models becomes a union of their builders. Generic arguments, `static`,
+`$this`, and intersections on the model are kept. Model query methods,
+`Collection::toQuery()`, and relation query builders use it so custom builders
+are retained.
+
+```php
+use App\User;
+use App\Post;
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * @phpstan-return builder-of<User>
+ */
+function getActiveUsers(): Builder
+{
+    return User::query()->where('active', true);
+}
+
+/**
+ * @phpstan-param builder-of<Post> $postQuery
+ */
+function publishPosts(Builder $postQuery): void
+{
+    $postQuery->where('foo', 'bar')->get()->each(fn ($post) => $post->publish());
+}
+```
+
+It also works with generic templates:
+
+```php
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ */
+class ModelRepository
+{
+    /**
+     * @phpstan-param class-string<TModel> $modelClass
+     * @phpstan-return builder-of<TModel>
+     */
+    public function getQuery(string $modelClass): Builder
+    {
+        return $modelClass::query();
+    }
+}
+```
+
+
