@@ -10,6 +10,7 @@ use PhpParser\Node;
 
 use function array_merge;
 use function preg_match_all;
+use function str_contains;
 
 use const PREG_SET_ORDER;
 
@@ -59,7 +60,13 @@ final class UsedViewInAnotherViewCollector
                 $usedViews[] = $match[5];
             }
 
-            $usedViews = array_merge($usedViews, $this->componentViews($node->value));
+            if (! str_contains($node->value, '<x-') && ! str_contains($node->value, '</x-')) {
+                continue;
+            }
+
+            foreach ($this->componentViews($node->value) as $view) {
+                $usedViews[] = $view;
+            }
         }
 
         return $usedViews;
@@ -75,7 +82,7 @@ final class UsedViewInAnotherViewCollector
         foreach ($matches as $match) {
             $name = $match[1];
 
-            if ($name === 'slot') {
+            if ($name === 'slot' || $name === 'dynamic-component') {
                 continue;
             }
 
