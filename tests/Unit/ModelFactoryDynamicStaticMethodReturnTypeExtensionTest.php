@@ -7,6 +7,7 @@ namespace Unit;
 use App\User;
 use CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ModelFactoryDynamicStaticMethodReturnTypeExtension;
 use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use CalebDW\PhpstanLaravel\Types\ModelFactoryType;
 use Generator;
@@ -56,6 +57,7 @@ class ModelFactoryDynamicStaticMethodReturnTypeExtensionTest extends PHPStanTest
         $extension = new ModelFactoryDynamicStaticMethodReturnTypeExtension(
             $this->createReflectionProvider(),
             new CallHelper(new TypeHelper()),
+            new ReflectionHelper(),
         );
 
         $type = $extension->getTypeFromStaticMethodCall(
@@ -81,6 +83,7 @@ class ModelFactoryDynamicStaticMethodReturnTypeExtensionTest extends PHPStanTest
         $extension = new ModelFactoryDynamicStaticMethodReturnTypeExtension(
             $this->createReflectionProvider(),
             new CallHelper(new TypeHelper()),
+            new ReflectionHelper(),
         );
 
         $type = $extension->getTypeFromStaticMethodCall(
