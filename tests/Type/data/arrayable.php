@@ -13,7 +13,7 @@ function test(Foo $foo, Bar $bar, User $user, Arrayable $arrayable): void
     assertType('array<string, int>', $foo->toArray());
     assertType('array<string, float>', $bar->toArray());
     assertType('array<string, int>', $arrayable->toArray());
-    assertType('array<string, mixed>', $user->toArray());
+    assertType('int', $user->toArray()['id']);
 }
 
 /** @implements Arrayable<string, int> */

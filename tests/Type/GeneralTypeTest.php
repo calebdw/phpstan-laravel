@@ -94,6 +94,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-properties-relations.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-properties.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-relations.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-serialization.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-scope-attribute.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-scopes.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model.php');
@@ -119,6 +120,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-cache-remember.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-eloquent-builder-model-keys.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-model-counter-methods.php');
+            yield from self::gatherAssertTypes(__DIR__ . '/data/l13-model-serialization.php');
         }
 
         //##############################################################################################################

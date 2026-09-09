@@ -135,6 +135,21 @@ $user->only(['name', $key]);  // array<string, mixed>
     [`Arr::only`](collections.md#only) has the same limitation, for its own
     reasons.
 
+## Serialization
+
+`toArray()` and `attributesToArray()` are a shape of the model's columns and
+appends, minus `$hidden` and respecting `$visible`. Dates, enums, Arrayables,
+and class-cast `serialize()` hooks are applied. Extra keys from partial
+selects, aggregates, and loaded relations stay available as `string` → `mixed`.
+
+```php
+$post->toArray();
+// array{id?: int, title?: string, published_at?: string|null, ...<string, mixed>}
+```
+
+A model that overrides `toArray`, `attributesToArray`, `getAppends`,
+`getHidden`, or `getVisible` is left as `array<string, mixed>`.
+
 ## Accessors and mutators
 
 Both styles are recognized. An [`Attribute`][attributes] accessor must be a

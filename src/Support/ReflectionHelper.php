@@ -12,8 +12,12 @@ use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\Mixin\MixinMethodsClassReflectionExtension;
 use PHPStan\Reflection\Mixin\MixinPropertiesClassReflectionExtension;
 
+use function array_filter;
 use function array_key_exists;
+use function array_values;
 use function collect;
+use function is_array;
+use function is_string;
 
 final class ReflectionHelper
 {
@@ -111,6 +115,26 @@ final class ReflectionHelper
         }
 
         return $expr->class->toString();
+    }
+
+    /**
+     * Constructor arguments that are strings, including a single list argument.
+     * Used by #[Appends], #[Hidden], and #[Visible].
+     *
+     * @return list<string>
+     */
+    public function attributeStringArguments(ClassReflection $class, string $attribute, bool $inherited = true): array
+    {
+        $attr = $this->findAttribute($class, $attribute, $inherited);
+
+        if ($attr === null) {
+            return [];
+        }
+
+        $arguments = array_values($attr->getArguments());
+        $columns   = is_array($arguments[0] ?? null) ? $arguments[0] : $arguments;
+
+        return array_values(array_filter($columns, is_string(...)));
     }
 
     private function findAttribute(ClassReflection $class, string $attribute, bool $inherited): NativeAttribute|null

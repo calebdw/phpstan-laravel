@@ -19,6 +19,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
+use function array_keys;
 use function array_map;
 use function assert;
 use function count;
@@ -62,6 +63,18 @@ final class ModelPropertyHelper
         assert($property !== false);
 
         return $property;
+    }
+
+    /** @return list<string> */
+    public function getDatabasePropertyNames(ClassReflection $classReflection): array
+    {
+        $model = $this->modelHelper->getModelInstance($classReflection);
+
+        if ($model === null || ! $this->modelSchema->hasModelTable($model)) {
+            return [];
+        }
+
+        return array_keys($this->modelSchema->getModelTable($model)->columns);
     }
 
     private function resolveDatabaseProperty(ClassReflection $classReflection, string $propertyName): ModelPropertyReflection|false
