@@ -1727,9 +1727,9 @@ enforces a style of writing jobs rather than catching a type error.</p>
 </span></code></pre></div>
 <h2 id="unique-job-uniquefor">Unique job uniqueFor<a class="headerlink" href="#unique-job-uniquefor" title="Permanent link">&para;</a></h2>
 <p><code>laravel.uniqueJob.missingUniqueFor</code> &middot; option <code>rules.uniqueJobUniqueFor</code> &middot; off by default</p>
-<p>A <code>ShouldBeUnique</code> job must declare <code>uniqueFor</code>, as a property or a method.
-Without it Laravel holds the uniqueness lock until the job finishes, so a
-worker that dies mid-job never releases the lock.</p>
+<p>A <code>ShouldBeUnique</code> job must declare <code>uniqueFor</code>, as a property, a method,
+or a <code>UniqueFor</code> attribute. Without it Laravel holds the uniqueness lock
+until the job finishes, so a worker that dies mid-job never releases the lock.</p>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span> <span class="nc">FetchSocialAvatar</span> <span class="k">implements</span> <span class="nx">ShouldQueue</span><span class="p">,</span> <span class="nx">ShouldBeUnique</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p">{</span>
@@ -1738,7 +1738,7 @@ worker that dies mid-job never releases the lock.</p>
 </span></code></pre></div>
 <p>Will result in the following error:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Job App\Jobs\FetchSocialAvatar implements ShouldBeUnique but does not declare uniqueFor.
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>💡 Declare a $uniqueFor property or a uniqueFor() method.
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>💡 Declare a $uniqueFor property, a uniqueFor() method, or a UniqueFor attribute.
 </span></code></pre></div>
 <h2 id="unique-job-uniqueid">Unique job uniqueId<a class="headerlink" href="#unique-job-uniqueid" title="Permanent link">&para;</a></h2>
 <p><code>laravel.uniqueJob.missingUniqueId</code> &middot; option <code>rules.uniqueJobUniqueId</code> &middot; off by default</p>
