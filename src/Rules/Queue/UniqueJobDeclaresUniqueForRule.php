@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Rules\Queue;
 
 use CalebDW\PhpstanLaravel\Support\QueuedJobHelper;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Queue\Attributes\UniqueFor;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
@@ -47,6 +48,12 @@ final class UniqueJobDeclaresUniqueForRule implements Rule
 
         if ($class->hasNativeProperty('uniqueFor') || $class->hasNativeMethod('uniqueFor')) {
             return [];
+        }
+
+        foreach ($class->getAttributes() as $attribute) {
+            if ($attribute->getName() === UniqueFor::class) {
+                return [];
+            }
         }
 
         return [
