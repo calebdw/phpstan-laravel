@@ -49,6 +49,10 @@ class UnusedViewsRuleTest extends RuleTestCase
                 'This view is not used in the project.',
                 00,
             ],
+            [
+                'This view is not used in the project.',
+                00,
+            ],
         ]);
     }
 
