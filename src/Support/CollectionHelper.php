@@ -24,6 +24,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeTraverser;
+use PHPStan\Type\TypeUtils;
 use PHPStan\Type\UnionType;
 use Traversable;
 
@@ -264,6 +265,29 @@ final class CollectionHelper
         return $modelReflection->getNativeMethod('newCollection')
             ->getVariants()[0]
             ->getReturnType();
+    }
+
+    public function determineCollectionTypeFromModels(Type $modelType): Type|null
+    {
+        $types = [];
+
+        foreach (TypeUtils::flattenTypes($modelType) as $type) {
+            foreach ($type->getObjectClassNames() as $className) {
+                if (! $this->reflectionProvider->hasClass($className)) {
+                    continue;
+                }
+
+                if (! $this->reflectionProvider->getClass($className)->is(Model::class)) {
+                    continue;
+                }
+
+                $types[] = $this->determineCollectionType($className, $type);
+            }
+        }
+
+        $types = array_filter($types);
+
+        return $types === [] ? null : TypeCombinator::union(...$types);
     }
 
     public function determineCollectionType(string $modelClassName, Type|null $modelType = null): Type|null

@@ -22,9 +22,7 @@ use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
 
-use function array_filter;
 use function in_array;
 
 final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
@@ -88,22 +86,14 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
         }
 
         if (in_array(Collection::class, $returnType->getReferencedClasses(), true)) {
-            if ($methodCall->class instanceof Name) {
-                $modelNames = [$scope->resolveName($methodCall->class)];
-            } else {
-                $modelNames = $scope->getType($methodCall->class)->getObjectTypeOrClassStringObjectType()->getObjectClassNames();
-            }
+            $modelType = $methodCall->class instanceof Name
+                ? new ObjectType($scope->resolveName($methodCall->class))
+                : $scope->getType($methodCall->class)->getObjectTypeOrClassStringObjectType();
 
-            $types = [];
+            $collection = $this->collectionHelper->determineCollectionTypeFromModels($modelType);
 
-            foreach ($modelNames as $modelName) {
-                $types[] = $this->collectionHelper->determineCollectionType($modelName);
-            }
-
-            $types = array_filter($types);
-
-            if ($types !== []) {
-                return TypeCombinator::union(...$types);
+            if ($collection !== null) {
+                return $collection;
             }
         }
 

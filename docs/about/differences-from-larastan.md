@@ -424,11 +424,17 @@ collection half.
 
 ### Paginators
 
-A paginator over models hands back an Eloquent collection:
+A paginator over models hands back that model's collection, including a
+custom `newCollection()` / `CollectedBy` class. Non-model items stay a
+Support collection. Keys stay the paginator's `TKey` (typically `int`)
+rather than a benevolent `int|string`.
 
 ```php
 User::paginate()->getCollection();
 // Illuminate\Database\Eloquent\Collection<int, App\User>
+
+Account::paginate()->getCollection();
+// App\AccountCollection<int, App\Account>
 ```
 
 ## Managers

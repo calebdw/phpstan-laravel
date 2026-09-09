@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace PaginatorExtension;
 
+use App\Account;
+use App\AccountCollection;
 use App\User;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 use function PHPStan\Testing\assertType;
 
@@ -32,9 +36,22 @@ function test(): void
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', User::simplePaginate()->getCollection());
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', User::cursorPaginate()->getCollection());
 
+    assertType('App\AccountCollection<int, App\Account>', Account::paginate()->getCollection());
+    assertType('App\AccountCollection<int, App\Account>', Account::simplePaginate()->getCollection());
+    assertType('App\AccountCollection<int, App\Account>', Account::cursorPaginate()->getCollection());
+
+    $paginator = User::paginate();
+    $paginator->setCollection(new AccountCollection(['account' => new Account()]));
+    assertType('App\AccountCollection<int, App\Account>', $paginator->getCollection());
+    assertType('Illuminate\Pagination\LengthAwarePaginator<string, App\Account>', $paginator);
+
+    $paginator->setCollection(new Collection(['name' => 'Taylor']));
+    assertType('Illuminate\Support\Collection<string, string>', $paginator->getCollection());
+
     // Anything else stays a support collection.
     assertType('Illuminate\Support\Collection<int, string>', paginatorOfStrings()->getCollection());
     assertType('Illuminate\Support\Collection<int, string>', cursorPaginatorOfStrings()->getCollection());
+    assertType('Illuminate\Support\Collection<int, stdClass>', (new LengthAwarePaginator([new \stdClass()], 1, 15))->getCollection());
 
     // HasMany
     assertType('Illuminate\Pagination\LengthAwarePaginator<int, App\Account>', (new User())->accounts()->paginate());
