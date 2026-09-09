@@ -31,6 +31,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/auth.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/belongs-to-many-generics.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/benchmark.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/cache-remember.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-aggregates.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-collapse.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-count-by.php');
@@ -114,6 +115,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/where-relation.php');
 
         if (laravel_version_compare('13.0.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/l13-cache-remember.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-eloquent-builder-model-keys.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-model-counter-methods.php');
         }
