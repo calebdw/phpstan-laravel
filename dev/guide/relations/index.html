@@ -1313,6 +1313,11 @@ related model is lost.</p>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hasMany</span><span class="p">(</span><span class="nx">Post</span><span class="o">::</span><span class="na">class</span><span class="p">);</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">}</span>
 </span></code></pre></div>
+<p><code>whereHas</code>, <code>whereRelation</code>, and the morph variants type the query callback as
+the related model's builder, including custom builders. <code>withWhereHas</code> and
+<code>with()</code> include the relation object as well. See
+<a href="../custom-types/#builder-of"><code>builder-of</code></a> for the <code>builder-of&lt;User, 'posts'&gt;</code>
+phpdoc form.</p>
 
 
 
