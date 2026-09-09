@@ -118,6 +118,7 @@ These move under `laravel.rules` and lose their `check` or `no` prefix:
 | `checkUnusedViews` | `unusedView` |
 | `noEnvCallsOutsideOfConfig` | `envCallOutsideConfig` |
 | `noModelMake` | `modelMake` |
+| `noImplicitQueryBuilderCall` | `modelForwardingToBuilder` and `modelStaticForwardingToBuilder` |
 | `noUnnecessaryEnumerableToArrayCalls` | `unnecessaryEnumerableToArrayCall` |
 | `checkUniqueJobUniqueFor` | `uniqueJobUniqueFor` |
 | `checkUniqueJobUniqueId` | `uniqueJobUniqueId` |
@@ -127,8 +128,10 @@ These move under `laravel.rules` and lose their `check` or `no` prefix:
 | `checkBatchableJobChecksCancellation` | `batchableJobChecksCancellation` |
 | `checkDispatchInTransactionAfterCommit` | `dispatchInTransactionAfterCommit` |
 
-Two more exist only in the `calebdw/larastan` fork, so they apply only if that
-is where the project is coming from. Both stay off by default:
+Larastan's `noImplicitQueryBuilderCall` is one toggle; here it is two, both
+off. Enable both to match. The same pair existed in the `calebdw/larastan`
+fork under these names, so rename them only if that is where the project is
+coming from:
 
 | `calebdw/larastan` | Here, under `laravel.rules` |
 | --- | --- |
@@ -224,6 +227,7 @@ baseline, any `ignoreErrors` entry using `identifier:`, and every inline
 | Larastan | Here |
 | --- | --- |
 | `larastan.noModelMake` | `laravel.modelMake` |
+| `larastan.noImplicitQueryBuilderCall` | `laravel.modelForwardingToBuilder` / `laravel.modelStaticForwardingToBuilder` |
 | `larastan.noEnvCallsOutsideOfConfig` | `laravel.envCallOutsideConfig` |
 | `larastan.noUnnecessaryCollectionCall` | `laravel.unnecessaryCollectionCall` |
 | `larastan.noAuthFacadeInRequestScope` | `laravel.authInRequestScope.facade` |
@@ -250,6 +254,12 @@ The rest are a plain prefix swap: `larastan.octaneCompatibility` becomes
 `unnecessaryEnumerableToArrayCall`, `console.*`, `uselessConstructs.*` and
 `deferrableServiceProvider.missingProvides`.
 
+`larastan.noImplicitQueryBuilderCall` covers instance and static calls as one
+identifier. Here those are `laravel.modelForwardingToBuilder` and
+`laravel.modelStaticForwardingToBuilder`. The rewrite below maps it to the
+instance identifier; static-call ignores need the other name, so review those
+by hand.
+
 One identifier has no counterpart. `larastan.configCollection` reported
 `Config::collection()` on a key that is not an array; that check is now part of
 a rule covering every typed accessor and reports under `laravel.configAccessor`.
@@ -265,6 +275,7 @@ file:
 rewrite_identifiers() {
     [ "$#" -eq 0 ] && return 0
     sed -i -E \
+        -e 's/\blarastan\.noImplicitQueryBuilderCall\b/laravel.modelForwardingToBuilder/g' \
         -e 's/\blarastan\.noEnvCallsOutsideOfConfig\b/laravel.envCallOutsideConfig/g' \
         -e 's/\blarastan\.noAuthFacadeInRequestScope\b/laravel.authInRequestScope.facade/g' \
         -e 's/\blarastan\.noAuthHelperInRequestScope\b/laravel.authInRequestScope.helper/g' \

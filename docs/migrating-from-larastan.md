@@ -108,6 +108,7 @@ and the name of a rule is not the place to restate whether you want it.
 | `checkUnusedViews` | `unusedView` |
 | `noEnvCallsOutsideOfConfig` | `envCallOutsideConfig` |
 | `noModelMake` | `modelMake` |
+| `noImplicitQueryBuilderCall` | `modelForwardingToBuilder` and `modelStaticForwardingToBuilder` |
 | `noUnnecessaryCollectionCall` | `unnecessaryCollectionCall.enabled` |
 | `noUnnecessaryCollectionCallOnly` | `unnecessaryCollectionCall.only` |
 | `noUnnecessaryCollectionCallExcept` | `unnecessaryCollectionCall.except` |
@@ -120,15 +121,17 @@ and the name of a rule is not the place to restate whether you want it.
 | `checkBatchableJobChecksCancellation` | `batchableJobChecksCancellation` |
 | `checkDispatchInTransactionAfterCommit` | `dispatchInTransactionAfterCommit` |
 
-Two more came from the `calebdw/larastan` fork rather than from Larastan itself,
-so they only apply if that is where you are coming from:
+Larastan's `noImplicitQueryBuilderCall` is one toggle for both instance and
+static calls. Here they are two, both off by default. Enable both to match
+Larastan. The same pair existed in the `calebdw/larastan` fork under the names
+below, so they only need renaming if that is where you are coming from:
 
 | `calebdw/larastan` | Here, under `laravel.rules` |
 | --- | --- |
 | `noModelForwardingToBuilder` | `modelForwardingToBuilder` |
 | `noModelStaticForwardingToBuilder` | `modelStaticForwardingToBuilder` |
 
-Both stay off by default. See [rules](rules/eloquent.md#model-forwarding-to-builder).
+See [rules](rules/eloquent.md#model-forwarding-to-builder).
 
 The three `noUnnecessaryCollectionCall*` options are one rule with two filters, so they
 are now one structure:
@@ -227,6 +230,7 @@ more than one kind of error, the identifiers are grouped under a common stem.
 | Larastan | Here |
 | --- | --- |
 | `larastan.noModelMake` | `laravel.modelMake` |
+| `larastan.noImplicitQueryBuilderCall` | `laravel.modelForwardingToBuilder` / `laravel.modelStaticForwardingToBuilder` |
 | `larastan.noEnvCallsOutsideOfConfig` | `laravel.envCallOutsideConfig` |
 | `larastan.noUnnecessaryCollectionCall` | `laravel.unnecessaryCollectionCall` |
 | `larastan.noAuthFacadeInRequestScope` | `laravel.authInRequestScope.facade` |
@@ -253,6 +257,11 @@ The rest are a plain prefix swap: `larastan.octaneCompatibility` becomes
 
 Two plurals became singular---`unusedViews` and `missingTranslations`---because each
 error is about one view or one translation.
+
+`larastan.noImplicitQueryBuilderCall` is one identifier covering instance and
+static calls. Here those are `laravel.modelForwardingToBuilder` and
+`laravel.modelStaticForwardingToBuilder`. Regenerating the baseline is the
+reliable split; a mechanical rewrite cannot know which call was which.
 
 Two identifiers came from the `calebdw/larastan` fork rather than from upstream.
 The script below rewrites them along with the rest, since they follow the same
@@ -283,6 +292,7 @@ general ones. Review the diff before committing:
 
 ```bash
 sed -i -E \
+  -e 's/\blarastan\.noImplicitQueryBuilderCall\b/laravel.modelForwardingToBuilder/g' \
   -e 's/\blarastan\.noEnvCallsOutsideOfConfig\b/laravel.envCallOutsideConfig/g' \
   -e 's/\blarastan\.noAuthFacadeInRequestScope\b/laravel.authInRequestScope.facade/g' \
   -e 's/\blarastan\.noAuthHelperInRequestScope\b/laravel.authInRequestScope.helper/g' \

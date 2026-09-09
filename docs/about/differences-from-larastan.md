@@ -560,7 +560,8 @@ prefixed identifier, so you can ignore a category precisely. See
 
 - **`modelForwardingToBuilder`** and **`modelStaticForwardingToBuilder`**
   (both off) for codebases that prefer `User::query()->where(...)` to
-  `User::where(...)`.
+  `User::where(...)`. Larastan's later `noImplicitQueryBuilderCall` is the
+  same idea as one toggle; here instance and static stay separate.
 - **`configAccessor`** (on), described above.
 - **`strictContracts`** (off). By default `resolve(SomeContract::class)`
   infers the concrete class the container is bound to, which is convenient but
