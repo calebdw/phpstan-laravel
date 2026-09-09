@@ -22,9 +22,9 @@ parameters:
 
 `laravel.uniqueJob.missingUniqueFor` &middot; option `rules.uniqueJobUniqueFor` &middot; off by default
 
-A `ShouldBeUnique` job must declare `uniqueFor`, as a property or a method.
-Without it Laravel holds the uniqueness lock until the job finishes, so a
-worker that dies mid-job never releases the lock.
+A `ShouldBeUnique` job must declare `uniqueFor`, as a property, a method,
+or a `UniqueFor` attribute. Without it Laravel holds the uniqueness lock
+until the job finishes, so a worker that dies mid-job never releases the lock.
 
 ### Examples
 
@@ -39,7 +39,7 @@ Will result in the following error:
 
 ```
 Job App\Jobs\FetchSocialAvatar implements ShouldBeUnique but does not declare uniqueFor.
-💡 Declare a $uniqueFor property or a uniqueFor() method.
+💡 Declare a $uniqueFor property, a uniqueFor() method, or a UniqueFor attribute.
 ```
 
 ## Unique job uniqueId

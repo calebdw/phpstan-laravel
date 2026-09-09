@@ -66,4 +66,37 @@ final class ReflectionHelper
         return $this->methodTags[$cacheKey] = (new MixinMethodsClassReflectionExtension([$classReflection->getName()]))
             ->hasMethod($classReflection, $methodName);
     }
+
+    /**
+     * Whether the class, a parent, or an immediately used trait declares the
+     * attribute. Matches Laravel's ReadsClassAttributes walk; nested traits
+     * of traits are not inspected.
+     */
+    public function hasAttribute(ClassReflection $class, string $attribute): bool
+    {
+        foreach ([$class, ...$class->getParents()] as $reflection) {
+            if ($this->declaresAttribute($reflection, $attribute)) {
+                return true;
+            }
+
+            foreach ($reflection->getTraits() as $trait) {
+                if ($this->declaresAttribute($trait, $attribute)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function declaresAttribute(ClassReflection $class, string $attribute): bool
+    {
+        foreach ($class->getAttributes() as $attr) {
+            if ($attr->getName() === $attribute) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
