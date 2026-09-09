@@ -11,8 +11,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Iterator;
 use IteratorAggregate;
-use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Name;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
@@ -47,8 +45,10 @@ final class CollectionHelper
     /** @var array<string, Type|null> */
     private array $collectionTypes = [];
 
-    public function __construct(private ReflectionProvider $reflectionProvider)
-    {
+    public function __construct(
+        private ReflectionProvider $reflectionProvider,
+        private ReflectionHelper $reflectionHelper,
+    ) {
     }
 
     /**
@@ -255,14 +255,10 @@ final class CollectionHelper
             return null;
         }
 
-        $attrs = $modelReflection->getNativeReflection()->getAttributes(CollectedBy::class);
+        $collectionClass = $this->reflectionHelper->attributeClassName($modelReflection, CollectedBy::class);
 
-        if ($attrs !== []) {
-            $expr =  $attrs[0]->getArgumentsExpressions()[0];
-
-            if ($expr instanceof ClassConstFetch && $expr->class instanceof Name) {
-                return new ObjectType($expr->class->toString());
-            }
+        if ($collectionClass !== null) {
+            return new ObjectType($collectionClass);
         }
 
         return $modelReflection->getNativeMethod('newCollection')

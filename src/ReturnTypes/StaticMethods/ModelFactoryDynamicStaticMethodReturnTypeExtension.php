@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods;
 
 use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use CalebDW\PhpstanLaravel\Types\ModelFactoryType;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
-use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
@@ -35,6 +34,7 @@ final class ModelFactoryDynamicStaticMethodReturnTypeExtension implements Dynami
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private CallHelper $callHelper,
+        private ReflectionHelper $reflectionHelper,
     ) {
     }
 
@@ -113,19 +113,15 @@ final class ModelFactoryDynamicStaticMethodReturnTypeExtension implements Dynami
      */
     private function getFactoryFromAttribute(ClassReflection $modelReflection): ClassReflection|null
     {
-        $attributes = $modelReflection->getNativeReflection()->getAttributes(UseFactory::class);
+        $factoryClass = $this->reflectionHelper->attributeClassName(
+            $modelReflection,
+            UseFactory::class,
+            inherited: false,
+        );
 
-        if ($attributes === []) {
+        if ($factoryClass === null) {
             return null;
         }
-
-        $expr = $attributes[0]->getArgumentsExpressions()[0] ?? null;
-
-        if (! $expr instanceof ClassConstFetch || ! $expr->class instanceof Name) {
-            return null;
-        }
-
-        $factoryClass = $expr->class->toString();
 
         if (! $this->reflectionProvider->hasClass($factoryClass)) {
             return null;

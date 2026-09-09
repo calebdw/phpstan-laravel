@@ -15,8 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Str;
-use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Name;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
@@ -62,6 +60,7 @@ final class BuilderHelper
         private ReflectionProvider $reflectionProvider,
         private bool $checkProperties,
         private MacroMethodsClassReflectionExtension $macroMethodsClassReflectionExtension,
+        private ReflectionHelper $reflectionHelper,
     ) {
     }
 
@@ -139,13 +138,7 @@ final class BuilderHelper
             // Check for Scope attribute
             if ($reflection->hasNativeMethod($methodName)) {
                 $methodReflection  = $reflection->getNativeMethod($methodName);
-                $hasScopeAttribute = false;
-                foreach ($methodReflection->getAttributes() as $attribute) {
-                    if ($attribute->getName() === Scope::class) {
-                        $hasScopeAttribute = true;
-                        break;
-                    }
-                }
+                $hasScopeAttribute = $this->reflectionHelper->hasMethodAttribute($methodReflection, Scope::class);
 
                 if (! $methodReflection->isPublic() && $hasScopeAttribute) {
                     $parametersAcceptor = $methodReflection->getVariants()[0];
@@ -265,14 +258,14 @@ final class BuilderHelper
         $method          = $modelReflection->getNativeMethod('newEloquentBuilder');
 
         if ($method->getDeclaringClass()->getName() === Model::class) {
-            $attrs = $modelReflection->getNativeReflection()->getAttributes(UseEloquentBuilder::class);
+            $builderClass = $this->reflectionHelper->attributeClassName(
+                $modelReflection,
+                UseEloquentBuilder::class,
+                inherited: false,
+            );
 
-            if ($attrs !== []) {
-                $expr =  $attrs[0]->getArgumentsExpressions()[0];
-
-                if ($expr instanceof ClassConstFetch && $expr->class instanceof Name) {
-                    return $expr->class->toString();
-                }
+            if ($builderClass !== null) {
+                return $builderClass;
             }
         }
 

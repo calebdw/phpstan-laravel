@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Name;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute as NativeAttribute;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\Mixin\MixinMethodsClassReflectionExtension;
 use PHPStan\Reflection\Mixin\MixinPropertiesClassReflectionExtension;
 
@@ -72,31 +76,78 @@ final class ReflectionHelper
      * attribute. Matches Laravel's ReadsClassAttributes walk; nested traits
      * of traits are not inspected.
      */
-    public function hasAttribute(ClassReflection $class, string $attribute): bool
+    public function hasAttribute(ClassReflection $class, string $attribute, bool $inherited = true): bool
     {
-        foreach ([$class, ...$class->getParents()] as $reflection) {
-            if ($this->declaresAttribute($reflection, $attribute)) {
-                return true;
-            }
-
-            foreach ($reflection->getTraits() as $trait) {
-                if ($this->declaresAttribute($trait, $attribute)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return $this->findAttribute($class, $attribute, $inherited) !== null;
     }
 
-    private function declaresAttribute(ClassReflection $class, string $attribute): bool
+    public function hasMethodAttribute(ExtendedMethodReflection $method, string $attribute): bool
     {
-        foreach ($class->getAttributes() as $attr) {
+        foreach ($method->getAttributes() as $attr) {
             if ($attr->getName() === $attribute) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * First constructor argument when it is a class constant fetch.
+     * Used by CollectedBy, UseFactory, and UseEloquentBuilder.
+     */
+    public function attributeClassName(ClassReflection $class, string $attribute, bool $inherited = true): string|null
+    {
+        $attr = $this->findAttribute($class, $attribute, $inherited);
+
+        if ($attr === null) {
+            return null;
+        }
+
+        $expr = $attr->getArgumentsExpressions()[0] ?? null;
+
+        if (! $expr instanceof ClassConstFetch || ! $expr->class instanceof Name) {
+            return null;
+        }
+
+        return $expr->class->toString();
+    }
+
+    private function findAttribute(ClassReflection $class, string $attribute, bool $inherited): NativeAttribute|null
+    {
+        $reflections = $inherited ? [$class, ...$class->getParents()] : [$class];
+
+        foreach ($reflections as $reflection) {
+            $attr = $this->declaredAttribute($reflection, $attribute);
+
+            if ($attr !== null) {
+                return $attr;
+            }
+
+            if (! $inherited) {
+                continue;
+            }
+
+            foreach ($reflection->getTraits() as $trait) {
+                $attr = $this->declaredAttribute($trait, $attribute);
+
+                if ($attr !== null) {
+                    return $attr;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function declaredAttribute(ClassReflection $class, string $attribute): NativeAttribute|null
+    {
+        foreach ($class->getNativeReflection()->getAttributes() as $attr) {
+            if ($attr instanceof NativeAttribute && $attr->getName() === $attribute) {
+                return $attr;
+            }
+        }
+
+        return null;
     }
 }
