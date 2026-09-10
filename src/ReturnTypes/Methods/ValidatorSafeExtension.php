@@ -6,22 +6,19 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
 use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use CalebDW\PhpstanLaravel\Support\ValidationHelper;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\ValidatedInput;
+use Illuminate\Validation\Validator;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
 
 use function count;
 
-final class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
+final class ValidatorSafeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(
         private ValidationHelper $validationHelper,
@@ -31,7 +28,7 @@ final class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMe
 
     public function getClass(): string
     {
-        return FormRequest::class;
+        return Validator::class;
     }
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
@@ -41,11 +38,10 @@ final class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMe
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
-        $shape = $this->shape($scope->getType($methodCall->var));
-        $args  = $methodCall->getArgs();
+        $args = $methodCall->getArgs();
 
         if (count($args) === 0) {
-            return $shape === null ? null : new GenericObjectType(ValidatedInput::class, [$shape]);
+            return null;
         }
 
         $keys = $this->typeHelper->constantStrings($scope->getType($args[0]->value));
@@ -53,6 +49,8 @@ final class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMe
         if ($keys === []) {
             return null;
         }
+
+        $shape = $this->validationHelper->validatedShapeFromType($scope->getType($methodCall->var));
 
         if ($shape !== null) {
             return $this->validationHelper->pick($shape, $keys);
@@ -65,22 +63,5 @@ final class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMe
         }
 
         return $builder->getArray();
-    }
-
-    private function shape(Type $calledOn): Type|null
-    {
-        $shapes = [];
-
-        foreach ($calledOn->getObjectClassReflections() as $class) {
-            $shape = $this->validationHelper->validatedShape($class);
-
-            if ($shape === null) {
-                continue;
-            }
-
-            $shapes[] = $shape;
-        }
-
-        return $shapes === [] ? null : TypeCombinator::union(...$shapes);
     }
 }

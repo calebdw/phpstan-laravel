@@ -45,7 +45,7 @@ Logic that more than one extension needs lives in `src/Support/`. Use it.
 | `TypeHelper` | `isCalledOn`, constant strings, hasMethod/hasProperty |
 | `ModelHelper` | Instantiated model, key type |
 | `SelectHelper` | `Arr::select` / `Collection::select` shapes |
-| `FormRequestHelper` | `rules()` parsing, `validated()` shapes, request properties |
+| `ValidationHelper` | `rules()` parsing, `validated()` / `make()` shapes, request properties |
 | `ReflectionHelper` | class attributes (self / parents / traits), `@property` / `@method` tags |
 
 Keep methods short. If an extension is growing a second copy of normalize /

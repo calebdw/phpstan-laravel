@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Functions;
 
+use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Validation\Validator;
@@ -16,8 +17,10 @@ use PHPStan\Type\Type;
 
 final class ValidatorExtension implements DynamicFunctionReturnTypeExtension
 {
-    public function __construct(private bool $strictContracts)
-    {
+    public function __construct(
+        private ValidationHelper $validationHelper,
+        private bool $strictContracts,
+    ) {
     }
 
     public function isFunctionSupported(FunctionReflection $functionReflection): bool
@@ -27,11 +30,15 @@ final class ValidatorExtension implements DynamicFunctionReturnTypeExtension
 
     public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type
     {
-        // Runtime behavior depends on argument count, so the nullable $data parameter cannot express this distinction.
         if ($functionCall->getArgs() === []) {
             return new ObjectType(Factory::class);
         }
 
-        return new ObjectType($this->strictContracts ? ValidatorContract::class : Validator::class);
+        $class = $this->strictContracts ? ValidatorContract::class : Validator::class;
+        $shape = $this->validationHelper->shapeFromRulesArg($functionCall, $scope);
+
+        return $shape === null
+            ? new ObjectType($class)
+            : $this->validationHelper->validator($shape, ! $this->strictContracts);
     }
 }

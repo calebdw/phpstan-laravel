@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
-use CalebDW\PhpstanLaravel\Support\FormRequestHelper;
+use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Foundation\Http\FormRequest;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -15,7 +15,7 @@ use PHPStan\Type\TypeCombinator;
 
 final class FormRequestValidatedExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private FormRequestHelper $formRequestHelper)
+    public function __construct(private ValidationHelper $validationHelper)
     {
     }
 
@@ -35,7 +35,7 @@ final class FormRequestValidatedExtension implements DynamicMethodReturnTypeExte
         $shapes   = [];
 
         foreach ($calledOn->getObjectClassReflections() as $class) {
-            $shape = $this->formRequestHelper->validatedShape($class);
+            $shape = $this->validationHelper->validatedShape($class);
 
             if ($shape === null) {
                 continue;

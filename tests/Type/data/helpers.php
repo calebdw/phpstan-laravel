@@ -154,7 +154,7 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
     assertType('Illuminate\Contracts\Routing\UrlGenerator', url());
 
     assertType('Illuminate\Contracts\Validation\Factory', validator());
-    assertType('Illuminate\Validation\Validator', validator(['foo' => 'bar'], ['foo' => 'required']));
+    assertType('Illuminate\Validation\Validator<array{foo: string}>', validator(['foo' => 'bar'], ['foo' => 'required']));
     assertType('array', validator(['foo' => 'bar'], ['foo' => 'required'])->valid());
 
     assertType('App\User|null', value(function (): ?User {

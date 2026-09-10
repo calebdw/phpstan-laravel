@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\In;
+use Illuminate\Validation\Validator;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
@@ -35,7 +38,9 @@ use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
+use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
+use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\NullType;
@@ -44,6 +49,7 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\TypeUtils;
 
 use function array_key_exists;
 use function array_pad;
@@ -58,7 +64,7 @@ use function is_string;
 use function str_contains;
 use function strtolower;
 
-final class FormRequestHelper
+final class ValidationHelper
 {
     /** @var array<string, Type|null> */
     private array $shapes = [];
@@ -138,6 +144,39 @@ final class FormRequestHelper
         }
 
         return $builder->getArray();
+    }
+
+    public function shapeFromRulesArg(CallLike $call, Scope $scope, string $name = 'rules', int $position = 1): Type|null
+    {
+        $rules = $call->getArg($name, $position);
+
+        return $rules === null ? null : $this->shapeFromRulesExpr($rules->value, $scope);
+    }
+
+    public function validator(Type $shape, bool $concrete = true): Type
+    {
+        return new GenericObjectType($concrete ? Validator::class : ValidatorContract::class, [$shape]);
+    }
+
+    public function validatedShapeFromType(Type $type): Type|null
+    {
+        $shapes = [];
+
+        foreach (TypeUtils::flattenTypes($type) as $member) {
+            $shape = $member->getTemplateType(Validator::class, 'TValidated');
+
+            if ($shape instanceof ErrorType) {
+                $shape = $member->getTemplateType(ValidatorContract::class, 'TValidated');
+            }
+
+            if ($shape instanceof ErrorType) {
+                continue;
+            }
+
+            $shapes[] = $shape;
+        }
+
+        return $shapes === [] ? null : TypeCombinator::union(...$shapes);
     }
 
     /** @return array<string, array{required: bool, nullable: bool, type: Type}> */

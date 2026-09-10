@@ -2,14 +2,24 @@
 
 namespace Illuminate\Validation;
 
-class Validator
+use \Illuminate\Contracts\Validation\Validator as ValidatorContract;
+
+/**
+ * @template TValidated of array = array<string, mixed>
+ * @implements ValidatorContract<TValidated>
+ */
+class Validator implements ValidatorContract
 {
     /**
-     * Get a validated input container for the validated input.
-     *
+     * @param  string  $errorBag
+     * @return TValidated
+     */
+    public function validateWithBag($errorBag);
+
+    /**
      * @param  array<string>|null  $keys
      *
-     * @return ($keys is null ? \Illuminate\Support\ValidatedInput : array<string, mixed>)
+     * @return ($keys is null ? \Illuminate\Support\ValidatedInput<TValidated> : array<string, mixed>)
      */
     public function safe(?array $keys = null);
 }

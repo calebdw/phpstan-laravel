@@ -1,0 +1,19 @@
+<?php
+
+namespace Illuminate\Contracts\Validation;
+
+/**
+ * @template TValidated of array = array<string, mixed>
+ */
+interface Validator
+{
+    /**
+     * @return TValidated
+     */
+    public function validate();
+
+    /**
+     * @return TValidated
+     */
+    public function validated();
+}

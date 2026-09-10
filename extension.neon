@@ -454,7 +454,7 @@ services:
     arguments: {configDirectories: %laravel.configDirectories%, parser: @currentPhpVersionSimpleDirectParser, treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%}
   - class: CalebDW\PhpstanLaravel\Support\ColumnHelper
   - class: CalebDW\PhpstanLaravel\Support\SelectHelper
-  - class: CalebDW\PhpstanLaravel\Support\FormRequestHelper
+  - class: CalebDW\PhpstanLaravel\Support\ValidationHelper
     arguments: {parser: @currentPhpVersionSimpleDirectParser}
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\FormRequestValidatedExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -462,6 +462,12 @@ services:
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\RequestValidateExtension
     tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ValidationFactoryExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\Methods\ValidatorSafeExtension
+    tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+  - class: CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods\ValidatorFacadeExtension
+    tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
   - class: CalebDW\PhpstanLaravel\Types\RequestValidateTypeSpecifyingExtension
     tags: [phpstan.typeSpecifier.methodTypeSpecifyingExtension]
   - class: CalebDW\PhpstanLaravel\Rules\NoAuthFacadeInRequestScopeRule

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Properties;
 
 use CalebDW\PhpstanLaravel\Reflection\ModelPropertyReflection;
-use CalebDW\PhpstanLaravel\Support\FormRequestHelper;
+use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Foundation\Http\FormRequest;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
@@ -18,7 +18,7 @@ final class FormRequestPropertyExtension implements PropertiesClassReflectionExt
     /** @var array<string, ModelPropertyReflection|false> */
     private array $properties = [];
 
-    public function __construct(private FormRequestHelper $formRequestHelper)
+    public function __construct(private ValidationHelper $validationHelper)
     {
     }
 
@@ -43,7 +43,7 @@ final class FormRequestPropertyExtension implements PropertiesClassReflectionExt
 
     private function resolveProperty(ClassReflection $classReflection, string $propertyName): ModelPropertyReflection|false
     {
-        $type = $this->formRequestHelper->propertyType($classReflection, $propertyName);
+        $type = $this->validationHelper->propertyType($classReflection, $propertyName);
 
         if ($type === null) {
             return false;

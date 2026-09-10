@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
-use CalebDW\PhpstanLaravel\Support\FormRequestHelper;
+use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -16,7 +16,7 @@ use function in_array;
 
 final class RequestValidateExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private FormRequestHelper $formRequestHelper)
+    public function __construct(private ValidationHelper $validationHelper)
     {
     }
 
@@ -32,11 +32,11 @@ final class RequestValidateExtension implements DynamicMethodReturnTypeExtension
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
-        $rules = $methodCall->getArg(
+        return $this->validationHelper->shapeFromRulesArg(
+            $methodCall,
+            $scope,
             'rules',
             $methodReflection->getName() === 'validateWithBag' ? 1 : 0,
         );
-
-        return $rules === null ? null : $this->formRequestHelper->shapeFromRulesExpr($rules->value, $scope);
     }
 }

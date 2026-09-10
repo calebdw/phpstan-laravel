@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Types;
 
-use CalebDW\PhpstanLaravel\Support\FormRequestHelper;
+use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -22,7 +22,7 @@ final class RequestValidateTypeSpecifyingExtension implements MethodTypeSpecifyi
 {
     private TypeSpecifier $typeSpecifier;
 
-    public function __construct(private FormRequestHelper $formRequestHelper)
+    public function __construct(private ValidationHelper $validationHelper)
     {
     }
 
@@ -47,13 +47,13 @@ final class RequestValidateTypeSpecifyingExtension implements MethodTypeSpecifyi
             return new SpecifiedTypes();
         }
 
-        $shape = $this->formRequestHelper->shapeFromRulesExpr($rules->value, $scope);
+        $shape = $this->validationHelper->shapeFromRulesExpr($rules->value, $scope);
 
         if ($shape === null) {
             return new SpecifiedTypes();
         }
 
-        $objectShape = $this->formRequestHelper->objectShape($shape);
+        $objectShape = $this->validationHelper->objectShape($shape);
 
         if ($objectShape === null) {
             return new SpecifiedTypes();
