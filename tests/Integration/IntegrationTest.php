@@ -22,6 +22,14 @@ class IntegrationTest extends PHPStanTestCase
     {
         self::getContainer();
 
+        yield 'missing-model-interface' => [
+            __DIR__ . '/data/missing-model-interface.php',
+            [
+                7  => ['Class MissingModelInterface\CalendarEvent implements unknown interface MissingModelInterface\MissingInterface.'],
+                11 => ['Access to an undefined property MissingModelInterface\CalendarEvent::$id.'],
+            ],
+        ];
+
         yield [__DIR__ . '/data/http-client-multipart.php'];
         yield [__DIR__ . '/data/test-case-extension.php', [34 => ['Call to function method_exists() with $this(TestTestCase) and \'partialMock\' will always evaluate to true.']]];
         yield [__DIR__ . '/data/model-builder.php'];

@@ -55,8 +55,12 @@ final class ModelHelper
             /** @var Model $modelInstance */
             $modelInstance = $model->getNativeReflection()->newInstance();
         } catch (Throwable) {
-            /** @var Model $modelInstance */
-            $modelInstance = $model->getNativeReflection()->newInstanceWithoutConstructor();
+            try {
+                /** @var Model $modelInstance */
+                $modelInstance = $model->getNativeReflection()->newInstanceWithoutConstructor();
+            } catch (Throwable) {
+                return $this->instances[$className] = null;
+            }
         }
 
         return $this->instances[$className] = $modelInstance;
