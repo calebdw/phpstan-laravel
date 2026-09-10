@@ -74,6 +74,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder-pluck.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-builder.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-getter-types.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/eloquent-where.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/enumerable-pluck.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/environment-helper.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/facades.php');

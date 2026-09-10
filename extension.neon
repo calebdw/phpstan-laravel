@@ -434,11 +434,16 @@ services:
     tags: [phpstan.methodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\EloquentBuilderRelationParameterExtension
     tags: [phpstan.methodParameterClosureTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Parameters\EloquentBuilderWhereParameterExtension
+    tags: [phpstan.methodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\ModelRelationParameterExtension
+    tags: [phpstan.staticMethodParameterClosureTypeExtension]
+  - class: CalebDW\PhpstanLaravel\Parameters\ModelWhereParameterExtension
     tags: [phpstan.staticMethodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Parameters\ArrMapSpreadParameterExtension
     tags: [phpstan.staticMethodParameterClosureTypeExtension]
   - class: CalebDW\PhpstanLaravel\Support\RelationClosureHelper
+  - class: CalebDW\PhpstanLaravel\Support\OrWhereClosureHelper
   - class: CalebDW\PhpstanLaravel\Support\AppMakeHelper
   - class: CalebDW\PhpstanLaravel\Support\ConsoleApplicationResolver
   - class: CalebDW\PhpstanLaravel\Support\ConsoleApplicationHelper
