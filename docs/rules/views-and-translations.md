@@ -39,6 +39,8 @@ parameters:
 
 - `view` helper function.
 - `$this->markdown`, `$this->view`, and `$this->text` methods in Mailables and mail messages.
+- `Content` constructor and fluent view methods in Mailables.
+- `Mail::send` and `Illuminate\Contracts\Mail\Mailer::send` methods.
 - `Illuminate\View\Factory::make` method.
 - `Illuminate\Support\Facades\View::make` method.
 - `Illuminate\Support\Facades\Route::view` and `Illuminate\Routing\Router::view` methods.

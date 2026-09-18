@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Collectors;
 
 use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use CalebDW\PhpstanLaravel\Support\ViewParser;
+use Illuminate\View\ViewName;
 use PhpParser\Node;
 
 use function array_merge;
@@ -57,7 +58,7 @@ final class UsedViewInAnotherViewCollector
             preg_match_all(self::VIEW_NAME_REGEX, $node->value, $matches, PREG_SET_ORDER, 0);
 
             foreach ($matches as $match) {
-                $usedViews[] = $match[5];
+                $usedViews[] = ViewName::normalize($match[5]);
             }
 
             if (! str_contains($node->value, '<x-') && ! str_contains($node->value, '</x-')) {

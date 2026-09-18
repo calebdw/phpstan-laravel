@@ -2,10 +2,13 @@
 
 namespace Tests\Rules\Data;
 
+use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Factory;
 
@@ -45,6 +48,19 @@ class FooMailable extends Mailable
     {
         return $this->view('emails.mailable.view');
     }
+
+    public function content(): Content
+    {
+        return (new Content(
+            view: 'emails.mailable.content.view',
+            html: 'emails.mailable.content.html',
+            text: 'emails.mailable.content.text',
+            markdown: 'emails.mailable.content.markdown',
+        ))->view('emails.mailable.content.fluent-view')
+            ->html('emails.mailable.content.fluent-html')
+            ->text('emails.mailable.content.fluent-text')
+            ->markdown('emails.mailable.content.fluent-markdown');
+    }
 }
 
 class FooMailMessage extends MailMessage
@@ -80,6 +96,13 @@ function routeView(): void
 function routerView(Router $router): void
 {
     $router->view('/welcome', 'route-view');
+}
+
+function mailSend(Mailer $mailer): void
+{
+    Mail::send(view: 'emails.mail-send.facade', data: []);
+    $mailer->send('emails.mail-send.contract', []);
+    Mail::to('user@example.com')->send(new FooMailable());
 }
 
 function dummyTranslationView()
