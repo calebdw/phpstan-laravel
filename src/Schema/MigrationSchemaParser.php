@@ -345,8 +345,6 @@ final class MigrationSchemaParser
 
             $rootVar = $stmt->expr;
 
-            $firstMethodCall = $rootVar;
-
             $nullable = false;
 
             while ($rootVar instanceof MethodCall) {

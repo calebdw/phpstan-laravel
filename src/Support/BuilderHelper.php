@@ -335,8 +335,7 @@ final class BuilderHelper
         $unknownFailure = false;
 
         foreach ($relationNames->getConstantStrings() as $relation) {
-            $relatedType  = $modelType;
-            $relationType = $modelType;
+            $relatedType = $modelType;
 
             foreach (explode('.', explode(':', $relation->getValue(), 2)[0]) as $name) {
                 if ($name === '') {

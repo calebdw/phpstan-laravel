@@ -111,7 +111,7 @@ final class CollectionFilterRejectDynamicReturnTypeExtension implements DynamicM
             return null;
         }
 
-        if ($var !== null && $expr !== null) {
+        if ($expr !== null) {
             if (! $var instanceof Variable || ! is_string($var->name)) {
                 throw new ShouldNotHappenException();
             }
