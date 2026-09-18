@@ -67,6 +67,23 @@ function unions(Application $app, bool $flag): void
     });
 }
 
+class ArrowFunctionServiceProvider extends \Illuminate\Support\ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(Service::class, fn () => new Service($this->app));
+        $this->app->bind(Service::class, fn () => new Service($this->app));
+
+        // This is fine
+        $this->app->bind(Service::class, fn ($app) => new Service($app));
+
+        $this->app->singleton(Service::class, fn ($app) => new Service($app['request']));
+
+        // This is fine
+        $this->app->singleton(Service::class, fn ($app) => new Service($app['session']));
+    }
+}
+
 class Service
 {
     /**

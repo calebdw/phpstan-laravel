@@ -29,6 +29,9 @@ class OctaneCompatibilityRuleTest extends RuleTestCase
             ['Consider using bind method instead or pass a closure.', 59, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
             ['Consider using bind method instead or pass a closure.', 62, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
             ['Consider using bind method instead or pass a closure.', 66, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 74, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 75, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 80, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
         ]);
     }
 
