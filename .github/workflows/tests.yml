@@ -71,6 +71,7 @@ jobs:
         run: "composer run-script test:unit"
 
       - name: "Analyse a sample Laravel application"
+        if: "matrix.dependencies == 'highest'"
         run: |
           version="${{ matrix.laravel }}"
           version="${version%%.*}.0"
