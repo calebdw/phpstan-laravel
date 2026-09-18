@@ -199,8 +199,8 @@ final class HigherOrderCollectionProxyHelper
                 $returnType = TypeCombinator::addNull(new FloatType());
                 break;
             case 'sum':
-                if ($methodOrPropertyReturnType->accepts(new IntegerType(), true)->yes()) {
-                    $returnType = new IntegerType();
+                if ($methodOrPropertyReturnType->isInteger()->yes() || $methodOrPropertyReturnType->accepts($integerType, true)->yes()) {
+                    $returnType = $integerType;
                 } else {
                     $returnType = new ErrorType();
                 }

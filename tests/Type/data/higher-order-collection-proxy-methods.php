@@ -10,6 +10,7 @@ use App\Transaction;
 use App\TransactionCollection;
 use App\User;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection as SupportCollection;
 
 use function PHPStan\Testing\assertType;
@@ -104,4 +105,15 @@ function test(
     assertType('App\OnlyValueGenericCollection<App\ModelWithOnlyValueGenericCollection>', $onlyValueGenericCollection->reject->id);
     assertType('App\TransactionCollection<int, App\Transaction>', $transactionCollection->each->count());
     assertType('App\TransactionCollection<int, App\Transaction>', $transactionCollection->reject->id);
+}
+
+/** @property int<0, max> $unsigned */
+class UnsignedModel extends Model
+{
+}
+
+/** @param EloquentCollection<int, UnsignedModel> $models */
+function unsignedSum(EloquentCollection $models): void
+{
+    assertType('int', $models->sum->unsigned);
 }

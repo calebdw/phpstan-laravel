@@ -68,7 +68,7 @@ final class ModelCastHelper
         $cast = $this->parseCast($cast);
 
         $attributeType = match ($cast) {
-            'int', 'integer', 'timestamp' => new IntegerType(),
+            'int', 'integer', 'timestamp' => $originalType->isInteger()->yes() ? $originalType : new IntegerType(),
             'real', 'float', 'double' => new FloatType(),
             'decimal' => TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType()),
             'string' => new StringType(),
@@ -133,7 +133,7 @@ final class ModelCastHelper
         $cast = $this->parseCast($cast);
 
         $attributeType = match ($cast) {
-            'int', 'integer', 'timestamp' => new IntegerType(),
+            'int', 'integer', 'timestamp' => $originalType->isInteger()->yes() ? $originalType : new IntegerType(),
             'real', 'float', 'double' => new FloatType(),
             'decimal' => TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType(), new FloatType()),
             'string' => new StringType(),
