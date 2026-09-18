@@ -1300,7 +1300,9 @@
 that type has to carry its generic parameters. The class the relation points at
 is taken from there rather than from the <code>hasMany(Post::class)</code> argument, which
 means an undocumented relation resolves to the base relation class and the
-related model is lost.</p>
+related model is lost. Relation query callbacks and <code>builder-of</code> paths then use
+<code>Builder&lt;Model&gt;</code> rather than assuming the relation still targets the declaring
+model.</p>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="sd">/** @return BelongsTo&lt;User, $this&gt; */</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">user</span><span class="p">()</span><span class="o">:</span> <span class="nx">BelongsTo</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">{</span>
