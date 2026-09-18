@@ -118,6 +118,6 @@ builder, including a custom builder. Dotted paths such as
 `builder-of<User, 'posts.comments'>` resolve to the final related model.
 Unions of models or relation names become unions of builders. Paths that
 cannot resolve are discarded; if none resolve, the type falls back to
-`builder-of<User>`.
-
+`builder-of<User>`. If a path cannot be followed because a relation lost its
+related model type, it instead falls back to `Builder<Model>`.
 

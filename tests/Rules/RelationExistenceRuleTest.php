@@ -292,6 +292,13 @@ class RelationExistenceRuleTest extends RuleTestCase
         ]);
     }
 
+    public function testBareRelations(): void
+    {
+        $this->analyse([__DIR__ . '/data/relation-existence-bare-relations.php'], [
+            ["Relation 'missing' is not found in App\\Comment model.", 15],
+        ]);
+    }
+
     /** @return string[] */
     public static function getAdditionalConfigFiles(): array
     {

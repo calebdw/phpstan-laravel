@@ -3,6 +3,7 @@
 namespace RelationshipQueryCallbacks;
 
 use App\Account;
+use App\BareRelations\Owner;
 use App\Comment;
 use App\Post;
 use App\PostComment;
@@ -47,6 +48,17 @@ function ordinaryRelationships(string $relation, string $unknown, User $user): v
 
     $builder->whereDoesntHave($user->accounts(), function (Builder $query) {
         assertType('Illuminate\Database\Eloquent\Builder<App\Account>', $query);
+    });
+}
+
+function bareRelationships(): void
+{
+    Owner::query()->whereHas('items', function (Builder $query) {
+        assertType('Illuminate\Database\Eloquent\Builder<Illuminate\Database\Eloquent\Model>', $query);
+    });
+
+    Owner::query()->whereHas('items.category.labels', function (Builder $query) {
+        assertType('Illuminate\Database\Eloquent\Builder<Illuminate\Database\Eloquent\Model>', $query);
     });
 }
 

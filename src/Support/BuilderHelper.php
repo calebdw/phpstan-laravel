@@ -321,11 +321,18 @@ final class BuilderHelper
 
     public function relationType(Type $modelType, Type $relationNames): Type|null
     {
+        return $this->resolveRelationType($modelType, $relationNames)[0];
+    }
+
+    /** @return array{Type|null, bool} */
+    private function resolveRelationType(Type $modelType, Type $relationNames): array
+    {
         if (TypeUtils::containsTemplateType($relationNames) || ! $relationNames->isConstantScalarValue()->yes()) {
-            return null;
+            return [null, false];
         }
 
-        $results = [];
+        $results        = [];
+        $unknownFailure = false;
 
         foreach ($relationNames->getConstantStrings() as $relation) {
             $relatedType  = $modelType;
@@ -339,6 +346,12 @@ final class BuilderHelper
                 $relations = [];
 
                 foreach (TypeUtils::flattenTypes($relatedType) as $type) {
+                    if ($this->isUnknownModelType($type)) {
+                        $unknownFailure = true;
+
+                        continue;
+                    }
+
                     if (! $type->hasMethod($name)->yes()) {
                         continue;
                     }
@@ -367,16 +380,36 @@ final class BuilderHelper
             $results[] = $relationType;
         }
 
-        return $results === [] ? null : TypeCombinator::union(...$results);
+        return [$results === [] ? null : TypeCombinator::union(...$results), $unknownFailure];
+    }
+
+    private function isUnknownModelType(Type $type): bool
+    {
+        $classes = $type->getObjectClassReflections();
+
+        if ($classes === []) {
+            return true;
+        }
+
+        foreach ($classes as $class) {
+            if ($class->is(Model::class) && $class->isAbstract()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function determineBuilderType(Type $modelType, Type|null $relationNames = null): Type
     {
         if ($relationNames !== null) {
-            $related = $this->relationType($modelType, $relationNames)?->getTemplateType(Relation::class, 'TRelatedModel');
+            [$relationType, $unknownFailure] = $this->resolveRelationType($modelType, $relationNames);
+            $related                         = $relationType?->getTemplateType(Relation::class, 'TRelatedModel');
 
             if ($related !== null) {
                 $modelType = $related;
+            } elseif ($unknownFailure) {
+                $modelType = new ObjectType(Model::class);
             }
         }
 

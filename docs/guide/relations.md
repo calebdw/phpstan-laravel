@@ -4,7 +4,9 @@ Relationship types are read from the relation method's declared return type, so
 that type has to carry its generic parameters. The class the relation points at
 is taken from there rather than from the `hasMany(Post::class)` argument, which
 means an undocumented relation resolves to the base relation class and the
-related model is lost.
+related model is lost. Relation query callbacks and `builder-of` paths then use
+`Builder<Model>` rather than assuming the relation still targets the declaring
+model.
 
 ```php
 /** @return BelongsTo<User, $this> */
