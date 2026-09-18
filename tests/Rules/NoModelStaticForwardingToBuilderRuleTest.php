@@ -29,6 +29,13 @@ class NoModelStaticForwardingToBuilderRuleTest extends RuleTestCase
         ]);
     }
 
+    public function testAttributeScope(): void
+    {
+        $this->analyse([__DIR__ . '/data/model-forwarding-attribute-scope.php'], [
+            ["Static method [active] is forwarded to a Builder instance, which is not allowed.\n    💡 Use [::query()->active()] instead.", 25],
+        ]);
+    }
+
     /** @return string[] */
     public static function getAdditionalConfigFiles(): array
     {

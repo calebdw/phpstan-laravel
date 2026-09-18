@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Rules;
 
 use CalebDW\PhpstanLaravel\Support\CallHelper;
+use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
+use Illuminate\Database\Eloquent\Attributes\Scope as ScopeAttribute;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\TypeCombinator;
 
@@ -21,8 +23,10 @@ use function sprintf;
 /** @implements Rule<MethodCall> */
 final class NoModelForwardingToBuilderRule implements Rule
 {
-    public function __construct(private CallHelper $callHelper)
-    {
+    public function __construct(
+        private CallHelper $callHelper,
+        private ReflectionHelper $reflectionHelper,
+    ) {
     }
 
     public function getNodeType(): string
@@ -30,7 +34,7 @@ final class NoModelForwardingToBuilderRule implements Rule
         return MethodCall::class;
     }
 
-    /** @return RuleError[] */
+    /** @return IdentifierRuleError[] */
     public function processNode(Node $node, Scope $scope): array
     {
         $errors = [];
@@ -49,6 +53,20 @@ final class NoModelForwardingToBuilderRule implements Rule
                     continue;
                 }
 
+                if ($method !== 'with' && $classReflection->hasNativeMethod($method)) {
+                    $nativeMethod = $classReflection->getNativeMethod($method);
+
+                    if ($scope->canCallMethod($nativeMethod)) {
+                        continue;
+                    }
+
+                    if ($this->reflectionHelper->hasMethodAttribute($nativeMethod, ScopeAttribute::class)) {
+                        $errors[] = $this->error($method, $node);
+
+                        continue;
+                    }
+                }
+
                 $methodReflection = $classReflection->getMethod($method, $scope);
                 $declaringClass   = $methodReflection->getDeclaringClass();
 
@@ -63,14 +81,19 @@ final class NoModelForwardingToBuilderRule implements Rule
                     continue;
                 }
 
-                $errors[] = RuleErrorBuilder::message(sprintf('Method [%s] is forwarded to a Builder instance, which is not allowed.', $method))
-                    ->tip(sprintf('Use [::%s()], [::query()->%s()] or [->newQuery()->%s()] instead.', $method, $method, $method))
-                    ->identifier('laravel.modelForwardingToBuilder')
-                    ->line($node->name->getStartLine())
-                    ->build();
+                $errors[] = $this->error($method, $node);
             }
         }
 
         return $errors;
+    }
+
+    private function error(string $method, MethodCall $node): IdentifierRuleError
+    {
+        return RuleErrorBuilder::message(sprintf('Method [%s] is forwarded to a Builder instance, which is not allowed.', $method))
+            ->tip(sprintf('Use [::%s()], [::query()->%s()] or [->newQuery()->%s()] instead.', $method, $method, $method))
+            ->identifier('laravel.modelForwardingToBuilder')
+            ->line($node->name->getStartLine())
+            ->build();
     }
 }
