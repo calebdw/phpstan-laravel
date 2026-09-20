@@ -34,6 +34,8 @@ final class ModelPropertyHelper
     /** @var array<string, ModelPropertyReflection|false> */
     private array $databaseProperties = [];
 
+    private ObjectType $attributeType;
+
     public function __construct(
         private TypeStringResolver $stringResolver,
         private ModelSchema $modelSchema,
@@ -41,6 +43,7 @@ final class ModelPropertyHelper
         private ModelHelper $modelHelper,
         private ReflectionHelper $reflectionHelper,
     ) {
+        $this->attributeType = new ObjectType(Attribute::class);
     }
 
     /**
@@ -168,7 +171,7 @@ final class ModelPropertyHelper
             if (! $methodReflection->isPublic() && ! $methodReflection->isPrivate()) {
                 $returnType = $methodReflection->getVariants()[0]->getReturnType();
 
-                if ((new ObjectType(Attribute::class))->isSuperTypeOf($returnType)->yes()) {
+                if ($this->attributeType->isSuperTypeOf($returnType)->yes()) {
                     return new ModelPropertyReflection(
                         $classReflection,
                         $this->resolveReadableType(
