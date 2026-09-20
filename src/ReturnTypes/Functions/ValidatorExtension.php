@@ -17,6 +17,10 @@ use PHPStan\Type\Type;
 
 final class ValidatorExtension implements DynamicFunctionReturnTypeExtension
 {
+    private ObjectType|null $factoryType = null;
+
+    private ObjectType|null $validatorType = null;
+
     public function __construct(
         private ValidationHelper $validationHelper,
         private bool $strictContracts,
@@ -31,14 +35,14 @@ final class ValidatorExtension implements DynamicFunctionReturnTypeExtension
     public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type
     {
         if ($functionCall->getArgs() === []) {
-            return new ObjectType(Factory::class);
+            return $this->factoryType ??= new ObjectType(Factory::class);
         }
 
         $class = $this->strictContracts ? ValidatorContract::class : Validator::class;
         $shape = $this->validationHelper->shapeFromRulesArg($functionCall, $scope);
 
         return $shape === null
-            ? new ObjectType($class)
+            ? $this->validatorType ??= new ObjectType($class)
             : $this->validationHelper->validator($shape, ! $this->strictContracts);
     }
 }

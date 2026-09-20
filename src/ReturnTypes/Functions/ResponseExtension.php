@@ -15,6 +15,10 @@ use PHPStan\Type\Type;
 
 final class ResponseExtension implements DynamicFunctionReturnTypeExtension
 {
+    private ObjectType|null $responseFactoryType = null;
+
+    private ObjectType|null $responseType = null;
+
     public function isFunctionSupported(FunctionReflection $functionReflection): bool
     {
         return $functionReflection->getName() === 'response';
@@ -24,9 +28,9 @@ final class ResponseExtension implements DynamicFunctionReturnTypeExtension
     {
         // Runtime behavior depends on argument count, so the nullable $content parameter cannot express this distinction.
         if ($functionCall->getArgs() === []) {
-            return new ObjectType(ResponseFactory::class);
+            return $this->responseFactoryType ??= new ObjectType(ResponseFactory::class);
         }
 
-        return new ObjectType(Response::class);
+        return $this->responseType ??= new ObjectType(Response::class);
     }
 }

@@ -15,6 +15,8 @@ use PHPStan\Type\Type;
 
 final class AppExtension implements DynamicFunctionReturnTypeExtension
 {
+    private ObjectType|null $applicationType = null;
+
     public function __construct(
         private AppMakeHelper $appMakeHelper,
     ) {
@@ -28,7 +30,7 @@ final class AppExtension implements DynamicFunctionReturnTypeExtension
     public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type|null
     {
         if ($functionCall->getArgs() === []) {
-            return new ObjectType(Application::class);
+            return $this->applicationType ??= new ObjectType(Application::class);
         }
 
         return $this->appMakeHelper->resolveType(
