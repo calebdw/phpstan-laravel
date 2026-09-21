@@ -100,9 +100,13 @@ final class ReflectionHelper
      * First constructor argument when it is a class constant fetch.
      * Used by CollectedBy, UseFactory, and UseEloquentBuilder.
      */
-    public function attributeClassName(ClassReflection $class, string $attribute, bool $inherited = true): string|null
-    {
-        $attr = $this->findAttribute($class, $attribute, $inherited);
+    public function attributeClassName(
+        ClassReflection $class,
+        string $attribute,
+        bool $inherited = true,
+        bool $traits = true,
+    ): string|null {
+        $attr = $this->findAttribute($class, $attribute, $inherited, $traits);
 
         if ($attr === null) {
             return null;
@@ -115,6 +119,13 @@ final class ReflectionHelper
         }
 
         return $expr->class->toString();
+    }
+
+    public function classStringPropertyDefault(ClassReflection $class, string $property): string|null
+    {
+        $value = $class->getNativeReflection()->getDefaultProperties()[$property] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 
     /**
@@ -137,8 +148,12 @@ final class ReflectionHelper
         return array_values(array_filter($columns, is_string(...)));
     }
 
-    private function findAttribute(ClassReflection $class, string $attribute, bool $inherited): NativeAttribute|null
-    {
+    private function findAttribute(
+        ClassReflection $class,
+        string $attribute,
+        bool $inherited,
+        bool $traits = true,
+    ): NativeAttribute|null {
         $reflections = $inherited ? [$class, ...$class->getParents()] : [$class];
 
         foreach ($reflections as $reflection) {
@@ -149,6 +164,10 @@ final class ReflectionHelper
             }
 
             if (! $inherited) {
+                continue;
+            }
+
+            if (! $traits) {
                 continue;
             }
 

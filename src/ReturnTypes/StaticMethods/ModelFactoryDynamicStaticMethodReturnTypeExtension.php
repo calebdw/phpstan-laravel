@@ -5,36 +5,26 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods;
 
 use CalebDW\PhpstanLaravel\Support\CallHelper;
-use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
+use CalebDW\PhpstanLaravel\Support\FactoryHelper;
 use CalebDW\PhpstanLaravel\Types\ModelFactoryType;
-use Illuminate\Database\Eloquent\Attributes\UseFactory;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Accessory\AccessoryNumericStringType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
-use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-use function array_map;
-use function class_exists;
-use function count;
-
 final class ModelFactoryDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(
-        private ReflectionProvider $reflectionProvider,
         private CallHelper $callHelper,
-        private ReflectionHelper $reflectionHelper,
+        private FactoryHelper $factoryHelper,
     ) {
     }
 
@@ -67,99 +57,9 @@ final class ModelFactoryDynamicStaticMethodReturnTypeExtension implements Dynami
             $isSingleModel = $numericType->isSuperTypeOf($argType)->negate()->result;
         }
 
-        return TypeCombinator::union(...array_map(function ($r) use ($scope, $isSingleModel) {
-            $factoryReflection = $this->getFactoryReflection($r, $scope);
-
-            if ($factoryReflection === null) {
-                return new ErrorType();
-            }
-
-            return new ModelFactoryType($factoryReflection->getName(), null, $factoryReflection, $isSingleModel);
-        }, $calledOnType->getObjectClassReflections()));
-    }
-
-    private function getFactoryReflection(ClassReflection $modelReflection, Scope $scope): ClassReflection|null
-    {
-        $factoryReflection = $this->getFactoryFromNewFactoryMethod($modelReflection, $scope);
-
-        if ($factoryReflection !== null) {
-            return $factoryReflection;
-        }
-
-        $factoryReflection = $this->getFactoryFromAttribute($modelReflection);
-
-        if ($factoryReflection !== null) {
-            return $factoryReflection;
-        }
-
-        /** @phpstan-ignore argument.type (guaranteed to be model class-string) */
-        $factoryClass = Factory::resolveFactoryName($modelReflection->getName());
-
-        if (class_exists($factoryClass)) {
-            return $this->reflectionProvider->getClass($factoryClass);
-        }
-
-        return null;
-    }
-
-    /**
-     * Reads the factory named by #[UseFactory].
-     *
-     * Laravel resolves the attribute inside HasFactory::newFactory(), whose
-     * declared return type cannot express it, and it takes precedence over the
-     * naming convention. The argument is read as an expression rather than by
-     * instantiating the attribute, so the factory does not have to be
-     * loadable for this to work.
-     */
-    private function getFactoryFromAttribute(ClassReflection $modelReflection): ClassReflection|null
-    {
-        $factoryClass = $this->reflectionHelper->attributeClassName(
-            $modelReflection,
-            UseFactory::class,
-            inherited: false,
+        return $this->factoryHelper->determineFactoryType(
+            $calledOnType,
+            static fn ($factory) => new ModelFactoryType($factory->getName(), null, $factory, $isSingleModel),
         );
-
-        if ($factoryClass === null) {
-            return null;
-        }
-
-        if (! $this->reflectionProvider->hasClass($factoryClass)) {
-            return null;
-        }
-
-        $factoryReflection = $this->reflectionProvider->getClass($factoryClass);
-
-        if (! $factoryReflection->is(Factory::class) || $factoryReflection->isAbstract()) {
-            return null;
-        }
-
-        return $factoryReflection;
-    }
-
-    private function getFactoryFromNewFactoryMethod(ClassReflection $modelReflection, Scope $scope): ClassReflection|null
-    {
-        if (! $modelReflection->hasMethod('newFactory')) {
-            return null;
-        }
-
-        $factoryReflections = $modelReflection->getMethod('newFactory', $scope)
-            ->getVariants()[0]
-            ->getReturnType()
-            ->getObjectClassReflections();
-
-        if (count($factoryReflections) !== 1) {
-            return null;
-        }
-
-        foreach ($factoryReflections as $factoryReflection) {
-            if (
-                $factoryReflection->is(Factory::class)
-                && ! $factoryReflection->isAbstract()
-            ) {
-                return $factoryReflection;
-            }
-        }
-
-        return null;
     }
 }

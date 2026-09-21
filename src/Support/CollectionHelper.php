@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use Composer\InstalledVersions;
 use Illuminate\Database\Eloquent\Attributes\CollectedBy;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,7 @@ use function array_unique;
 use function array_values;
 use function count;
 use function in_array;
+use function version_compare;
 
 final class CollectionHelper
 {
@@ -256,15 +258,36 @@ final class CollectionHelper
             return null;
         }
 
-        $collectionClass = $this->reflectionHelper->attributeClassName($modelReflection, CollectedBy::class);
+        $method = $modelReflection->getNativeMethod('newCollection');
+
+        $declaringClass = $modelReflection->getNativeReflection()
+            ->getMethod('newCollection')
+            ->getDeclaringClass()
+            ->getName();
+
+        if ($declaringClass !== Model::class) {
+            return $method->getVariants()[0]->getReturnType();
+        }
+
+        $laravelVersion  = InstalledVersions::getVersion('laravel/framework')
+            ?? InstalledVersions::getVersion('illuminate/database')
+            ?? '0';
+        $collectionClass = $this->reflectionHelper->attributeClassName(
+            $modelReflection,
+            CollectedBy::class,
+            inherited: version_compare($laravelVersion, '13.0.0.0', '>='),
+            traits: false,
+        );
 
         if ($collectionClass !== null) {
             return new ObjectType($collectionClass);
         }
 
-        return $modelReflection->getNativeMethod('newCollection')
-            ->getVariants()[0]
-            ->getReturnType();
+        $collectionClass = $this->reflectionHelper->classStringPropertyDefault($modelReflection, 'collectionClass');
+
+        return $collectionClass === null
+            ? $method->getVariants()[0]->getReturnType()
+            : new ObjectType($collectionClass);
     }
 
     public function determineCollectionTypeFromModels(Type $modelType, Type|null $keyType = null): Type|null

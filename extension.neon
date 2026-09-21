@@ -287,6 +287,11 @@ services:
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Types\BuilderOfTypeNodeResolverExtension
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\Types\CollectionOfTypeNodeResolverExtension
+    tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\Types\FactoryOfTypeNodeResolverExtension
+    tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\Support\FactoryHelper
   - class: CalebDW\PhpstanLaravel\Support\ModelHelper
   - class: CalebDW\PhpstanLaravel\Support\ManagerHelper
   - class: CalebDW\PhpstanLaravel\Support\AuthHelper

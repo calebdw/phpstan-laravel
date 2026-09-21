@@ -13,6 +13,12 @@ function test(): void
     assertType('ModelCollectionsL1128\UserCollection', User::query()->where('id', '>', 1)->get());
 }
 
+/** @param collection-of<User> $users */
+function testCollectionOf(Collection $users): void
+{
+    assertType('ModelCollectionsL1128\UserCollection', $users);
+}
+
 #[CollectedBy(UserCollection::class)]
 class User extends Model
 {

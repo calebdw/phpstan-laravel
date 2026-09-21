@@ -51,9 +51,10 @@ The type is only active when [`modelPropertyType`](../reference/configuration.md
 
 ## builder-of
 
-The `builder-of<Model>` type resolves to the Eloquent builder for that model. A custom
-builder from `newEloquentBuilder()` or `#[UseEloquentBuilder]` is used when the model
-has one; otherwise it is `Illuminate\Database\Eloquent\Builder<Model>`.
+The `builder-of<Model>` type resolves to the Eloquent builder for that model. It
+uses a custom `newEloquentBuilder()` implementation, `#[UseEloquentBuilder]`, or
+the model's static `$builder` property, in that order. Otherwise it is
+`Illuminate\Database\Eloquent\Builder<Model>`.
 
 A union of models becomes a union of their builders. Generic arguments, `static`,
 `$this`, and intersections on the model are kept. Model query methods,
@@ -121,3 +122,42 @@ cannot resolve are discarded; if none resolve, the type falls back to
 `builder-of<User>`. If a path cannot be followed because a relation lost its
 related model type, it instead falls back to `Builder<Model>`.
 
+## collection-of
+
+The `collection-of<Model>` type resolves to the Eloquent collection used by
+that model. It uses a custom `newCollection()` implementation,
+`#[CollectedBy]`, or the model's static `$collectionClass` property, in that
+order. Laravel 13's inherited `#[CollectedBy]` behavior is also respected.
+Otherwise it is
+`Illuminate\Database\Eloquent\Collection<int|string, Model>`.
+
+Model unions become unions of their collections, and generic templates are
+resolved when their model type becomes known. Like `array<TKey, TValue>`, an
+optional key type can be given first:
+
+```php
+/** @param collection-of<string, \App\User> $users */
+function usersByEmail(\Illuminate\Database\Eloquent\Collection $users): void
+{
+}
+```
+
+## factory-of
+
+The `factory-of<Model>` type resolves to the concrete factory selected for the
+model. It follows the same precedence as `Model::factory()`: a model's custom
+`newFactory()` method, static `$factory` property, `#[UseFactory]`, then
+Laravel's factory naming convention. Model unions become unions of their
+factories.
+
+```php
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @param class-string<TModel> $model
+ * @return factory-of<TModel>
+ */
+function factoryFor(string $model)
+{
+    return $model::factory();
+}
+```

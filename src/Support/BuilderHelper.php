@@ -272,6 +272,16 @@ final class BuilderHelper
             if ($builderClass !== null) {
                 return $builderClass;
             }
+
+            $builderClass = $this->reflectionHelper->classStringPropertyDefault($modelReflection, 'builder');
+
+            if (
+                $builderClass !== null
+                && $this->reflectionProvider->hasClass($builderClass)
+                && $this->reflectionProvider->getClass($builderClass)->is(EloquentBuilder::class)
+            ) {
+                return $builderClass;
+            }
         }
 
         $returnType = $method->getVariants()[0]->getReturnType();

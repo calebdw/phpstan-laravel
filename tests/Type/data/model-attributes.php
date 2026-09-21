@@ -82,3 +82,9 @@ function test(): void
     assertType('ModelAttributes\GadgetFactory', Gadget::factory());
     assertType('ModelAttributes\Gadget', Gadget::factory()->create());
 }
+
+/** @param factory-of<Widget> $factory */
+function testFactoryOf(Factory $factory): void
+{
+    assertType('ModelAttributes\WidgetFactory', $factory);
+}
