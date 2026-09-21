@@ -33,10 +33,14 @@ final class PaginatorGetCollectionExtension implements DynamicMethodReturnTypeEx
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
-        $valueType = $scope->getType($methodCall->var)->getTemplateType($this->class, 'TValue');
+        $paginator = $scope->getType($methodCall->var);
+        $valueType = $paginator->getTemplateType($this->class, 'TValue');
 
         return $valueType instanceof ErrorType
             ? null
-            : $this->collectionHelper->determineCollectionTypeFromModels($valueType);
+            : $this->collectionHelper->determineCollectionTypeFromModels(
+                $valueType,
+                $paginator->getTemplateType($this->class, 'TKey'),
+            );
     }
 }

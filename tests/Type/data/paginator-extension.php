@@ -39,11 +39,13 @@ function test(): void
     assertType('App\AccountCollection<int, App\Account>', Account::paginate()->getCollection());
     assertType('App\AccountCollection<int, App\Account>', Account::simplePaginate()->getCollection());
     assertType('App\AccountCollection<int, App\Account>', Account::cursorPaginate()->getCollection());
+    assertType('array<int, App\User>', User::paginate()->getCollection()->all());
 
     $paginator = User::paginate();
     $paginator->setCollection(new AccountCollection(['account' => new Account()]));
-    assertType('App\AccountCollection<int, App\Account>', $paginator->getCollection());
+    assertType('App\AccountCollection<string, App\Account>', $paginator->getCollection());
     assertType('Illuminate\Pagination\LengthAwarePaginator<string, App\Account>', $paginator);
+    assertType('App\AccountCollection<string, App\Account>', $paginator->getCollection()->filterByActive());
 
     $paginator->setCollection(new Collection(['name' => 'Taylor']));
     assertType('Illuminate\Support\Collection<string, string>', $paginator->getCollection());

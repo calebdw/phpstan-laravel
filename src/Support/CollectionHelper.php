@@ -267,7 +267,7 @@ final class CollectionHelper
             ->getReturnType();
     }
 
-    public function determineCollectionTypeFromModels(Type $modelType): Type|null
+    public function determineCollectionTypeFromModels(Type $modelType, Type|null $keyType = null): Type|null
     {
         $types = [];
 
@@ -281,7 +281,7 @@ final class CollectionHelper
                     continue;
                 }
 
-                $types[] = $this->determineCollectionType($className, $type);
+                $types[] = $this->determineCollectionType($className, $type, $keyType);
             }
         }
 
@@ -290,7 +290,7 @@ final class CollectionHelper
         return $types === [] ? null : TypeCombinator::union(...$types);
     }
 
-    public function determineCollectionType(string $modelClassName, Type|null $modelType = null): Type|null
+    public function determineCollectionType(string $modelClassName, Type|null $modelType = null, Type|null $keyType = null): Type|null
     {
         if ($modelType === null) {
             if (array_key_exists($modelClassName, $this->collectionTypes)) {
@@ -300,10 +300,10 @@ final class CollectionHelper
             return $this->collectionTypes[$modelClassName] = $this->resolveCollectionType($modelClassName, new ObjectType($modelClassName));
         }
 
-        return $this->resolveCollectionType($modelClassName, $modelType);
+        return $this->resolveCollectionType($modelClassName, $modelType, $keyType);
     }
 
-    private function resolveCollectionType(string $modelClassName, Type $modelType): Type|null
+    private function resolveCollectionType(string $modelClassName, Type $modelType, Type|null $keyType = null): Type|null
     {
         $collectionType = $this->determineOriginalCollectionType($modelClassName);
 
@@ -311,7 +311,7 @@ final class CollectionHelper
             return null;
         }
 
-        return TypeTraverser::map($collectionType, function (Type $type, callable $traverse) use ($modelType): Type {
+        return TypeTraverser::map($collectionType, function (Type $type, callable $traverse) use ($keyType, $modelType): Type {
             if ($type instanceof UnionType || $type instanceof IntersectionType) {
                 return $traverse($type);
             }
@@ -328,8 +328,8 @@ final class CollectionHelper
                 return $type;
             }
 
-            $keyType = new IntegerType();
-            $typeMap = $classReflection->getActiveTemplateTypeMap();
+            $keyType ??= new IntegerType();
+            $typeMap   = $classReflection->getActiveTemplateTypeMap();
 
             if ($typeMap->count() === 1 && ! $typeMap->hasType('TModel')) {
                 return new GenericObjectType($classReflection->getName(), [$keyType]);
