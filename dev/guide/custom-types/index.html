@@ -792,6 +792,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#collection-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        collection-of
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#factory-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        factory-of
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1388,6 +1410,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#collection-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        collection-of
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#factory-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        factory-of
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1445,9 +1489,10 @@ arguments. <code>htmlString</code> is rendered HTML and is not checked as a view
 <p>All of the Laravel core methods have this type thanks to the stubs. So whenever you use a Eloquent builder, relation or a model method that expects a column, it'll be checked by this extension if the column actually exists. But you can also typehint any argument with <code>model-property</code> in your code.</p>
 <p>The type is only active when <a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a> is enabled. With it off, <code>model-property&lt;Model&gt;</code> behaves as a plain <code>string</code> and nothing is checked. There is no rule behind it: once the type is active, the mismatches are reported by PHPStan's ordinary argument checks, so they carry core identifiers such as <code>argument.type</code>. See <a href="../model-properties/#checking-column-names">checking column names</a> for a worked example.</p>
 <h2 id="builder-of">builder-of<a class="headerlink" href="#builder-of" title="Permanent link">&para;</a></h2>
-<p>The <code>builder-of&lt;Model&gt;</code> type resolves to the Eloquent builder for that model. A custom
-builder from <code>newEloquentBuilder()</code> or <code>#[UseEloquentBuilder]</code> is used when the model
-has one; otherwise it is <code>Illuminate\Database\Eloquent\Builder&lt;Model&gt;</code>.</p>
+<p>The <code>builder-of&lt;Model&gt;</code> type resolves to the Eloquent builder for that model. It
+uses a custom <code>newEloquentBuilder()</code> implementation, <code>#[UseEloquentBuilder]</code>, or
+the model's static <code>$builder</code> property, in that order. Otherwise it is
+<code>Illuminate\Database\Eloquent\Builder&lt;Model&gt;</code>.</p>
 <p>A union of models becomes a union of their builders. Generic arguments, <code>static</code>,
 <code>$this</code>, and intersections on the model are kept. Model query methods,
 <code>Collection::toQuery()</code>, and relation query builders use it so custom builders
@@ -1504,6 +1549,37 @@ Unions of models or relation names become unions of builders. Paths that
 cannot resolve are discarded; if none resolve, the type falls back to
 <code>builder-of&lt;User&gt;</code>. If a path cannot be followed because a relation lost its
 related model type, it instead falls back to <code>Builder&lt;Model&gt;</code>.</p>
+<h2 id="collection-of">collection-of<a class="headerlink" href="#collection-of" title="Permanent link">&para;</a></h2>
+<p>The <code>collection-of&lt;Model&gt;</code> type resolves to the Eloquent collection used by
+that model. It uses a custom <code>newCollection()</code> implementation,
+<code>#[CollectedBy]</code>, or the model's static <code>$collectionClass</code> property, in that
+order. Laravel 13's inherited <code>#[CollectedBy]</code> behavior is also respected.
+Otherwise it is
+<code>Illuminate\Database\Eloquent\Collection&lt;int|string, Model&gt;</code>.</p>
+<p>Model unions become unions of their collections, and generic templates are
+resolved when their model type becomes known. Like <code>array&lt;TKey, TValue&gt;</code>, an
+optional key type can be given first:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="sd">/** @param collection-of&lt;string, \App\User&gt; $users */</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">function</span> <span class="nf">usersByEmail</span><span class="p">(</span><span class="nx">\Illuminate\Database\Eloquent\Collection</span> <span class="nv">$users</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">{</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="p">}</span>
+</span></code></pre></div>
+<h2 id="factory-of">factory-of<a class="headerlink" href="#factory-of" title="Permanent link">&para;</a></h2>
+<p>The <code>factory-of&lt;Model&gt;</code> type resolves to the concrete factory selected for the
+model. It follows the same precedence as <code>Model::factory()</code>: a model's custom
+<code>newFactory()</code> method, static <code>$factory</code> property, <code>#[UseFactory]</code>, then
+Laravel's factory naming convention. Model unions become unions of their
+factories.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="sd">/**</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="sd"> * @template TModel of \Illuminate\Database\Eloquent\Model</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="sd"> * @param class-string&lt;TModel&gt; $model</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="sd"> * @return factory-of&lt;TModel&gt;</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="sd"> */</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">function</span> <span class="nf">factoryFor</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$model</span><span class="p">)</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="p">{</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="k">return</span> <span class="nv">$model</span><span class="o">::</span><span class="na">factory</span><span class="p">();</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="p">}</span>
+</span></code></pre></div>
 
 
 
