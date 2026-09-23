@@ -53,6 +53,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-make-static.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-reject.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-select.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/collection-structure.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-stubs.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-to-array.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-transform.php');

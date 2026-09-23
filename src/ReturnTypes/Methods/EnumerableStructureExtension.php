@@ -88,7 +88,7 @@ final class EnumerableStructureExtension implements DynamicMethodReturnTypeExten
             $key,
             TypeCombinator::union(
                 $valueType,
-                $scope->getType($source->value)->getIterableValueType()->generalize(GeneralizePrecision::lessSpecific()),
+                $scope->getType($source->value)->getIterableValueType()->generalize(GeneralizePrecision::templateArgument()),
             ),
         );
     }
@@ -106,7 +106,7 @@ final class EnumerableStructureExtension implements DynamicMethodReturnTypeExten
             TypeCombinator::union($keyType, new IntegerType()),
             TypeCombinator::union(
                 $valueType,
-                $scope->getType($value->value)->generalize(GeneralizePrecision::lessSpecific()),
+                $scope->getType($value->value)->generalize(GeneralizePrecision::templateArgument()),
             ),
         );
     }
@@ -118,7 +118,7 @@ final class EnumerableStructureExtension implements DynamicMethodReturnTypeExten
         foreach ($methodCall->getArgs() as $arg) {
             $values[] = $scope->getType($arg->value)
                 ->getIterableValueType()
-                ->generalize(GeneralizePrecision::lessSpecific());
+                ->generalize(GeneralizePrecision::templateArgument());
         }
 
         $class = $reflection->is(EloquentCollection::class) ? Collection::class : $reflection->getName();
