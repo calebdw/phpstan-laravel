@@ -33,7 +33,7 @@ function test(Request $request): void
         'avatar' => 'image',
     ]);
 
-    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: list<string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $data);
+    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $data);
     assertType('string', $request->title);
     assertType('string|null', $request->body);
     assertType('int|numeric-string', $request->age);

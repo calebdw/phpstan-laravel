@@ -18,6 +18,7 @@ use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Expr\Ternary;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\Int_;
@@ -43,6 +44,7 @@ use PHPStan\Type\FloatType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectShapeType;
 use PHPStan\Type\ObjectType;
@@ -264,14 +266,43 @@ final class ValidationHelper
     /** @return array{required: bool, nullable: bool, type: Type} */
     private function fieldFromRules(Expr $expr, ClassReflection|null $class, Scope|null $scope = null): array
     {
-        $tokens   = $this->ruleTokens($expr, $class, $scope);
-        $required = in_array('required', $tokens['names'], true);
-        $nullable = in_array('nullable', $tokens['names'], true);
+        $required = true;
+        $nullable = false;
+        $types    = [];
+
+        foreach ($this->ruleBranches($expr) as $branch) {
+            $tokens   = $this->ruleTokens($branch, $class, $scope);
+            $excluded = in_array('exclude', $tokens['names'], true);
+            $required = $required
+                && ! $excluded
+                && in_array('required', $tokens['names'], true)
+                && ! in_array('sometimes', $tokens['names'], true);
+            $nullable = $nullable || in_array('nullable', $tokens['names'], true);
+
+            if ($excluded) {
+                continue;
+            }
+
+            $types[] = $this->valueType($tokens);
+        }
 
         return [
-            'required' => $required && ! in_array('sometimes', $tokens['names'], true),
+            'required' => $required,
             'nullable' => $nullable,
-            'type' => $this->valueType($tokens),
+            'type' => $types === [] ? new MixedType() : TypeCombinator::union(...$types),
+        ];
+    }
+
+    /** @return list<Expr> */
+    private function ruleBranches(Expr $expr): array
+    {
+        if (! $expr instanceof Ternary) {
+            return [$expr];
+        }
+
+        return [
+            ...$this->ruleBranches($expr->if ?? $expr->cond),
+            ...$this->ruleBranches($expr->else),
         ];
     }
 
@@ -574,8 +605,18 @@ final class ValidationHelper
             return TypeCombinator::union(new BooleanType(), new StringType());
         }
 
-        if (in_array('array', $names, true) || in_array('list', $names, true)) {
-            return new ArrayType(new IntegerType(), new StringType());
+        if (in_array('list', $names, true)) {
+            return TypeCombinator::intersect(
+                new ArrayType(new IntegerType(), new MixedType()),
+                new AccessoryArrayListType(),
+            );
+        }
+
+        if (in_array('array', $names, true)) {
+            return new ArrayType(
+                TypeCombinator::union(new IntegerType(), new StringType()),
+                new MixedType(),
+            );
         }
 
         return new StringType();
@@ -632,7 +673,10 @@ final class ValidationHelper
         if (array_key_exists('*', $groups) && count($groups) === 1) {
             [$type] = $this->groupType($groups['*']);
 
-            return TypeCombinator::intersect(new ArrayType(new IntegerType(), $type), new AccessoryArrayListType());
+            return new ArrayType(
+                TypeCombinator::union(new IntegerType(), new StringType()),
+                $type,
+            );
         }
 
         $builder = ConstantArrayTypeBuilder::createEmpty();
@@ -664,6 +708,7 @@ final class ValidationHelper
         $type     = new StringType();
         $nullable = false;
         $hasLeaf  = false;
+        $list     = false;
 
         foreach ($entries as [$tail, $field]) {
             if ($tail === '') {
@@ -671,6 +716,7 @@ final class ValidationHelper
                 $type     = $field['type'];
                 $nullable = $field['nullable'];
                 $required = $required || $field['required'];
+                $list     = $field['type']->isList()->yes();
                 continue;
             }
 
@@ -680,6 +726,10 @@ final class ValidationHelper
 
         if ($nested !== []) {
             $type = $this->shape($nested);
+
+            if ($hasLeaf && $list) {
+                $type = TypeCombinator::intersect($type, new AccessoryArrayListType());
+            }
         } elseif ($hasLeaf && $nullable) {
             $type = TypeCombinator::union($type, new NullType());
         }

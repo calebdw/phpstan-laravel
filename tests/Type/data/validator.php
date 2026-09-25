@@ -40,14 +40,18 @@ function testFactory(Factory $factory, FactoryContract $contract): void
         'color' => 'in:red,blue',
         'tags' => 'array',
         'tags.*' => 'string',
+        'options' => 'array',
+        'steps' => 'list',
+        'keyed.*.name' => 'string',
+        'conditional' => true ? ['nullable', 'numeric'] : ['exclude'],
         'author.name' => 'required|string',
         'avatar' => 'image',
     ]);
-    assertType('Illuminate\Validation\Validator<array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: list<string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}>', $made);
-    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: list<string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $made->validated());
-    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: list<string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $made->validate());
+    assertType('Illuminate\Validation\Validator<array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, options?: array<int|string, mixed>, steps?: list, keyed?: array<int|string, array{name?: string}>, conditional?: float|int|numeric-string|null, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}>', $made);
+    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, options?: array<int|string, mixed>, steps?: list, keyed?: array<int|string, array{name?: string}>, conditional?: float|int|numeric-string|null, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $made->validated());
+    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, options?: array<int|string, mixed>, steps?: list, keyed?: array<int|string, array{name?: string}>, conditional?: float|int|numeric-string|null, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $made->validate());
     assertType('array{title: string}', $factory->validate([], ['title' => 'required|string']));
-    assertType('Illuminate\Support\ValidatedInput<array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: list<string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}>', $made->safe());
+    assertType('Illuminate\Support\ValidatedInput<array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, options?: array<int|string, mixed>, steps?: list, keyed?: array<int|string, array{name?: string}>, conditional?: float|int|numeric-string|null, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}>', $made->safe());
     assertType('array{title: string, body?: string|null}', $made->safe(['title', 'body']));
 
     $contractMade = $contract->make([], ['title' => 'required|string']);

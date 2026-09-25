@@ -21,7 +21,7 @@ function test(FormRequest $request, AuthedRequest $authedRequest, StorePostReque
     assertType('App\User', $authedRequest->user());
     assertType('App\Admin|App\User|null', $request->user());
 
-    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', priority: 1|2|\'1\'|\'2\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: list<string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $post->validated());
+    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', priority: 1|2|\'1\'|\'2\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $post->validated());
     assertType('string', $post->validated('title'));
     assertType('string', $post->title);
     assertType('string|null', $post->body);
@@ -32,12 +32,12 @@ function test(FormRequest $request, AuthedRequest $authedRequest, StorePostReque
     assertType("'admin'|'user'", $post->role);
     assertType('int<1, 10>|numeric-string', $post->size);
     assertType("'blue'|'red'", $post->color);
-    assertType('list<string>', $post->tags);
+    assertType('array<int|string, string>', $post->tags);
     assertType('array{name: string}', $post->author);
 
-    assertType('Illuminate\Support\ValidatedInput<array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', priority: 1|2|\'1\'|\'2\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: list<string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}>', $post->safe());
+    assertType('Illuminate\Support\ValidatedInput<array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', priority: 1|2|\'1\'|\'2\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}>', $post->safe());
     assertType('array{title: string, body?: string|null}', $post->safe(['title', 'body']));
-    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', priority: 1|2|\'1\'|\'2\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: list<string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $post->safe()->all());
+    assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', priority: 1|2|\'1\'|\'2\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $post->safe()->all());
 }
 
 /** Narrows user() to a concrete model. */
