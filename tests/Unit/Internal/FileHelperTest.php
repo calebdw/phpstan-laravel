@@ -116,10 +116,13 @@ class FileHelperTest extends PHPStanTestCase
     public function it_resolves_glob_patterns(): void
     {
         $files = $this->fileHelper->getFiles([$this->directory . '/su*'], '/\.php$/i');
+        $paths = array_keys($files);
+
+        sort($paths);
 
         self::assertSame(
-            [$this->directory . '/sub/nested.php', $this->directory . '/sub/deeper/deep.php'],
-            array_keys($files),
+            [$this->directory . '/sub/deeper/deep.php', $this->directory . '/sub/nested.php'],
+            $paths,
         );
     }
 
