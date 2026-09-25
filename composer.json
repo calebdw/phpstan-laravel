@@ -38,7 +38,7 @@
     "webmozart/assert": "^2.4"
   },
   "require-dev": {
-    "boundwize/structarmed": "^0.17.2",
+    "boundwize/structarmed": "^0.18.0",
     "calebdw/pg-schema-parser": "^1.0",
     "doctrine/coding-standard": "^14.0",
     "iamcal/sql-parser": "^0.7.0",
