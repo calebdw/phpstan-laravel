@@ -18,6 +18,15 @@ use function PHPStan\Testing\assertType;
 
 class AbstractModel extends Model
 {
+    /** `parent::` forwards late static binding, so the parent's `static` is ours. */
+    public function replicate(?array $except = null): static
+    {
+        assertType('static(Model\AbstractModel)', parent::replicate($except));
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\AbstractModel)>', parent::newQuery());
+
+        return parent::replicate($except);
+    }
+
     public static function new(): static
     {
         assertType('static(Model\AbstractModel)', static::query()->create());

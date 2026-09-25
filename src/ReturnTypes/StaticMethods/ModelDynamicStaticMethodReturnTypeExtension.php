@@ -20,6 +20,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\StaticType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 
@@ -70,11 +71,9 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
             return null;
         }
 
-        if ((new ObjectType(EloquentBuilder::class))->isSuperTypeOf($returnType)->yes()) {
-            $modelType = $methodCall->class instanceof Name
-                ? $scope->resolveTypeByName($methodCall->class)
-                : $scope->getType($methodCall->class)->getObjectTypeOrClassStringObjectType();
+        $modelType = $this->calledOnType($methodCall, $scope);
 
+        if ((new ObjectType(EloquentBuilder::class))->isSuperTypeOf($returnType)->yes()) {
             if (! (new ObjectType(Model::class))->isSuperTypeOf($modelType)->yes()) {
                 return null;
             }
@@ -86,10 +85,6 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
         }
 
         if (in_array(Collection::class, $returnType->getReferencedClasses(), true)) {
-            $modelType = $methodCall->class instanceof Name
-                ? new ObjectType($scope->resolveName($methodCall->class))
-                : $scope->getType($methodCall->class)->getObjectTypeOrClassStringObjectType();
-
             $collection = $this->collectionHelper->determineCollectionTypeFromModels($modelType);
 
             if ($collection !== null) {
@@ -97,6 +92,28 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
             }
         }
 
-        return $returnType;
+        // Nothing to contribute: PHPStan resolves `static` and `$this` against the
+        // called-on type itself, which a return type read off the declaring class
+        // would throw away.
+        return null;
+    }
+
+    /**
+     * `parent::` forwards late static binding, but resolving the name gives the
+     * parent class, which would hand back a builder of the wrong model.
+     */
+    private function calledOnType(StaticCall $methodCall, Scope $scope): Type
+    {
+        if (! $methodCall->class instanceof Name) {
+            return $scope->getType($methodCall->class)->getObjectTypeOrClassStringObjectType();
+        }
+
+        $classReflection = $scope->getClassReflection();
+
+        if ($classReflection !== null && $methodCall->class->toLowerString() === 'parent') {
+            return new StaticType($classReflection);
+        }
+
+        return $scope->resolveTypeByName($methodCall->class);
     }
 }
