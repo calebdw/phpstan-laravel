@@ -355,13 +355,9 @@ final class BuilderHelper
                 $relations = [];
 
                 foreach (TypeUtils::flattenTypes($relatedType) as $type) {
-                    if ($this->isUnknownModelType($type)) {
-                        $unknownFailure = true;
-
-                        continue;
-                    }
-
                     if (! $type->hasMethod($name)->yes()) {
+                        $unknownFailure = $unknownFailure || $this->isUnknownModelType($type);
+
                         continue;
                     }
 
@@ -372,6 +368,8 @@ final class BuilderHelper
                     )->getReturnType();
 
                     if (! (new ObjectType(Relation::class))->isSuperTypeOf($returnType)->yes()) {
+                        $unknownFailure = $unknownFailure || $this->isUnknownModelType($type);
+
                         continue;
                     }
 
