@@ -291,6 +291,8 @@ services:
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Types\FactoryOfTypeNodeResolverExtension
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
+  - class: CalebDW\PhpstanLaravel\Types\RelationOfTypeNodeResolverExtension
+    tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Support\FactoryHelper
   - class: CalebDW\PhpstanLaravel\Support\ModelHelper
   - class: CalebDW\PhpstanLaravel\Support\ManagerHelper

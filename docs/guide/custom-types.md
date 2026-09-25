@@ -122,6 +122,27 @@ cannot resolve are discarded; if none resolve, the type falls back to
 `builder-of<User>`. If a path cannot be followed because a relation lost its
 related model type, it instead falls back to `Builder<Model>`.
 
+## relation-of
+
+The `relation-of<Model, 'name'>` type resolves to the relationship object
+returned by the model's relationship method, including its concrete relation
+class and generic model types. Dotted paths resolve to the final relationship
+object, rather than its query builder.
+
+```php
+/** @param relation-of<\App\User, 'posts.comments'> $comments */
+function filterComments(\Illuminate\Database\Eloquent\Relations\Relation $comments): void
+{
+    $comments->where('approved', true);
+}
+```
+
+Unions of models or relationship names resolve to unions of relationship
+objects. Unresolvable names are discarded when another name resolves; when
+none resolve, the type falls back to `Relation<Model, Model>` with the original
+model as the declaring model. Generic model and relationship name templates
+resolve once their types are known.
+
 ## collection-of
 
 The `collection-of<Model>` type resolves to the Eloquent collection used by
