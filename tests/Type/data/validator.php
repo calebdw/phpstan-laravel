@@ -66,4 +66,12 @@ function testFacadeAndHelper(): void
     assertType('Illuminate\Validation\Validator<array{title: string}>', $fromHelper);
     assertType('array{title: string}', $fromHelper->validated());
     assertType('array{title: string}', validator([], ['title' => 'required|string'])->validate());
+
+    $indexed = ValidatorFacade::make([], [
+        'items' => 'required|array',
+        'items.0.id' => 'required|integer',
+        'items.0.quantity' => 'integer',
+        'items.1.id' => 'nullable|integer',
+    ]);
+    assertType('array{items: array{0: array{id: int|numeric-string, quantity?: int|numeric-string}, 1?: array{id?: int|numeric-string|null}}}', $indexed->validated());
 }

@@ -619,6 +619,7 @@ final class ValidationHelper
     /** @param  array<string, array{required: bool, nullable: bool, type: Type}> $fields */
     private function shape(array $fields): Type
     {
+        /** @var array<array-key, list<array{0: string, 1: array{required: bool, nullable: bool, type: Type}}>> $groups */
         $groups = [];
 
         foreach ($fields as $path => $field) {
@@ -642,7 +643,10 @@ final class ValidationHelper
             }
 
             [$type, $required] = $this->groupType($entries);
-            $builder->setOffsetValueType(new ConstantStringType($key), $type, ! $required);
+            $keyType           = is_int($key)
+                ? new ConstantIntegerType($key)
+                : new ConstantStringType($key);
+            $builder->setOffsetValueType($keyType, $type, ! $required);
         }
 
         return $builder->getArray();
