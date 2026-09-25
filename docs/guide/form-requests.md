@@ -26,7 +26,7 @@ class StorePostRequest extends FormRequest
 }
 
 $post->validated();
-// array{title: string, body?: string|null, age?: int|numeric-string, status: 'draft'|'published', tags?: list<string>, author: array{name: string}}
+// array{title: string, body?: string|null, age?: int|numeric-string, status: 'draft'|'published', tags?: array<int|string, string>, author: array{name: string}}
 
 $post->safe();                   // ValidatedInput of that shape
 $post->safe(['title', 'body']);  // array{title: string, body?: string|null}
@@ -34,6 +34,24 @@ $post->safe(['title', 'body']);  // array{title: string, body?: string|null}
 $post->title;   // string
 $post->integer('age');           // int
 $post->enum('status', PostStatus::class); // PostStatus|null
+```
+
+A wildcard keeps whatever keys were submitted, because Laravel does not
+reindex them: `tags.*` is `array<int|string, string>` rather than a list.
+Laravel's own `list` rule on the parent narrows it back to one. A dotted
+segment that is numeric is an integer key, the way PHP casts it, so
+`items.0.id` is `array{items: array{0: array{id: …}}}`.
+
+A ternary in the rules array is read on both branches and unioned; the
+condition is not evaluated, so it can be anything. The field is required
+only when every branch requires it, and a branch that `exclude`s it
+contributes no type but leaves the key optional.
+
+```php
+'discount' => $condition
+    ? ['nullable', 'numeric']
+    : ['exclude'],
+// discount?: float|int|numeric-string|null
 ```
 
 `$request->foo` is typed like `validated()['foo']` for keys in `rules()`.
