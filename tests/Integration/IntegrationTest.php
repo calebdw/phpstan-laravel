@@ -75,6 +75,21 @@ class IntegrationTest extends PHPStanTestCase
         yield [__DIR__ . '/data/macro-call-forms.php', [33 => ['Static call to instance method Illuminate\Support\Collection<(int|string),mixed>::plainClosureMacro().']]];
         yield [__DIR__ . '/data/static-model-macro.php', [11 => ['Static call to instance method App\PostBuilder::modelBoundMacro().']]];
 
+        yield 'force-create-quietly' => [
+            __DIR__ . '/data/model-property-force-create-quietly.php',
+            [
+                5 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Builder<App\User>::forceCreateQuietly() expects array<model property of App\User, mixed>, array<string, string> given.'],
+                9 => ['Parameter #1 $attributes of static method Illuminate\Database\Eloquent\Builder<static(App\User)>::forceCreateQuietly() expects array<model property of App\User, mixed>, array<string, string> given.'],
+            ],
+        ];
+
+        yield 'model-save-options' => [
+            __DIR__ . '/data/model-save-options.php',
+            [
+                5 => ['Parameter #1 $options of method Illuminate\Database\Eloquent\Model::save() expects array{touch?: bool|null}, array{touch: \'no\'} given.'],
+            ],
+        ];
+
         // Managers returning a contract only expose the contract's methods.
         yield [
             __DIR__ . '/data/managers.php',
@@ -142,6 +157,18 @@ class IntegrationTest extends PHPStanTestCase
                 8 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::updateOrCreate() expects array<model property of App\Account, mixed>, array<string, string> given.'],
                 10 => ['Parameter #1 $column of method Illuminate\Database\Eloquent\Builder<App\Post>::where() expects array<int|model property of App\Post, mixed>|(Closure(Illuminate\Database\Query\Builder): mixed)|Illuminate\Contracts\Database\Query\Expression|model property of App\Post, \'foo\' given.'],
                 12 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::createOrFirst() expects array<model property of App\Account, mixed>, array<string, string> given.'],
+            ],
+        ];
+
+        yield 'relation-create-variants' => [
+            __DIR__ . '/data/model-property-relation-create-variants.php',
+            [
+                4 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::createQuietly() expects array<model property of App\Account, mixed>, array<string, string> given.'],
+                5 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::forceCreate() expects array<model property of App\Account, mixed>, array<string, string> given.'],
+                6 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::forceCreateQuietly() expects array<model property of App\Account, mixed>, array<string, string> given.'],
+                7 => ['Parameter #1 $records of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::createManyQuietly() expects iterable<array<model property of App\Account, mixed>>, array<int, array<string, string>> given.'],
+                8 => ['Parameter #1 $records of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::forceCreateMany() expects iterable<array<model property of App\Account, mixed>>, array<int, array<string, string>> given.'],
+                9 => ['Parameter #1 $records of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::forceCreateManyQuietly() expects iterable<array<model property of App\Account, mixed>>, array<int, array<string, string>> given.'],
             ],
         ];
 

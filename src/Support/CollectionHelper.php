@@ -258,6 +258,10 @@ final class CollectionHelper
             return null;
         }
 
+        if (! $modelReflection->hasNativeMethod('newCollection')) {
+            return $this->generic(EloquentCollection::class, new IntegerType(), new ObjectType($modelClassName));
+        }
+
         $method = $modelReflection->getNativeMethod('newCollection');
 
         $declaringClass = $modelReflection->getNativeReflection()
