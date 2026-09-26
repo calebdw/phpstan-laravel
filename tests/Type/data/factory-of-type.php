@@ -2,6 +2,7 @@
 
 namespace FactoryOfType;
 
+use App\Account;
 use App\Post;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -13,12 +14,19 @@ use function PHPStan\Testing\assertType;
  * @param factory-of<User> $users
  * @param factory-of<Post> $posts
  * @param factory-of<User|Post> $union
+ * @param factory-of<Account> $none
+ * @param factory-of<User|Account> $partial
  */
-function test(Factory $users, Factory $posts, Factory $union): void
+function test(Factory $users, Factory $posts, Factory $union, Factory $none, Factory $partial): void
 {
     assertType('Database\Factories\UserFactory', $users);
     assertType('Database\Factories\Post\PostFactory', $posts);
     assertType('Database\Factories\Post\PostFactory|Database\Factories\UserFactory', $union);
+
+    // No factory class exists, so fall back to the base rather than erroring.
+    assertType('Illuminate\Database\Eloquent\Factories\Factory<App\Account>', $none);
+    assertType('Database\Factories\UserFactory|Illuminate\Database\Eloquent\Factories\Factory<App\Account>', $partial);
+    assertType('App\Account|Illuminate\Database\Eloquent\Collection<int, App\Account>', $none->create());
 
     assertType('Database\Factories\UserFactory', factoryFor(User::class));
     assertType('Database\Factories\Post\PostFactory', factoryFor(Post::class));

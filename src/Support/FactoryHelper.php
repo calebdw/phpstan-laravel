@@ -10,8 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Type\ErrorType;
+use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\NeverType;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeUtils;
@@ -49,8 +50,10 @@ final class FactoryHelper
                 }
 
                 $factoryReflection = $this->factoryReflection($modelReflection);
-                $types[]           = $factoryReflection === null
-                    ? new ErrorType()
+                // A model without a factory still has Factory::factoryForModel()
+                // behind it, so fall back to the base rather than erroring out.
+                $types[] = $factoryReflection === null
+                    ? new GenericObjectType(Factory::class, [new ObjectType($className)])
                     : $factoryType($factoryReflection);
             }
         }
