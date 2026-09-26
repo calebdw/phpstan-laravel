@@ -793,6 +793,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#relation-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        relation-of
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#collection-of" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1411,6 +1422,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#relation-of" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        relation-of
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#collection-of" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1549,6 +1571,22 @@ Unions of models or relation names become unions of builders. Paths that
 cannot resolve are discarded; if none resolve, the type falls back to
 <code>builder-of&lt;User&gt;</code>. If a path cannot be followed because a relation lost its
 related model type, it instead falls back to <code>Builder&lt;Model&gt;</code>.</p>
+<h2 id="relation-of">relation-of<a class="headerlink" href="#relation-of" title="Permanent link">&para;</a></h2>
+<p>The <code>relation-of&lt;Model, 'name'&gt;</code> type resolves to the relationship object
+returned by the model's relationship method, including its concrete relation
+class and generic model types. Dotted paths resolve to the final relationship
+object, rather than its query builder.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="sd">/** @param relation-of&lt;\App\User, 'posts.comments'&gt; $comments */</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">function</span> <span class="nf">filterComments</span><span class="p">(</span><span class="nx">\Illuminate\Database\Eloquent\Relations\Relation</span> <span class="nv">$comments</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">{</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="nv">$comments</span><span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="s1">'approved'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Unions of models or relationship names resolve to unions of relationship
+objects. Unresolvable names are discarded when another name resolves; when
+none resolve, the type falls back to <code>Relation&lt;Model, Model&gt;</code> with the original
+model as the declaring model. Generic model and relationship name templates
+resolve once their types are known.</p>
 <h2 id="collection-of">collection-of<a class="headerlink" href="#collection-of" title="Permanent link">&para;</a></h2>
 <p>The <code>collection-of&lt;Model&gt;</code> type resolves to the Eloquent collection used by
 that model. It uses a custom <code>newCollection()</code> implementation,
@@ -1559,10 +1597,10 @@ Otherwise it is
 <p>Model unions become unions of their collections, and generic templates are
 resolved when their model type becomes known. Like <code>array&lt;TKey, TValue&gt;</code>, an
 optional key type can be given first:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="sd">/** @param collection-of&lt;string, \App\User&gt; $users */</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">function</span> <span class="nf">usersByEmail</span><span class="p">(</span><span class="nx">\Illuminate\Database\Eloquent\Collection</span> <span class="nv">$users</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">{</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="sd">/** @param collection-of&lt;string, \App\User&gt; $users */</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">function</span> <span class="nf">usersByEmail</span><span class="p">(</span><span class="nx">\Illuminate\Database\Eloquent\Collection</span> <span class="nv">$users</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="p">{</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">}</span>
 </span></code></pre></div>
 <h2 id="factory-of">factory-of<a class="headerlink" href="#factory-of" title="Permanent link">&para;</a></h2>
 <p>The <code>factory-of&lt;Model&gt;</code> type resolves to the concrete factory selected for the
@@ -1570,15 +1608,15 @@ model. It follows the same precedence as <code>Model::factory()</code>: a model'
 <code>newFactory()</code> method, static <code>$factory</code> property, <code>#[UseFactory]</code>, then
 Laravel's factory naming convention. Model unions become unions of their
 factories.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="sd">/**</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="sd"> * @template TModel of \Illuminate\Database\Eloquent\Model</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="sd"> * @param class-string&lt;TModel&gt; $model</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="sd"> * @return factory-of&lt;TModel&gt;</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="sd"> */</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">function</span> <span class="nf">factoryFor</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$model</span><span class="p">)</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="p">{</span>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="k">return</span> <span class="nv">$model</span><span class="o">::</span><span class="na">factory</span><span class="p">();</span>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="sd">/**</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="sd"> * @template TModel of \Illuminate\Database\Eloquent\Model</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="sd"> * @param class-string&lt;TModel&gt; $model</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="sd"> * @return factory-of&lt;TModel&gt;</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="sd"> */</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="k">function</span> <span class="nf">factoryFor</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$model</span><span class="p">)</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="p">{</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="k">return</span> <span class="nv">$model</span><span class="o">::</span><span class="na">factory</span><span class="p">();</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">}</span>
 </span></code></pre></div>
 
 

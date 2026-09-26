@@ -1303,7 +1303,7 @@ as they arrived (forms are strings; JSON may already be <code>int</code>/<code>b
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="p">}</span>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="nv">$post</span><span class="o">-&gt;</span><span class="na">validated</span><span class="p">();</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1">// array{title: string, body?: string|null, age?: int|numeric-string, status: 'draft'|'published', tags?: list&lt;string&gt;, author: array{name: string}}</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1">// array{title: string, body?: string|null, age?: int|numeric-string, status: 'draft'|'published', tags?: array&lt;int|string, string&gt;, author: array{name: string}}</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="nv">$post</span><span class="o">-&gt;</span><span class="na">safe</span><span class="p">();</span>                   <span class="c1">// ValidatedInput of that shape</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="nv">$post</span><span class="o">-&gt;</span><span class="na">safe</span><span class="p">([</span><span class="s1">'title'</span><span class="p">,</span> <span class="s1">'body'</span><span class="p">]);</span>  <span class="c1">// array{title: string, body?: string|null}</span>
@@ -1312,19 +1312,33 @@ as they arrived (forms are strings; JSON may already be <code>int</code>/<code>b
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="nv">$post</span><span class="o">-&gt;</span><span class="na">integer</span><span class="p">(</span><span class="s1">'age'</span><span class="p">);</span>           <span class="c1">// int</span>
 </span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="nv">$post</span><span class="o">-&gt;</span><span class="na">enum</span><span class="p">(</span><span class="s1">'status'</span><span class="p">,</span> <span class="nx">PostStatus</span><span class="o">::</span><span class="na">class</span><span class="p">);</span> <span class="c1">// PostStatus|null</span>
 </span></code></pre></div>
+<p>A wildcard keeps whatever keys were submitted, because Laravel does not
+reindex them: <code>tags.*</code> is <code>array&lt;int|string, string&gt;</code> rather than a list.
+Laravel's own <code>list</code> rule on the parent narrows it back to one. A dotted
+segment that is numeric is an integer key, the way PHP casts it, so
+<code>items.0.id</code> is <code>array{items: array{0: array{id: …}}}</code>.</p>
+<p>A ternary in the rules array is read on both branches and unioned; the
+condition is not evaluated, so it can be anything. The field is required
+only when every branch requires it, and a branch that <code>exclude</code>s it
+contributes no type but leaves the key optional.</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="s1">'discount'</span> <span class="o">=&gt;</span> <span class="nv">$condition</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="o">?</span> <span class="p">[</span><span class="s1">'nullable'</span><span class="p">,</span> <span class="s1">'numeric'</span><span class="p">]</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="o">:</span> <span class="p">[</span><span class="s1">'exclude'</span><span class="p">],</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// discount?: float|int|numeric-string|null</span>
+</span></code></pre></div>
 <p><code>$request-&gt;foo</code> is typed like <code>validated()['foo']</code> for keys in <code>rules()</code>.
 Runtime <code>__get</code> reads <code>all()</code> (unvalidated input and route params too); the
 type is the useful shape, not that bag.</p>
 <p>Inline <code>$request-&gt;validate($rules)</code> on <code>Illuminate\Http\Request</code> uses the
 same rule parser. The return value is the shape; after the call,
 <code>$request-&gt;title</code> is too.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">([</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="s1">'title'</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">'required'</span><span class="p">,</span> <span class="s1">'string'</span><span class="p">],</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="s1">'age'</span> <span class="o">=&gt;</span> <span class="s1">'integer'</span><span class="p">,</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">]);</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">// array{title: string, age?: int|numeric-string}</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nv">$request</span><span class="o">-&gt;</span><span class="na">title</span><span class="p">;</span> <span class="c1">// string</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">$data</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">([</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="s1">'title'</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">'required'</span><span class="p">,</span> <span class="s1">'string'</span><span class="p">],</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="s1">'age'</span> <span class="o">=&gt;</span> <span class="s1">'integer'</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">]);</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">// array{title: string, age?: int|numeric-string}</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nv">$request</span><span class="o">-&gt;</span><span class="na">title</span><span class="p">;</span> <span class="c1">// string</span>
 </span></code></pre></div>
 
 
