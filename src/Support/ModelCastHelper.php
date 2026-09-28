@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\AsEncryptedArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsEncryptedCollection;
+use Illuminate\Database\Eloquent\Casts\AsEnumArrayObject;
+use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 use Illuminate\Database\Eloquent\Casts\AsStringable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon as IlluminateCarbon;
@@ -35,7 +37,6 @@ use PHPStan\Type\FloatType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
-use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
@@ -43,6 +44,7 @@ use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
 use stdClass;
 use Stringable;
+use UnitEnum;
 
 use function array_combine;
 use function array_key_exists;
@@ -65,7 +67,10 @@ final class ModelCastHelper
 
     public function getReadableType(string $cast, Type $originalType): Type
     {
+        $enum = $this->parseEnumArgument($cast);
         $cast = $this->parseCast($cast);
+
+        $arrayKeyType = new BenevolentUnionType([new IntegerType(), new StringType()]);
 
         $attributeType = match ($cast) {
             'int', 'integer', 'timestamp' => $originalType->isInteger()->yes() ? $originalType : new IntegerType(),
@@ -74,15 +79,14 @@ final class ModelCastHelper
             'string' => new StringType(),
             'bool', 'boolean' => new BooleanType(),
             'object' => new ObjectType(stdClass::class),
-            'array', 'json' => new ArrayType(new BenevolentUnionType([new IntegerType(), new StringType()]), new MixedType()),
+            'array', 'json' => new ArrayType($arrayKeyType, new MixedType()),
             'collection' => new ObjectType(Collection::class),
             'date', 'datetime' => $this->getDateType(),
             'immutable_date', 'immutable_datetime' => new ObjectType(CarbonImmutable::class),
             AsArrayObject::class, AsEncryptedArrayObject::class => new ObjectType(ArrayObject::class),
-            AsCollection::class, AsEncryptedCollection::class => new BenevolentUnionType([
-                new GenericObjectType(Collection::class, [new BenevolentUnionType([new IntegerType(), new StringType()]), new MixedType()]),
-                new NullType(),
-            ]),
+            AsCollection::class, AsEncryptedCollection::class => new GenericObjectType(Collection::class, [$arrayKeyType, new MixedType()]),
+            AsEnumCollection::class => new GenericObjectType(Collection::class, [$arrayKeyType, $enum]),
+            AsEnumArrayObject::class => new GenericObjectType(ArrayObject::class, [$arrayKeyType, $enum]),
             AsStringable::class => new ObjectType(IlluminateStringable::class),
             default => null,
         };
@@ -144,7 +148,8 @@ final class ModelCastHelper
             'date', 'datetime' => $this->getDateType(),
             'immutable_date', 'immutable_datetime' => new ObjectType(CarbonImmutable::class),
             AsArrayObject::class, AsCollection::class,
-            AsEncryptedArrayObject::class, AsEncryptedCollection::class => new MixedType(),
+            AsEncryptedArrayObject::class, AsEncryptedCollection::class,
+            AsEnumArrayObject::class, AsEnumCollection::class => new MixedType(),
             AsStringable::class => TypeCombinator::union(new StringType(), new ObjectType(Stringable::class)),
             default => null,
         };
@@ -216,6 +221,24 @@ final class ModelCastHelper
         }
 
         return new ObjectType($dateClass);
+    }
+
+    private function parseEnumArgument(string $cast): Type
+    {
+        $argument = explode(':', $cast, limit: 2)[1] ?? null;
+
+        // Extra arguments belong to whatever else the cast takes; the enum comes first.
+        $enum = $argument === null ? null : explode(',', $argument)[0];
+
+        if ($enum === null || ! $this->reflectionProvider->hasClass($enum)) {
+            return new ObjectType(UnitEnum::class);
+        }
+
+        $classReflection = $this->reflectionProvider->getClass($enum);
+
+        return $classReflection->isEnum()
+            ? $classReflection->getObjectType()
+            : new ObjectType(UnitEnum::class);
     }
 
     private function parseCast(string $cast): string

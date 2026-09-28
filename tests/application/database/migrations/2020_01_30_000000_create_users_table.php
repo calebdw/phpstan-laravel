@@ -28,6 +28,10 @@ class CreateUsersTable extends Migration
             $table->json('meta');
             $table->json('options');
             $table->json('properties');
+            $table->json('enum_collection');
+            $table->json('enum_array_object');
+            $table->json('enum_collection_without_argument');
+            $table->json('nullable_enum_collection')->nullable();
             $table->json('favorites');
             $table->string('secret');
             $table->boolean('blocked');

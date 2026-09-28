@@ -99,9 +99,16 @@ function test(
     assertType('string', $thread->custom_property);
     assertType('Illuminate\Database\Eloquent\Casts\ArrayObject', $user->options);
     assertType('int<0, max>', count($user->options));
-    assertType('(Illuminate\Support\Collection<(int|string), mixed>|null)', $user->properties);
+    assertType('Illuminate\Support\Collection<(int|string), mixed>', $user->properties);
     assertType('int<0, max>', count($user->properties));
     assertType('mixed', $user->properties->first());
+
+    assertType('Illuminate\Support\Collection<(int|string), App\Casts\BackedEnumeration>', $user->enum_collection);
+    assertType('App\Casts\BackedEnumeration|null', $user->enum_collection->first());
+    assertType('Illuminate\Database\Eloquent\Casts\ArrayObject<(int|string), App\Casts\BackedEnumeration>', $user->enum_array_object);
+    assertType('Illuminate\Support\Collection<(int|string), App\Casts\BackedEnumeration>|null', $user->nullable_enum_collection);
+    assertType('Illuminate\Support\Collection<(int|string), UnitEnum>', $user->enum_collection_without_argument);
+
     assertType('non-falsy-string|null', $user->deleted_at?->format('d/m/Y'));
 
     assertType('string|null', $user->remember_token);
