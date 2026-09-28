@@ -657,14 +657,14 @@ final class ValidationHelper
         return $values === [] ? new StringType() : TypeCombinator::union(...$values);
     }
 
-    /** @param  array<string, array{required: bool, nullable: bool, type: Type}> $fields */
+    /** @param  array<array-key, array{required: bool, nullable: bool, type: Type}> $fields */
     private function shape(array $fields): Type
     {
         /** @var array<array-key, list<array{0: string, 1: array{required: bool, nullable: bool, type: Type}}>> $groups */
         $groups = [];
 
         foreach ($fields as $path => $field) {
-            $parts           = explode('.', $path);
+            $parts           = explode('.', (string) $path);
             $head            = array_shift($parts);
             $tail            = implode('.', $parts);
             $groups[$head][] = [$tail, $field];

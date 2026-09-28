@@ -63,3 +63,13 @@ function testStatement(Request $request): void
 
     assertType('string', $request->title);
 }
+
+function testNumericNestedKeys(Request $request): void
+{
+    $data = $request->validate([
+        'weekly_rates.1' => 'required|string',
+        'weekly_rates.2' => 'nullable|string',
+    ]);
+
+    assertType('array{weekly_rates: array{1: string, 2?: string|null}}', $data);
+}
