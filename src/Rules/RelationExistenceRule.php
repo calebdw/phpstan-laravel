@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Rules;
 
 use CalebDW\PhpstanLaravel\Support\CallHelper;
 use CalebDW\PhpstanLaravel\Support\RelationExistenceHelper;
+use Closure;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node;
@@ -106,6 +107,8 @@ final class RelationExistenceRule implements Rule
             return [];
         }
 
+        $constrained = $this->pairedWithCallback($method, $args, $scope);
+
         foreach ($args as $arg) {
             if ($arg->name !== null && in_array($arg->name->toString(), ['relation', 'relations'], true)) {
                 $args = [$arg];
@@ -127,14 +130,42 @@ final class RelationExistenceRule implements Rule
         $args     = $variadic && $scope->getType($args[0]->value)->isString()->yes() ? $args : [$args[0]];
         $errors   = [];
 
-        foreach ($args as $arg) {
+        foreach ($args as $position => $arg) {
             if ($arg->unpack) {
                 continue;
             }
 
-            $errors = array_merge($errors, $this->relationExistenceHelper->check($scope->getType($arg->value), $type, $node, $scope, $aggregate));
+            $name        = $arg->name?->toString();
+            $relationArg = $name === null ? $position === 0 : in_array($name, ['relation', 'relations'], true);
+
+            $errors = array_merge($errors, $this->relationExistenceHelper->check($scope->getType($arg->value), $type, $node, $scope, $aggregate, $constrained && $relationArg));
         }
 
         return $errors;
+    }
+
+    /**
+     * These methods hand a Closure in the callback slot to Builder::with(), which
+     * then uses the relation name verbatim.
+     *
+     * @param Node\Arg[] $args
+     */
+    private function pairedWithCallback(string $method, array $args, Scope $scope): bool
+    {
+        if (! in_array($method, ['with', 'withwherehas', 'load', 'loadmissing'], true)) {
+            return false;
+        }
+
+        foreach ($args as $position => $arg) {
+            $name = $arg->name?->toString();
+
+            if ($name === null ? $position !== 1 : $name !== 'callback') {
+                continue;
+            }
+
+            return (new ObjectType(Closure::class))->isSuperTypeOf($scope->getType($arg->value))->yes();
+        }
+
+        return false;
     }
 }

@@ -32,13 +32,11 @@ final class RelationExistenceHelper
     }
 
     /** @return RuleError[] */
-    public function check(Type $relations, Type $modelType, Node $node, Scope $scope, bool $aggregate = false): array
+    public function check(Type $relations, Type $modelType, Node $node, Scope $scope, bool $aggregate = false, bool $constrained = false): array
     {
         $errors = [];
 
-        foreach (array_unique($this->relationNames($relations)) as $name) {
-            $name = explode(':', $name)[0];
-
+        foreach (array_unique($this->relationNames($relations, $constrained)) as $name) {
             if ($aggregate && preg_match('/^(.*?)\s+as\s+/i', $name, $alias) === 1) {
                 $name = $alias[1];
             }
@@ -84,13 +82,18 @@ final class RelationExistenceHelper
         return array_values($errors);
     }
 
-    /** @return string[] */
-    private function relationNames(Type $type, string $prefix = ''): array
+    /**
+     * A column selection such as `posts:id` is parsed only for a bare name or a
+     * nested array. A name paired with a callback is used verbatim.
+     *
+     * @return string[]
+     */
+    private function relationNames(Type $type, bool $constrained, string $prefix = ''): array
     {
         $names = [];
 
         foreach ($type->getConstantStrings() as $name) {
-            $names[] = $prefix . $name->getValue();
+            $names[] = $prefix . $this->relationName($name->getValue(), $constrained);
         }
 
         foreach ($type->getConstantArrays() as $array) {
@@ -99,23 +102,29 @@ final class RelationExistenceHelper
 
                 if ($key->isString()->yes()) {
                     foreach ($key->getConstantStrings() as $constant) {
-                        $name    = $prefix . $constant->getValue();
-                        $names[] = $name;
+                        $segment = $constant->getValue();
+                        $parsed  = explode(':', $segment)[0];
+                        $names[] = $prefix . ($value->isArray()->no() ? $segment : $parsed);
 
                         if (! $value->isArray()->yes()) {
                             continue;
                         }
 
-                        $names = array_merge($names, $this->relationNames($value, explode(':', $name)[0] . '.'));
+                        $names = array_merge($names, $this->relationNames($value, false, $prefix . $parsed . '.'));
                     }
                 } else {
                     foreach ($value->getConstantStrings() as $name) {
-                        $names[] = $prefix . $name->getValue();
+                        $names[] = $prefix . $this->relationName($name->getValue(), false);
                     }
                 }
             }
         }
 
         return $names;
+    }
+
+    private function relationName(string $name, bool $constrained): string
+    {
+        return $constrained ? $name : explode(':', $name)[0];
     }
 }

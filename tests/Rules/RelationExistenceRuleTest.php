@@ -289,6 +289,15 @@ class RelationExistenceRuleTest extends RuleTestCase
             ["Relation 'unknown' is not found in App\\User model.", 99],
             ["Relation 'missing' is not found in App\\User model.", 114],
             ["Relation 'missing' is not found in App\\Comment model.", 121],
+            ["Relation 'accounts:id,user_id' is not found in App\\User model.", 133],
+            ["Relation 'accounts:id,user_id' is not found in App\\User model.", 134],
+            ["Relation 'accounts:id,user_id' is not found in App\\User model.", 135],
+            ["Relation 'accounts:id,user_id' is not found in App\\User model.", 136],
+            ["Relation 'accounts:id,user_id' is not found in App\\User model.", 137],
+            ["Relation 'accounts:id,user_id' is not found in App\\User model.", 138],
+            ["Relation 'accounts:id,user_id' is not found in App\\User model.", 139],
+            ["Relation 'comments:id' is not found in App\\Post model.", 140],
+            ["Relation 'accounts:id,user_id' is not found in App\\User model.", 141],
         ]);
     }
 

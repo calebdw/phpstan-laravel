@@ -127,3 +127,22 @@ function dynamicList(User $user, array $names): void
     $user->load($names);
     $user->load(...$names);
 }
+
+function columnSelectionWithCallback(User $user): void
+{
+    $user->load(['accounts:id,user_id' => static function () {}]);
+    User::with(['accounts:id,user_id' => static function () {}]);
+    User::query()->with('accounts:id,user_id', static function () {});
+    User::query()->with(callback: static function () {}, relations: 'accounts:id,user_id');
+    User::query()->withWhereHas('accounts:id,user_id', static function () {});
+    $user->load('accounts:id,user_id', static function () {});
+    $user->loadMissing('accounts:id,user_id', static function () {});
+    User::query()->with(['posts.comments:id' => static function () {}]);
+    User::withCount(['accounts:id,user_id' => static function () {}]);
+
+    $user->load(['accounts:id,user_id']);
+    $user->load(['accounts:id' => ['transactions']]);
+    User::query()->with('accounts:id,user_id');
+    User::withWhereHas('accounts:id,user_id');
+    User::query()->withOnly('accounts:id,user_id', static function () {});
+}

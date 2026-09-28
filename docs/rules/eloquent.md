@@ -209,8 +209,9 @@ Supported methods include:
 - `withAggregate`, `withCount`, `withMax`, `withMin`, `withSum`, `withAvg`, `withExists`, and the matching `load*` methods
 
 Eager loading supports dotted paths, constraint arrays, nested arrays, and
-column selectors such as `accounts.transactions:id`. Aggregate methods and
-`$withCount` accept aliases such as `accounts as total`.
+column selectors such as `accounts.transactions:id`. A selector is not parsed
+when the name is paired with a callback, so that name is checked verbatim.
+Aggregate methods and `$withCount` accept aliases such as `accounts as total`.
 
 ### Examples
 
