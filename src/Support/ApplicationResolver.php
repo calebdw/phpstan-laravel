@@ -71,10 +71,13 @@ final class ApplicationResolver
             $vendorDir = $workingPath . '/vendor';
         }
 
-        $resolvingCallback = static function ($app): void {
+        $resolvingCallback = static function (Application $app): void {
             $packageManifest = $app->make(PackageManifest::class);
+            $manifestPath    = $packageManifest->manifestPath;
 
-            if (file_exists($packageManifest->manifestPath)) {
+            // Testbench always hands us a path, but the property is nullable and
+            // build() cannot write a manifest without somewhere to put it.
+            if ($manifestPath === null || file_exists($manifestPath)) {
                 return;
             }
 
