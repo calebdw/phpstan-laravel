@@ -79,6 +79,23 @@ function testNullablePropertyWithCast(User $user): void
     $user->email_verified_at = null;
 }
 
+function testDecimalCast(User $user): void
+{
+    $user->decimal = 1.5;
+    $user->decimal = 1;
+    $user->decimal = '1.50';
+
+    $user->floatButRoundedDecimalString = 1.5;
+}
+
+function testNullableDecimalCast(User $user): void
+{
+    $user->nullable_decimal = 1.5;
+    $user->nullable_decimal = 1;
+    $user->nullable_decimal = '1.50';
+    $user->nullable_decimal = null;
+}
+
 function testWriteToSoftDeletesColumn(User $user): void
 {
     $user->deleted_at = now();

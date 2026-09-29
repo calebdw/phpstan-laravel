@@ -139,7 +139,13 @@ final class ModelCastHelper
         $attributeType = match ($cast) {
             'int', 'integer', 'timestamp' => $originalType->isInteger()->yes() ? $originalType : new IntegerType(),
             'real', 'float', 'double' => new FloatType(),
-            'decimal' => TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType(), new FloatType()),
+            // A decimal is only formatted on read, so a write takes any number
+            // or the numeric string the column round-trips as.
+            'decimal' => TypeCombinator::union(
+                TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType()),
+                new FloatType(),
+                new IntegerType(),
+            ),
             'string' => new StringType(),
             'bool', 'boolean' => TypeCombinator::union(new BooleanType(), new ConstantIntegerType(0), new ConstantIntegerType(1)),
             'object' => new ObjectType(stdClass::class),
