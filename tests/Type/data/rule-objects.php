@@ -28,6 +28,7 @@ function testValidator(bool $flag): void
         'types' => ['required', File::types(['pdf', 'docx'])->max('25mb')],
         'image' => ['required', File::image()],
         'default' => ['required', File::default()],
+        'defaults' => ['required', File::defaults()],
         'new_file' => ['required', new File()],
         'new_image' => ['required', new ImageFile()],
         'new_dimensions' => ['required', new Dimensions([])],
@@ -44,6 +45,7 @@ function testValidator(bool $flag): void
     assertType('Illuminate\Http\UploadedFile', $validated['types']);
     assertType('Illuminate\Http\UploadedFile', $validated['image']);
     assertType('Illuminate\Http\UploadedFile', $validated['default']);
+    assertType('Illuminate\Http\UploadedFile', $validated['defaults']);
     assertType('Illuminate\Http\UploadedFile', $validated['new_file']);
     assertType('Illuminate\Http\UploadedFile', $validated['new_image']);
     assertType('Illuminate\Http\UploadedFile', $validated['new_dimensions']);
@@ -68,6 +70,7 @@ function testFormRequest(UploadRequest $request): void
     assertType('Illuminate\Http\UploadedFile', $request->types);
     assertType('Illuminate\Http\UploadedFile', $request->image);
     assertType('Illuminate\Http\UploadedFile', $request->default);
+    assertType('Illuminate\Http\UploadedFile', $request->defaults);
     assertType('Illuminate\Http\UploadedFile', $request->new_file);
     assertType('Illuminate\Http\UploadedFile', $request->new_image);
     assertType('Illuminate\Http\UploadedFile', $request->new_dimensions);
@@ -90,6 +93,7 @@ class UploadRequest extends FormRequest
             'types' => ['required', File::types(['pdf', 'docx'])->max('25mb')],
             'image' => ['required', File::image()],
             'default' => ['required', File::default()],
+            'defaults' => ['required', File::defaults()],
             'new_file' => ['required', new File()],
             'new_image' => ['required', new ImageFile()],
             'new_dimensions' => ['required', new Dimensions([])],
