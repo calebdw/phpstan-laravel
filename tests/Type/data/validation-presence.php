@@ -69,6 +69,37 @@ function testKeptThroughChildren(): void
     assertType('array{draft?: int|numeric-string, m: array<int|string, array<int|string, int|numeric-string>>, a: array<int|string, array{b?: array<int|string, array{c: string}>}>, info: array{title?: string}, r: array<int|string, string>, p: array<int|string, array{id?: int|numeric-string}>, notes?: array{title?: string}}', $kept->validated());
 }
 
+function testPresenceRules(bool $flag): void
+{
+    $present = Validator::make([], [
+        'body' => ['present', 'nullable', 'string'],
+        'gone' => 'missing',
+        'maybe' => 'sometimes|present|string',
+        'excluded' => 'exclude_if:flag,1|present|string',
+        'conditional' => 'present_if:flag,1|string',
+        'with' => 'required_with:body|string',
+        'branch' => $flag ? 'present|string' : 'string',
+    ]);
+    assertType('array{body: string|null, gone?: mixed, maybe?: string, excluded?: string, conditional?: string, with?: string, branch?: string}', $present->validated());
+
+    $accepted = Validator::make([], [
+        'terms' => 'accepted',
+        'optout' => ['declined'],
+    ])->validated();
+    assertType('true', array_key_exists('terms', $accepted));
+    assertType('true', array_key_exists('optout', $accepted));
+}
+
+function testPresenceRequest(PresenceRequest $request): void
+{
+    $validated = $request->validated();
+    assertType('string|null', $validated['body']);
+    assertType('true', array_key_exists('body', $validated));
+    assertType('true', array_key_exists('terms', $validated));
+    assertType('true', array_key_exists('optout', $validated));
+    assertType('bool', array_key_exists('maybe', $validated));
+}
+
 function testFormRequest(OptionalRequest $optional, RequiredRequest $required, KeptRequest $kept): void
 {
     assertType('array{draft?: int|numeric-string, m: array<int|string, array<int|string, int|numeric-string>>, a: array<int|string, array{b?: array<int|string, array{c: string}>}>, info: array{title?: string}, r: array<int|string, string>, p: array<int|string, array{id?: int|numeric-string}>, notes?: array{title?: string}}', $kept->validated());
@@ -196,6 +227,20 @@ class KeptRequest extends FormRequest
             'p.*.id' => 'integer',
             'notes' => 'required|array',
             'notes.title' => 'exclude_if:draft,1|string',
+        ];
+    }
+}
+
+class PresenceRequest extends FormRequest
+{
+    /** @return array<string, mixed> */
+    public function rules(): array
+    {
+        return [
+            'body' => ['present', 'nullable', 'string'],
+            'terms' => 'accepted',
+            'optout' => ['declined'],
+            'maybe' => 'sometimes|present|string',
         ];
     }
 }
