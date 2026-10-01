@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
+use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Foundation\Http\FormRequest;
 use PhpParser\Node\Expr\MethodCall;
@@ -15,8 +16,10 @@ use PHPStan\Type\TypeCombinator;
 
 final class FormRequestValidatedExtension implements DynamicMethodReturnTypeExtension
 {
-    public function __construct(private ValidationHelper $validationHelper)
-    {
+    public function __construct(
+        private ValidationHelper $validationHelper,
+        private ColumnHelper $columnHelper,
+    ) {
     }
 
     public function getClass(): string
@@ -55,18 +58,12 @@ final class FormRequestValidatedExtension implements DynamicMethodReturnTypeExte
             return $shape;
         }
 
-        $keyType = $scope->getType($keyArg->value);
-
-        if ($keyType->isNull()->yes()) {
-            return $shape;
-        }
-
-        $values = [];
-
-        foreach ($keyType->getConstantStrings() as $key) {
-            $values[] = $shape->getOffsetValueType($key);
-        }
-
-        return $values === [] ? null : TypeCombinator::union(...$values);
+        // validated($key, $default) is data_get() on the validated array.
+        return $this->columnHelper->dataGet(
+            $shape,
+            $scope->getType($keyArg->value),
+            $methodCall->getArg('default', 1),
+            $scope,
+        );
     }
 }
