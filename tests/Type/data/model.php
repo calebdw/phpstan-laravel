@@ -84,6 +84,17 @@ class Bar extends Model
         assertType('static(Model\Bar)|null', static::query()->first());
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', static::query()->orWhere('foo', 'bar'));
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', static::query()->select('foo'));
+
+        assertType('Illuminate\Database\Eloquent\Collection<int, Model\Bar>', $this::all());
+    }
+
+    public static function allFromStatic(): void
+    {
+        assertType('Illuminate\Database\Eloquent\Collection<int, Model\Bar>', self::all());
+        assertType('Illuminate\Database\Eloquent\Collection<int, Model\Bar>', Bar::all());
+        assertType('Illuminate\Database\Eloquent\Collection<int, static(Model\Bar)>', static::all());
+        assertType('Illuminate\Database\Eloquent\Collection<int, Model\Bar>', self::query()->get());
+        assertType('Illuminate\Database\Eloquent\Collection<int, static(Model\Bar)>', parent::all());
     }
 }
 
