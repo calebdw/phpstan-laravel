@@ -50,6 +50,16 @@ class IntegrationTest extends PHPStanTestCase
         yield [__DIR__ . '/data/test-case-extension.php', [34 => ['Call to function method_exists() with $this(TestTestCase) and \'partialMock\' will always evaluate to true.']]];
         yield [__DIR__ . '/data/model-builder.php'];
         yield [__DIR__ . '/data/model-properties.php'];
+        yield 'model-property-cast-writes' => [
+            __DIR__ . '/data/model-property-cast-writes.php',
+            [
+                10 => ['Property App\\User::$int (int|numeric-string) does not accept \'abc\'.'],
+                11 => ['Property App\\User::$blocked (0|1|\'0\'|\'1\'|bool) does not accept \'yes\'.'],
+                12 => ['Property App\\Address::$custom_foreign_id_for_name (int) does not accept string.'],
+            ],
+            true,
+        ];
+
         yield [__DIR__ . '/data/model-factories.php'];
         yield [__DIR__ . '/data/blade-view.php'];
 
