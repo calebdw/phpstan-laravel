@@ -9,6 +9,7 @@ use App\Thread;
 use App\Team;
 use App\Address;
 use App\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -60,6 +61,22 @@ final class FinalModel extends Model
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\FinalModel)>', $this->newQuery());
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\FinalModel)>', $this->newModelQuery());
     }
+
+    public function forwardingCallsOnFinalModel(): void
+    {
+        // Nothing can extend a final model, so `static` is the model and how
+        // the call is written decides nothing.
+        assertType('Illuminate\Database\Eloquent\Collection<int, Model\FinalModel>', self::all());
+        assertType('Illuminate\Database\Eloquent\Collection<int, Model\FinalModel>', static::all());
+        assertType('Illuminate\Database\Eloquent\Collection<int, Model\FinalModel>', $this::all());
+        assertType('Illuminate\Database\Eloquent\Builder<Model\FinalModel>', static::query());
+    }
+
+    /** @return Collection<int, self> */
+    public function selfCollection(): Collection
+    {
+        return static::all();
+    }
 }
 
 class Foo
@@ -76,14 +93,30 @@ class Bar extends Model
 
     public function test(): void
     {
-        assertType('Illuminate\Database\Eloquent\Builder<Model\Bar>', self::query());
+        // Bar is not final, so every forwarding call keeps `static`: all() and
+        // query() are inherited and resolve the model with it.
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', self::query());
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', static::query());
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', $this->newQuery());
 
-        assertType('Model\Bar|null', self::query()->first());
+        assertType('static(Model\Bar)|null', self::query()->first());
         assertType('static(Model\Bar)|null', static::query()->first());
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', static::query()->orWhere('foo', 'bar'));
         assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', static::query()->select('foo'));
+
+        assertType('Illuminate\Database\Eloquent\Collection<int, static(Model\Bar)>', $this::all());
+        assertType('Illuminate\Database\Eloquent\Builder<static(Model\Bar)>', $this::query());
+    }
+
+    public static function allFromStatic(): void
+    {
+        assertType('Illuminate\Database\Eloquent\Collection<int, static(Model\Bar)>', self::all());
+        assertType('Illuminate\Database\Eloquent\Collection<int, static(Model\Bar)>', static::all());
+        assertType('Illuminate\Database\Eloquent\Collection<int, static(Model\Bar)>', self::query()->get());
+        assertType('Illuminate\Database\Eloquent\Collection<int, static(Model\Bar)>', parent::all());
+
+        // Naming the class is what stops the call forwarding, even here.
+        assertType('Illuminate\Database\Eloquent\Collection<int, Model\Bar>', Bar::all());
     }
 }
 

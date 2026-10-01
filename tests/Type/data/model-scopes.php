@@ -35,7 +35,7 @@ class Scopes extends Model
     {
         // A scope shadowing a passthru method still returns the builder, while
         // a model without such a scope keeps the passthru return type.
-        assertType('Illuminate\Database\Eloquent\Builder<ModelScope\Scopes>', self::query()->count());
+        assertType('Illuminate\Database\Eloquent\Builder<static(ModelScope\Scopes)>', self::query()->count());
         assertType('int<0, max>', User::query()->count());
 
         assertType('Illuminate\Database\Eloquent\Relations\HasOne<App\User, $this(ModelScope\Scopes)>', $this->hasOne(User::class)->active());
