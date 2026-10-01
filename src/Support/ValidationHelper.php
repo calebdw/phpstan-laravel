@@ -36,6 +36,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\Accessory\AccessoryNumericStringType;
@@ -479,7 +480,11 @@ final class ValidationHelper
             return null;
         }
 
-        return $reflection->getNativeMethod($root->name->toString())->getVariants()[0]->getReturnType();
+        return ParametersAcceptorSelector::selectFromTypes(
+            array_map(static fn () => new MixedType(), $root->getArgs()),
+            $reflection->getNativeMethod($root->name->toString())->getVariants(),
+            false,
+        )->getReturnType();
     }
 
     private function enumClass(Expr $expr, ClassReflection|null $inClass, Scope|null $scope = null): string|null
