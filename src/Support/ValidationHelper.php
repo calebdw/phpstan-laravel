@@ -94,7 +94,11 @@ use function strtolower;
  */
 final class ValidationHelper
 {
-    private const array EXCLUDE_RULES = ['exclude', 'exclude_if', 'exclude_unless', 'exclude_with', 'exclude_without'];
+    /** Implicit rules that fail when the key is absent. */
+    private const array PRESENCE_RULES = ['required', 'present', 'accepted', 'declined'];
+
+    /** `missing` fails when the key is present, so like `exclude` it leaves the key out. */
+    private const array EXCLUDE_RULES = ['exclude', 'exclude_if', 'exclude_unless', 'exclude_with', 'exclude_without', 'missing'];
 
     /** @var array<string, Type|null> */
     private array $shapes = [];
@@ -303,14 +307,14 @@ final class ValidationHelper
         foreach ($this->ruleBranches($expr) as $branch) {
             $tokens     = $this->ruleTokens($branch, $class, $scope);
             $required   = $required
-                && in_array('required', $tokens['names'], true)
+                && array_intersect($tokens['names'], self::PRESENCE_RULES) !== []
                 && ! in_array('sometimes', $tokens['names'], true);
             $nullable   = $nullable || in_array('nullable', $tokens['names'], true);
             $strippable = $strippable || $tokens['strippable'];
             $excludable = $excludable || array_intersect($tokens['names'], self::EXCLUDE_RULES) !== [];
 
-            // Only a plain exclude always drops the key; a conditional one keeps its type.
-            if (in_array('exclude', $tokens['names'], true)) {
+            // `exclude` and `missing` always drop the key; a conditional exclude keeps its type.
+            if (array_intersect($tokens['names'], ['exclude', 'missing']) !== []) {
                 continue;
             }
 
