@@ -118,6 +118,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/throw.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/translate.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/translator.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/validation-nullable-parent.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/validator.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/view-exists.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/view.php');
