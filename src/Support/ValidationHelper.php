@@ -39,6 +39,7 @@ use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
+use PHPStan\Type\ConstantTypeHelper;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\Generic\GenericObjectType;
@@ -54,6 +55,7 @@ use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeUtils;
 
 use function array_key_exists;
+use function array_map;
 use function array_pad;
 use function array_shift;
 use function count;
@@ -66,6 +68,16 @@ use function is_string;
 use function str_contains;
 use function strtolower;
 
+/**
+ * @phpstan-type Tokens array{
+ *     names: list<string>,
+ *     enum: string|null,
+ *     min: int|null,
+ *     max: int|null,
+ *     in: list<Type>,
+ *     strict: bool
+ * }
+ */
 final class ValidationHelper
 {
     /** @var array<string, Type|null> */
@@ -306,14 +318,15 @@ final class ValidationHelper
         ];
     }
 
-    /** @return array{names: list<string>, enum: string|null, min: int|null, max: int|null, in: list<Type>} */
+    /** @return Tokens */
     private function ruleTokens(Expr $expr, ClassReflection|null $class, Scope|null $scope = null): array
     {
-        $names = [];
-        $enum  = null;
-        $min   = null;
-        $max   = null;
-        $in    = [];
+        $names  = [];
+        $enum   = null;
+        $min    = null;
+        $max    = null;
+        $in     = [];
+        $strict = false;
 
         foreach ($this->ruleExprs($expr) as $rule) {
             if ($rule instanceof String_) {
@@ -332,6 +345,10 @@ final class ValidationHelper
 
                     if ($name === 'max') {
                         $max = $this->intParam($arg);
+                    }
+
+                    if (($name === 'boolean' || $name === 'bool') && $arg === 'strict') {
+                        $strict = true;
                     }
 
                     if ($name === 'between' && is_string($arg)) {
@@ -365,7 +382,7 @@ final class ValidationHelper
             }
         }
 
-        return ['names' => $names, 'enum' => $enum, 'min' => $min, 'max' => $max, 'in' => $in];
+        return ['names' => $names, 'enum' => $enum, 'min' => $min, 'max' => $max, 'in' => $in, 'strict' => $strict];
     }
 
     /** @return list<Expr> */
@@ -565,7 +582,7 @@ final class ValidationHelper
             : $short;
     }
 
-    /** @param array{names: list<string>, enum: string|null, min: int|null, max: int|null, in: list<Type>} $tokens */
+    /** @param Tokens $tokens */
     private function valueType(array $tokens): Type
     {
         $names = $tokens['names'];
@@ -601,8 +618,10 @@ final class ValidationHelper
             );
         }
 
-        if (in_array('boolean', $names, true) || in_array('bool', $names, true)) {
-            return TypeCombinator::union(new BooleanType(), new StringType());
+        $booleans = $this->booleanValues($tokens);
+
+        if ($booleans !== null) {
+            return $booleans;
         }
 
         if (in_array('list', $names, true)) {
@@ -620,6 +639,33 @@ final class ValidationHelper
         }
 
         return new StringType();
+    }
+
+    /** @param Tokens $tokens */
+    private function booleanValues(array $tokens): Type|null
+    {
+        $names = $tokens['names'];
+        $sets  = [];
+
+        if (in_array('boolean', $names, true) || in_array('bool', $names, true)) {
+            $sets[] = $tokens['strict'] ? new BooleanType() : $this->constants([true, false, 0, 1, '0', '1']);
+        }
+
+        if (in_array('accepted', $names, true)) {
+            $sets[] = $this->constants([true, 1, '1', 'yes', 'on', 'true']);
+        }
+
+        if (in_array('declined', $names, true)) {
+            $sets[] = $this->constants([false, 0, '0', 'no', 'off', 'false']);
+        }
+
+        return $sets === [] ? null : TypeCombinator::intersect(...$sets);
+    }
+
+    /** @param list<bool|int|string> $values */
+    private function constants(array $values): Type
+    {
+        return TypeCombinator::union(...array_map(ConstantTypeHelper::getTypeFromValue(...), $values));
     }
 
     private function enumBackingType(string $class): Type
