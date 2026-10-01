@@ -8,7 +8,9 @@ use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Dimensions;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Validator;
 use PhpParser\Node;
@@ -16,9 +18,12 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
+use PhpParser\Node\Expr\NullsafeMethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Ternary;
+use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\Int_;
@@ -54,6 +59,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeUtils;
 
+use function array_intersect;
 use function array_key_exists;
 use function array_map;
 use function array_pad;
@@ -305,21 +311,49 @@ final class ValidationHelper
         ];
     }
 
-    /** @return list<Expr> */
+    /**
+     * Splits every ternary, whole or inside a rule array, so that each branch
+     * is one list of rules.
+     *
+     * @return list<list<Expr>>
+     */
     private function ruleBranches(Expr $expr): array
     {
-        if (! $expr instanceof Ternary) {
-            return [$expr];
+        if ($expr instanceof Ternary) {
+            return [
+                ...$this->ruleBranches($expr->if ?? $expr->cond),
+                ...$this->ruleBranches($expr->else),
+            ];
         }
 
-        return [
-            ...$this->ruleBranches($expr->if ?? $expr->cond),
-            ...$this->ruleBranches($expr->else),
-        ];
+        if (! $expr instanceof Array_) {
+            return [[$expr]];
+        }
+
+        $branches = [[]];
+
+        foreach ($expr->items as $item) {
+            $values = $item->value instanceof Ternary ? $this->ruleBranches($item->value) : [[$item->value]];
+            $next   = [];
+
+            foreach ($branches as $branch) {
+                foreach ($values as $value) {
+                    $next[] = [...$branch, ...$value];
+                }
+            }
+
+            $branches = $next;
+        }
+
+        return $branches;
     }
 
-    /** @return Tokens */
-    private function ruleTokens(Expr $expr, ClassReflection|null $class, Scope|null $scope = null): array
+    /**
+     * @param list<Expr> $rules
+     *
+     * @return Tokens
+     */
+    private function ruleTokens(array $rules, ClassReflection|null $class, Scope|null $scope = null): array
     {
         $names  = [];
         $enum   = null;
@@ -328,7 +362,7 @@ final class ValidationHelper
         $in     = [];
         $strict = false;
 
-        foreach ($this->ruleExprs($expr) as $rule) {
+        foreach ($rules as $rule) {
             if ($rule instanceof String_) {
                 foreach (explode('|', $rule->value) as $token) {
                     [$name, $arg] = array_pad(explode(':', $token, 2), 2, null);
@@ -369,36 +403,83 @@ final class ValidationHelper
                 continue;
             }
 
-            $enumClass = $this->enumClass($rule, $class, $scope);
+            if ($rule instanceof FunctionLike) {
+                continue;
+            }
+
+            $root      = $this->chainRoot($rule);
+            $enumClass = $this->enumClass($root, $class, $scope);
 
             if ($enumClass !== null) {
                 $names[] = 'enum';
                 $enum    = $enumClass;
+
+                continue;
             }
 
-            foreach ($this->inValues($rule, $class, $scope) as $value) {
+            $values = $this->inValues($root, $class, $scope);
+
+            foreach ($values as $value) {
                 $names[] = 'in';
                 $in[]    = $value;
             }
+
+            $type = $scope?->getType($rule) ?? $this->unscopedRuleType($root, $class);
+
+            if ($values !== [] || ! $this->isFileRule($type)) {
+                continue;
+            }
+
+            $names[] = 'file';
         }
 
         return ['names' => $names, 'enum' => $enum, 'min' => $min, 'max' => $max, 'in' => $in, 'strict' => $strict];
     }
 
-    /** @return list<Expr> */
-    private function ruleExprs(Expr $expr): array
+    private function chainRoot(Expr $expr): Expr
     {
-        if (! $expr instanceof Array_) {
-            return [$expr];
+        while ($expr instanceof MethodCall || $expr instanceof NullsafeMethodCall) {
+            $expr = $expr->var;
         }
 
-        $rules = [];
+        return $expr;
+    }
 
-        foreach ($expr->items as $item) {
-            $rules[] = $item->value;
+    private function isFileRule(Type|null $type): bool
+    {
+        return $type !== null && TypeCombinator::union(
+            new ObjectType(File::class),
+            new ObjectType(Dimensions::class),
+        )->isSuperTypeOf($type)->yes();
+    }
+
+    /**
+     * Laravel declares no native return types on its rule builders, so a
+     * static call is read through its PHPDoc.
+     */
+    private function unscopedRuleType(Expr $root, ClassReflection|null $inClass): Type|null
+    {
+        if ((! $root instanceof StaticCall && ! $root instanceof New_) || ! $root->class instanceof Name) {
+            return null;
         }
 
-        return $rules;
+        $class = $this->resolveName($root->class, $inClass);
+
+        if (! $this->reflectionProvider->hasClass($class)) {
+            return null;
+        }
+
+        if ($root instanceof New_) {
+            return new ObjectType($class);
+        }
+
+        $reflection = $this->reflectionProvider->getClass($class);
+
+        if (! $root->name instanceof Identifier || ! $reflection->hasNativeMethod($root->name->toString())) {
+            return null;
+        }
+
+        return $reflection->getNativeMethod($root->name->toString())->getVariants()[0]->getReturnType();
     }
 
     private function enumClass(Expr $expr, ClassReflection|null $inClass, Scope|null $scope = null): string|null
@@ -587,7 +668,7 @@ final class ValidationHelper
     {
         $names = $tokens['names'];
 
-        if (in_array('file', $names, true) || in_array('image', $names, true) || in_array('mimes', $names, true) || in_array('mimetypes', $names, true)) {
+        if (array_intersect($names, ['file', 'image', 'mimes', 'mimetypes', 'extensions', 'dimensions']) !== []) {
             return new ObjectType(UploadedFile::class);
         }
 

@@ -1,9 +1,11 @@
 # Form requests
 
 `rules()` is parsed when it is a constant array of pipe-strings, arrays of
-strings, `Rule::enum()` / `new Enum()`, `Rule::in()` / `in:`, and `min` /
-`max` / `between` on integers. Closures, `Rule::when()`, and `$this->…` in
-the array are skipped.
+strings, `Rule::enum()` / `new Enum()`, `Rule::in()` / `in:`, the `File`,
+`ImageFile` and `Dimensions` rule objects however they are built, and `min` /
+`max` / `between` on integers. A chain such as `Rule::enum(…)->only(…)` is
+read from its first call. Closures, `Rule::when()`, and `$this->…` in the
+array are skipped.
 
 Validation does not cast. `validated()` and `$request->title` are the values
 as they arrived (forms are strings; JSON may already be `int`/`bool`). Use
@@ -42,10 +44,10 @@ Laravel's own `list` rule on the parent narrows it back to one. A dotted
 segment that is numeric is an integer key, the way PHP casts it, so
 `items.0.id` is `array{items: array{0: array{id: …}}}`.
 
-A ternary in the rules array is read on both branches and unioned; the
-condition is not evaluated, so it can be anything. The field is required
-only when every branch requires it, and a branch that `exclude`s it
-contributes no type but leaves the key optional.
+A ternary, around a field's rules or around one rule among them, is read
+on both branches and unioned; the condition is not evaluated, so it can be
+anything. The field is required only when every branch requires it, and a
+branch that `exclude`s it contributes no type but leaves the key optional.
 
 ```php
 'discount' => $condition
