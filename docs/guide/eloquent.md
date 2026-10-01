@@ -148,3 +148,45 @@ class User extends Model
     protected static string $collectionClass = GeneralCollection::class;
 }
 ```
+
+## Static calls inside a model
+
+Whether `all()` and `query()` give the model or `static` depends on the model,
+not on how the call is written:
+
+```php
+class User extends Model
+{
+    public function everyone(): void
+    {
+        self::all();    // Collection<int, static(User)>
+        $this::all();   // Collection<int, static(User)>
+        static::all();  // Collection<int, static(User)>
+        parent::all();  // Collection<int, static(User)>
+        User::all();    // Collection<int, User>
+    }
+}
+
+final class Invoice extends Model
+{
+    public function everyone(): void
+    {
+        self::all();    // Collection<int, Invoice>
+        static::all();  // Collection<int, Invoice>
+    }
+}
+```
+
+`all()` and `query()` are inherited from `Model` and resolve the model with
+`static`, and `self::`, `$this::` and `parent::` are forwarding calls that hand
+late static binding straight through to it. Calling `User::everyone()` on a
+subclass therefore gives a collection of that subclass, whichever of them the
+body used. Writing the class name out is the one form that does not forward,
+and names that class.
+
+A final model is where this stops mattering: nothing can extend it, so `static`
+is the model. That is already how PHPStan reads a plain `@return static`; it
+only misses it inside a generic argument such as `Collection<int, static>`.
+
+So annotate a method on an open model `@return Collection<int, static>`, and
+one on a final model whichever of `self` or `static` reads better.

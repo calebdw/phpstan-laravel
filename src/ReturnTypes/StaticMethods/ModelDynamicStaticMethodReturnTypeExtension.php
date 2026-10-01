@@ -21,7 +21,6 @@ use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
-use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 
 use function in_array;
@@ -78,10 +77,7 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
                 return null;
             }
 
-            return new BuilderOfType(
-                $modelType instanceof ThisType ? $modelType->getStaticObjectType() : $modelType,
-                $this->builderHelper,
-            );
+            return new BuilderOfType($modelType, $this->builderHelper);
         }
 
         if (in_array(Collection::class, $returnType->getReferencedClasses(), true)) {
@@ -99,10 +95,33 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
     }
 
     /**
-     * `parent::` forwards late static binding, but resolving the name gives the
-     * parent class, which would hand back a builder of the wrong model.
+     * `all()` and `query()` are inherited and resolve the model with `static`,
+     * and `self::`, `$this::` and `parent::` are forwarding calls that hand it
+     * straight through. None of them names the class the call is written in, so
+     * how the call is spelled decides nothing - only whether a subclass can
+     * exist at all does.
+     *
+     * A final class is where that stops being hypothetical: nothing extends it,
+     * so `static` is the class, which is what PHPStan already says for a plain
+     * `@return static` and only misses inside a generic argument.
+     *
+     * A written-out class name is not a forwarding call and keeps naming that
+     * class, subclasses or not.
      */
     private function calledOnType(StaticCall $methodCall, Scope $scope): Type
+    {
+        $type = $this->writtenType($methodCall, $scope);
+
+        if (! $type instanceof StaticType) {
+            return $type;
+        }
+
+        return $type->getClassReflection()->isFinal()
+            ? $type->getStaticObjectType()
+            : new StaticType($type->getClassReflection());
+    }
+
+    private function writtenType(StaticCall $methodCall, Scope $scope): Type
     {
         if (! $methodCall->class instanceof Name) {
             return $scope->getType($methodCall->class)->getObjectTypeOrClassStringObjectType();
@@ -110,10 +129,14 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
 
         $classReflection = $scope->getClassReflection();
 
-        if ($classReflection !== null && $methodCall->class->toLowerString() === 'parent') {
+        // Resolving `parent` by name would give the parent class, and a builder
+        // of the wrong model with it.
+        if ($classReflection !== null && in_array($methodCall->class->toLowerString(), ['self', 'static', 'parent'], true)) {
             return new StaticType($classReflection);
         }
 
-        return $scope->resolveTypeByName($methodCall->class);
+        // Resolving a written-out name inside its own class gives `static`,
+        // which this is not: naming the class is what stops the call forwarding.
+        return new ObjectType($scope->resolveName($methodCall->class));
     }
 }
