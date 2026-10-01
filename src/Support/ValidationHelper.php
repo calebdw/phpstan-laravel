@@ -48,6 +48,7 @@ use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
+use PHPStan\Type\ConstantTypeHelper;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\Generic\GenericObjectType;
@@ -93,7 +94,8 @@ use function strtolower;
  *     min: int|null,
  *     max: int|null,
  *     in: list<Type>,
- *     strippable: bool
+ *     strippable: bool,
+ *     strict: bool
  * }
  * @phpstan-type Group array{type: Type, kept: bool, keepsParent: bool}
  * @phpstan-type Shape array{type: Type, anyKept: bool, allKeepParent: bool}
@@ -386,6 +388,7 @@ final class ValidationHelper
         $max        = null;
         $in         = [];
         $strippable = false;
+        $strict     = false;
 
         foreach ($this->ruleExprs($expr) as $rule) {
             if ($rule instanceof String_) {
@@ -405,6 +408,10 @@ final class ValidationHelper
 
                     if ($name === 'max') {
                         $max = $this->intParam($arg);
+                    }
+
+                    if (($name === 'boolean' || $name === 'bool') && $arg === 'strict') {
+                        $strict = true;
                     }
 
                     if ($name === 'between' && is_string($arg)) {
@@ -453,7 +460,15 @@ final class ValidationHelper
             $strippable = $strippable || $this->castsToArray($rule, $type, $class, $scope);
         }
 
-        return ['names' => $names, 'enum' => $enum, 'min' => $min, 'max' => $max, 'in' => $in, 'strippable' => $strippable];
+        return [
+            'names' => $names,
+            'enum' => $enum,
+            'min' => $min,
+            'max' => $max,
+            'in' => $in,
+            'strippable' => $strippable,
+            'strict' => $strict,
+        ];
     }
 
     /** @return list<Expr> */
@@ -797,8 +812,10 @@ final class ValidationHelper
             );
         }
 
-        if (in_array('boolean', $names, true) || in_array('bool', $names, true)) {
-            return TypeCombinator::union(new BooleanType(), new StringType());
+        $booleans = $this->booleanValues($tokens);
+
+        if ($booleans !== null) {
+            return $booleans;
         }
 
         if (in_array('list', $names, true)) {
@@ -816,6 +833,33 @@ final class ValidationHelper
         }
 
         return new StringType();
+    }
+
+    /** @param Tokens $tokens */
+    private function booleanValues(array $tokens): Type|null
+    {
+        $names = $tokens['names'];
+        $sets  = [];
+
+        if (in_array('boolean', $names, true) || in_array('bool', $names, true)) {
+            $sets[] = $tokens['strict'] ? new BooleanType() : $this->constants([true, false, 0, 1, '0', '1']);
+        }
+
+        if (in_array('accepted', $names, true)) {
+            $sets[] = $this->constants([true, 1, '1', 'yes', 'on', 'true']);
+        }
+
+        if (in_array('declined', $names, true)) {
+            $sets[] = $this->constants([false, 0, '0', 'no', 'off', 'false']);
+        }
+
+        return $sets === [] ? null : TypeCombinator::intersect(...$sets);
+    }
+
+    /** @param list<bool|int|string> $values */
+    private function constants(array $values): Type
+    {
+        return TypeCombinator::union(...array_map(ConstantTypeHelper::getTypeFromValue(...), $values));
     }
 
     private function enumBackingType(string $class): Type
