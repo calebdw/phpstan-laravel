@@ -730,7 +730,9 @@ final class ValidationHelper
             if ($hasLeaf && $list) {
                 $type = TypeCombinator::intersect($type, new AccessoryArrayListType());
             }
-        } elseif ($hasLeaf && $nullable) {
+        }
+
+        if ($hasLeaf && $nullable) {
             $type = TypeCombinator::union($type, new NullType());
         }
 
