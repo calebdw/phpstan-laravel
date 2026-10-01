@@ -33,6 +33,7 @@ use PHPStan\Type\ArrayType;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantIntegerType;
+use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
@@ -137,7 +138,15 @@ final class ModelCastHelper
         $cast = $this->parseCast($cast);
 
         $attributeType = match ($cast) {
-            'int', 'integer', 'timestamp' => $originalType->isInteger()->yes() ? $originalType : new IntegerType(),
+            // An int is cast on read, so a numeric string reads back as one, but
+            // not necessarily inside a narrower range.
+            'int', 'integer' => $originalType->isInteger()->yes() && ! $originalType->isSuperTypeOf(new IntegerType())->yes()
+                ? $originalType
+                : TypeCombinator::union(
+                    new IntegerType(),
+                    TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType()),
+                ),
+            'timestamp' => $originalType->isInteger()->yes() ? $originalType : new IntegerType(),
             'real', 'float', 'double' => new FloatType(),
             // A decimal is only formatted on read, so a write takes any number
             // or the numeric string the column round-trips as.
@@ -147,7 +156,14 @@ final class ModelCastHelper
                 new IntegerType(),
             ),
             'string' => new StringType(),
-            'bool', 'boolean' => TypeCombinator::union(new BooleanType(), new ConstantIntegerType(0), new ConstantIntegerType(1)),
+            // A bool is cast on read, so the '0' and '1' a form sends read back as one.
+            'bool', 'boolean' => TypeCombinator::union(
+                new BooleanType(),
+                new ConstantIntegerType(0),
+                new ConstantIntegerType(1),
+                new ConstantStringType('0'),
+                new ConstantStringType('1'),
+            ),
             'object' => new ObjectType(stdClass::class),
             'array', 'json' => new ArrayType(new BenevolentUnionType([new IntegerType(), new StringType()]), new MixedType()),
             'collection' => new ObjectType(Collection::class),
