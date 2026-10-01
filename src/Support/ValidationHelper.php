@@ -557,7 +557,11 @@ final class ValidationHelper
             return null;
         }
 
-        return $reflection->getNativeMethod($root->name->toString())->getVariants()[0]->getReturnType();
+        return ParametersAcceptorSelector::selectFromTypes(
+            array_map(static fn () => new MixedType(), $root->getArgs()),
+            $reflection->getNativeMethod($root->name->toString())->getVariants(),
+            false,
+        )->getReturnType();
     }
 
     /**
