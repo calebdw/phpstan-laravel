@@ -17,18 +17,21 @@ use function PHPStan\Testing\assertType;
  * @param  Collection<int, array{user: array{id: int, name: string}}>  $arrays
  * @param  EloquentCollection<int, Post>  $posts
  * @param  LazyCollection<int, User>  $lazyUsers
+ * @param  'id'|'name'  $field
  */
 function test(
     EloquentCollection $users,
     Collection $arrays,
     EloquentCollection $posts,
     LazyCollection $lazyUsers,
+    string $field,
 ): void {
     assertType('Illuminate\Support\Collection<int, string>', $users->pluck('name'));
     assertType('Illuminate\Support\Collection<string, string>', $users->pluck('name', 'name'));
 
     assertType('Illuminate\Support\Collection<int, string>', $arrays->pluck('user.name'));
     assertType('Illuminate\Support\Collection<string, string>', $arrays->pluck('user.name', 'user.name'));
+    assertType('Illuminate\Support\Collection<int, int|string>', $arrays->pluck(['user', $field]));
 
     assertType('Illuminate\Support\Collection<int, string>', $users->pluck(fn ($u) => $u->name));
     assertType('Illuminate\Support\Collection<string, string>', $users->pluck(fn ($u) => $u->name, fn ($u) => $u->name));
