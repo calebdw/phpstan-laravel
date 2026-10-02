@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\ArrayRule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\ExcludeIf;
 use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Validator;
 use PhpParser\Node;
@@ -19,8 +23,10 @@ use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\Ternary;
+use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar;
 use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Class_;
@@ -31,6 +37,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\Accessory\AccessoryNumericStringType;
@@ -53,7 +60,9 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeUtils;
 
+use function array_intersect;
 use function array_key_exists;
+use function array_map;
 use function array_pad;
 use function array_shift;
 use function count;
@@ -66,8 +75,31 @@ use function is_string;
 use function str_contains;
 use function strtolower;
 
+/**
+ * @phpstan-type Field array{
+ *     required: bool,
+ *     nullable: bool,
+ *     type: Type,
+ *     strippable: bool,
+ *     excludable: bool
+ * }
+ * @phpstan-type Tokens array{
+ *     names: list<string>,
+ *     enum: string|null,
+ *     min: int|null,
+ *     max: int|null,
+ *     in: list<Type>,
+ *     strippable: bool
+ * }
+ */
 final class ValidationHelper
 {
+    /** Implicit rules that fail when the key is absent. */
+    private const array PRESENCE_RULES = ['required', 'present', 'accepted', 'declined'];
+
+    /** `missing` fails when the key is present, so like `exclude` it leaves the key out. */
+    private const array EXCLUDE_RULES = ['exclude', 'exclude_if', 'exclude_unless', 'exclude_with', 'exclude_without', 'missing'];
+
     /** @var array<string, Type|null> */
     private array $shapes = [];
 
@@ -181,7 +213,7 @@ final class ValidationHelper
         return $shapes === [] ? null : TypeCombinator::union(...$shapes);
     }
 
-    /** @return array<string, array{required: bool, nullable: bool, type: Type}> */
+    /** @return array<string, Field> */
     private function fields(ClassReflection $class): array
     {
         if (! $class->hasNativeMethod('rules')) {
@@ -241,7 +273,7 @@ final class ValidationHelper
         return null;
     }
 
-    /** @return array<string, array{required: bool, nullable: bool, type: Type}> */
+    /** @return array<string, Field> */
     private function fieldsFromArray(Array_ $array, ClassReflection|null $class, Scope|null $scope = null): array
     {
         $fields = [];
@@ -263,23 +295,26 @@ final class ValidationHelper
         return $fields;
     }
 
-    /** @return array{required: bool, nullable: bool, type: Type} */
+    /** @return Field */
     private function fieldFromRules(Expr $expr, ClassReflection|null $class, Scope|null $scope = null): array
     {
-        $required = true;
-        $nullable = false;
-        $types    = [];
+        $required   = true;
+        $nullable   = false;
+        $strippable = false;
+        $excludable = false;
+        $types      = [];
 
         foreach ($this->ruleBranches($expr) as $branch) {
-            $tokens   = $this->ruleTokens($branch, $class, $scope);
-            $excluded = in_array('exclude', $tokens['names'], true);
-            $required = $required
-                && ! $excluded
-                && in_array('required', $tokens['names'], true)
+            $tokens     = $this->ruleTokens($branch, $class, $scope);
+            $required   = $required
+                && array_intersect($tokens['names'], self::PRESENCE_RULES) !== []
                 && ! in_array('sometimes', $tokens['names'], true);
-            $nullable = $nullable || in_array('nullable', $tokens['names'], true);
+            $nullable   = $nullable || in_array('nullable', $tokens['names'], true);
+            $strippable = $strippable || $tokens['strippable'];
+            $excludable = $excludable || array_intersect($tokens['names'], self::EXCLUDE_RULES) !== [];
 
-            if ($excluded) {
+            // `exclude` and `missing` always drop the key; a conditional exclude keeps its type.
+            if (array_intersect($tokens['names'], ['exclude', 'missing']) !== []) {
                 continue;
             }
 
@@ -290,6 +325,8 @@ final class ValidationHelper
             'required' => $required,
             'nullable' => $nullable,
             'type' => $types === [] ? new MixedType() : TypeCombinator::union(...$types),
+            'strippable' => $strippable,
+            'excludable' => $excludable,
         ];
     }
 
@@ -306,14 +343,15 @@ final class ValidationHelper
         ];
     }
 
-    /** @return array{names: list<string>, enum: string|null, min: int|null, max: int|null, in: list<Type>} */
+    /** @return Tokens */
     private function ruleTokens(Expr $expr, ClassReflection|null $class, Scope|null $scope = null): array
     {
-        $names = [];
-        $enum  = null;
-        $min   = null;
-        $max   = null;
-        $in    = [];
+        $names      = [];
+        $enum       = null;
+        $min        = null;
+        $max        = null;
+        $in         = [];
+        $strippable = false;
 
         foreach ($this->ruleExprs($expr) as $rule) {
             if ($rule instanceof String_) {
@@ -321,6 +359,7 @@ final class ValidationHelper
                     [$name, $arg] = array_pad(explode(':', $token, 2), 2, null);
                     $name         = strtolower((string) $name);
                     $names[]      = $name;
+                    $strippable   = $strippable || ($arg === null && in_array($name, ['array', 'list'], true));
 
                     if ($name === 'enum' && is_string($arg) && $arg !== '' && $this->reflectionProvider->hasClass($arg)) {
                         $enum = $this->reflectionProvider->getClass($arg)->getName();
@@ -352,6 +391,10 @@ final class ValidationHelper
                 continue;
             }
 
+            if ($rule instanceof FunctionLike) {
+                continue;
+            }
+
             $enumClass = $this->enumClass($rule, $class, $scope);
 
             if ($enumClass !== null) {
@@ -363,9 +406,16 @@ final class ValidationHelper
                 $names[] = 'in';
                 $in[]    = $value;
             }
+
+            if ($this->ruleCall($rule, $class, ExcludeIf::class, 'excludeIf', $scope) !== null) {
+                $names[] = 'exclude_if';
+            }
+
+            $type       = $scope?->getType($rule) ?? $this->unscopedRuleType($rule, $class);
+            $strippable = $strippable || $this->castsToArray($rule, $type, $class, $scope);
         }
 
-        return ['names' => $names, 'enum' => $enum, 'min' => $min, 'max' => $max, 'in' => $in];
+        return ['names' => $names, 'enum' => $enum, 'min' => $min, 'max' => $max, 'in' => $in, 'strippable' => $strippable];
     }
 
     /** @return list<Expr> */
@@ -384,10 +434,87 @@ final class ValidationHelper
         return $rules;
     }
 
+    /**
+     * validated() drops a parent whose rules hold an exact `array` or `list`.
+     * Closures and rule contracts are wrapped, and `in` and `exclude_if` cast
+     * to their own name, but any other object may cast to `array`.
+     */
+    private function castsToArray(Expr $rule, Type|null $type, ClassReflection|null $class, Scope|null $scope): bool
+    {
+        $args = $this->ruleCall($rule, $class, ArrayRule::class, 'array', $scope);
+
+        if ($args !== null) {
+            return $this->withoutKeys($args, $scope);
+        }
+
+        return $type === null || ! TypeCombinator::union(
+            new ObjectType(Closure::class),
+            new ObjectType(ValidationRule::class),
+            // Deprecated, but user rules still implement them.
+            new ObjectType('Illuminate\Contracts\Validation\Rule'),
+            new ObjectType('Illuminate\Contracts\Validation\InvokableRule'),
+            new ObjectType(In::class),
+            new ObjectType(ExcludeIf::class),
+        )->isSuperTypeOf($type)->yes();
+    }
+
+    /**
+     * `Rule::array()` casts to a bare `array` only when its keys come from an
+     * empty array; any other argument becomes a key.
+     *
+     * @param list<Expr> $args
+     */
+    private function withoutKeys(array $args, Scope|null $scope): bool
+    {
+        if (count($args) !== 1) {
+            return $args === [];
+        }
+
+        if ($scope === null) {
+            return $args[0] instanceof Array_ ? $args[0]->items === [] : ! $args[0] instanceof Scalar;
+        }
+
+        $type = $scope->getType($args[0]);
+
+        return ! $type->isIterableAtLeastOnce()->yes() && ! $type->isScalar()->yes() && ! $type->isNull()->yes();
+    }
+
+    /**
+     * Laravel declares no native return types on its rule builders, so a
+     * static call is read through its PHPDoc.
+     */
+    private function unscopedRuleType(Expr $root, ClassReflection|null $inClass): Type|null
+    {
+        if ((! $root instanceof StaticCall && ! $root instanceof New_) || ! $root->class instanceof Name) {
+            return null;
+        }
+
+        $class = $this->resolveName($root->class, $inClass);
+
+        if (! $this->reflectionProvider->hasClass($class)) {
+            return null;
+        }
+
+        if ($root instanceof New_) {
+            return new ObjectType($class);
+        }
+
+        $reflection = $this->reflectionProvider->getClass($class);
+
+        if (! $root->name instanceof Identifier || ! $reflection->hasNativeMethod($root->name->toString())) {
+            return null;
+        }
+
+        return ParametersAcceptorSelector::selectFromTypes(
+            array_map(static fn () => new MixedType(), $root->getArgs()),
+            $reflection->getNativeMethod($root->name->toString())->getVariants(),
+            false,
+        )->getReturnType();
+    }
+
     private function enumClass(Expr $expr, ClassReflection|null $inClass, Scope|null $scope = null): string|null
     {
-        $args = $this->ruleCallArgs($expr, $inClass, Enum::class, 'enum', $scope);
-        $arg  = $args[0] ?? null;
+        $arg = $this->ruleCall($expr, $inClass, Enum::class, 'enum', $scope)[0] ?? null;
 
         if ($arg === null) {
             return null;
@@ -415,7 +542,7 @@ final class ValidationHelper
     /** @return list<Type> */
     private function inValues(Expr $expr, ClassReflection|null $inClass, Scope|null $scope = null): array
     {
-        $args = $this->ruleCallArgs($expr, $inClass, In::class, 'in', $scope);
+        $args = $this->ruleCall($expr, $inClass, In::class, 'in', $scope) ?? [];
 
         if ($args === []) {
             return [];
@@ -441,30 +568,33 @@ final class ValidationHelper
     }
 
     /**
+     * The arguments of `Rule::$staticMethod()` or `new $objectClass()`, or
+     * null when the expression builds neither.
+     *
      * @param class-string $objectClass
      *
-     * @return list<Expr>
+     * @return list<Expr>|null
      */
-    private function ruleCallArgs(Expr $expr, ClassReflection|null $inClass, string $objectClass, string $staticMethod, Scope|null $scope = null): array
+    private function ruleCall(Expr $expr, ClassReflection|null $inClass, string $objectClass, string $staticMethod, Scope|null $scope = null): array|null
     {
         if ($scope !== null) {
-            return $this->scopedRuleCallArgs($expr, $objectClass, $staticMethod, $scope);
+            return $this->scopedRuleCall($expr, $objectClass, $staticMethod, $scope);
         }
 
         if ($expr instanceof StaticCall) {
             if (! $expr->class instanceof Name || ! $expr->name instanceof Identifier) {
-                return [];
+                return null;
             }
 
             if ($expr->name->toString() !== $staticMethod || ! $this->isClass($expr->class, $inClass, Rule::class)) {
-                return [];
+                return null;
             }
         } elseif ($expr instanceof New_) {
             if (! $expr->class instanceof Name || ! $this->isClass($expr->class, $inClass, $objectClass)) {
-                return [];
+                return null;
             }
         } else {
-            return [];
+            return null;
         }
 
         return $this->callHelper->argValues($expr);
@@ -473,20 +603,20 @@ final class ValidationHelper
     /**
      * @param class-string $objectClass
      *
-     * @return list<Expr>
+     * @return list<Expr>|null
      */
-    private function scopedRuleCallArgs(Expr $expr, string $objectClass, string $staticMethod, Scope $scope): array
+    private function scopedRuleCall(Expr $expr, string $objectClass, string $staticMethod, Scope $scope): array|null
     {
         if ($expr instanceof StaticCall) {
             if ($this->callHelper->matchingNames($expr, $scope, $staticMethod) === [] || ! $this->callHelper->isCalledOn($expr, $scope, Rule::class)) {
-                return [];
+                return null;
             }
 
             return $this->callHelper->argValues($expr);
         }
 
         if (! $expr instanceof New_ || ! $this->callHelper->isCalledOn($expr, $scope, $objectClass)) {
-            return [];
+            return null;
         }
 
         return $this->callHelper->argValues($expr);
@@ -565,7 +695,7 @@ final class ValidationHelper
             : $short;
     }
 
-    /** @param array{names: list<string>, enum: string|null, min: int|null, max: int|null, in: list<Type>} $tokens */
+    /** @param Tokens $tokens */
     private function valueType(array $tokens): Type
     {
         $names = $tokens['names'];
@@ -657,10 +787,20 @@ final class ValidationHelper
         return $values === [] ? new StringType() : TypeCombinator::union(...$values);
     }
 
-    /** @param  array<array-key, array{required: bool, nullable: bool, type: Type}> $fields */
+    /** @param  array<array-key, Field> $fields */
     private function shape(array $fields): Type
     {
-        /** @var array<array-key, list<array{0: string, 1: array{required: bool, nullable: bool, type: Type}}>> $groups */
+        return $this->shapeOf($fields)[0];
+    }
+
+    /**
+     * @param  array<array-key, Field> $fields
+     *
+     * @return array{0: Type, 1: bool, 2: bool}
+     */
+    private function shapeOf(array $fields): array
+    {
+        /** @var array<array-key, list<array{0: string, 1: Field}>> $groups */
         $groups = [];
 
         foreach ($fields as $path => $field) {
@@ -670,71 +810,85 @@ final class ValidationHelper
             $groups[$head][] = [$tail, $field];
         }
 
-        if (array_key_exists('*', $groups) && count($groups) === 1) {
-            [$type] = $this->groupType($groups['*']);
+        $allSafe = true;
 
-            return new ArrayType(
-                TypeCombinator::union(new IntegerType(), new StringType()),
-                $type,
-            );
+        if (array_key_exists('*', $groups)) {
+            [$type, , $allSafe] = $this->groupType($groups['*'], true);
+
+            if (count($groups) === 1) {
+                return [
+                    new ArrayType(TypeCombinator::union(new IntegerType(), new StringType()), $type),
+                    false,
+                    $allSafe,
+                ];
+            }
         }
 
         $builder = ConstantArrayTypeBuilder::createEmpty();
+        $anyKept = false;
 
         foreach ($groups as $key => $entries) {
             if ($key === '*') {
                 continue;
             }
 
-            [$type, $required] = $this->groupType($entries);
-            $keyType           = is_int($key)
+            [$type, $kept, $safe] = $this->groupType($entries);
+            $anyKept              = $anyKept || $kept;
+            $allSafe              = $allSafe && $safe;
+            $keyType              = is_int($key)
                 ? new ConstantIntegerType($key)
                 : new ConstantStringType($key);
-            $builder->setOffsetValueType($keyType, $type, ! $required);
+            $builder->setOffsetValueType($keyType, $type, ! $kept);
         }
 
-        return $builder->getArray();
+        return [$builder->getArray(), $anyKept, $allSafe];
     }
 
     /**
-     * @param  list<array{0: string, 1: array{required: bool, nullable: bool, type: Type}}> $entries
+     * validated() keeps a key whose own rule is not stripped, and rebuilds a
+     * stripped parent from the children it keeps. A child that applies a rule
+     * without being kept therefore loses the parent: a named rule applies to
+     * every parent, a `*` rule only to elements that exist, and an exclusion
+     * removes its rules along with the key.
      *
-     * @return array{0: Type, 1: bool}
+     * @param  list<array{0: string, 1: Field}> $entries
+     *
+     * @return array{0: Type, 1: bool, 2: bool}
      */
-    private function groupType(array $entries): array
+    private function groupType(array $entries, bool $element = false): array
     {
-        $nested   = [];
-        $required = false;
-        $type     = new StringType();
-        $nullable = false;
-        $hasLeaf  = false;
-        $list     = false;
+        $nested = [];
+        $leaf   = null;
 
         foreach ($entries as [$tail, $field]) {
             if ($tail === '') {
-                $hasLeaf  = true;
-                $type     = $field['type'];
-                $nullable = $field['nullable'];
-                $required = $required || $field['required'];
-                $list     = $field['type']->isList()->yes();
+                $leaf = $field;
                 continue;
             }
 
             $nested[$tail] = $field;
-            $required      = $required || $field['required'];
         }
 
-        if ($nested !== []) {
-            $type = $this->shape($nested);
+        if ($leaf === null) {
+            [$type, $kept, $allSafe] = $this->shapeOf($nested);
 
-            if ($hasLeaf && $list) {
-                $type = TypeCombinator::intersect($type, new AccessoryArrayListType());
-            }
-        } elseif ($hasLeaf && $nullable) {
+            return [$type, $kept, $kept || $allSafe];
+        }
+
+        [$type, $namedKept, $allSafe] = $nested === [] ? [$leaf['type'], false, true] : $this->shapeOf($nested);
+
+        if ($nested !== [] && $leaf['type']->isList()->yes()) {
+            $type = TypeCombinator::intersect($type, new AccessoryArrayListType());
+        }
+
+        if ($leaf['nullable']) {
             $type = TypeCombinator::union($type, new NullType());
         }
 
-        return [$type, $required];
+        $keptWithValue = $namedKept || ! $leaf['strippable'] || $allSafe;
+        $kept          = $namedKept || ($leaf['required'] && $keptWithValue);
+
+        return [$type, $kept && ! $leaf['excludable'], $element ? $keptWithValue : $kept];
     }
 
     /** @return array<string, Type> */

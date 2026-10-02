@@ -36,6 +36,11 @@ $post->integer('age');           // int
 $post->enum('status', PostStatus::class); // PostStatus|null
 ```
 
+A key is required when its rules include `required`, `present`, `accepted`
+or `declined`, without `sometimes` or an `exclude` rule. `validated()`
+rebuilds an `array` parent with child rules from the children that exist,
+so an optional child rule can leave the parent out.
+
 A wildcard keeps whatever keys were submitted, because Laravel does not
 reindex them: `tags.*` is `array<int|string, string>` rather than a list.
 Laravel's own `list` rule on the parent narrows it back to one. A dotted
