@@ -23,6 +23,19 @@ function testBooleanAcceptsFalse(User $user): void
     $user->blocked = false;
 }
 
+function testBooleanAcceptsZeroOrOneString(User $user): void
+{
+    $user->blocked = '0';
+    $user->blocked = '1';
+}
+
+/** @param numeric-string $numeric */
+function testIntegerCastAcceptsNumericString(User $user, string $numeric): void
+{
+    $user->int = '5';
+    $user->integer = $numeric;
+}
+
 function testWriteToProperty(User $user): void
 {
     $user->created_at = now();

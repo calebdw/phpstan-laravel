@@ -148,3 +148,26 @@ class User extends Model
     protected static string $collectionClass = GeneralCollection::class;
 }
 ```
+
+## Static calls inside a model
+
+`self::` and `$this::` give the model class, `static::` and `parent::` give
+`static`:
+
+```php
+class User extends Model
+{
+    public function everyone(): void
+    {
+        self::all();    // Collection<int, User>
+        $this::all();   // Collection<int, User>
+        static::all();  // Collection<int, static(User)>
+    }
+}
+```
+
+All four return the called class at runtime, but the collection's model
+template is invariant, so `Collection<int, static>` and `Collection<int, User>`
+do not satisfy each other. Call `self::all()` where a method returns
+`Collection<int, self>` and `static::all()` where it returns
+`Collection<int, static>`.

@@ -73,15 +73,16 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
 
         $modelType = $this->calledOnType($methodCall, $scope);
 
+        if ($modelType instanceof ThisType) {
+            $modelType = $modelType->getStaticObjectType();
+        }
+
         if ((new ObjectType(EloquentBuilder::class))->isSuperTypeOf($returnType)->yes()) {
             if (! (new ObjectType(Model::class))->isSuperTypeOf($modelType)->yes()) {
                 return null;
             }
 
-            return new BuilderOfType(
-                $modelType instanceof ThisType ? $modelType->getStaticObjectType() : $modelType,
-                $this->builderHelper,
-            );
+            return new BuilderOfType($modelType, $this->builderHelper);
         }
 
         if (in_array(Collection::class, $returnType->getReferencedClasses(), true)) {
