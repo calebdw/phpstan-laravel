@@ -1,0 +1,12 @@
+<?php
+
+namespace Illuminate\Validation\Rules;
+
+class File
+{
+    /**
+     * @param  static|callable|null  $callback
+     * @return ($callback is null ? static : void)
+     */
+    public static function defaults($callback = null);
+}
