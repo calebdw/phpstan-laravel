@@ -22,9 +22,15 @@ use SplFileInfo;
 
 use function array_key_exists;
 use function array_shift;
+use function array_slice;
 use function count;
 use function explode;
 use function is_numeric;
+use function rtrim;
+use function str_replace;
+use function str_starts_with;
+use function strlen;
+use function substr;
 
 /**
  * Statically parses the configuration files within the configured directories.
@@ -36,6 +42,9 @@ final class ConfigParser
 {
     /** @var array<string, SplFileInfo>|null */
     private array|null $files = null;
+
+    /** @var list<string>|null */
+    private array|null $directories = null;
 
     /** @var array<string, Return_|null> */
     private array $returns = [];
@@ -58,6 +67,38 @@ final class ConfigParser
         return $this->configDirectories !== [];
     }
 
+    /** @return list<string> */
+    public function directories(): array
+    {
+        return $this->directories ??= $this->fileHelper->getDirectories($this->configDirectories);
+    }
+
+    /**
+     * The files the key can be declared in, as paths relative to a
+     * configuration directory, shallowest first.
+     *
+     * Laravel keys a configuration file by its path below the directory and
+     * not by its name, so `eagle.payments.stripe` can be declared by
+     * `eagle.php`, by `eagle/payments.php` or by `eagle/payments/stripe.php`,
+     * with whatever is left of the key read as offsets into it.
+     *
+     * @see Illuminate\Foundation\Bootstrap\LoadConfiguration::getNestedDirectory()
+     *
+     * @return non-empty-list<string>
+     */
+    public static function candidateFiles(string $key): array
+    {
+        $files = [];
+        $path  = '';
+
+        foreach (explode('.', $key) as $part) {
+            $path    = $path === '' ? $part : $path . '/' . $part;
+            $files[] = $path . '.php';
+        }
+
+        return $files;
+    }
+
     public function getType(string $key, Scope $scope): Type|null
     {
         if (! $this->hasDirectories()) {
@@ -68,16 +109,32 @@ final class ConfigParser
             return $this->types[$key];
         }
 
-        $parts = explode('.', $key);
-        $file  = array_shift($parts);
-        $node  = $this->getReturn($file);
+        return $this->types[$key] = $this->resolve($key, $scope);
+    }
 
-        $type = $node === null
-            ? null
-            : $this->getTypeFromDocComment($node, $parts, $file)
-                ?? $this->getTypeFromExpr($node->expr, $parts, $scope);
+    private function resolve(string $key, Scope $scope): Type|null
+    {
+        $parts      = explode('.', $key);
+        $candidates = self::candidateFiles($key);
 
-        return $this->types[$key] = $type;
+        // Deepest first: Laravel loads the files in path order, so where both
+        // `eagle.php` and `eagle/payments.php` declare `eagle.payments` it is
+        // the nested one that was written last.
+        for ($depth = count($candidates); $depth > 0; $depth--) {
+            $file = $candidates[$depth - 1];
+            $node = $this->getReturn($file);
+
+            if ($node === null) {
+                continue;
+            }
+
+            $rest = array_slice($parts, $depth);
+
+            return $this->getTypeFromDocComment($node, $rest, $file)
+                ?? $this->getTypeFromExpr($node->expr, $rest, $scope);
+        }
+
+        return null;
     }
 
     /** @param list<string> $parts */
@@ -228,7 +285,12 @@ final class ConfigParser
         return $this->returns[$file] = $node;
     }
 
-    /** @return array<string, SplFileInfo> */
+    /**
+     * Indexed by the path below the configuration directory, which is what
+     * names the key - see candidateFiles().
+     *
+     * @return array<string, SplFileInfo>
+     */
     private function getFiles(): array
     {
         if ($this->files !== null) {
@@ -237,14 +299,26 @@ final class ConfigParser
 
         $this->files = [];
 
-        foreach ($this->fileHelper->getFiles($this->configDirectories, '/\.php$/i') as $file) {
-            $name = $file->getBasename('.php');
+        foreach ($this->directories() as $directory) {
+            $base = str_replace('\\', '/', rtrim($directory, '/\\')) . '/';
 
-            if (array_key_exists($name, $this->files)) {
-                continue;
+            foreach ($this->fileHelper->getFiles([$directory], '/\.php$/i') as $file) {
+                $path = str_replace('\\', '/', $file->getPathname());
+
+                if (! str_starts_with($path, $base)) {
+                    continue;
+                }
+
+                $relative = substr($path, strlen($base));
+
+                // Laravel merges the directories in order, so the first one
+                // declaring a key is the one that answers for it.
+                if (array_key_exists($relative, $this->files)) {
+                    continue;
+                }
+
+                $this->files[$relative] = $file;
             }
-
-            $this->files[$name] = $file;
         }
 
         return $this->files;

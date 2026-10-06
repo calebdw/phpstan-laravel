@@ -26,8 +26,27 @@ function test(): void
     assertType("Illuminate\Support\Collection<'key', string>", Config::collection('package.nested.deep'));
     assertType("array{'package.string': string, 'package.nested.deep.key': string}", Config::getMany(['package.string', 'package.nested.deep.key']));
 
-    // nested directories are scanned too
-    assertType('string|null', config('queue.connection'));
+    // a nested file is keyed by its path, the way Laravel loads it, so
+    // config/module/queue.php declares `module.queue` and not `queue`
+    assertType('array{connection: string}|null', config('module.queue'));
+    assertType('string|null', config('module.queue.connection'));
+    assertType('mixed', config('queue.connection'));
+
+    // a directory on its own declares nothing
+    assertType('mixed', config('module'));
+
+    // config/module/package.php and config/package.php share a name but not
+    // a key, so neither shadows the other
+    assertType('int|null', config('module.package.from'));
+    assertType('string|null', config('package.string'));
+
+    // nesting goes as deep as the directories do
+    assertType('string|null', config('email.engineering.designs.subject'));
+
+    // config/override/nested.php is loaded after config/override.php, so the
+    // nested file is what `override.nested` holds
+    assertType('string|null', config('override.nested.from'));
+    assertType('string|null', config('override.own'));
 
     // unknown keys stay mixed
     assertType('mixed', config('package.missing'));

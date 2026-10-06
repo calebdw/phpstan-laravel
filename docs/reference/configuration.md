@@ -311,11 +311,15 @@ parameters:
 
 Paths may be absolute or relative to the PHPStan config file that declares them,
 and directories are searched recursively. `*` and `?` glob patterns are supported
-for the directory portion, which is useful for modular layouts. A file's name is what the first
-segment of a config key is matched against, wherever the file sits in the tree —
-`modules/billing/config/invoices.php` answers `config('invoices.*')`. If two
-files share a name, the first one found wins, in the order the directories are
-listed.
+for the directory portion, which is useful for modular layouts.
+
+A file is keyed by its path below the directory, exactly as Laravel loads it, so
+`config/billing/invoices.php` answers `config('billing.invoices.*')` and not
+`config('invoices.*')`. Nesting goes as deep as the directories do, and two files
+that share a name in different directories are different keys. Where both
+`config/billing.php` and `config/billing/invoices.php` declare `billing.invoices`
+the nested file wins, again matching Laravel. If two *directories* contain the
+same relative path, the first one listed wins.
 
 The same parameter tells [the env-call rule](../rules/config.md#env-call-outside-config)
 where `env()` calls are allowed to live, so if you already set it for that rule

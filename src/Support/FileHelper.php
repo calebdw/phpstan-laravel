@@ -29,22 +29,7 @@ final class FileHelper
      */
     public function getFiles(array $directories, array|string|null $name = null, bool $recursive = true): array
     {
-        /** @var list<string> $resolvedDirectories */
-        $resolvedDirectories = [];
-
-        foreach ($directories as $directory) {
-            $directory = $this->fileHelper->absolutizePath($directory);
-
-            if (is_dir($directory)) {
-                $resolvedDirectories[] = $directory;
-
-                continue;
-            }
-
-            foreach (glob($directory, GLOB_ONLYDIR) ?: [] as $globbedDirectory) {
-                $resolvedDirectories[] = $globbedDirectory;
-            }
-        }
+        $resolvedDirectories = $this->getDirectories($directories);
 
         if ($resolvedDirectories === []) {
             return [];
@@ -61,5 +46,35 @@ final class FileHelper
         }
 
         return iterator_to_array($finder);
+    }
+
+    /**
+     * The directories the given paths name, with globs expanded to the
+     * directories that exist right now.
+     *
+     * @param  array<array-key, string> $directories
+     *
+     * @return list<string>
+     */
+    public function getDirectories(array $directories): array
+    {
+        /** @var list<string> $resolved */
+        $resolved = [];
+
+        foreach ($directories as $directory) {
+            $directory = $this->fileHelper->absolutizePath($directory);
+
+            if (is_dir($directory)) {
+                $resolved[] = $directory;
+
+                continue;
+            }
+
+            foreach (glob($directory, GLOB_ONLYDIR) ?: [] as $globbedDirectory) {
+                $resolved[] = $globbedDirectory;
+            }
+        }
+
+        return $resolved;
     }
 }
