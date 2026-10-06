@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Functions;
 
 use CalebDW\PhpstanLaravel\Support\ConfigHelper;
 use PhpParser\Node\Expr\FuncCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
@@ -22,6 +23,7 @@ final class ConfigDynamicFunctionReturnTypeExtension implements DynamicFunctionR
         return $functionReflection->getName() === 'config';
     }
 
+    /** @param Scope&DependencyTracker $scope */
     public function getTypeFromFunctionCall(FunctionReflection $functionReflection, FuncCall $functionCall, Scope $scope): Type|null
     {
         return $this->configHelper->determineConfigType($functionReflection, $functionCall, $scope);

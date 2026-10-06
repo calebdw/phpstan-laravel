@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Types;
 
 use CalebDW\PhpstanLaravel\Schema\ModelSchema;
+use CalebDW\PhpstanLaravel\Schema\SchemaDependencyTracker;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -36,6 +37,7 @@ final class GenericModelPropertyType extends StringType
         private Type $type,
         private ModelSchema $modelSchema,
         private ModelHelper $modelHelper,
+        private SchemaDependencyTracker $schemaDependencyTracker,
     ) {
         parent::__construct();
     }
@@ -95,6 +97,14 @@ final class GenericModelPropertyType extends StringType
                     ->getModelInstance($modelClass)
                     ?->getConnectionName()
                     ?? $this->modelSchema->getDefaultConnection();
+
+                // Read straight off the schema here, bypassing the reflection
+                // that tracks the model everywhere else.
+                $modelReflection = $genericType->getObjectClassReflections()[0] ?? null;
+
+                if ($modelReflection !== null) {
+                    $this->schemaDependencyTracker->trackModel($modelReflection);
+                }
 
                 if (! isset($this->modelSchema->connections[$connection]->tables[$tableName]->columns[$propertyName])) {
                     return AcceptsResult::createNo([sprintf('Database table "%s" does not have column "%s"', $tableName, $propertyName)]);
@@ -156,7 +166,7 @@ final class GenericModelPropertyType extends StringType
             return $this;
         }
 
-        return new self($newType, $this->modelSchema, $this->modelHelper);
+        return new self($newType, $this->modelSchema, $this->modelHelper, $this->schemaDependencyTracker);
     }
 
     public function inferTemplateTypes(Type $receivedType): TemplateTypeMap
@@ -207,6 +217,11 @@ final class GenericModelPropertyType extends StringType
     /** @param  mixed[] $properties */
     public static function __set_state(array $properties): Type
     {
-        return new self($properties['type'], $properties['modelSchema'], $properties['modelHelper']);
+        return new self(
+            $properties['type'],
+            $properties['modelSchema'],
+            $properties['modelHelper'],
+            $properties['schemaDependencyTracker'],
+        );
     }
 }

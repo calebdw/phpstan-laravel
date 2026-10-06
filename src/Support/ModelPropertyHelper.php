@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use CalebDW\PhpstanLaravel\Reflection\ModelPropertyReflection;
 use CalebDW\PhpstanLaravel\Schema\ModelSchema;
+use CalebDW\PhpstanLaravel\Schema\SchemaDependencyTracker;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -42,6 +43,7 @@ final class ModelPropertyHelper
         private ModelCastHelper $modelCastHelper,
         private ModelHelper $modelHelper,
         private ReflectionHelper $reflectionHelper,
+        private SchemaDependencyTracker $schemaDependencyTracker,
     ) {
         $this->attributeType = new ObjectType(Attribute::class);
     }
@@ -54,6 +56,9 @@ final class ModelPropertyHelper
         if (! $classReflection->is(Model::class) || $classReflection->isAbstract()) {
             return false;
         }
+
+        // Also when the answer is no: a migration can make the column appear.
+        $this->schemaDependencyTracker->trackModel($classReflection);
 
         $cacheKey = $classReflection->getCacheKey() . '-' . $propertyName;
 
@@ -71,6 +76,8 @@ final class ModelPropertyHelper
     /** @return list<string> */
     public function getDatabasePropertyNames(ClassReflection $classReflection): array
     {
+        $this->schemaDependencyTracker->trackModel($classReflection);
+
         $model = $this->modelHelper->getModelInstance($classReflection);
 
         if ($model === null || ! $this->modelSchema->hasModelTable($model)) {

@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods;
 use CalebDW\PhpstanLaravel\Support\ConfigHelper;
 use Illuminate\Support\Facades\Config;
 use PhpParser\Node\Expr\StaticCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
@@ -30,6 +31,7 @@ final class ConfigDynamicStaticMethodReturnTypeExtension implements DynamicStati
         return in_array($methodReflection->getName(), ['get', 'getMany', 'array', 'collection', 'all'], true);
     }
 
+    /** @param Scope&DependencyTracker $scope */
     public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
     {
         return $this->configHelper->determineConfigType($methodReflection, $methodCall, $scope);

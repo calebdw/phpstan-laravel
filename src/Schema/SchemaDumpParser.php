@@ -23,6 +23,9 @@ final class SchemaDumpParser
     /** @var array<string, SplFileInfo>|null */
     private array|null $files = null;
 
+    /** @var list<string>|null */
+    private array|null $directories = null;
+
     /** @param  string[] $schemaPaths */
     public function __construct(
         private array $schemaPaths,
@@ -101,6 +104,18 @@ final class SchemaDumpParser
 
             $modelSchema->setConnection($connection);
         }
+    }
+
+    /** @return list<string> */
+    public function directories(): array
+    {
+        if ($this->directories !== null) {
+            return $this->directories;
+        }
+
+        return $this->directories = $this->scanSchema
+            ? $this->fileHelper->getDirectories($this->schemaPaths)
+            : [];
     }
 
     /** @return array<string, SplFileInfo> */

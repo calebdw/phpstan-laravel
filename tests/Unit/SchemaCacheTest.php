@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use CalebDW\PhpstanLaravel\ResultCache\SchemaResultCacheMetaExtension;
 use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use CalebDW\PhpstanLaravel\Schema\SchemaCache;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
@@ -66,21 +65,6 @@ class SchemaCacheTest extends PHPStanTestCase
         touch($migration, filemtime($migration) + 1);
 
         self::assertNotSame($hash, $this->cache($this->directory, $this->directory . '/cache')->inputHash());
-    }
-
-    #[Test]
-    public function meta_extension_uses_the_schema_input_hash(): void
-    {
-        $migration = $this->directory . '/2020_01_30_000000_create_users_table.php';
-        $source    = file_get_contents(__DIR__ . '/data/basic_migration/2020_01_30_000000_create_users_table.php');
-        self::assertIsString($source);
-        file_put_contents($migration, $source);
-
-        $cache     = $this->cache($this->directory, $this->directory . '/cache');
-        $extension = new SchemaResultCacheMetaExtension($cache);
-
-        self::assertSame('phpstan-laravel.schema-inputs', $extension->getKey());
-        self::assertSame($cache->inputHash(), $extension->getHash());
     }
 
     #[Test]

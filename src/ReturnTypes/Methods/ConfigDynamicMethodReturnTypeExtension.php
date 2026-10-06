@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 use CalebDW\PhpstanLaravel\Support\ConfigHelper;
 use Illuminate\Contracts\Config\Repository;
 use PhpParser\Node\Expr\MethodCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -30,6 +31,7 @@ final class ConfigDynamicMethodReturnTypeExtension implements DynamicMethodRetur
         return in_array($methodReflection->getName(), ['get', 'getMany', 'array', 'collection', 'all'], true);
     }
 
+    /** @param Scope&DependencyTracker $scope */
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
         return $this->configHelper->determineConfigType($methodReflection, $methodCall, $scope);

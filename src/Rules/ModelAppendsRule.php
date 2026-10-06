@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Rules;
 
+use CalebDW\PhpstanLaravel\Schema\SchemaDependencyTracker;
 use CalebDW\PhpstanLaravel\Support\ModelPropertyHelper;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Property;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -31,6 +33,7 @@ final class ModelAppendsRule implements Rule
 {
     public function __construct(
         private ModelPropertyHelper $modelPropertyHelper,
+        private SchemaDependencyTracker $schemaDependencyTracker,
     ) {
     }
 
@@ -39,7 +42,11 @@ final class ModelAppendsRule implements Rule
         return Property::class;
     }
 
-    /** @return RuleError[] */
+    /**
+     * @param  Scope&DependencyTracker $scope
+     *
+     * @return RuleError[]
+     */
     public function processNode(Node $node, Scope $scope): array
     {
         if ($node->props[0]->name->toString() !== 'appends') {
@@ -57,6 +64,10 @@ final class ModelAppendsRule implements Rule
         if (! $value instanceof Array_) {
             return [];
         }
+
+        // The model's own file does not depend on the model as a class, so the
+        // declaration tracked below every column read would not reach it.
+        $this->schemaDependencyTracker->trackScope($scope);
 
         $errors = [];
 

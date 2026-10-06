@@ -303,8 +303,7 @@ services:
     arguments: {schemaPaths: %laravel.schemaDirectories%, scanSchema: %laravel.scanSchema%, currentWorkingDirectory: '%currentWorkingDirectory%'}
   - class: CalebDW\PhpstanLaravel\Schema\SchemaCache
     arguments: {tmpDir: %tmpDir%}
-  - class: CalebDW\PhpstanLaravel\ResultCache\SchemaResultCacheMetaExtension
-    tags: [phpstan.resultCacheMetaExtension]
+  - class: CalebDW\PhpstanLaravel\Schema\SchemaDependencyTracker
   - class: CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager
     arguments: {defaultDriver: %laravel.sqlParser%}
   - class: CalebDW\PhpstanLaravel\Support\ModelCastHelper

@@ -7,6 +7,7 @@ namespace Tests\Type;
 use App\Account;
 use App\User;
 use CalebDW\PhpstanLaravel\Schema\ModelSchema;
+use CalebDW\PhpstanLaravel\Schema\SchemaDependencyTracker;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use CalebDW\PhpstanLaravel\Types\GenericModelPropertyType;
 use PHPStan\Testing\PHPStanTestCase;
@@ -208,6 +209,7 @@ class GenericModelPropertyTypeTest extends PHPStanTestCase
             new ObjectType($class),
             self::getContainer()->getByType(ModelSchema::class),
             new ModelHelper(self::createReflectionProvider()),
+            self::getContainer()->getByType(SchemaDependencyTracker::class),
         );
     }
 }

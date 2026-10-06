@@ -19,6 +19,9 @@ final class MigrationFileParser
     /** @var array<string, SplFileInfo>|null */
     private array|null $files = null;
 
+    /** @var list<string>|null */
+    private array|null $directories = null;
+
     public function __construct(
         private Parser $parser,
         /** @var string[] */
@@ -53,6 +56,18 @@ final class MigrationFileParser
                 continue;
             }
         }
+    }
+
+    /** @return list<string> */
+    public function directories(): array
+    {
+        if ($this->directories !== null) {
+            return $this->directories;
+        }
+
+        return $this->directories = $this->scanMigrations
+            ? $this->fileHelper->getDirectories($this->databaseMigrationPath)
+            : [];
     }
 
     /** @return array<string, SplFileInfo> */

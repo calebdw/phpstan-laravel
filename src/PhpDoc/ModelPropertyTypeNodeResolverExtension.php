@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\PhpDoc;
 
 use CalebDW\PhpstanLaravel\Schema\ModelSchema;
+use CalebDW\PhpstanLaravel\Schema\SchemaDependencyTracker;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use CalebDW\PhpstanLaravel\Types\GenericModelPropertyType;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +32,7 @@ final class ModelPropertyTypeNodeResolverExtension implements TypeNodeResolverEx
         protected bool $active,
         private ModelSchema $modelSchema,
         private ModelHelper $modelHelper,
+        private SchemaDependencyTracker $schemaDependencyTracker,
     ) {
     }
 
@@ -62,6 +64,11 @@ final class ModelPropertyTypeNodeResolverExtension implements TypeNodeResolverEx
             return new ErrorType();
         }
 
-        return new GenericModelPropertyType($genericType, $this->modelSchema, $this->modelHelper);
+        return new GenericModelPropertyType(
+            $genericType,
+            $this->modelSchema,
+            $this->modelHelper,
+            $this->schemaDependencyTracker,
+        );
     }
 }

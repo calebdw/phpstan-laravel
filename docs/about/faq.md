@@ -219,3 +219,22 @@ and `scanSchema: false` skip it.
 
 Beyond that, the usual PHPStan advice applies: keep the result cache between
 runs, and do not point `paths` at `vendor`.
+
+## Does a new migration re-analyse everything?
+
+No. Whatever reads a column - a model property, `$appends`, `toArray()`, a
+`model-property` argument - records that it read the migration and schema
+directories, so a change there re-analyses the models and the files using
+them. Code that never touches the database stays cached.
+
+Configuration is tracked per file. Reading `config('mail.default')` depends
+on `config/mail.php`, on the environment file and on a cached config, so a
+change to `config/app.php` leaves it alone. Nested directories are followed
+the way Laravel keys them, so `config('email.engineering.designs.subject')`
+depends on `config/email/engineering/designs.php` and on the files that
+could come to declare it instead.
+
+Views are the exception: `view-string` checks whether a view exists while
+resolving a type, which happens where there is nothing to hang the dependency
+on. Adding or removing a Blade file does not invalidate anything, so clear the
+result cache after one.

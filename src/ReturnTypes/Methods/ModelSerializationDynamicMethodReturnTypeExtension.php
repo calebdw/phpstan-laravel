@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 
+use CalebDW\PhpstanLaravel\Schema\SchemaDependencyTracker;
 use CalebDW\PhpstanLaravel\Support\ModelCastHelper;
 use CalebDW\PhpstanLaravel\Support\ModelPropertyHelper;
 use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Str;
 use PhpParser\Node\Expr\MethodCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
@@ -62,6 +64,7 @@ final class ModelSerializationDynamicMethodReturnTypeExtension implements Dynami
         private ModelCastHelper $casts,
         private ReflectionProvider $reflectionProvider,
         private ReflectionHelper $reflectionHelper,
+        private SchemaDependencyTracker $schemaDependencyTracker,
     ) {
     }
 
@@ -75,6 +78,7 @@ final class ModelSerializationDynamicMethodReturnTypeExtension implements Dynami
         return in_array($methodReflection->getName(), ['toArray', 'attributesToArray'], true);
     }
 
+    /** @param Scope&DependencyTracker $scope */
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): Type|null
     {
         $types = [];
@@ -93,7 +97,11 @@ final class ModelSerializationDynamicMethodReturnTypeExtension implements Dynami
             $appends = $this->configuredNames($class, 'Appends');
             $hidden  = array_flip($this->configuredNames($class, 'Hidden'));
             $visible = array_flip($this->configuredNames($class, 'Visible'));
-            $names   = array_unique(array_merge($this->properties->getDatabasePropertyNames($class), $appends));
+            // The call can be $this->toArray() inside the model, whose file does
+            // not depend on the model as a class.
+            $this->schemaDependencyTracker->trackScope($scope);
+
+            $names = array_unique(array_merge($this->properties->getDatabasePropertyNames($class), $appends));
 
             if ($names === []) {
                 continue;

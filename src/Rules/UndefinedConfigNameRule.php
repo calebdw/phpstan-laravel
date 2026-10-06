@@ -28,6 +28,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -108,7 +109,11 @@ final class UndefinedConfigNameRule implements Rule
         return CallLike::class;
     }
 
-    /** @return list<IdentifierRuleError> */
+    /**
+     * @param  Scope&DependencyTracker $scope
+     *
+     * @return list<IdentifierRuleError>
+     */
     public function processNode(Node $node, Scope $scope): array
     {
         if (! $node instanceof MethodCall && ! $node instanceof StaticCall) {
@@ -141,6 +146,7 @@ final class UndefinedConfigNameRule implements Rule
 
     /**
      * @param value-of<self::LOOKUPS> $lookup
+     * @param Scope&DependencyTracker $scope
      *
      * @return list<IdentifierRuleError>
      */

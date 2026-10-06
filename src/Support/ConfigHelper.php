@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\MethodReflection;
@@ -31,16 +33,30 @@ use PHPStan\Type\TypeCombinator;
 use stdClass;
 
 use function array_map;
+use function array_unique;
+use function array_values;
+use function basename;
 use function count;
+use function dirname;
 use function is_array;
 use function is_bool;
 use function is_float;
 use function is_int;
 use function is_object;
 use function is_string;
+use function str_replace;
 
 final class ConfigHelper
 {
+    /** The whole repository, for `all()`. Not a key any file can declare. */
+    private const string ALL_KEYS = '*';
+
+    /** @var list<string>|null */
+    private array|null $configDirectories = null;
+
+    /** @var list<string>|null */
+    private array|null $configFiles = null;
+
     public function __construct(
         private ConfigParser $configParser,
         private ContainerHelper $containerHelper,
@@ -48,6 +64,7 @@ final class ConfigHelper
     ) {
     }
 
+    /** @param Scope&DependencyTracker $scope */
     public function determineConfigType(
         FunctionReflection|MethodReflection $reflection,
         FuncCall|MethodCall|StaticCall $call,
@@ -60,6 +77,8 @@ final class ConfigHelper
         }
 
         if ($reflection->getName() === 'all') {
+            $this->trackSources(self::ALL_KEYS, $scope);
+
             return $repository ? $this->getTypeFromValue($repository->all()) : null;
         }
 
@@ -163,6 +182,8 @@ final class ConfigHelper
      * Resolves the type of a single config key, for callers that have a
      * key in hand rather than a call to take it from.
      */
+
+    /** @param Scope&DependencyTracker $scope */
     public function getKeyType(string $key, Scope $scope): Type|null
     {
         return $this->resolveKey($key, $this->getRepository(), $scope);
@@ -172,9 +193,13 @@ final class ConfigHelper
      * Resolves the type of the given key from the booted container,
      * falling back to statically parsing the configured directories
      * for keys the container does not know about.
+     *
+     * @param Scope&DependencyTracker $scope
      */
     private function resolveKey(string $key, Repository|null $repository, Scope $scope): Type|null
     {
+        $this->trackSources($key, $scope);
+
         if ($repository) {
             $default = new stdClass();
             $value   = $repository->get($key, $default);
@@ -185,6 +210,93 @@ final class ConfigHelper
         }
 
         return $this->configParser->getType($key, $scope);
+    }
+
+    /**
+     * The files a key is answered from.
+     *
+     * Not the resolved value: the result cache asks for it in the main process,
+     * which never loads the bootstrap file and so has no booted application to
+     * ask. The files behind it are readable there, and the key's first segment
+     * names the only config file that can declare it.
+     *
+     * @param Scope&DependencyTracker $scope
+     */
+    private function trackSources(string $key, Scope $scope): void
+    {
+        foreach ($this->configDirectories() as $directory) {
+            if ($key === self::ALL_KEYS) {
+                $scope->trackDirectoryDependency($directory, '*.php');
+
+                continue;
+            }
+
+            foreach (ConfigParser::candidateFiles($key) as $candidate) {
+                $nested = dirname($candidate);
+
+                $scope->trackDirectoryDependency(
+                    $nested === '.' ? $directory : $directory . '/' . $nested,
+                    basename($candidate),
+                );
+            }
+
+            // Files below the key are part of its value: `config('email')` is
+            // built from everything under `config/email`, down to
+            // `config/email/engineering/designs.php`.
+            $scope->trackDirectoryDependency(
+                $directory . '/' . str_replace('.', '/', $key),
+                '*.php',
+            );
+        }
+
+        // Any key can be read from the environment, and a cached config file
+        // replaces the lot of them.
+        foreach ($this->configFiles() as $file) {
+            $scope->trackFileDependency($file);
+        }
+    }
+
+    /** @return list<string> */
+    private function configDirectories(): array
+    {
+        if ($this->configDirectories !== null) {
+            return $this->configDirectories;
+        }
+
+        $directories = $this->configParser->directories();
+        $application = $this->getApplication();
+
+        if ($application !== null) {
+            $directories[] = $application->configPath();
+        }
+
+        return $this->configDirectories = array_values(array_unique($directories));
+    }
+
+    /** @return list<string> */
+    private function configFiles(): array
+    {
+        if ($this->configFiles !== null) {
+            return $this->configFiles;
+        }
+
+        $application = $this->getApplication();
+
+        if ($application === null) {
+            return $this->configFiles = [];
+        }
+
+        return $this->configFiles = [
+            $application->environmentFilePath(),
+            $application->getCachedConfigPath(),
+        ];
+    }
+
+    private function getApplication(): Application|null
+    {
+        $application = $this->containerHelper->getContainer();
+
+        return $application instanceof Application ? $application : null;
     }
 
     private function getRepository(): Repository|null

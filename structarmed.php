@@ -30,7 +30,6 @@ return Architecture::define()
     ->layer('PhpDoc', 'src/PhpDoc/')
     ->layer('Properties', 'src/Properties/')
     ->layer('Reflection', 'src/Reflection/')
-    ->layer('ResultCache', 'src/ResultCache/')
     ->layer('ReturnTypes', 'src/ReturnTypes/')
     ->layer('Rules', 'src/Rules/')
     ->layer('Schema', 'src/Schema/')
@@ -44,7 +43,6 @@ return Architecture::define()
         'PhpDoc'      => ['+Types'],
         'Properties'  => ['+Support'],
         'Reflection'  => [],
-        'ResultCache' => ['Schema'],
         'ReturnTypes' => ['+Parameters', '+Types'],
         'Rules'       => ['+Collectors', '+Properties'],
         'Schema'      => ['Support'],

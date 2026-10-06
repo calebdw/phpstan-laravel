@@ -6,7 +6,7 @@
 | --- | --- |
 | PHP | 8.3+ |
 | Laravel | 12.67+ and 13.26+ |
-| PHPStan | 2.2.2+ |
+| PHPStan | 2.3.0+ |
 
 Only the two most recent Laravel releases are supported, and each at a recent
 minor rather than the oldest release of that major. That keeps the codebase
