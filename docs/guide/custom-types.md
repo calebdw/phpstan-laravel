@@ -143,6 +143,32 @@ none resolve, the type falls back to `Relation<Model, Model>` with the original
 model as the declaring model. Generic model and relationship name templates
 resolve once their types are known.
 
+## eager-load-of
+
+The `eager-load-of<Model, TRelations>` type is the `with()` argument with each
+closure typed by its key: the closure under `'posts'` receives
+`relation-of<Model, 'posts'>`. The builder's `with()` / `withOnly()` and the
+Eloquent collection's `load()` / `loadMissing()` bind `TRelations` to their
+argument with a template, whose bound checks the argument. A wrapper does the
+same:
+
+```php
+/**
+ * @template TRelations of array<array-key, array<mixed>|\Closure|string>|string
+ * @param eager-load-of<\App\User, TRelations> $relations
+ */
+function loadUsers(array|string $relations): void
+{
+    \App\User::query()->with($relations)->get();
+}
+
+loadUsers(['posts.comments' => fn ($query) => $query->latest()]);
+// $query: MorphMany<App\Comment, App\Post>
+```
+
+Other values, and arrays whose keys are not all literals, are checked against
+the bound.
+
 ## collection-of
 
 The `collection-of<Model>` type resolves to the Eloquent collection used by

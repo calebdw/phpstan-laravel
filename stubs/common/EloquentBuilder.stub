@@ -275,14 +275,18 @@ class Builder
     public function withWhereRelation($relation, $column, $operator = null, $value = null);
 
     /**
-     * @param array<array-key, array<mixed>|\Closure|string>|string $relations
+     * @template TRelations of array<array-key, array<mixed>|\Closure|string>|string
+     *
+     * @param eager-load-of<TModel, TRelations> $relations
      * @param (\Closure(\Illuminate\Database\Eloquent\Relations\Relation<*, *, *>): mixed)|string|null $callback
      * @return $this
      */
     public function with($relations, $callback = null);
 
     /**
-     * @param array<array-key, array<mixed>|\Closure|string>|string $relations
+     * @template TRelations of array<array-key, array<mixed>|\Closure|string>|string
+     *
+     * @param eager-load-of<TModel, TRelations> $relations
      * @return $this
      */
     public function withOnly($relations);

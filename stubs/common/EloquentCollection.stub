@@ -21,13 +21,17 @@ class Collection extends BaseCollection implements QueueableCollection
     public function toQuery();
 
     /**
-     * @param array<array-key, array<mixed>|\Closure|string>|string $relations
+     * @template TRelations of array<array-key, array<mixed>|\Closure|string>|string
+     *
+     * @param eager-load-of<TModel, TRelations> $relations
      * @return $this
      */
     public function load($relations);
 
     /**
-     * @param array<array-key, array<mixed>|\Closure|string>|string $relations
+     * @template TRelations of array<array-key, array<mixed>|\Closure|string>|string
+     *
+     * @param eager-load-of<TModel, TRelations> $relations
      * @return $this
      */
     public function loadMissing($relations);
