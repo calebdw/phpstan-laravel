@@ -1,0 +1,29 @@
+<?php
+
+namespace Illuminate\Events;
+
+class Dispatcher
+{
+    /**
+     * Halting hands back whatever the first listener answered with, so the
+     * answer is a listener's and not a list of them. Without halting the
+     * answers are collected, and a dispatch that was deferred or held for a
+     * transaction answers with null having called nobody yet.
+     *
+     * @param  string|object  $event
+     * @param  mixed  $payload
+     * @param  bool  $halt
+     * @return ($halt is true ? mixed : list<mixed>|null)
+     */
+    public function dispatch($event, $payload = [], $halt = false);
+
+    /**
+     * Dispatches with halting, so see dispatch(): this is a listener's answer
+     * rather than the list that Laravel's own return type describes.
+     *
+     * @param  string|object  $event
+     * @param  mixed  $payload
+     * @return mixed
+     */
+    public function until($event, $payload = []);
+}

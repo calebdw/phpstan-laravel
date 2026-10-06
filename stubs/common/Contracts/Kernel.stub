@@ -2,4 +2,12 @@
 
 namespace Illuminate\Contracts\Console;
 
-interface Kernel {}
+interface Kernel
+{
+    /**
+     * Symfony keys its commands by name.
+     *
+     * @return array<string, \Symfony\Component\Console\Command\Command>
+     */
+    public function all();
+}

@@ -1,0 +1,16 @@
+<?php
+
+namespace Illuminate\Contracts\Events;
+
+interface Dispatcher
+{
+    /**
+     * @see \Illuminate\Events\Dispatcher::dispatch()
+     *
+     * @param  string|object  $event
+     * @param  mixed  $payload
+     * @param  bool  $halt
+     * @return ($halt is true ? mixed : list<mixed>|null)
+     */
+    public function dispatch($event, $payload = [], $halt = false);
+}

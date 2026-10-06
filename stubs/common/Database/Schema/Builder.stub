@@ -1,0 +1,13 @@
+<?php
+
+namespace Illuminate\Database\Schema;
+
+/**
+ * Declared so the Schema facade's @mixin resolves while the stub files are
+ * checked, which happens without the application's autoloader. Laravel types
+ * the methods themselves well enough; it is only the facade's @method
+ * annotations in front of them that lose the detail.
+ */
+class Builder
+{
+}

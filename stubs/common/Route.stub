@@ -11,4 +11,13 @@ class Route
      * @return ($middleware is null ? string[] : $this)
      */
     public function middleware($middleware = null);
+
+    /**
+     * The verbs the route answers to, HEAD included where Laravel added it.
+     * Keys are whatever the route was declared with, so they are not promised
+     * to be a list.
+     *
+     * @return array<array-key, string>
+     */
+    public function methods();
 }
