@@ -275,6 +275,19 @@ class Builder
     public function withWhereRelation($relation, $column, $operator = null, $value = null);
 
     /**
+     * @param array<array-key, array<mixed>|\Closure|string>|string $relations
+     * @param (\Closure(\Illuminate\Database\Eloquent\Relations\Relation<*, *, *>): mixed)|string|null $callback
+     * @return $this
+     */
+    public function with($relations, $callback = null);
+
+    /**
+     * @param array<array-key, array<mixed>|\Closure|string>|string $relations
+     * @return $this
+     */
+    public function withOnly($relations);
+
+    /**
      * Create and return an un-saved model instance.
      *
      * @phpstan-param array<model-property<TModel>, mixed> $attributes
