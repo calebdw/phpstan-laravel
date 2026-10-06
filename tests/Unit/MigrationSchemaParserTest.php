@@ -226,6 +226,59 @@ class MigrationSchemaParserTest extends PHPStanTestCase
     }
 
     #[Test]
+    public function it_drops_the_columns_behind_the_foreign_id_drops(): void
+    {
+        $parser       = self::getContainer()->getService('currentPhpVersionSimpleDirectParser');
+        $schemaParser = new MigrationSchemaParser(
+            $this->modelDatabaseHelper,
+            $this->modelHelper,
+            $this->createReflectionProvider(),
+            self::getContainer()->getByType(InitializerExprTypeResolver::class),
+        );
+
+        $statements = $parser->parseString(<<<'PHP'
+            <?php
+
+            namespace Tests\Unit\SchemaParserForeignIdDrops;
+
+            use App\Account;
+            use App\User;
+            use Illuminate\Database\Schema\Blueprint;
+            use Illuminate\Support\Facades\Schema;
+            use Tests\Unit\SchemaParserConstants\ColumnConstants;
+
+            class CreateCommentsTable
+            {
+                public function up(): void
+                {
+                    Schema::create('comments', function (Blueprint $table) {
+                        $table->id();
+                        $table->string('body');
+                        $table->foreignId('author_id');
+                        $table->foreignIdFor(User::class);
+                        $table->foreignIdFor(Account::class);
+                        $table->foreignId(ColumnConstants::CREATED_BY);
+                    });
+
+                    Schema::table('comments', function (Blueprint $table) {
+                        $table->dropConstrainedForeignId('author_id');
+                        $table->dropForeignIdFor(User::class);
+                        $table->dropConstrainedForeignIdFor(Account::class);
+                        $table->dropConstrainedForeignId(ColumnConstants::CREATED_BY);
+                    });
+                }
+            }
+            PHP);
+
+        $schemaParser->addStatements($statements);
+
+        $table = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables['comments'];
+
+        self::assertSame(['id', 'body'], array_keys($table->columns));
+        self::assertSame('string', $table->columns['body']->readableType);
+    }
+
+    #[Test]
     public function it_survives_a_constant_that_is_not_there(): void
     {
         $parser       = self::getContainer()->getService('currentPhpVersionSimpleDirectParser');

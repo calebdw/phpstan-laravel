@@ -8,7 +8,6 @@ use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
@@ -38,7 +37,6 @@ use PHPStan\Type\ObjectType;
 use function array_key_exists;
 use function array_merge;
 use function array_pop;
-use function class_basename;
 use function count;
 use function end;
 use function in_array;
@@ -49,6 +47,16 @@ use function strtolower;
 /** @see https://github.com/psalm/laravel-psalm-plugin/blob/master/src/SchemaAggregator.php */
 final class MigrationSchemaParser
 {
+    /**
+     * Blueprint methods whose first argument is a model rather than a column,
+     * with the column derived from it the way Model::getForeignKey() does.
+     */
+    private const array MODEL_KEYED_METHODS = [
+        'foreignIdFor',
+        'dropForeignIdFor',
+        'dropConstrainedForeignIdFor',
+    ];
+
     /** @var list<Connection> */
     private array $connectionStack = [];
 
@@ -326,7 +334,10 @@ final class MigrationSchemaParser
             $firstArg  = $firstMethodCall->getArgs()[0]->value ?? null;
             $secondArg = $firstMethodCall->getArgs()[1]->value ?? null;
 
-            if ($firstMethodCall->name->name === 'foreignIdFor') {
+            // The methods that name their column after a model rather than
+            // passing one, so the column has to be derived before the name
+            // based dispatch below can do anything with it.
+            if (in_array($firstMethodCall->name->name, self::MODEL_KEYED_METHODS, true)) {
                 if (
                     $firstArg instanceof ClassConstFetch
                     && $firstArg->class instanceof Name
@@ -338,16 +349,20 @@ final class MigrationSchemaParser
                     continue;
                 }
 
-                $columnName = Str::snake(class_basename($modelClass)) . '_id';
-
-                if ($secondArg !== null) {
-                    $columnName = $this->resolveName($secondArg) ?? $columnName;
-                }
-
                 /** @phpstan-ignore argument.type (not a class string) */
                 $model = $this->modelHelper->getModelInstance($modelClass);
 
                 if ($model === null) {
+                    continue;
+                }
+
+                $columnName = $secondArg === null
+                    ? $model->getForeignKey()
+                    : $this->resolveName($secondArg) ?? $model->getForeignKey();
+
+                if ($firstMethodCall->name->name !== 'foreignIdFor') {
+                    $table->dropColumn($columnName);
+
                     continue;
                 }
 
@@ -721,6 +736,8 @@ final class MigrationSchemaParser
                 return;
 
             case 'dropcolumn':
+            // Drops the foreign key index and the column it covers.
+            case 'dropconstrainedforeignid':
             case 'dropifexists':
             case 'dropsoftdeletes':
             case 'dropsoftdeletestz':
