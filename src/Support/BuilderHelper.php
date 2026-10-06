@@ -61,6 +61,9 @@ final class BuilderHelper
     /** @var array<string, string> */
     private array $builderNames = [];
 
+    /** @var array<string, array{Type|null, bool}> */
+    private array $relationTypes = [];
+
     public function __construct(
         private ReflectionProvider $reflectionProvider,
         private bool $checkProperties,
@@ -341,6 +344,14 @@ final class BuilderHelper
             return [null, false];
         }
 
+        $key = $modelType->describe(VerbosityLevel::cache()) . ' ' . $relationNames->describe(VerbosityLevel::cache());
+
+        return $this->relationTypes[$key] ??= $this->walkRelationType($modelType, $relationNames);
+    }
+
+    /** @return array{Type|null, bool} */
+    private function walkRelationType(Type $modelType, Type $relationNames): array
+    {
         $results        = [];
         $unknownFailure = false;
 

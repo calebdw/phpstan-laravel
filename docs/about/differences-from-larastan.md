@@ -192,6 +192,21 @@ $user->through('mechanic');
 and `when()` / `unless()` on a relation keep the relation's type instead of
 widening to the base class.
 
+**Eager-load arrays are typed per key.** Each closure in a builder `with()`
+array receives the relation its key names, so a narrowed parameter is checked
+against it:
+
+```php
+Product::query()->with([
+    'stocks' => function (MorphTo $morphTo) {   // MorphTo<..., App\Product>
+        $morphTo->morphWith([Warehouse::class => ['stocks']]);
+    },
+]);
+```
+
+`withOnly()` and an Eloquent collection's `load()` / `loadMissing()` work the
+same way.
+
 #### Where it stops
 
 This is not finished work, and it is worth knowing the edges.
@@ -203,11 +218,11 @@ a `@return HasMany<Stock, $this>` is what names the related model, and an
 undocumented relation gives `Builder<Model>` as well. Neither of those is a
 false positive, only a return to what you would have had anyway.
 
-The real gap is eager loading. Closures in a `with()` array are **not** typed:
-their parameter is `mixed`, so narrowing it is accepted but not checked. The
-two-argument form is typed, yet narrowing its parameter is reported, because
-Laravel documents the callback as `Closure(Relation<*, *, *>): mixed` and a
-narrower parameter is not a subtype of a wider one:
+Eager-load array keys must be literals too: with one dynamic key, every closure
+in the array stays `mixed`. The two-argument form is typed, yet narrowing its
+parameter is reported, because Laravel documents the callback as
+`Closure(Relation<*, *, *>): mixed` and a narrower parameter is not a subtype
+of a wider one:
 
 ```php
 Product::query()->with('stocks', function (MorphTo $morphTo) {   // argument.type
