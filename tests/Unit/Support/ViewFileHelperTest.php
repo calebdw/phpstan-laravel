@@ -54,6 +54,42 @@ class ViewFileHelperTest extends PHPStanTestCase
         self::assertNotSame([], $this->helper()->getViewDirectories());
     }
 
+    #[Test]
+    public function it_lists_every_file_a_view_could_be_loaded_from(): void
+    {
+        $paths = $this->helper()->getViewFilePaths('reports.monthly');
+
+        self::assertCount(4, $paths);
+
+        foreach (['blade.php', 'php', 'css', 'html'] as $index => $extension) {
+            self::assertStringEndsWith('/resources/views/reports/monthly.' . $extension, $paths[$index]);
+        }
+    }
+
+    #[Test]
+    public function it_resolves_a_namespaced_view_from_its_hint(): void
+    {
+        $paths = $this->helper()->getViewFilePaths('pagination::default');
+
+        self::assertNotSame([], $paths);
+        self::assertStringEndsWith('/default.blade.php', $paths[0]);
+        self::assertStringStartsNotWith($this->helper()->getViewDirectories()[0], $paths[0]);
+    }
+
+    #[Test]
+    public function it_knows_nothing_about_an_unregistered_namespace(): void
+    {
+        self::assertSame([], $this->helper()->getViewFilePaths('nope::dashboard'));
+    }
+
+    #[Test]
+    public function it_lists_no_files_without_an_application(): void
+    {
+        $this->withoutApplication(function (): void {
+            self::assertSame([], $this->helper()->getViewFilePaths('dashboard'));
+        });
+    }
+
     /** @param list<non-empty-string> $directories */
     private function helper(array $directories = []): ViewFileHelper
     {

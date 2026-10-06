@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Collectors;
 
 use CalebDW\PhpstanLaravel\Support\CallHelper;
 use CalebDW\PhpstanLaravel\Support\TypeHelper;
+use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -23,6 +24,7 @@ use Illuminate\View\ViewName;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\New_;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
@@ -109,8 +111,11 @@ final class UsedViewCollector implements Collector
         ],
     ];
 
-    public function __construct(private CallHelper $callHelper, private TypeHelper $typeHelper)
-    {
+    public function __construct(
+        private CallHelper $callHelper,
+        private TypeHelper $typeHelper,
+        private ViewFileHelper $viewFileHelper,
+    ) {
     }
 
     public function getNodeType(): string
@@ -119,7 +124,8 @@ final class UsedViewCollector implements Collector
     }
 
     /**
-     * @param CallLike $node
+     * @param  CallLike                $node
+     * @param  Scope&DependencyTracker $scope
      *
      * @return list<string>|null
      */
@@ -138,7 +144,7 @@ final class UsedViewCollector implements Collector
                 $views = [...$views, ...$this->typeHelper->constantStrings($scope->getType($arg->value))];
             }
 
-            return array_map(ViewName::normalize(...), $views) ?: null;
+            return $this->collect($views, $scope);
         }
 
         $arg = $this->callHelper->matchingArg($node, $scope, self::FUNCTIONS, self::METHODS);
@@ -147,8 +153,34 @@ final class UsedViewCollector implements Collector
             return null;
         }
 
-        $views = $this->typeHelper->constantStrings($scope->getType($arg));
+        return $this->collect($this->typeHelper->constantStrings($scope->getType($arg)), $scope);
+    }
 
-        return array_map(ViewName::normalize(...), $views) ?: null;
+    /**
+     * Declares the files behind every view named here, as well as collecting
+     * the names.
+     *
+     * `view-string` asks whether a view exists while PHPStan resolves a type,
+     * which gets no scope to declare anything on, so without this the result
+     * cache keeps reporting a view as missing after it has been written. This
+     * is where a call site is already known to name a view, and it is the same
+     * set of call sites `view-string` is checked at.
+     *
+     * @param  list<string>            $views
+     * @param  Scope&DependencyTracker $scope
+     *
+     * @return list<string>|null
+     */
+    private function collect(array $views, Scope $scope): array|null
+    {
+        $views = array_map(ViewName::normalize(...), $views);
+
+        foreach ($views as $view) {
+            foreach ($this->viewFileHelper->getViewFilePaths($view) as $path) {
+                $scope->trackFileDependency($path);
+            }
+        }
+
+        return $views ?: null;
     }
 }

@@ -8,6 +8,7 @@ use Generator;
 use Illuminate\Contracts\View\Factory as ViewFactoryContract;
 use Illuminate\View\Factory as ViewFactory;
 use Illuminate\View\FileViewFinder;
+use Illuminate\View\ViewFinderInterface;
 use SplFileInfo;
 
 use function array_merge;
@@ -17,6 +18,7 @@ use function explode;
 use function rtrim;
 use function str_contains;
 use function str_replace;
+use function strpos;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -64,6 +66,51 @@ final class ViewFileHelper
             $finder->getPaths(),
             ...array_values($finder->getHints()),
         )));
+    }
+
+    /**
+     * The files the named view could be loaded from, in the order the finder
+     * would try them, whether or not any of them exists.
+     *
+     * The name is expected to be normalised, as ViewName::normalize() leaves
+     * it: dots for separators, with a `pkg::` namespace kept intact.
+     *
+     * Always the finder's own paths, never the configured view directories:
+     * `view-string` asks the finder whether a view exists, so this has to
+     * look where the answer comes from.
+     *
+     * @see FileViewFinder::findInPaths()
+     *
+     * @return list<string>
+     */
+    public function getViewFilePaths(string $view): array
+    {
+        $finder = $this->finder();
+
+        if ($finder === null) {
+            return [];
+        }
+
+        $paths = $finder->getPaths();
+
+        // A delimiter at the very start is not a namespace, the same way the
+        // finder reads it.
+        if (strpos($view, ViewFinderInterface::HINT_PATH_DELIMITER) > 0) {
+            [$namespace, $view] = explode(ViewFinderInterface::HINT_PATH_DELIMITER, $view, 2);
+
+            $paths = $finder->getHints()[$namespace] ?? [];
+        }
+
+        $relative = str_replace('.', '/', $view);
+        $files    = [];
+
+        foreach ($paths as $path) {
+            foreach ($finder->getExtensions() as $extension) {
+                $files[] = rtrim($path, '/\\') . '/' . $relative . '.' . $extension;
+            }
+        }
+
+        return $files;
     }
 
     /** @return Generator<int, string, void, void> */

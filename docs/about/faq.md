@@ -234,7 +234,7 @@ the way Laravel keys them, so `config('email.engineering.designs.subject')`
 depends on `config/email/engineering/designs.php` and on the files that
 could come to declare it instead.
 
-Views are the exception: `view-string` checks whether a view exists while
-resolving a type, which happens where there is nothing to hang the dependency
-on. Adding or removing a Blade file does not invalidate anything, so clear the
-result cache after one.
+Views are tracked per view. `view('reports.monthly')` depends on the files
+the view finder would look for - every path it searches, in each of its
+extensions - so writing `reports/monthly.blade.php` clears the error about
+it, and editing an unrelated template leaves the call alone.
