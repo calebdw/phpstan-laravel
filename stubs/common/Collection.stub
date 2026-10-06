@@ -32,6 +32,40 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     public function random($number = null, $preserveKeys = false);
 
     /**
+     * array_merge() renumbers integer keys, so a key type made only of integers
+     * widens to int while string keys survive from both sides.
+     *
+     * The conditional asks about an array wrapped around the keys rather than
+     * about the keys themselves: a conditional whose subject appears in its own
+     * branch is narrowed by it, which would turn a benevolent int|string into
+     * plain string.
+     *
+     * @template TMergeKey of array-key
+     * @template TMergeValue
+     *
+     * @param  \Illuminate\Contracts\Support\Arrayable<TMergeKey, TMergeValue>|iterable<TMergeKey, TMergeValue>  $items
+     * @return static<(array<TKey|TMergeKey, mixed> is array<int, mixed> ? int : TKey|TMergeKey), TValue|TMergeValue>
+     */
+    public function merge($items);
+
+    /**
+     * array_merge() renumbers integer keys, so a key type made only of integers
+     * widens to int while string keys survive from both sides.
+     *
+     * The conditional asks about an array wrapped around the keys rather than
+     * about the keys themselves: a conditional whose subject appears in its own
+     * branch is narrowed by it, which would turn a benevolent int|string into
+     * plain string.
+     *
+     * @template TMergeRecursiveKey of array-key
+     * @template TMergeRecursiveValue
+     *
+     * @param  \Illuminate\Contracts\Support\Arrayable<TMergeRecursiveKey, TMergeRecursiveValue>|iterable<TMergeRecursiveKey, TMergeRecursiveValue>  $items
+     * @return static<(array<TKey|TMergeRecursiveKey, mixed> is array<int, mixed> ? int : TKey|TMergeRecursiveKey), TValue|TMergeRecursiveValue>
+     */
+    public function mergeRecursive($items);
+
+    /**
      * @template TConcatValue
      *
      * @param  iterable<array-key, TConcatValue>  $source
@@ -164,6 +198,40 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
      * @return ($number is null ? TValue : static<($preserveKeys is true ? TKey : int), TValue>)
      */
     public function random($number = null, $preserveKeys = false);
+
+    /**
+     * array_merge() renumbers integer keys, so a key type made only of integers
+     * widens to int while string keys survive from both sides.
+     *
+     * The conditional asks about an array wrapped around the keys rather than
+     * about the keys themselves: a conditional whose subject appears in its own
+     * branch is narrowed by it, which would turn a benevolent int|string into
+     * plain string.
+     *
+     * @template TMergeKey of array-key
+     * @template TMergeValue
+     *
+     * @param  \Illuminate\Contracts\Support\Arrayable<TMergeKey, TMergeValue>|iterable<TMergeKey, TMergeValue>  $items
+     * @return static<(array<TKey|TMergeKey, mixed> is array<int, mixed> ? int : TKey|TMergeKey), TValue|TMergeValue>
+     */
+    public function merge($items);
+
+    /**
+     * array_merge() renumbers integer keys, so a key type made only of integers
+     * widens to int while string keys survive from both sides.
+     *
+     * The conditional asks about an array wrapped around the keys rather than
+     * about the keys themselves: a conditional whose subject appears in its own
+     * branch is narrowed by it, which would turn a benevolent int|string into
+     * plain string.
+     *
+     * @template TMergeRecursiveKey of array-key
+     * @template TMergeRecursiveValue
+     *
+     * @param  \Illuminate\Contracts\Support\Arrayable<TMergeRecursiveKey, TMergeRecursiveValue>|iterable<TMergeRecursiveKey, TMergeRecursiveValue>  $items
+     * @return static<(array<TKey|TMergeRecursiveKey, mixed> is array<int, mixed> ? int : TKey|TMergeRecursiveKey), TValue|TMergeRecursiveValue>
+     */
+    public function mergeRecursive($items);
 
     /**
      * @template TConcatValue
