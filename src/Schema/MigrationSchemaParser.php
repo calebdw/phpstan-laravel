@@ -711,17 +711,26 @@ final class MigrationSchemaParser
 
                 return;
 
+            // Index and constraint methods. Their first argument names an
+            // index or the columns one covers, never a column to declare, and
+            // the default branch below would otherwise invent a column from it
+            // or overwrite the real one with mixed.
             case 'dropforeign':
+            case 'dropfulltext':
             case 'dropindex':
             case 'dropprimary':
+            case 'dropspatialindex':
             case 'dropunique':
+            case 'dropvectorindex':
             case 'foreign':
+            case 'fulltext':
             case 'index':
             case 'primary':
+            case 'rawindex':
             case 'renameindex':
             case 'spatialindex':
             case 'unique':
-            case 'dropspatialindex':
+            case 'vectorindex':
                 return;
 
             case 'dropmorphs':

@@ -72,4 +72,62 @@ class MigrationSchemaParserTest extends PHPStanTestCase
         self::assertSame('string', $tables['users']->columns['email']->readableType);
         self::assertTrue($tables['users']->columns['email']->nullable);
     }
+
+    #[Test]
+    public function it_leaves_the_columns_alone_for_index_methods(): void
+    {
+        $parser       = self::getContainer()->getService('currentPhpVersionSimpleDirectParser');
+        $schemaParser = new MigrationSchemaParser(
+            $this->modelDatabaseHelper,
+            $this->modelHelper,
+            $this->createReflectionProvider(),
+            self::getContainer()->getByType(InitializerExprTypeResolver::class),
+        );
+
+        $statements = $parser->parseString(<<<'PHP'
+            <?php
+
+            namespace Tests\Unit\SchemaParserIndexes;
+
+            use Illuminate\Database\Schema\Blueprint;
+            use Illuminate\Support\Facades\Schema;
+
+            class CreatePostsTable
+            {
+                public function up(): void
+                {
+                    Schema::create('posts', function (Blueprint $table) {
+                        $table->id();
+                        $table->text('body');
+                        $table->string('slug');
+
+                        $table->index('slug');
+                        $table->unique('slug');
+                        $table->primary('id');
+                        $table->fullText('body');
+                        $table->rawIndex('(lower(slug))', 'posts_slug_lower');
+                        $table->spatialIndex('slug');
+                        $table->vectorIndex('body');
+                    });
+
+                    Schema::table('posts', function (Blueprint $table) {
+                        $table->dropIndex('posts_slug_index');
+                        $table->dropUnique('posts_slug_unique');
+                        $table->dropPrimary('posts_id_primary');
+                        $table->dropFullText('posts_body_fulltext');
+                        $table->dropSpatialIndex('posts_slug_spatialindex');
+                        $table->dropVectorIndex('posts_body_vectorindex');
+                    });
+                }
+            }
+            PHP);
+
+        $schemaParser->addStatements($statements);
+
+        $table = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables['posts'];
+
+        self::assertSame(['id', 'body', 'slug'], array_keys($table->columns));
+        self::assertSame('string', $table->columns['body']->readableType);
+        self::assertSame('string', $table->columns['slug']->readableType);
+    }
 }
