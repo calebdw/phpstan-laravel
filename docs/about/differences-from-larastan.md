@@ -203,21 +203,19 @@ a `@return HasMany<Stock, $this>` is what names the related model, and an
 undocumented relation gives `Builder<Model>` as well. Neither of those is a
 false positive, only a return to what you would have had anyway.
 
-The real gap is eager loading. Closures passed to `with()` are **not** typed,
-and a closure that narrows its own parameter is reported, because Laravel
-documents that argument as `Closure(Relation<*, *, *>): mixed` and a narrower
-parameter is not a subtype of a wider one:
+The real gap is eager loading. Closures in a `with()` array are **not** typed:
+their parameter is `mixed`, so narrowing it is accepted but not checked. The
+two-argument form is typed, yet narrowing its parameter is reported, because
+Laravel documents the callback as `Closure(Relation<*, *, *>): mixed` and a
+narrower parameter is not a subtype of a wider one:
 
 ```php
-Product::query()->with([
-    'stocks' => function (MorphTo $morphTo) {   // argument.type
-        $morphTo->morphWith([Warehouse::class => ['stocks']]);
-    },
-]);
+Product::query()->with('stocks', function (MorphTo $morphTo) {   // argument.type
+    $morphTo->morphWith([Warehouse::class => ['stocks']]);
+});
 ```
 
-Fixing that properly needs a change further down, in PHPStan itself. Until
-then, widen the parameter to `Relation` or ignore `argument.type` at that call.
+Widen the parameter to `Relation`, or use the array form.
 
 ### Factories stay on your factory
 
