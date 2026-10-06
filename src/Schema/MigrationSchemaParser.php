@@ -240,52 +240,7 @@ final class MigrationSchemaParser
             return;
         }
 
-        $value = $call->getArgs()[0]->value;
-
-        $tableName = null;
-
-        if ($value instanceof String_) {
-            $tableName = $value->value;
-        }
-
-        if ($value instanceof ClassConstFetch) {
-            if (
-                ! $value->class instanceof Name
-                || ! $value->name instanceof Identifier
-            ) {
-                return;
-            }
-
-            if ($value->class instanceof FullyQualified) {
-                $className = $value->class->name;
-            } else {
-                $resolvedName = $value->class->getAttribute('resolvedName');
-
-                if (! $resolvedName instanceof FullyQualified) {
-                    return;
-                }
-
-                $className = $resolvedName->name;
-            }
-
-            if (! $this->reflectionProvider->hasClass($className)) {
-                return;
-            }
-
-            $class    = $this->reflectionProvider->getClass($className);
-            $constant = $class->getConstant($value->name->toString());
-
-            $constantValueType = $this->initializerExprTypeResolver->getType(
-                $constant->getValueExpr(),
-                InitializerExprContext::fromClassReflection($constant->getDeclaringClass()),
-            );
-
-            $constantStrings = $constantValueType->getConstantStrings();
-
-            if (count($constantStrings) === 1) {
-                $tableName = $constantStrings[0]->getValue();
-            }
-        }
+        $tableName = $this->resolveName($call->getArgs()[0]->value);
 
         if ($tableName === null) {
             return;
@@ -384,8 +339,9 @@ final class MigrationSchemaParser
                 }
 
                 $columnName = Str::snake(class_basename($modelClass)) . '_id';
-                if ($secondArg instanceof String_) {
-                    $columnName = $secondArg->value;
+
+                if ($secondArg !== null) {
+                    $columnName = $this->resolveName($secondArg) ?? $columnName;
                 }
 
                 /** @phpstan-ignore argument.type (not a class string) */
@@ -403,14 +359,18 @@ final class MigrationSchemaParser
                 continue;
             }
 
-            if (! $firstArg instanceof String_) {
+            $columnName = $firstArg === null ? null : $this->resolveName($firstArg);
+
+            if ($columnName === null) {
                 if ($firstArg instanceof Array_ && $firstMethodCall->name->name === 'dropColumn') {
                     foreach ($firstArg->items as $arrayItem) {
-                        if (! $arrayItem->value instanceof String_) {
+                        $droppedColumn = $this->resolveName($arrayItem->value);
+
+                        if ($droppedColumn === null) {
                             continue;
                         }
 
-                        $table->dropColumn($arrayItem->value->value);
+                        $table->dropColumn($droppedColumn);
                     }
                 }
 
@@ -455,8 +415,6 @@ final class MigrationSchemaParser
                 }
 
                 $columnName = $defaultsMap[$firstMethodCall->name->name];
-            } else {
-                $columnName = $firstArg->value;
             }
 
             $secondArgArray = null;
@@ -486,6 +444,67 @@ final class MigrationSchemaParser
                 $stmt,
             );
         }
+    }
+
+    /**
+     * The table or column a literal or a class constant names.
+     *
+     * A constant only answers when it resolves to exactly one string.
+     *
+     * An enum case is reflected as a constant whose value is the case's
+     * backing value, so a string-backed `Column::Email` would read as a column
+     * named after the backing value. It is not one: Laravel has no idea what
+     * to do with an enum here, and taking the backing value would declare a
+     * column the migration never wrote, or overwrite the real one.
+     */
+    private function resolveName(Expr $value): string|null
+    {
+        if ($value instanceof String_) {
+            return $value->value;
+        }
+
+        if (
+            ! $value instanceof ClassConstFetch
+            || ! $value->class instanceof Name
+            || ! $value->name instanceof Identifier
+        ) {
+            return null;
+        }
+
+        if ($value->class instanceof FullyQualified) {
+            $className = $value->class->name;
+        } else {
+            $resolvedName = $value->class->getAttribute('resolvedName');
+
+            if (! $resolvedName instanceof FullyQualified) {
+                return null;
+            }
+
+            $className = $resolvedName->name;
+        }
+
+        if (! $this->reflectionProvider->hasClass($className)) {
+            return null;
+        }
+
+        $class        = $this->reflectionProvider->getClass($className);
+        $constantName = $value->name->toString();
+
+        // getConstant() throws rather than answering for one that is not
+        // there, and a migration naming a constant that has since been
+        // renamed must not take the analysis down with it.
+        if (! $class->hasConstant($constantName) || $class->hasEnumCase($constantName)) {
+            return null;
+        }
+
+        $constant = $class->getConstant($constantName);
+
+        $constantStrings = $this->initializerExprTypeResolver->getType(
+            $constant->getValueExpr(),
+            InitializerExprContext::fromClassReflection($constant->getDeclaringClass()),
+        )->getConstantStrings();
+
+        return count($constantStrings) === 1 ? $constantStrings[0]->getValue() : null;
     }
 
     private function dropTable(StaticCall|MethodCall $call): void

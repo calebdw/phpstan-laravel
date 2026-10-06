@@ -130,4 +130,144 @@ class MigrationSchemaParserTest extends PHPStanTestCase
         self::assertSame('string', $table->columns['body']->readableType);
         self::assertSame('string', $table->columns['slug']->readableType);
     }
+
+    #[Test]
+    public function it_resolves_column_constant_initializers(): void
+    {
+        $parser       = self::getContainer()->getService('currentPhpVersionSimpleDirectParser');
+        $schemaParser = new MigrationSchemaParser(
+            $this->modelDatabaseHelper,
+            $this->modelHelper,
+            $this->createReflectionProvider(),
+            self::getContainer()->getByType(InitializerExprTypeResolver::class),
+        );
+
+        $statements = $parser->parseString(<<<'PHP'
+            <?php
+
+            namespace Tests\Unit\SchemaParserColumns;
+
+            use Illuminate\Database\Schema\Blueprint;
+            use Illuminate\Support\Facades\Schema;
+            use Tests\Unit\SchemaParserConstants\ColumnConstants;
+            use Tests\Unit\SchemaParserConstants\ColumnEnum;
+
+            class CreateContactsTable
+            {
+                public function up(): void
+                {
+                    Schema::create('contacts', function (Blueprint $table) {
+                        $table->id();
+                        $table->string(ColumnConstants::EMAIL)->nullable();
+                        $table->string(ColumnConstants::CREATED_BY);
+                        $table->string(ColumnConstants::NOT_A_STRING);
+                        $table->string(ColumnEnum::Email);
+                        $table->string('kept');
+                    });
+
+                    Schema::table('contacts', function (Blueprint $table) {
+                        $table->dropColumn([ColumnConstants::CREATED_BY, 'kept']);
+                    });
+                }
+            }
+            PHP);
+
+        $schemaParser->addStatements($statements);
+
+        $table = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables['contacts'];
+
+        // A constant that does not name a column, and an enum case whose
+        // backing value happens to read like one, leave the table alone
+        // rather than declaring or overwriting a column.
+        self::assertSame(['id', 'email'], array_keys($table->columns));
+        self::assertSame('string', $table->columns['email']->readableType);
+        self::assertTrue($table->columns['email']->nullable);
+    }
+
+    #[Test]
+    public function it_resolves_a_foreign_id_column_constant(): void
+    {
+        $parser       = self::getContainer()->getService('currentPhpVersionSimpleDirectParser');
+        $schemaParser = new MigrationSchemaParser(
+            $this->modelDatabaseHelper,
+            $this->modelHelper,
+            $this->createReflectionProvider(),
+            self::getContainer()->getByType(InitializerExprTypeResolver::class),
+        );
+
+        $statements = $parser->parseString(<<<'PHP'
+            <?php
+
+            namespace Tests\Unit\SchemaParserForeignIds;
+
+            use App\User;
+            use Illuminate\Database\Schema\Blueprint;
+            use Illuminate\Support\Facades\Schema;
+            use Tests\Unit\SchemaParserConstants\ColumnConstants;
+
+            class CreateNotesTable
+            {
+                public function up(): void
+                {
+                    Schema::create('notes', function (Blueprint $table) {
+                        $table->id();
+                        $table->foreignIdFor(User::class, ColumnConstants::CREATED_BY);
+                        $table->foreignIdFor(User::class);
+                    });
+                }
+            }
+            PHP);
+
+        $schemaParser->addStatements($statements);
+
+        $table = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables['notes'];
+
+        self::assertSame(['id', 'created_by', 'user_id'], array_keys($table->columns));
+    }
+
+    #[Test]
+    public function it_survives_a_constant_that_is_not_there(): void
+    {
+        $parser       = self::getContainer()->getService('currentPhpVersionSimpleDirectParser');
+        $schemaParser = new MigrationSchemaParser(
+            $this->modelDatabaseHelper,
+            $this->modelHelper,
+            $this->createReflectionProvider(),
+            self::getContainer()->getByType(InitializerExprTypeResolver::class),
+        );
+
+        // Reflection throws for a constant it cannot find, which a migration
+        // left behind by a rename would otherwise turn into a failed run.
+        $statements = $parser->parseString(<<<'PHP'
+            <?php
+
+            namespace Tests\Unit\SchemaParserMissing;
+
+            use Illuminate\Database\Schema\Blueprint;
+            use Illuminate\Support\Facades\Schema;
+            use Tests\Unit\SchemaParserConstants\ColumnConstants;
+
+            class CreateGhostsTable
+            {
+                public function up(): void
+                {
+                    Schema::create(ColumnConstants::NO_SUCH_TABLE, function (Blueprint $table) {
+                        $table->id();
+                    });
+
+                    Schema::create('ghosts', function (Blueprint $table) {
+                        $table->id();
+                        $table->string(ColumnConstants::NO_SUCH_COLUMN);
+                    });
+                }
+            }
+            PHP);
+
+        $schemaParser->addStatements($statements);
+
+        $tables = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables;
+
+        self::assertArrayNotHasKey('', $tables);
+        self::assertSame(['id'], array_keys($tables['ghosts']->columns));
+    }
 }
