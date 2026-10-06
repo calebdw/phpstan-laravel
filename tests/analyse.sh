@@ -55,7 +55,7 @@ case "$TARGET" in
         ;;
     filamentphp-filament)
         REPOSITORY="filamentphp/filament"
-        REF="2f10baac09333f33ccf6cb8ec133897ba001056a"
+        REF="978dd89e7e9955a18052d0d6ec21f27e4bce2dba"
         FORCE_PHPSTAN_VERSION=1
         ;;
     *)
