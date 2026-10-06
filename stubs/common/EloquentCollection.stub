@@ -21,6 +21,18 @@ class Collection extends BaseCollection implements QueueableCollection
     public function toQuery();
 
     /**
+     * @param array<array-key, array<mixed>|\Closure|string>|string $relations
+     * @return $this
+     */
+    public function load($relations);
+
+    /**
+     * @param array<array-key, array<mixed>|\Closure|string>|string $relations
+     * @return $this
+     */
+    public function loadMissing($relations);
+
+    /**
      * @template TPadValue
      *
      * @param  int  $size
