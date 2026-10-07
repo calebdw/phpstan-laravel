@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\Functions;
 
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeTraverser;
 
 final class ValueExtension implements DynamicFunctionReturnTypeExtension
 {
+    public function __construct(private TypeHelper $typeHelper)
+    {
+    }
+
     public function isFunctionSupported(FunctionReflection $functionReflection): bool
     {
         return $functionReflection->getName() === 'value';
@@ -26,12 +30,6 @@ final class ValueExtension implements DynamicFunctionReturnTypeExtension
             return null;
         }
 
-        return TypeTraverser::map($scope->getType($value), static function (Type $type, callable $traverse) use ($scope): Type {
-            if ($type->isCallable()->yes()) {
-                return $type->getCallableParametersAcceptors($scope)[0]->getReturnType();
-            }
-
-            return $traverse($type);
-        });
+        return $this->typeHelper->valueOf($scope->getType($value), $scope);
     }
 }

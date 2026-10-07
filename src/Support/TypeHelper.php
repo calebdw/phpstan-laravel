@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use Closure;
+use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\TypeTraverser;
 
 use function collect;
 
@@ -80,5 +85,31 @@ final class TypeHelper
             ->map(static fn ($s) => $s->getValue())
             ->values()
             ->all();
+    }
+
+    /**
+     * What `value()` hands back, and with it every default that goes through
+     * it. Only a Closure is called: a callable string such as `'time'` is a
+     * value like any other, and comes back as it was given.
+     */
+    public function valueOf(Type $type, Scope $scope): Type
+    {
+        $closure = new ObjectType(Closure::class);
+
+        return TypeTraverser::map($type, static function (Type $type, callable $traverse) use ($closure, $scope): Type {
+            if (! $type->isCallable()->yes()) {
+                return $traverse($type);
+            }
+
+            $isClosure = $closure->isSuperTypeOf($type);
+
+            if ($isClosure->no()) {
+                return $type;
+            }
+
+            $returnType = $type->getCallableParametersAcceptors($scope)[0]->getReturnType();
+
+            return $isClosure->yes() ? $returnType : TypeCombinator::union($type, $returnType);
+        });
     }
 }
