@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Types;
 use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -49,6 +50,10 @@ final class EagerLoadOfType implements CompoundType, LateResolvableType
 
     protected function getResult(): Type
     {
+        if (! $this->namesRelations()) {
+            return $this->bound;
+        }
+
         $closure = new ObjectType(Closure::class);
         $array   = new ArrayType(new MixedType(), new MixedType());
         $value   = TypeCombinator::intersect($this->bound, $array)->getIterableValueType();
@@ -91,6 +96,37 @@ final class EagerLoadOfType implements CompoundType, LateResolvableType
         }
 
         return TypeCombinator::union(...$arrays);
+    }
+
+    /**
+     * Whether the model is one whose relations could be named.
+     *
+     * A query that never said which model it runs on has the base model here,
+     * which declares none, so no key names one either. Every name resolves to
+     * a bare `Relation`, which then rejects the `withTrashed()` a `BelongsTo`
+     * would have taken, so the bound's mixed is the honest answer instead.
+     */
+    private function namesRelations(): bool
+    {
+        // A template stands for whatever model the caller has, which does
+        // name them.
+        if (TypeUtils::containsTemplateType($this->type)) {
+            return true;
+        }
+
+        $names = $this->type->getObjectClassNames();
+
+        if ($names === []) {
+            return false;
+        }
+
+        foreach ($names as $name) {
+            if ($name === Model::class) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /** The callback a relation name, or any of them, hands its query to. */

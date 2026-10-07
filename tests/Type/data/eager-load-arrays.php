@@ -46,10 +46,17 @@ function test(Collection $users, string $name): void
 /**
  * @param Builder<User|Account> $builder
  * @param Builder<TModel> $generic
+ * @param Builder<Model> $any
  * @template TModel of Model
  */
-function models(Builder $builder, Builder $generic): void
+function models(Builder $builder, Builder $generic, Builder $any, string $name): void
 {
+    // A query that never said which model it runs on has every relation in
+    // Laravel as a candidate, so naming them says nothing and would reject
+    // what a real relation accepts - a literal key names one no better.
+    $any->with([$name => fn ($q) => assertType('mixed', $q)]);
+    $any->with(['payment' => fn ($q) => assertType('mixed', $q)]);
+
     $builder->with(['posts' => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\BelongsToMany<App\Post, App\Account, Illuminate\Database\Eloquent\Relations\Pivot, \'pivot\'>|Illuminate\Database\Eloquent\Relations\BelongsToMany<App\Post, App\User, Illuminate\Database\Eloquent\Relations\Pivot, \'pivot\'>', $q)]);
 
     $generic->with(['posts' => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\Relation<Illuminate\Database\Eloquent\Model, TModel of Illuminate\Database\Eloquent\Model (function EagerLoadArrays\models(), argument)>', $q)]);
