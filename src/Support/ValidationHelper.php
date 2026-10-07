@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use Closure;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Http\FormRequest;
@@ -60,6 +61,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeUtils;
+use Throwable;
 
 use function array_intersect;
 use function array_key_exists;
@@ -107,6 +109,8 @@ final class ValidationHelper
     /** @var array<string, Type|null> */
     private array $shapes = [];
 
+    private bool $stripsUnvalidatedKeys;
+
     /** @var array<string, array<string, Type>> */
     private array $properties = [];
 
@@ -115,6 +119,7 @@ final class ValidationHelper
         private ReflectionProvider $reflectionProvider,
         private TypeHelper $typeHelper,
         private CallHelper $callHelper,
+        private ContainerHelper $containerHelper,
     ) {
     }
 
@@ -329,9 +334,34 @@ final class ValidationHelper
             'required' => $required,
             'nullable' => $nullable,
             'type' => $types === [] ? new MixedType() : TypeCombinator::union(...$types),
-            'strippable' => $strippable,
+            'strippable' => $strippable && $this->stripsUnvalidatedKeys(),
             'excludable' => $excludable,
         ];
+    }
+
+    /**
+     * Whether validated() drops an array parent that has child rules.
+     *
+     * An application can turn this off with includeUnvalidatedArrayKeys(), and
+     * the booted container answers for the one being analysed. A validator the
+     * container cannot build answers with Laravel's own default.
+     */
+    private function stripsUnvalidatedKeys(): bool
+    {
+        if (isset($this->stripsUnvalidatedKeys)) {
+            return $this->stripsUnvalidatedKeys;
+        }
+
+        $factory = $this->containerHelper->resolve(ValidationFactory::class);
+
+        try {
+            $validator = $factory instanceof ValidationFactory ? $factory->make([], []) : null;
+        } catch (Throwable) {
+            $validator = null;
+        }
+
+        return $this->stripsUnvalidatedKeys = ! $validator instanceof Validator
+            || $validator->excludeUnvalidatedArrayKeys;
     }
 
     /** @return list<Expr> */
