@@ -60,10 +60,14 @@ final class ModelCastHelper
     /** @var array<string, array<string, string>> */
     private array $modelCasts = [];
 
+    /** The string a numeric column round-trips as. */
+    private Type $numericString;
+
     public function __construct(
         protected ReflectionProvider $reflectionProvider,
         protected ModelHelper $modelHelper,
     ) {
+        $this->numericString = TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType());
     }
 
     public function getReadableType(string $cast, Type $originalType): Type
@@ -76,7 +80,7 @@ final class ModelCastHelper
         $attributeType = match ($cast) {
             'int', 'integer', 'timestamp' => $originalType->isInteger()->yes() ? $originalType : new IntegerType(),
             'real', 'float', 'double' => new FloatType(),
-            'decimal' => TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType()),
+            'decimal' => $this->numericString,
             'string' => new StringType(),
             'bool', 'boolean' => new BooleanType(),
             'object' => new ObjectType(stdClass::class),
@@ -144,14 +148,14 @@ final class ModelCastHelper
                 ? $originalType
                 : TypeCombinator::union(
                     new IntegerType(),
-                    TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType()),
+                    $this->numericString,
                 ),
             'timestamp' => $originalType->isInteger()->yes() ? $originalType : new IntegerType(),
             'real', 'float', 'double' => new FloatType(),
             // A decimal is only formatted on read, so a write takes any number
             // or the numeric string the column round-trips as.
             'decimal' => TypeCombinator::union(
-                TypeCombinator::intersect(new StringType(), new AccessoryNumericStringType()),
+                $this->numericString,
                 new FloatType(),
                 new IntegerType(),
             ),
