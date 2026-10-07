@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\ArrayRule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\ExcludeIf;
+use Illuminate\Validation\Rules\ExcludeUnless;
 use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Validator;
 use PhpParser\Node;
@@ -73,6 +74,7 @@ use function is_int;
 use function is_numeric;
 use function is_string;
 use function str_contains;
+use function str_starts_with;
 use function strtolower;
 
 /**
@@ -411,6 +413,10 @@ final class ValidationHelper
                 $names[] = 'exclude_if';
             }
 
+            if ($this->ruleCall($rule, $class, ExcludeUnless::class, 'excludeUnless', $scope) !== null) {
+                $names[] = 'exclude_unless';
+            }
+
             $type       = $scope?->getType($rule) ?? $this->unscopedRuleType($rule, $class);
             $strippable = $strippable || $this->castsToArray($rule, $type, $class, $scope);
         }
@@ -436,8 +442,10 @@ final class ValidationHelper
 
     /**
      * validated() drops a parent whose rules hold an exact `array` or `list`.
-     * Closures and rule contracts are wrapped, and `in` and `exclude_if` cast
-     * to their own name, but any other object may cast to `array`.
+     *
+     * Laravel wraps a closure and a rule contract, and casts every other rule
+     * object to a string, so a rule object strips the parent only when that
+     * string is exactly `array`. A rule the parser cannot place may be.
      */
     private function castsToArray(Expr $rule, Type|null $type, ClassReflection|null $class, Scope|null $scope): bool
     {
@@ -447,15 +455,41 @@ final class ValidationHelper
             return $this->withoutKeys($args, $scope);
         }
 
-        return $type === null || ! TypeCombinator::union(
+        if ($type === null) {
+            return true;
+        }
+
+        $wrapped = TypeCombinator::union(
             new ObjectType(Closure::class),
             new ObjectType(ValidationRule::class),
             // Deprecated, but user rules still implement them.
             new ObjectType('Illuminate\Contracts\Validation\Rule'),
             new ObjectType('Illuminate\Contracts\Validation\InvokableRule'),
-            new ObjectType(In::class),
-            new ObjectType(ExcludeIf::class),
-        )->isSuperTypeOf($type)->yes();
+        );
+
+        return ! $wrapped->isSuperTypeOf($type)->yes() && ! $this->isRuleBuilder($type);
+    }
+
+    /**
+     * Every builder Laravel ships casts to its own rule name, so none of them
+     * reads as `array`. `Rule::array()` is the exception, and only the call
+     * that built it says whether it carries keys.
+     */
+    private function isRuleBuilder(Type $type): bool
+    {
+        $names = $type->getObjectClassNames();
+
+        if ($names === []) {
+            return false;
+        }
+
+        foreach ($names as $name) {
+            if ($name === ArrayRule::class || ! str_starts_with($name, 'Illuminate\\Validation\\Rules\\')) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
