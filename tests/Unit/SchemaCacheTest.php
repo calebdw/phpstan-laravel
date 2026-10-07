@@ -51,6 +51,25 @@ class SchemaCacheTest extends PHPStanTestCase
         self::assertNotSame($hash, $this->cache($this->directory, $this->directory . '/cache')->inputHash());
     }
 
+    /**
+     * A checkout gives every file a new mtime without changing a line of it,
+     * which is how a CI job starts, and the schema it describes is the same.
+     */
+    #[Test]
+    public function touching_a_file_does_not_change_the_input_hash(): void
+    {
+        $migration = $this->directory . '/2020_01_30_000000_create_users_table.php';
+        $source    = file_get_contents(__DIR__ . '/data/basic_migration/2020_01_30_000000_create_users_table.php');
+        self::assertIsString($source);
+        file_put_contents($migration, $source);
+
+        $hash = $this->cache($this->directory, $this->directory . '/cache')->inputHash();
+
+        touch($migration, filemtime($migration) + 3600);
+
+        self::assertSame($hash, $this->cache($this->directory, $this->directory . '/cache')->inputHash());
+    }
+
     #[Test]
     public function schema_changes_change_the_input_hash(): void
     {

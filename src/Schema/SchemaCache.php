@@ -10,6 +10,7 @@ use Throwable;
 use function dirname;
 use function file_put_contents;
 use function getmypid;
+use function hash_file;
 use function hash_final;
 use function hash_init;
 use function hash_update;
@@ -54,11 +55,15 @@ final class SchemaCache
         ksort($files);
 
         foreach ($files as $identity => $file) {
+            $digest = @hash_file('xxh128', $file->getPathname());
+
             hash_update($context, sprintf(
-                "%s\0%d\0%d\0",
+                "%s\0%s\0",
                 $identity,
-                $file->getMTime(),
-                $file->getSize(),
+                // The contents rather than the stat: a checkout rewrites every
+                // mtime while describing the same schema, and a CI job that
+                // starts with one would never reuse what it cached before.
+                $digest === false ? sprintf('%d:%d', $file->getMTime(), $file->getSize()) : $digest,
             ));
         }
 
