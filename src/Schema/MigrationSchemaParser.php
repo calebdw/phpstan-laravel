@@ -57,6 +57,20 @@ final class MigrationSchemaParser
         'dropConstrainedForeignIdFor',
     ];
 
+    /**
+     * Blueprint methods with an `unsigned` prefixed counterpart, which a
+     * chained `unsigned()` turns them into.
+     *
+     * A YEAR column has no unsigned form, so `year()` is not one of them.
+     */
+    private const array UNSIGNABLE_METHODS = [
+        'biginteger',
+        'integer',
+        'mediuminteger',
+        'smallinteger',
+        'tinyinteger',
+    ];
+
     /** @var list<Connection> */
     private array $connectionStack = [];
 
@@ -309,14 +323,18 @@ final class MigrationSchemaParser
             $rootVar = $stmt->expr;
 
             $nullable = false;
+            $unsigned = false;
 
             while ($rootVar instanceof MethodCall) {
-                if (
-                    $rootVar->name instanceof Identifier
-                    && $rootVar->name->name === 'nullable'
-                    && $this->getNullableArgumentValue($rootVar) === true
-                ) {
-                    $nullable = true;
+                if ($rootVar->name instanceof Identifier) {
+                    if (
+                        $rootVar->name->name === 'nullable'
+                        && $this->getNullableArgumentValue($rootVar) === true
+                    ) {
+                        $nullable = true;
+                    } elseif ($rootVar->name->name === 'unsigned') {
+                        $unsigned = true;
+                    }
                 }
 
                 $firstMethodCall = $rootVar;
@@ -446,8 +464,16 @@ final class MigrationSchemaParser
                 }
             }
 
+            $method = strtolower($firstMethodCall->name->name);
+
+            // `integer('votes')->unsigned()` declares the column
+            // `unsignedInteger('votes')` does, so read it as that one.
+            if ($unsigned && in_array($method, self::UNSIGNABLE_METHODS, true)) {
+                $method = 'unsigned' . $method;
+            }
+
             $this->processStatementAlterMethod(
-                strtolower($firstMethodCall->name->name),
+                $method,
                 $firstMethodCall,
                 $table,
                 $columnName,
@@ -651,25 +677,33 @@ final class MigrationSchemaParser
                 return;
 
             case 'biginteger':
-            case 'increments':
-            case 'id':
             case 'integer':
+            case 'mediuminteger':
+            case 'smallinteger':
+            case 'tinyinteger':
+            // A YEAR column is not unsigned, and the dump parser reads it as a
+            // plain int too.
+            case 'year':
+                $table->setColumn(new Column($columnName, 'int', $nullable));
+
+                return;
+
+            // Every auto-incrementing column is unsigned, as is a foreign id,
+            // which is an unsigned big integer pointing at one.
+            case 'bigincrements':
+            case 'id':
+            case 'increments':
             case 'integerincrements':
             case 'mediumincrements':
-            case 'mediuminteger':
             case 'smallincrements':
-            case 'smallinteger':
             case 'tinyincrements':
-            case 'tinyinteger':
             case 'unsignedbiginteger':
             case 'unsignedinteger':
             case 'unsignedmediuminteger':
             case 'unsignedsmallinteger':
             case 'unsignedtinyinteger':
-            case 'bigincrements':
             case 'foreignid':
-            case 'year':
-                $table->setColumn(new Column($columnName, 'int', $nullable));
+                $table->setColumn(new Column($columnName, 'non-negative-int', $nullable));
 
                 return;
 
@@ -782,13 +816,13 @@ final class MigrationSchemaParser
 
             case 'morphs':
                 $table->setColumn(new Column($columnName . '_type', 'string', $nullable));
-                $table->setColumn(new Column($columnName . '_id', 'int', $nullable));
+                $table->setColumn(new Column($columnName . '_id', 'non-negative-int', $nullable));
 
                 return;
 
             case 'nullablemorphs':
                 $table->setColumn(new Column($columnName . '_type', 'string', true));
-                $table->setColumn(new Column($columnName . '_id', 'int', true));
+                $table->setColumn(new Column($columnName . '_id', 'non-negative-int', true));
 
                 return;
 

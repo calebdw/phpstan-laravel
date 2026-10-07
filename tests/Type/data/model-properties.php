@@ -87,7 +87,7 @@ function test(
     // CastsAttributes
     assertType('App\ValueObjects\Favorites', $user->favorites);
 
-    assertType('int', $user->id);
+    assertType('int<0, max>', $user->id);
     assertType('bool', $user->blocked);
     assertType('Carbon\Carbon|null', $user->created_at);
     assertType('string|null', $user->updated_at);
@@ -120,28 +120,28 @@ function test(
     assertType('string', $user->spatially_indexed);
     assertType('string|null', $user->deleted_datetime_at);
     assertType('string|null', $user->deleted_tz_at);
-    assertType('int', $address->user_id);
-    assertType('int', $address->custom_foreign_id_for_name);
+    assertType('int<0, max>', $address->user_id);
+    assertType('int<0, max>', $address->custom_foreign_id_for_name);
     assertType('string', $address->address_id);
     assertType('string', $address->nullable_address_id); // overridden by a @property
-    assertType('int', $address->foreign_id_constrained);
-    assertType('int|null', $address->nullable_foreign_id_constrained);
+    assertType('int<0, max>', $address->foreign_id_constrained);
+    assertType('int<0, max>|null', $address->nullable_foreign_id_constrained);
     assertType('App\ValueObjects\Favorites', $user->favorites);
     assertType('string', $address->uuid);
     assertType('string', $roleUser->role_id);
-    assertType('int', $roleUser->user_id);
+    assertType('int<0, max>', $roleUser->user_id);
 
     assertType('bool', $modelWithCasts->integer);
     assertType(Stringable::class, $modelWithCasts->string);
 
     // Foo Connection
 
-    assertType('int', $fooUser->id);
+    assertType('int<0, max>', $fooUser->id);
     assertType('string', $fooUser->password);
     assertType('*ERROR*', $fooUser->notaproperty);
     assertType('*ERROR*', $fooUser->floatButRoundedDecimalString);
 
-    assertType('int', $fooThread->id);
+    assertType('int<0, max>', $fooThread->id);
     assertType('bool', $fooThread->active);
 }
 

@@ -45,17 +45,17 @@ function test(
 ): void {
     // One grouper, key resolved from the column.
     assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy('name'));
-    assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy('id'));
+    assertType('Illuminate\Database\Eloquent\Collection<int<0, max>, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy('id'));
 
     // Two and three groupers nest one level each.
-    assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>>', $users->groupBy(['name', 'id']));
-    assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>>>', $users->groupBy(['name', 'id', 'email']));
+    assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int<0, max>, Illuminate\Database\Eloquent\Collection<int, App\User>>>', $users->groupBy(['name', 'id']));
+    assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int<0, max>, Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>>>', $users->groupBy(['name', 'id', 'email']));
 
     // Dotted access through a relation.
     assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\Post>>', $posts->groupBy('user.name'));
 
     // Callables, including ones declaring no types.
-    assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy(fn ($u) => $u->id));
+    assertType('Illuminate\Database\Eloquent\Collection<int<0, max>, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy(fn ($u) => $u->id));
     assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy(function ($u) {
         return $u->name;
     }));
@@ -68,13 +68,13 @@ function test(
     assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy(fn ($u): array => [$u->name]));
 
     // Mixing a column and a callable across levels.
-    assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>>', $users->groupBy(['name', fn ($u) => $u->id]));
+    assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int<0, max>, Illuminate\Database\Eloquent\Collection<int, App\User>>>', $users->groupBy(['name', fn ($u) => $u->id]));
 
     // preserveKeys keeps the original keys on the innermost collection.
-    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<int, App\User>>', $keyed->groupBy('id'));
-    assertType('Illuminate\Support\Collection<int, Illuminate\Support\Collection<string, App\User>>', $keyed->groupBy('id', true));
-    assertType('Illuminate\Support\LazyCollection<int, Illuminate\Support\Collection<int, App\User>>', $lazy->groupBy('id'));
-    assertType('Illuminate\Support\LazyCollection<string, Illuminate\Support\Collection<int, Illuminate\Support\Collection<string, App\User>>>', $lazy->groupBy(['name', 'id'], true));
+    assertType('Illuminate\Support\Collection<int<0, max>, Illuminate\Support\Collection<int, App\User>>', $keyed->groupBy('id'));
+    assertType('Illuminate\Support\Collection<int<0, max>, Illuminate\Support\Collection<string, App\User>>', $keyed->groupBy('id', true));
+    assertType('Illuminate\Support\LazyCollection<int<0, max>, Illuminate\Support\Collection<int, App\User>>', $lazy->groupBy('id'));
+    assertType('Illuminate\Support\LazyCollection<string, Illuminate\Support\Collection<int<0, max>, Illuminate\Support\Collection<string, App\User>>>', $lazy->groupBy(['name', 'id'], true));
 }
 
 /**

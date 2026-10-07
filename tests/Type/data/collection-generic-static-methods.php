@@ -68,7 +68,7 @@ function test(
     assertType('Illuminate\Support\Collection<App\User, int>', $collection->flip());
     assertType('Illuminate\Support\Collection<int, string>', $items->flip());
 
-    assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $collection->groupBy('id'));
+    assertType('Illuminate\Database\Eloquent\Collection<int<0, max>, Illuminate\Database\Eloquent\Collection<int, App\User>>', $collection->groupBy('id'));
     assertType('Illuminate\Support\Collection<(int|string), Illuminate\Support\Collection<int, int>>', $items->groupBy('id'));
 
     assertType('Illuminate\Database\Eloquent\Collection<string, App\User>', $collection->keyBy(fn (User $user, int $key): string => $user->email));
@@ -80,22 +80,22 @@ function test(
     assertType('Illuminate\Support\Collection<int, mixed>', $items->pluck('foo'));
 
     assertType('Illuminate\Support\Collection<int, int>', $customEloquentCollection->map(fn (Transaction $transaction): int => $transaction->id));
-    assertType('Illuminate\Support\Collection<int, int>', $secondCustomEloquentCollection->map(fn (User $user): int => $user->id));
-    assertType('Illuminate\Support\Collection<int, int>', $collection->map(fn (User $user): int => $user->id));
+    assertType('Illuminate\Support\Collection<int, int<0, max>>', $secondCustomEloquentCollection->map(fn (User $user): int => $user->id));
+    assertType('Illuminate\Support\Collection<int, int<0, max>>', $collection->map(fn (User $user): int => $user->id));
     assertType('Illuminate\Support\Collection<string, int>', $items->map(fn (int $value, string $key): int => $value));
 
     assertType('App\TransactionCollection<int, App\Transaction>', $customEloquentCollection->map(fn (Transaction $transaction): Transaction => $transaction));
     assertType('App\UserCollection', $secondCustomEloquentCollection->map(fn (User $user): User => $user));
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $collection->map(fn (User $user): User => $user));
 
-    assertType('Illuminate\Database\Eloquent\Collection<int, array<int, int>>', $collection->mapToDictionary(fn (User $u) => [$u->id => $u->id]));
+    assertType('Illuminate\Database\Eloquent\Collection<int<0, max>, array<int, int<0, max>>>', $collection->mapToDictionary(fn (User $u) => [$u->id => $u->id]));
     assertType("App\TransactionCollection<'foo', array<int, int>>", $customEloquentCollection->mapToDictionary(fn (Transaction $t) => ['foo'=> $t->id]));
     assertType('App\UserCollection', $secondCustomEloquentCollection->mapToDictionary(fn (User $t) => ['foo'=> $t->id]));
     assertType("Illuminate\Support\Collection<'foo', array<int, int>>", $items->mapToDictionary(fn (int $v) => ['foo' => $v]));
 
     assertType('Illuminate\Support\Collection<int, string>', $customEloquentCollection->mapWithKeys(fn (Transaction $transaction): array => [$transaction->id => 'foo']));
     assertType('Illuminate\Support\Collection<int, string>', $secondCustomEloquentCollection->mapWithKeys(fn (User $user): array => [$user->id => 'foo']));
-    assertType('Illuminate\Support\Collection<int, int>', $collection->mapWithKeys(fn (User $user): array => [$user->id => $user->id]));
+    assertType('Illuminate\Support\Collection<int, int<0, max>>', $collection->mapWithKeys(fn (User $user): array => [$user->id => $user->id]));
     assertType('Illuminate\Support\Collection<string, int>', $items->mapWithKeys(fn (int $value, string $key): array => ['foo' => $value]));
 
     assertType('App\TransactionCollection<int, App\Transaction>', $customEloquentCollection->mapWithKeys(fn (Transaction $transaction): array => [$transaction->id => $transaction]));
@@ -211,7 +211,7 @@ function test(
     assertType('Illuminate\Support\LazyCollection<int, int>', LazyCollection::times(10, fn ($int) => 5));
 
     assertType(
-        'Illuminate\Database\Eloquent\Collection<int, int>',
+        'Illuminate\Database\Eloquent\Collection<int, int<0, max>>',
         $collection->flatMap(function (User $user, int $id) {
             return [$user->id];
         })
@@ -225,7 +225,7 @@ function test(
     );
 
     assertType(
-        'Illuminate\Support\LazyCollection<int, int>',
+        'Illuminate\Support\LazyCollection<int, int<0, max>>',
         $lazyCollection->flatMap(function (User $user, int $id) {
             return [$user->id];
         })

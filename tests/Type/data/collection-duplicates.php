@@ -19,7 +19,7 @@ function test(Collection $users, EloquentCollection $eloquent, Collection $rows)
 {
     assertType('Illuminate\Support\Collection<int, App\User>', $users->duplicates());
     assertType('Illuminate\Support\Collection<int, string>', $users->duplicates('email'));
-    assertType('Illuminate\Support\Collection<int, int>', $users->duplicates(fn ($u) => $u->id));
+    assertType('Illuminate\Support\Collection<int, int<0, max>>', $users->duplicates(fn ($u) => $u->id));
     assertType('Illuminate\Support\Collection<int, string>', $users->duplicatesStrict('email'));
 
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $eloquent->duplicates());

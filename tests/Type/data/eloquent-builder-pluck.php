@@ -28,8 +28,8 @@ function test(Builder $users): void {
 function testRelations(User $user, Post $post): void {
     assertType('Illuminate\Support\Collection<int, string>', $user->accounts()->pluck('name'));
     assertType('Illuminate\Support\Collection<string, string>', $user->accounts()->pluck('name', 'name'));
-    assertType('Illuminate\Support\Collection<int, int>', $user->accounts()->pluck('id'));
-    assertType('Illuminate\Support\Collection<int, string>', $user->accounts()->pluck('name', 'id'));
+    assertType('Illuminate\Support\Collection<int, int<0, max>>', $user->accounts()->pluck('id'));
+    assertType('Illuminate\Support\Collection<int<0, max>, string>', $user->accounts()->pluck('name', 'id'));
 
     // The related model, not the declaring one.
     assertType('Illuminate\Support\Collection<int, string>', $post->user()->pluck('name'));

@@ -16,6 +16,6 @@ use function PHPStan\Testing\assertType;
 function test(array $map, array $users): void
 {
     assertType('array<string, decimal-int-string>', Arr::map($map, fn ($v) => (string) $v));
-    assertType('list<int>', Arr::map($users, fn ($u) => $u->id));
+    assertType('list<int<0, max>>', Arr::map($users, fn ($u) => $u->id));
     assertType('array<string, App\User>', Arr::mapWithKeys($users, fn ($u) => [$u->email => $u]));
 }

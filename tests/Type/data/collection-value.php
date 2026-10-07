@@ -25,12 +25,12 @@ function test(
     LazyCollection $lazyUsers,
 ): void {
     assertType('string|null', $users->value('name'));
-    assertType('int|null', $users->value('id'));
+    assertType('int<0, max>|null', $users->value('id'));
     assertType('string|null', $rows->value('name'));
     assertType('string|null', $posts->value('user.name'));
     assertType('string|null', $lazyUsers->value('email'));
 
     assertType('string', $users->value('name', 'anonymous'));
-    assertType('int|false', $users->value('id', false));
+    assertType('int<0, max>|false', $users->value('id', false));
     assertType('string', $users->value('name', fn () => 'anonymous'));
 }

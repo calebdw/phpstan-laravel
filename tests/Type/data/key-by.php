@@ -31,11 +31,11 @@ function test(
 ): void {
     // keyBy rewrites the keys and keeps both the value type and the class.
     assertType('Illuminate\Database\Eloquent\Collection<string, App\User>', $users->keyBy('name'));
-    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->keyBy('id'));
+    assertType('Illuminate\Database\Eloquent\Collection<int<0, max>, App\User>', $users->keyBy('id'));
     assertType('Illuminate\Support\LazyCollection<string, App\User>', $lazyUsers->keyBy('name'));
 
     // Callbacks, including ones that declare no types at all.
-    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->keyBy(fn ($u) => $u->id));
+    assertType('Illuminate\Database\Eloquent\Collection<int<0, max>, App\User>', $users->keyBy(fn ($u) => $u->id));
     assertType('Illuminate\Database\Eloquent\Collection<string, App\User>', $users->keyBy(function ($u) {
         assertType('App\User', $u);
 
@@ -49,7 +49,7 @@ function test(
 
     // Arr::keyBy keeps the value type too.
     assertType('array<string, App\User>', Arr::keyBy($userArray, 'name'));
-    assertType('array<int, App\User>', Arr::keyBy($userArray, fn ($u) => $u->id));
+    assertType('array<int<0, max>, App\User>', Arr::keyBy($userArray, fn ($u) => $u->id));
     assertType('array<string, array{user: array{id: int, name: string}}>', Arr::keyBy($list, 'user.name'));
 }
 

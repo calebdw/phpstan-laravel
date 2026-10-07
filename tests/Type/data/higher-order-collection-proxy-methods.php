@@ -78,13 +78,13 @@ function test(
     assertType('Illuminate\Database\Eloquent\Collection<string, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->groupBy->email);
     assertType('Illuminate\Database\Eloquent\Collection<string, App\User>', $users->keyBy->email);
     assertType('Illuminate\Support\Collection<int, string>', $users->map->email);
-    assertType('Illuminate\Support\Collection<int, int>', $users->map->id);
+    assertType('Illuminate\Support\Collection<int, int<0, max>>', $users->map->id);
     assertType('Illuminate\Support\Collection<(int|string), int<0, max>>', $users->groupBy('status')->map->count());
     assertType('Illuminate\Support\Collection<int, Carbon\Carbon|null>', $users->map->created_at);
     assertType('string', $users->max->email);
-    assertType('int', $users->max->id);
+    assertType('int<0, max>', $users->max->id);
     assertType('string', $users->min->email);
-    assertType('int', $users->min->id);
+    assertType('int<0, max>', $users->min->id);
     assertType('bool', $users->hasMany->email);
     assertType('bool', $users->hasSole->email);
     assertType('Illuminate\Database\Eloquent\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>', $users->partition->email);

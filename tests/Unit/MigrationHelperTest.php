@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\Unit\Concerns\HasDatabaseHelper;
 
 use function array_keys;
+use function array_map;
 
 class MigrationHelperTest extends PHPStanTestCase
 {
@@ -67,7 +68,7 @@ class MigrationHelperTest extends PHPStanTestCase
         self::assertArrayHasKey('users', $tables);
         self::assertCount(8, $tables['users']->columns);
         self::assertSame(['id', 'email', 'birthday', 'city', 'zip', 'created_at', 'updated_at', 'active'], array_keys($tables['users']->columns));
-        self::assertSame('int', $tables['users']->columns['id']->readableType);
+        self::assertSame('non-negative-int', $tables['users']->columns['id']->readableType);
         self::assertSame('string', $tables['users']->columns['email']->readableType);
         self::assertSame('string', $tables['users']->columns['birthday']->readableType);
         self::assertSame('string', $tables['users']->columns['city']->readableType);
@@ -77,6 +78,40 @@ class MigrationHelperTest extends PHPStanTestCase
         self::assertSame('string', $tables['users']->columns['created_at']->readableType);
         self::assertSame('string', $tables['users']->columns['updated_at']->readableType);
         self::assertSame('int', $tables['users']->columns['active']->readableType);
+    }
+
+    #[Test]
+    public function it_reads_unsigned_integer_columns_as_non_negative_ints(): void
+    {
+        $this->getMigrationHelper([__DIR__ . '/data/unsigned_integer_columns'])
+            ->parseMigrations($this->modelDatabaseHelper);
+
+        $tables = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables;
+
+        self::assertSame([
+            // Every auto-incrementing column is unsigned, as is a foreign id
+            // and the `_id` half of a morph.
+            'id' => 'non-negative-int',
+            'owner_id' => 'non-negative-int',
+            'views' => 'non-negative-int',
+            'clicks' => 'non-negative-int',
+            'shares' => 'non-negative-int',
+            'replies' => 'non-negative-int',
+            'flags' => 'non-negative-int',
+            // A chained `unsigned()` says the same thing the prefixed methods
+            // above do, wherever it sits in the chain.
+            'score' => 'non-negative-int',
+            'offset' => 'non-negative-int',
+            'balance' => 'int',
+            'delta' => 'int',
+            // A YEAR column is not unsigned.
+            'opened_year' => 'int',
+            'subject_type' => 'string',
+            'subject_id' => 'non-negative-int',
+        ], array_map(
+            static fn ($c) => $c->readableType,
+            $tables['counters']->columns,
+        ));
     }
 
     #[Test]
@@ -138,7 +173,7 @@ class MigrationHelperTest extends PHPStanTestCase
         self::assertArrayHasKey('users', $tables);
         self::assertCount(5, $tables['users']->columns);
         self::assertSame(['id', 'name', 'created_at', 'updated_at', 'email'], array_keys($tables['users']->columns));
-        self::assertSame('int', $tables['users']->columns['id']->readableType);
+        self::assertSame('non-negative-int', $tables['users']->columns['id']->readableType);
         self::assertSame('string', $tables['users']->columns['name']->readableType);
         self::assertSame('string', $tables['users']->columns['email']->readableType);
         self::assertSame('string', $tables['users']->columns['created_at']->readableType);
@@ -213,7 +248,7 @@ class MigrationHelperTest extends PHPStanTestCase
         self::assertCount(1, $tables);
         self::assertArrayHasKey('users', $tables);
         self::assertCount(11, $tables['users']->columns);
-        self::assertSame('int', $tables['users']->columns['id']->readableType);
+        self::assertSame('non-negative-int', $tables['users']->columns['id']->readableType);
         self::assertSame('string', $tables['users']->columns['ip_address']->readableType);
         self::assertSame('string', $tables['users']->columns['custom_ip_address']->readableType);
         self::assertSame('string', $tables['users']->columns['mac_address']->readableType);
@@ -247,7 +282,7 @@ class MigrationHelperTest extends PHPStanTestCase
 
         self::assertCount(5, $foo['teams']->columns);
         self::assertSame(['id', 'team', 'owner_email', 'created_at', 'updated_at'], array_keys($foo['teams']->columns));
-        self::assertSame('int', $foo['teams']->columns['id']->readableType);
+        self::assertSame('non-negative-int', $foo['teams']->columns['id']->readableType);
         self::assertSame('string', $foo['teams']->columns['team']->readableType);
         self::assertSame('string', $foo['teams']->columns['owner_email']->readableType);
         self::assertSame('string', $foo['teams']->columns['created_at']->readableType);
@@ -255,7 +290,7 @@ class MigrationHelperTest extends PHPStanTestCase
 
         self::assertCount(1, $foo['users']->columns);
         self::assertSame(['id'], array_keys($foo['users']->columns));
-        self::assertSame('int', $foo['users']->columns['id']->readableType);
+        self::assertSame('non-negative-int', $foo['users']->columns['id']->readableType);
 
         self::assertCount(2, $bar);
         self::assertArrayHasKey('users', $bar);
@@ -263,7 +298,7 @@ class MigrationHelperTest extends PHPStanTestCase
 
         self::assertCount(5, $bar['users']->columns);
         self::assertSame(['id', 'name', 'email', 'created_at', 'updated_at'], array_keys($bar['users']->columns));
-        self::assertSame('int', $bar['users']->columns['id']->readableType);
+        self::assertSame('non-negative-int', $bar['users']->columns['id']->readableType);
         self::assertSame('string', $bar['users']->columns['name']->readableType);
         self::assertSame('string', $bar['users']->columns['email']->readableType);
         self::assertSame('string', $bar['users']->columns['created_at']->readableType);
@@ -271,7 +306,7 @@ class MigrationHelperTest extends PHPStanTestCase
 
         self::assertCount(1, $bar['teams']->columns);
         self::assertSame(['id'], array_keys($bar['teams']->columns));
-        self::assertSame('int', $bar['teams']->columns['id']->readableType);
+        self::assertSame('non-negative-int', $bar['teams']->columns['id']->readableType);
 
         $this->assertUsersTableSchema($baz);
     }
@@ -359,7 +394,7 @@ class MigrationHelperTest extends PHPStanTestCase
         self::assertArrayHasKey('users', $tables);
         self::assertCount(5, $tables['users']->columns);
         self::assertSame(['id', 'name', 'email', 'created_at', 'updated_at'], array_keys($tables['users']->columns));
-        self::assertSame('int', $tables['users']->columns['id']->readableType);
+        self::assertSame('non-negative-int', $tables['users']->columns['id']->readableType);
         self::assertSame('string', $tables['users']->columns['name']->readableType);
         self::assertSame('string', $tables['users']->columns['email']->readableType);
         self::assertSame('string', $tables['users']->columns['created_at']->readableType);

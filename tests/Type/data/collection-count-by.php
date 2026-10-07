@@ -31,11 +31,11 @@ function test(
 ): void {
     // Column and callback keys resolve the same way as groupBy.
     assertType('Illuminate\Support\Collection<string, int>', $users->countBy('email'));
-    assertType('Illuminate\Support\Collection<int, int>', $users->countBy('id'));
+    assertType('Illuminate\Support\Collection<int<0, max>, int>', $users->countBy('id'));
     assertType('Illuminate\Support\Collection<string, int>', $rows->countBy('name'));
     assertType('Illuminate\Support\LazyCollection<string, int>', $lazyUsers->countBy('email'));
 
-    assertType('Illuminate\Support\Collection<int, int>', $users->countBy(fn ($u) => $u->id));
+    assertType('Illuminate\Support\Collection<int<0, max>, int>', $users->countBy(fn ($u) => $u->id));
     assertType('Illuminate\Support\Collection<string, int>', $users->countBy(function ($u) {
         return $u->email;
     }));

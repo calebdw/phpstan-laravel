@@ -362,13 +362,13 @@ function test(
     );
 
     assertType('string|null', User::query()->value('name'));
-    assertType('int|null', User::query()->value('id'));
+    assertType('int<0, max>|null', User::query()->value('id'));
     assertType('bool|null', User::query()->value('blocked'));
     assertType('string|null', User::query()->value('propertyDefinedOnlyInAnnotation'));
     assertType('string', User::query()->soleValue('name'));
-    assertType('int', User::query()->soleValue('id'));
+    assertType('int<0, max>', User::query()->soleValue('id'));
     assertType('string', User::query()->valueOrFail('name'));
-    assertType('int', User::query()->valueOrFail('id'));
+    assertType('int<0, max>', User::query()->valueOrFail('id'));
     assertType('Carbon\Carbon|null', User::query()->valueOrFail('email_verified_at'));
 
     assertType('int', User::query()->restore());

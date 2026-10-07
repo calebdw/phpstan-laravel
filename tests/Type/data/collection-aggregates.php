@@ -42,11 +42,11 @@ function test(
     assertType('int', $nullables->sum('qty'));
     assertType('float|int', $nullables->sum(fn ($r) => $r['amount']));
 
-    assertType('int|null', $users->min('id'));
+    assertType('int<0, max>|null', $users->min('id'));
     assertType('string|null', $users->max('email'));
     assertType('int|null', $rows->min('price'));
     assertType('string|null', $rows->max('name'));
-    assertType('int|null', $users->min(fn ($u) => $u->id));
+    assertType('int<0, max>|null', $users->min(fn ($u) => $u->id));
 
     assertType('float|int|null', $ints->avg());
     assertType('float|int|null', $ints->average());
@@ -57,12 +57,12 @@ function test(
 
     assertType('float|int|null', $ints->median());
     assertType('float|null', $floats->median());
-    assertType('float|int|null', $users->median('id'));
+    assertType('float|int<0, max>|null', $users->median('id'));
     assertType('float|int|null', $rows->median('price'));
 
     assertType('list<int>|null', $ints->mode());
     assertType('list<string>|null', $names->mode());
-    assertType('list<int>|null', $users->mode('id'));
+    assertType('list<int<0, max>>|null', $users->mode('id'));
     assertType('list<string>|null', $users->mode('email'));
     assertType('list<string>|null', $rows->mode('name'));
 }

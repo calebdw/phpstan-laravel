@@ -28,7 +28,7 @@ function test(
     // A literal key is the only group that callback can produce, so it stays
     // a literal. Eloquent map() then toBase()s the outer collection.
     assertType(
-        "Illuminate\Support\Collection<'foo', Illuminate\Database\Eloquent\Collection<int, int>>",
+        "Illuminate\Support\Collection<'foo', Illuminate\Database\Eloquent\Collection<int, int<0, max>>>",
         $users->mapToGroups(fn (User $user): array => ['foo' => $user->id]),
     );
 
@@ -38,7 +38,7 @@ function test(
         $users->mapToGroups(fn ($u) => [$u->email => $u]),
     );
     assertType(
-        'Illuminate\Support\Collection<int, Illuminate\Database\Eloquent\Collection<int, App\User>>',
+        'Illuminate\Support\Collection<int<0, max>, Illuminate\Database\Eloquent\Collection<int, App\User>>',
         $users->mapToGroups(fn ($u) => [$u->id => $u]),
     );
 
@@ -66,14 +66,14 @@ function test(
 
     // Branching literals union the keys the same way groupBy does.
     assertType(
-        "Illuminate\Support\Collection<'hi'|'lo', Illuminate\Database\Eloquent\Collection<int, int>>",
+        "Illuminate\Support\Collection<'hi'|'lo', Illuminate\Database\Eloquent\Collection<int, int<0, max>>>",
         $users->mapToGroups(fn (User $u): array => $u->id > 1 ? ['hi' => $u->id] : ['lo' => $u->id]),
     );
 
     // Runtime only reads the first pair, so a second key in the same array
     // does not become a group.
     assertType(
-        "Illuminate\Support\Collection<'foo', Illuminate\Database\Eloquent\Collection<int, int>>",
+        "Illuminate\Support\Collection<'foo', Illuminate\Database\Eloquent\Collection<int, int<0, max>>>",
         $users->mapToGroups(fn (User $u): array => ['foo' => $u->id, 'bar' => $u->email]),
     );
 
@@ -84,7 +84,7 @@ function test(
         $users->mapToDictionary(fn ($u) => [$u->email => $u]),
     );
     assertType(
-        "Illuminate\Database\Eloquent\Collection<'foo', array<int, int>>",
+        "Illuminate\Database\Eloquent\Collection<'foo', array<int, int<0, max>>>",
         $users->mapToDictionary(fn (User $u): array => ['foo' => $u->id]),
     );
     assertType(

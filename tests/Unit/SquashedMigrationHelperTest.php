@@ -15,6 +15,7 @@ use Tests\Unit\Concerns\HasDatabaseHelper;
 use Tests\Unit\Concerns\SkipsMissingSqlParsers;
 
 use function array_keys;
+use function array_map;
 
 #[CoversClass(SchemaDumpParser::class)]
 class SquashedMigrationHelperTest extends PHPStanTestCase
@@ -198,6 +199,42 @@ class SquashedMigrationHelperTest extends PHPStanTestCase
         $this->assertTrue($users['created_at']->nullable);
 
         $this->assertSame('string', $tables['posts']->columns['published_at']->readableType);
+    }
+
+    /**
+     * A squashed dump is the same schema the migrations it replaced declared,
+     * so a model's columns cannot change type just because the project ran
+     * `schema:dump`. The two parsers reading unsigned columns differently is
+     * what this guards against.
+     */
+    #[Test]
+    #[DataProvider('driverProvider')]
+    public function it_agrees_with_the_migration_parser_on_unsigned_columns(string $driver): void
+    {
+        $this->skipUnlessParserInstalled($driver);
+
+        $this->getMigrationHelper([__DIR__ . '/data/unsigned_integer_columns'])
+            ->parseMigrations($this->modelDatabaseHelper);
+
+        $fromMigrations = $this->countersColumnTypes();
+
+        $this->setUpHasDatabaseHelper();
+
+        $this->getSquashedMigrationHelper(
+            [__DIR__ . '/data/schema/unsigned_integer_columns'],
+            driver: $driver,
+        )->parseSchemaDumps($this->modelDatabaseHelper);
+
+        $this->assertSame($fromMigrations, $this->countersColumnTypes());
+    }
+
+    /** @return array<string, string> */
+    private function countersColumnTypes(): array
+    {
+        return array_map(
+            static fn ($c) => $c->readableType,
+            $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables['counters']->columns,
+        );
     }
 
     #[Test]
