@@ -657,6 +657,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#static-calls-inside-a-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Static calls inside a model
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1388,6 +1399,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#static-calls-inside-a-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Static calls inside a model
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1531,6 +1553,41 @@ collection serves several models, since the generic can then say which:</p>
 </span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>    <span class="k">protected</span> <span class="k">static</span> <span class="nx">string</span> <span class="nv">$collectionClass</span> <span class="o">=</span> <span class="nx">GeneralCollection</span><span class="o">::</span><span class="na">class</span><span class="p">;</span>
 </span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="p">}</span>
 </span></code></pre></div>
+<h2 id="static-calls-inside-a-model">Static calls inside a model<a class="headerlink" href="#static-calls-inside-a-model" title="Permanent link">&para;</a></h2>
+<p>Whether <code>all()</code> and <code>query()</code> give the model or <code>static</code> depends on the model,
+not on how the call is written:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Model</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="p">{</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">everyone</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="p">{</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>        <span class="nx">self</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>    <span class="c1">// Collection&lt;int, static(User)&gt;</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>        <span class="nv">$this</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>   <span class="c1">// Collection&lt;int, static(User)&gt;</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>        <span class="k">static</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>  <span class="c1">// Collection&lt;int, static(User)&gt;</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>        <span class="k">parent</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>  <span class="c1">// Collection&lt;int, static(User)&gt;</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>        <span class="nx">User</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>    <span class="c1">// Collection&lt;int, User&gt;</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    <span class="p">}</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="p">}</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="k">final</span> <span class="k">class</span> <span class="nc">Invoice</span> <span class="k">extends</span> <span class="nx">Model</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="p">{</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>    <span class="k">public</span> <span class="k">function</span> <span class="nf">everyone</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>    <span class="p">{</span>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>        <span class="nx">self</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>    <span class="c1">// Collection&lt;int, Invoice&gt;</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>        <span class="k">static</span><span class="o">::</span><span class="na">all</span><span class="p">();</span>  <span class="c1">// Collection&lt;int, Invoice&gt;</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>    <span class="p">}</span>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><code>all()</code> and <code>query()</code> are inherited from <code>Model</code> and resolve the model with
+<code>static</code>, and <code>self::</code>, <code>$this::</code> and <code>parent::</code> are forwarding calls that hand
+late static binding straight through to it. Calling <code>User::everyone()</code> on a
+subclass therefore gives a collection of that subclass, whichever of them the
+body used. Writing the class name out is the one form that does not forward,
+and names that class.</p>
+<p>A final model is where this stops mattering: nothing can extend it, so <code>static</code>
+is the model. That is already how PHPStan reads a plain <code>@return static</code>; it
+only misses it inside a generic argument such as <code>Collection&lt;int, static&gt;</code>.</p>
+<p>So annotate a method on an open model <code>@return Collection&lt;int, static&gt;</code>, and
+one on a final model whichever of <code>self</code> or <code>static</code> reads better.</p>
 
 
 

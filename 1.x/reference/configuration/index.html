@@ -2368,11 +2368,14 @@ authors stand up a full Testbench workbench just to get config types, set
 </span></code></pre></div>
 <p>Paths may be absolute or relative to the PHPStan config file that declares them,
 and directories are searched recursively. <code>*</code> and <code>?</code> glob patterns are supported
-for the directory portion, which is useful for modular layouts. A file's name is what the first
-segment of a config key is matched against, wherever the file sits in the tree —
-<code>modules/billing/config/invoices.php</code> answers <code>config('invoices.*')</code>. If two
-files share a name, the first one found wins, in the order the directories are
-listed.</p>
+for the directory portion, which is useful for modular layouts.</p>
+<p>A file is keyed by its path below the directory, exactly as Laravel loads it, so
+<code>config/billing/invoices.php</code> answers <code>config('billing.invoices.*')</code> and not
+<code>config('invoices.*')</code>. Nesting goes as deep as the directories do, and two files
+that share a name in different directories are different keys. Where both
+<code>config/billing.php</code> and <code>config/billing/invoices.php</code> declare <code>billing.invoices</code>
+the nested file wins, again matching Laravel. If two <em>directories</em> contain the
+same relative path, the first one listed wins.</p>
 <p>The same parameter tells <a href="../../rules/config/#env-call-outside-config">the env-call rule</a>
 where <code>env()</code> calls are allowed to live, so if you already set it for that rule
 you get the type inference for free.</p>

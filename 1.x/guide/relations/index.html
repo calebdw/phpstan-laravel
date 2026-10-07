@@ -1317,7 +1317,9 @@ model.</p>
 </span></code></pre></div>
 <p><code>whereHas</code>, <code>whereRelation</code>, and the morph variants type the query callback as
 the related model's builder, including custom builders. <code>withWhereHas</code> and
-<code>with()</code> include the relation object as well. See
+<code>with()</code> include the relation object as well, and each closure in a builder
+<code>with()</code> array receives the relation its key names
+(<a href="../custom-types/#eager-load-of"><code>eager-load-of</code></a>). See
 <a href="../custom-types/#builder-of"><code>builder-of</code></a> for the <code>builder-of&lt;User, 'posts'&gt;</code>
 phpdoc form.</p>
 

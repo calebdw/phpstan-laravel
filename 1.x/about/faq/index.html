@@ -1361,6 +1361,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#does-a-new-migration-re-analyse-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Does a new migration re-analyse everything?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1674,6 +1685,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#does-a-new-migration-re-analyse-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Does a new migration re-analyse everything?
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1856,6 +1878,21 @@ scanning is proportional to how many files you have; if your models carry
 and <code>scanSchema: false</code> skip it.</p>
 <p>Beyond that, the usual PHPStan advice applies: keep the result cache between
 runs, and do not point <code>paths</code> at <code>vendor</code>.</p>
+<h2 id="does-a-new-migration-re-analyse-everything">Does a new migration re-analyse everything?<a class="headerlink" href="#does-a-new-migration-re-analyse-everything" title="Permanent link">&para;</a></h2>
+<p>No. Whatever reads a column - a model property, <code>$appends</code>, <code>toArray()</code>, a
+<code>model-property</code> argument - records that it read the migration and schema
+directories, so a change there re-analyses the models and the files using
+them. Code that never touches the database stays cached.</p>
+<p>Configuration is tracked per file. Reading <code>config('mail.default')</code> depends
+on <code>config/mail.php</code>, on the environment file and on a cached config, so a
+change to <code>config/app.php</code> leaves it alone. Nested directories are followed
+the way Laravel keys them, so <code>config('email.engineering.designs.subject')</code>
+depends on <code>config/email/engineering/designs.php</code> and on the files that
+could come to declare it instead.</p>
+<p>Views are tracked per view. <code>view('reports.monthly')</code> depends on the files
+the view finder would look for - every path it searches, in each of its
+extensions - so writing <code>reports/monthly.blade.php</code> clears the error about
+it, and editing an unrelated template leaves the call alone.</p>
 
 
 
