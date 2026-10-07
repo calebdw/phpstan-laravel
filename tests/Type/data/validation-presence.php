@@ -122,9 +122,12 @@ function testRuleObjects(bool $flag, RuleObjectRequest $request): void
         'empty.a' => 'string',
         'unknown' => ['required', new Stringy()],
         'unknown.a' => 'string',
+        'unless' => [Rule::excludeUnless($flag), 'required', 'string'],
+        'builder' => ['required', Rule::unique('users')],
+        'builder.a' => 'string',
     ]);
-    assertType('array{ex?: string, exn?: string, r?: array<int|string, string>, items: array<int|string, array{id?: int|numeric-string}>, opts: array{a?: string}, empty?: array{a?: string}, unknown?: array{a?: string}}', $objects->validated());
-    assertType('array{ex?: string, exn?: string, r?: array<int|string, string>, items: array<int|string, array{id?: int|numeric-string}>, opts: array{a?: string}, empty?: array{a?: string}, unknown?: array{a?: string}}', $request->validated());
+    assertType('array{ex?: string, exn?: string, r?: array<int|string, string>, items: array<int|string, array{id?: int|numeric-string}>, opts: array{a?: string}, empty?: array{a?: string}, unknown?: array{a?: string}, unless?: string, builder: array{a?: string}}', $objects->validated());
+    assertType('array{ex?: string, exn?: string, r?: array<int|string, string>, items: array<int|string, array{id?: int|numeric-string}>, opts: array{a?: string}, empty?: array{a?: string}, unknown?: array{a?: string}, unless?: string, builder: array{a?: string}}', $request->validated());
 }
 
 class OptionalRequest extends FormRequest
@@ -189,6 +192,9 @@ class RuleObjectRequest extends FormRequest
             'empty.a' => 'string',
             'unknown' => ['required', new Stringy()],
             'unknown.a' => 'string',
+            'unless' => [Rule::excludeUnless($this->boolean('flag')), 'required', 'string'],
+            'builder' => ['required', Rule::unique('users')],
+            'builder.a' => 'string',
         ];
     }
 }
