@@ -39,7 +39,9 @@ $post->enum('status', PostStatus::class); // PostStatus|null
 A key is required when its rules include `required`, `present`, `accepted`
 or `declined`, without `sometimes` or an `exclude` rule. `validated()`
 rebuilds an `array` parent with child rules from the children that exist,
-so an optional child rule can leave the parent out.
+so an optional child rule can leave the parent out. An application that
+calls `Validator::includeUnvalidatedArrayKeys()` keeps such a parent
+whole, and is read from the booted container.
 
 A wildcard keeps whatever keys were submitted, because Laravel does not
 reindex them: `tags.*` is `array<int|string, string>` rather than a list.
