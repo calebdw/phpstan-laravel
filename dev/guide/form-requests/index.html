@@ -1281,9 +1281,11 @@
 
 <h1 id="form-requests">Form requests<a class="headerlink" href="#form-requests" title="Permanent link">&para;</a></h1>
 <p><code>rules()</code> is parsed when it is a constant array of pipe-strings, arrays of
-strings, <code>Rule::enum()</code> / <code>new Enum()</code>, <code>Rule::in()</code> / <code>in:</code>, and <code>min</code> /
-<code>max</code> / <code>between</code> on integers. Closures, <code>Rule::when()</code>, and <code>$this-&gt;…</code> in
-the array are skipped.</p>
+strings, <code>Rule::enum()</code> / <code>new Enum()</code>, <code>Rule::in()</code> / <code>in:</code>, the <code>File</code>,
+<code>ImageFile</code> and <code>Dimensions</code> rule objects however they are built, and <code>min</code> /
+<code>max</code> / <code>between</code> on integers. A chain such as <code>Rule::enum(…)-&gt;only(…)</code> is
+read from its first call. Closures, <code>Rule::when()</code>, and <code>$this-&gt;…</code> in the
+array are skipped.</p>
 <p>Validation does not cast. <code>validated()</code> and <code>$request-&gt;title</code> are the values
 as they arrived (forms are strings; JSON may already be <code>int</code>/<code>bool</code>). Use
 <code>integer()</code>, <code>boolean()</code>, and <code>enum()</code> when you want a cast.</p>
@@ -1323,10 +1325,10 @@ reindex them: <code>tags.*</code> is <code>array&lt;int|string, string&gt;</code
 Laravel's own <code>list</code> rule on the parent narrows it back to one. A dotted
 segment that is numeric is an integer key, the way PHP casts it, so
 <code>items.0.id</code> is <code>array{items: array{0: array{id: …}}}</code>.</p>
-<p>A ternary in the rules array is read on both branches and unioned; the
-condition is not evaluated, so it can be anything. The field is required
-only when every branch requires it, and a branch that <code>exclude</code>s it
-contributes no type but leaves the key optional.</p>
+<p>A ternary, around a field's rules or around one rule among them, is read
+on both branches and unioned; the condition is not evaluated, so it can be
+anything. The field is required only when every branch requires it, and a
+branch that <code>exclude</code>s it contributes no type but leaves the key optional.</p>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="s1">'discount'</span> <span class="o">=&gt;</span> <span class="nv">$condition</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="o">?</span> <span class="p">[</span><span class="s1">'nullable'</span><span class="p">,</span> <span class="s1">'numeric'</span><span class="p">]</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="o">:</span> <span class="p">[</span><span class="s1">'exclude'</span><span class="p">],</span>
