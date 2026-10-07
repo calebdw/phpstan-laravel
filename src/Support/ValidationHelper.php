@@ -93,6 +93,8 @@ use function strtolower;
  *     in: list<Type>,
  *     strippable: bool
  * }
+ * @phpstan-type Group array{type: Type, kept: bool, keepsParent: bool}
+ * @phpstan-type Shape array{type: Type, anyKept: bool, allKeepParent: bool}
  */
 final class ValidationHelper
 {
@@ -824,13 +826,13 @@ final class ValidationHelper
     /** @param  array<array-key, Field> $fields */
     private function shape(array $fields): Type
     {
-        return $this->shapeOf($fields)[0];
+        return $this->shapeOf($fields)['type'];
     }
 
     /**
      * @param  array<array-key, Field> $fields
      *
-     * @return array{0: Type, 1: bool, 2: bool}
+     * @return Shape
      */
     private function shapeOf(array $fields): array
     {
@@ -844,16 +846,20 @@ final class ValidationHelper
             $groups[$head][] = [$tail, $field];
         }
 
-        $allSafe = true;
+        $allKeepParent = true;
 
         if (array_key_exists('*', $groups)) {
-            [$type, , $allSafe] = $this->groupType($groups['*'], true);
+            $element       = $this->groupType($groups['*'], true);
+            $allKeepParent = $element['keepsParent'];
 
             if (count($groups) === 1) {
                 return [
-                    new ArrayType(TypeCombinator::union(new IntegerType(), new StringType()), $type),
-                    false,
-                    $allSafe,
+                    'type' => new ArrayType(
+                        TypeCombinator::union(new IntegerType(), new StringType()),
+                        $element['type'],
+                    ),
+                    'anyKept' => false,
+                    'allKeepParent' => $allKeepParent,
                 ];
             }
         }
@@ -866,16 +872,16 @@ final class ValidationHelper
                 continue;
             }
 
-            [$type, $kept, $safe] = $this->groupType($entries);
-            $anyKept              = $anyKept || $kept;
-            $allSafe              = $allSafe && $safe;
-            $keyType              = is_int($key)
+            $group         = $this->groupType($entries);
+            $anyKept       = $anyKept || $group['kept'];
+            $allKeepParent = $allKeepParent && $group['keepsParent'];
+            $keyType       = is_int($key)
                 ? new ConstantIntegerType($key)
                 : new ConstantStringType($key);
-            $builder->setOffsetValueType($keyType, $type, ! $kept);
+            $builder->setOffsetValueType($keyType, $group['type'], ! $group['kept']);
         }
 
-        return [$builder->getArray(), $anyKept, $allSafe];
+        return ['type' => $builder->getArray(), 'anyKept' => $anyKept, 'allKeepParent' => $allKeepParent];
     }
 
     /**
@@ -887,9 +893,9 @@ final class ValidationHelper
      *
      * @param  list<array{0: string, 1: Field}> $entries
      *
-     * @return array{0: Type, 1: bool, 2: bool}
+     * @return Group
      */
-    private function groupType(array $entries, bool $element = false): array
+    private function groupType(array $entries, bool $wildcard = false): array
     {
         $nested = [];
         $leaf   = null;
@@ -904,12 +910,19 @@ final class ValidationHelper
         }
 
         if ($leaf === null) {
-            [$type, $kept, $allSafe] = $this->shapeOf($nested);
+            $shape = $this->shapeOf($nested);
 
-            return [$type, $kept, $kept || $allSafe];
+            return [
+                'type' => $shape['type'],
+                'kept' => $shape['anyKept'],
+                'keepsParent' => $shape['anyKept'] || $shape['allKeepParent'],
+            ];
         }
 
-        [$type, $namedKept, $allSafe] = $nested === [] ? [$leaf['type'], false, true] : $this->shapeOf($nested);
+        $shape = $nested === []
+            ? ['type' => $leaf['type'], 'anyKept' => false, 'allKeepParent' => true]
+            : $this->shapeOf($nested);
+        $type  = $shape['type'];
 
         if ($nested !== [] && $leaf['type']->isList()->yes()) {
             $type = TypeCombinator::intersect($type, new AccessoryArrayListType());
@@ -919,10 +932,18 @@ final class ValidationHelper
             $type = TypeCombinator::union($type, new NullType());
         }
 
-        $keptWithValue = $namedKept || ! $leaf['strippable'] || $allSafe;
-        $kept          = $namedKept || ($leaf['required'] && $keptWithValue);
+        // A stripped key is rebuilt from the children it keeps, so it survives
+        // only when one of them is kept, or when every child that is not kept
+        // took its rule with it and left the parent whole.
+        $keptWhenPresent = $shape['anyKept'] || ! $leaf['strippable'] || $shape['allKeepParent'];
+        $kept            = $shape['anyKept'] || ($leaf['required'] && $keptWhenPresent);
 
-        return [$type, $kept && ! $leaf['excludable'], $element ? $keptWithValue : $kept];
+        return [
+            'type' => $type,
+            'kept' => $kept && ! $leaf['excludable'],
+            // A `*` entry says nothing about whether its parent was sent.
+            'keepsParent' => $wildcard ? $keptWhenPresent : $kept,
+        ];
     }
 
     /** @return array<string, Type> */
