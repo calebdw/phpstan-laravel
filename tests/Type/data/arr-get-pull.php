@@ -28,6 +28,8 @@ function test(ArrayAccess $arrayAccess, array $union, array $map, array $nested,
     assertType('string', Arr::get($nested, 'user.name'));
     assertType('string|null', Arr::get($nested, 'user.email'));
     assertType('5', Arr::get($nested, 'user.missing', static fn (): int => 5));
+    // value() calls only a Closure, so a callable string is the default itself.
+    assertType("'time'", Arr::get($nested, 'user.missing', 'time'));
 
     $present = ['foo' => 1];
     $missing = ['foo' => 1];

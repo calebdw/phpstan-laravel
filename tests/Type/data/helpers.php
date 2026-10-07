@@ -165,6 +165,10 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
     assertType('int|string', value($intOrClosure));
     assertType('mixed', value($intOrClosureWithNoDocBlock));
 
+    // Only a Closure is called, so a callable string comes back as it is.
+    assertType("'time'", value('time'));
+    assertType('int<1, max>', value(time(...)));
+
     assertType('array<string, mixed>|null', transform(User::first(), fn (User $user) => $user->getAttributes()));
     assertType('array<string, mixed>', transform(User::sole(), fn (User $user) => $user->getAttributes()));
 

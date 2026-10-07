@@ -6,7 +6,6 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use ArrayAccess;
 use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
-use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use PhpParser\Node\Arg;
@@ -31,7 +30,6 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\TypeUtils;
 use PHPStan\Type\UnionType;
 use Throwable;
@@ -266,7 +264,7 @@ final class ColumnHelper
             return null;
         }
 
-        $default = $default === null ? new NullType() : $this->resolveDefault($scope->getType($default->value), $scope);
+        $default = $default === null ? new NullType() : $this->typeHelper->valueOf($scope->getType($default->value), $scope);
         $types   = $key->isNull()->no() ? [] : [$target];
 
         foreach ($paths as $segments) {
@@ -462,27 +460,5 @@ final class ColumnHelper
         }
 
         return ! $member->isArray()->no() || $this->typeHelper->isCalledOn($member, ArrayAccess::class);
-    }
-
-    /** value() calls a default only when it is a Closure. */
-    private function resolveDefault(Type $type, Scope $scope): Type
-    {
-        $closure = new ObjectType(Closure::class);
-
-        return TypeTraverser::map($type, static function (Type $type, callable $traverse) use ($closure, $scope): Type {
-            if (! $type->isCallable()->yes()) {
-                return $traverse($type);
-            }
-
-            $isClosure = $closure->isSuperTypeOf($type);
-
-            if ($isClosure->no()) {
-                return $type;
-            }
-
-            $returnType = $type->getCallableParametersAcceptors($scope)[0]->getReturnType();
-
-            return $isClosure->yes() ? $returnType : TypeCombinator::union($type, $returnType);
-        });
     }
 }

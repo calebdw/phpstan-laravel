@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods;
 
+use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
@@ -13,7 +14,6 @@ use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use PHPStan\Type\TypeTraverser;
 
 use function explode;
 use function in_array;
@@ -21,6 +21,10 @@ use function str_contains;
 
 final class ArrGetPullExtension implements DynamicStaticMethodReturnTypeExtension
 {
+    public function __construct(private TypeHelper $typeHelper)
+    {
+    }
+
     public function getClass(): string
     {
         return Arr::class;
@@ -43,7 +47,7 @@ final class ArrGetPullExtension implements DynamicStaticMethodReturnTypeExtensio
         $arrayType = $scope->getType($arrayArg->value);
         $keyType   = $scope->getType($keyArg->value);
         $default   = $methodCall->getArg('default', 2);
-        $default   = $default === null ? new NullType() : $this->resolveValueType($scope->getType($default->value), $scope);
+        $default   = $default === null ? new NullType() : $this->typeHelper->valueOf($scope->getType($default->value), $scope);
 
         if ($keyType->isNull()->yes()) {
             return $arrayType;
@@ -119,16 +123,5 @@ final class ArrGetPullExtension implements DynamicStaticMethodReturnTypeExtensio
         }
 
         return $possiblyMissing ? TypeCombinator::union($array, $default) : $array;
-    }
-
-    private function resolveValueType(Type $type, Scope $scope): Type
-    {
-        return TypeTraverser::map($type, static function (Type $type, callable $traverse) use ($scope): Type {
-            if ($type->isCallable()->yes()) {
-                return $type->getCallableParametersAcceptors($scope)[0]->getReturnType();
-            }
-
-            return $traverse($type);
-        });
     }
 }
