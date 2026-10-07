@@ -28,9 +28,12 @@ function test(Collection $users, string $name): void
 
     User::query()->with(['accounts' => fn (HasMany $q) => assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $q)]);
 
+    // A key PHPStan cannot read collapses the array, taking the literal keys
+    // beside it with it. The relation is still one of the model's, which is
+    // worth more to the closure than a mixed.
     User::query()->with([
-        'accounts' => fn ($q) => assertType('mixed', $q),
-        $name => fn ($q) => assertType('mixed', $q),
+        'accounts' => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\Relation<Illuminate\Database\Eloquent\Model, App\User>', $q),
+        $name => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\Relation<Illuminate\Database\Eloquent\Model, App\User>', $q),
     ]);
 
     User::query()->withOnly(['accounts' => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $q)]);

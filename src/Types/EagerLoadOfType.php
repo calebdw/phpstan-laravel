@@ -20,6 +20,7 @@ use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\LateResolvableType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\StringType;
 use PHPStan\Type\Traits\LateResolvableTypeTrait;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -48,32 +49,57 @@ final class EagerLoadOfType implements CompoundType, LateResolvableType
 
     protected function getResult(): Type
     {
+        $closure = new ObjectType(Closure::class);
+        $array   = new ArrayType(new MixedType(), new MixedType());
+        $value   = TypeCombinator::intersect($this->bound, $array)->getIterableValueType();
+
         if (! $this->relations->isConstantArray()->yes()) {
-            return $this->bound;
+            // A key that cannot be read takes the keys beside it with it, as
+            // PHPStan has already collapsed the array by the time we see it.
+            // The relation is still one of the model's, which is worth more to
+            // the closure than the mixed the bound would hand it.
+            $members = [];
+
+            foreach (TypeUtils::flattenTypes($value) as $member) {
+                $members[] = $closure->isSuperTypeOf($member)->yes()
+                    ? $this->closureFor(new StringType())
+                    : $member;
+            }
+
+            return TypeCombinator::union(
+                ...TypeUtils::flattenTypes(TypeCombinator::remove($this->bound, $array)),
+                ...[new ArrayType(new MixedType(), TypeCombinator::union(...$members))],
+            );
         }
 
-        $closure = new ObjectType(Closure::class);
-        $value   = TypeCombinator::intersect($this->bound, new ArrayType(new MixedType(), new MixedType()))->getIterableValueType();
-        $arrays  = [];
+        $arrays = [];
 
-        foreach ($this->relations->getConstantArrays() as $array) {
+        foreach ($this->relations->getConstantArrays() as $constantArray) {
             $builder = ConstantArrayTypeBuilder::createEmpty();
 
-            foreach ($array->getKeyTypes() as $i => $key) {
+            foreach ($constantArray->getKeyTypes() as $i => $key) {
                 $keyValue = $value;
 
-                if ($key->isString()->yes() && $closure->isSuperTypeOf($array->getValueTypes()[$i])->yes()) {
-                    $relation = new RelationOfType($this->type, $key, $this->builderHelper);
-                    $keyValue = new ClosureType([new SimpleParameterReflection('query', $relation)], new MixedType());
+                if ($key->isString()->yes() && $closure->isSuperTypeOf($constantArray->getValueTypes()[$i])->yes()) {
+                    $keyValue = $this->closureFor($key);
                 }
 
-                $builder->setOffsetValueType($key, $keyValue, $array->isOptionalKey($i));
+                $builder->setOffsetValueType($key, $keyValue, $constantArray->isOptionalKey($i));
             }
 
             $arrays[] = $builder->getArray();
         }
 
         return TypeCombinator::union(...$arrays);
+    }
+
+    /** The callback a relation name, or any of them, hands its query to. */
+    private function closureFor(Type $relationNames): ClosureType
+    {
+        return new ClosureType(
+            [new SimpleParameterReflection('query', new RelationOfType($this->type, $relationNames, $this->builderHelper))],
+            new MixedType(),
+        );
     }
 
     public function isResolvable(): bool
