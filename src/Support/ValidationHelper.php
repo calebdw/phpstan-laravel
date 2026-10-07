@@ -117,6 +117,12 @@ final class ValidationHelper
 
     private bool $stripsUnvalidatedKeys;
 
+    /** The rule objects that put an uploaded file on the field. */
+    private Type $fileRules;
+
+    /** The rule objects Laravel wraps instead of casting to a string. */
+    private Type $wrappedRules;
+
     /** @var array<string, array<string, Type>> */
     private array $properties = [];
 
@@ -127,6 +133,18 @@ final class ValidationHelper
         private CallHelper $callHelper,
         private ContainerHelper $containerHelper,
     ) {
+        $this->fileRules = TypeCombinator::union(
+            new ObjectType(File::class),
+            new ObjectType(Dimensions::class),
+        );
+
+        $this->wrappedRules = TypeCombinator::union(
+            new ObjectType(Closure::class),
+            new ObjectType(ValidationRule::class),
+            // Deprecated, but user rules still implement them.
+            new ObjectType('Illuminate\Contracts\Validation\Rule'),
+            new ObjectType('Illuminate\Contracts\Validation\InvokableRule'),
+        );
     }
 
     public function validatedShape(ClassReflection $class): Type|null
@@ -525,10 +543,7 @@ final class ValidationHelper
 
     private function isFileRule(Type|null $type): bool
     {
-        return $type !== null && TypeCombinator::union(
-            new ObjectType(File::class),
-            new ObjectType(Dimensions::class),
-        )->isSuperTypeOf($type)->yes();
+        return $type !== null && $this->fileRules->isSuperTypeOf($type)->yes();
     }
 
     /**
@@ -583,15 +598,7 @@ final class ValidationHelper
             return true;
         }
 
-        $wrapped = TypeCombinator::union(
-            new ObjectType(Closure::class),
-            new ObjectType(ValidationRule::class),
-            // Deprecated, but user rules still implement them.
-            new ObjectType('Illuminate\Contracts\Validation\Rule'),
-            new ObjectType('Illuminate\Contracts\Validation\InvokableRule'),
-        );
-
-        return ! $wrapped->isSuperTypeOf($type)->yes() && ! $this->isRuleBuilder($type);
+        return ! $this->wrappedRules->isSuperTypeOf($type)->yes() && ! $this->isRuleBuilder($type);
     }
 
     /**
