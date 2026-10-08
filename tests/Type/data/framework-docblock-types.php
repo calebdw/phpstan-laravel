@@ -41,3 +41,11 @@ function other(Kernel $kernel, Route $route): void
     // Laravel types the builder itself but not the facade in front of it
     assertType('list<string>', Schema::getColumnListing('users'));
 }
+
+function fakeInspection(): void
+{
+    assertType('Illuminate\Support\Collection', Event::dispatched('event'));
+    assertType('bool', Event::hasDispatched('event'));
+    assertType('array', Event::dispatchedEvents());
+    assertType('Illuminate\Support\Testing\Fakes\EventFake', Event::except('event'));
+}
