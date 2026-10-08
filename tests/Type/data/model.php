@@ -247,7 +247,7 @@ function test(
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $className::query()->active()->get());
 
     assertType('string', Thread::valid()->toRawSql());
-    assertType('Illuminate\Database\Eloquent\Builder<App\Thread>', Thread::valid()->dumpRawSql());
+    assertType('Illuminate\Database\Query\Builder', Thread::valid()->dumpRawSql());
 
     User::where(function (Builder $query) {
         assertType('Illuminate\Database\Eloquent\Builder<App\User>', $query);
