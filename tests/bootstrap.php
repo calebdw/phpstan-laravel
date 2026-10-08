@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\CustomGuard;
+use App\FirstCustomQueryBuilder;
 use App\Importer;
+use App\SecondCustomQueryBuilder;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +30,10 @@ Builder::macro('modelBoundMacro', function (): string {
 \Illuminate\Database\Query\Builder::macro('globalCustomDatabaseQueryMacro', static function (string $arg = 'foobar', int $b = 5): string {
     return $arg;
 });
+
+FirstCustomQueryBuilder::macro('customScalar', fn (int $v): int => $v);
+SecondCustomQueryBuilder::macro('customScalar', fn (int $v): string => (string) $v);
+FirstCustomQueryBuilder::macro('count', fn (): string => 'shadowed');
 
 Route::macro('facadeMacro', static function (): int {
     return 5;

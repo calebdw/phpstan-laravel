@@ -271,7 +271,7 @@ services:
     tags: [phpstan.phpDoc.typeNodeResolverExtension]
   - class: CalebDW\PhpstanLaravel\Rules\OctaneCompatibilityRule
   - class: CalebDW\PhpstanLaravel\Rules\NoEnvCallsOutsideOfConfigRule
-    arguments: {configDirectories: %laravel.configDirectories%}
+    arguments: {configDirectories: %laravel.configDirectories%, singleReflectionFile: %singleReflectionFile%, singleReflectionInsteadOfFile: %singleReflectionInsteadOfFile%}
   - class: CalebDW\PhpstanLaravel\Rules\NoModelMakeRule
   - class: CalebDW\PhpstanLaravel\Rules\NoUnnecessaryCollectionCallRule
     arguments: {onlyMethods: %laravel.rules.unnecessaryCollectionCall.only%, excludeMethods: %laravel.rules.unnecessaryCollectionCall.except%}

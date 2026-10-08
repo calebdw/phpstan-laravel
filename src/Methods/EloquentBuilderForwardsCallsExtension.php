@@ -10,6 +10,7 @@ use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
@@ -99,7 +100,7 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
         }
 
         // Macros have their own reflection. And return type, parameters, etc. are already set with the closure.
-        if ($ref instanceof MacroMethodReflection) {
+        if ($ref instanceof MacroMethodReflection && ! $ref->getDeclaringClass()->is(QueryBuilder::class)) {
             return $ref;
         }
 

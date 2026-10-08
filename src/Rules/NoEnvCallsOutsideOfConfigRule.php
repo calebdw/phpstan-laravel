@@ -35,6 +35,8 @@ final class NoEnvCallsOutsideOfConfigRule implements Rule
         private FileHelper $fileHelper,
         private ContainerHelper $containerHelper,
         private CallHelper $callHelper,
+        private string|null $singleReflectionFile = null,
+        private string|null $singleReflectionInsteadOfFile = null,
     ) {
         if ($configDirectories !== []) {
             $this->configDirectories = array_map(
@@ -91,6 +93,16 @@ final class NoEnvCallsOutsideOfConfigRule implements Rule
             return false;
         }
 
+        $file = $scope->getFile();
+
+        if ($this->singleReflectionFile !== null && $this->fileHelper->normalizePath($file) === $this->fileHelper->normalizePath($this->singleReflectionFile)) {
+            if ($this->singleReflectionInsteadOfFile === null) {
+                return false;
+            }
+
+            $file = $this->singleReflectionInsteadOfFile;
+        }
+
         foreach ($this->configDirectories as $configDirectory) {
             $absolutePath = $this->fileHelper->absolutizePath($configDirectory);
 
@@ -98,7 +110,7 @@ final class NoEnvCallsOutsideOfConfigRule implements Rule
                 continue;
             }
 
-            if (str_starts_with($scope->getFile(), $absolutePath)) {
+            if (str_starts_with($file, $absolutePath)) {
                 return false;
             }
         }

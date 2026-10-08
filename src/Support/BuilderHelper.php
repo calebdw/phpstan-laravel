@@ -218,17 +218,6 @@ final class BuilderHelper
         }
 
         $queryBuilderType = $this->queryBuilderType($eloquentBuilder);
-        $hasNativeMethod  = false;
-
-        foreach ($queryBuilderType->getObjectClassReflections() as $queryBuilder) {
-            $hasNativeMethod = $hasNativeMethod || $queryBuilder->hasNativeMethod($methodName);
-        }
-
-        $queryBuilderReflection = $this->reflectionProvider->getClass(QueryBuilder::class);
-
-        if (! $hasNativeMethod && $this->macroMethodsClassReflectionExtension->hasMethod($queryBuilderReflection, $methodName)) {
-            return $this->macroMethodsClassReflectionExtension->getMethod($queryBuilderReflection, $methodName);
-        }
 
         if ($queryBuilderType->hasMethod($methodName)->yes()) {
             return $queryBuilderType->getMethod($methodName, new OutOfClassScope());

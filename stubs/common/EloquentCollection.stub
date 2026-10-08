@@ -78,7 +78,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @template TMapValue
      *
      * @param  callable(TModel, TKey): TMapValue  $callback
-     * @return (array{TMapValue} is array{\Illuminate\Database\Eloquent\Model} ? static<TKey, TMapValue&\Illuminate\Database\Eloquent\Model> : \Illuminate\Support\Collection<TKey, TMapValue>)
+     * @return (TMapValue is \Illuminate\Database\Eloquent\Model ? static<TKey, TMapValue> : \Illuminate\Support\Collection<TKey, TMapValue>)
      */
     public function map(callable $callback);
 
@@ -91,7 +91,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @template TMapWithKeysValue
      *
      * @param  callable(TModel, TKey): array<TMapWithKeysKey, TMapWithKeysValue>  $callback
-     * @return (array{TMapWithKeysValue} is array{\Illuminate\Database\Eloquent\Model} ? static<TMapWithKeysKey, TMapWithKeysValue&\Illuminate\Database\Eloquent\Model> : \Illuminate\Support\Collection<TMapWithKeysKey, TMapWithKeysValue>)
+     * @return (TMapWithKeysValue is \Illuminate\Database\Eloquent\Model ? static<TMapWithKeysKey, TMapWithKeysValue> : \Illuminate\Support\Collection<TMapWithKeysKey, TMapWithKeysValue>)
      */
     public function mapWithKeys(callable $callback);
 }

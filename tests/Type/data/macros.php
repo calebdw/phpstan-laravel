@@ -34,9 +34,9 @@ function test(): void
     assertType('string', User::first()->accounts()->globalCustomMacro(b: 99));
 
     assertType('string', \Illuminate\Database\Query\Builder::globalCustomDatabaseQueryMacro(b: 99));
-    assertType('string', Post::globalCustomDatabaseQueryMacro(b: 99));
-    assertType('string', PostBuilder::globalCustomDatabaseQueryMacro(b: 99));
-    assertType('string', User::first()->accounts()->globalCustomDatabaseQueryMacro(b: 99));
+    assertType('App\PostBuilder<App\Post>', Post::globalCustomDatabaseQueryMacro(b: 99));
+    assertType('App\PostBuilder', PostBuilder::globalCustomDatabaseQueryMacro(b: 99));
+    assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', User::first()->accounts()->globalCustomDatabaseQueryMacro(b: 99));
 
     assertType('int', Route::facadeMacro());
     assertType('int', Auth::sessionGuardMacro());

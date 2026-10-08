@@ -17,6 +17,10 @@ use const DIRECTORY_SEPARATOR;
 /** @extends RuleTestCase<NoEnvCallsOutsideOfConfigRule> */
 class NoEnvCallsOutsideOfConfigRuleTest extends RuleTestCase
 {
+    private string|null $singleReflectionFile = null;
+
+    private string|null $singleReflectionInsteadOfFile = null;
+
     protected function setUp(): void
     {
         $this->overrideConfigPath(__DIR__ . '/data/config');
@@ -29,6 +33,8 @@ class NoEnvCallsOutsideOfConfigRuleTest extends RuleTestCase
             $this->getFileHelper(),
             self::getContainer()->getByType(ContainerHelper::class),
             self::getContainer()->getByType(CallHelper::class),
+            $this->singleReflectionFile,
+            $this->singleReflectionInsteadOfFile,
         );
     }
 
@@ -85,6 +91,44 @@ class NoEnvCallsOutsideOfConfigRuleTest extends RuleTestCase
             $actualErrors[1]->getFile(),
         );
         $this->assertSame(18, $actualErrors[1]->getLine());
+    }
+
+    #[Test]
+    public function itDoesNotReportEditorBuffersForConfigFiles(): void
+    {
+        $this->singleReflectionFile          = __DIR__ . '/data/env-calls.php';
+        $this->singleReflectionInsteadOfFile = __DIR__ . '/data/config/env-calls.php';
+
+        $this->analyse([__DIR__ . '/data/env-calls.php'], []);
+    }
+
+    #[Test]
+    public function itReportsEditorBuffersOutsideConfig(): void
+    {
+        $this->singleReflectionFile          = __DIR__ . '/data/config/env-calls.php';
+        $this->singleReflectionInsteadOfFile = __DIR__ . '/data/env-calls.php';
+
+        $this->analyse([__DIR__ . '/data/config/env-calls.php'], [
+            ["Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.", 5],
+            ["Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.", 6],
+        ]);
+    }
+
+    #[Test]
+    public function itUsesTheActualPathForOtherFiles(): void
+    {
+        $this->singleReflectionFile          = __DIR__ . '/data/config/env-calls.php';
+        $this->singleReflectionInsteadOfFile = __DIR__ . '/data/config/env-calls.php';
+
+        $this->itReportsEnvCallsOutsideOfConfigDirectory();
+    }
+
+    #[Test]
+    public function itDoesNotReportEditorBuffersWithoutAnOriginalPath(): void
+    {
+        $this->singleReflectionFile = __DIR__ . '/data/env-calls.php';
+
+        $this->analyse([__DIR__ . '/data/env-calls.php'], []);
     }
 
     protected function overrideConfigPath(string $path): void

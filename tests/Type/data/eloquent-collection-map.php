@@ -14,6 +14,8 @@ function mapping(Collection $users, UserCollection $custom): void
 {
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->map(fn ($u) => $u));
     assertType('Illuminate\Database\Eloquent\Collection<int, App\Account>', $users->map(fn ($u) => new Account()));
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\Account|App\User>', $users->map(fn ($u) => $u->exists ? $u : new Account()));
+    assertType('Illuminate\Database\Eloquent\Collection<string, App\Account|App\User>', $users->mapWithKeys(fn ($u) => [$u->name => $u->exists ? $u : new Account()]));
     assertType('Illuminate\Support\Collection<int, App\User|null>', $users->map(fn ($u) => $u->exists ? $u : null));
     assertType('Illuminate\Support\Collection<string, App\User|null>', $users->mapWithKeys(fn ($u) => [$u->name => $u->exists ? $u : null]));
     assertType('Illuminate\Support\Collection<int, string>', $users->map(fn ($u) => 'unknown'));
