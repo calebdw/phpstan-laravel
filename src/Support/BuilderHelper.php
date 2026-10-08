@@ -217,18 +217,37 @@ final class BuilderHelper
             }
         }
 
-        $queryBuilderReflection = $this->reflectionProvider->getClass(QueryBuilder::class);
+        $queryBuilderType = $this->queryBuilderType($eloquentBuilder);
 
-        if ($this->methodIsBuilderPassthru($methodName) || $queryBuilderReflection->hasNativeMethod($methodName)) {
-            return $queryBuilderReflection->getNativeMethod($methodName);
+        if ($queryBuilderType->hasMethod($methodName)->yes()) {
+            return $queryBuilderType->getMethod($methodName, new OutOfClassScope());
         }
 
         // Check for query builder macros
+        $queryBuilderReflection = $this->reflectionProvider->getClass(QueryBuilder::class);
         if ($this->macroMethodsClassReflectionExtension->hasMethod($queryBuilderReflection, $methodName)) {
             return $this->macroMethodsClassReflectionExtension->getMethod($queryBuilderReflection, $methodName);
         }
 
         return $this->dynamicWhere($methodName, $this->getBuilderType($eloquentBuilder->getName(), $modelType), $modelType);
+    }
+
+    public function queryBuilderType(ClassReflection $eloquentBuilder): Type
+    {
+        $fallback = new ObjectType(QueryBuilder::class);
+
+        if (! $eloquentBuilder->hasMethod('toBase')) {
+            return $fallback;
+        }
+
+        $types = [];
+
+        foreach ($eloquentBuilder->getMethod('toBase', new OutOfClassScope())->getVariants() as $variant) {
+            $type    = $variant->getReturnType();
+            $types[] = $fallback->isSuperTypeOf($type)->yes() ? $type : $fallback;
+        }
+
+        return TypeCombinator::union(...$types);
     }
 
     public function getModelType(ClassReflection|Type $type): Type|null

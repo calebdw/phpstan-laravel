@@ -10,7 +10,6 @@ use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
@@ -109,8 +108,16 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
         // forward the declared return type when the method genuinely came from
         // the query builder; a scope that happens to share the name still has
         // to return the builder.
-        $isPassthru = $ref->getDeclaringClass()->getName() === QueryBuilder::class
-            && $this->builderHelper->methodIsBuilderPassthru($methodName);
+        $isPassthru = false;
+
+        if ($this->builderHelper->methodIsBuilderPassthru($methodName)) {
+            foreach ($this->builderHelper->queryBuilderType($classReflection)->getObjectClassReflections() as $queryBuilder) {
+                if ($queryBuilder->is($ref->getDeclaringClass()->getName()) && $queryBuilder->hasNativeMethod($methodName)) {
+                    $isPassthru = true;
+                    break;
+                }
+            }
+        }
 
         $returnType = $isPassthru
             ? $parametersAcceptor->getReturnType()
