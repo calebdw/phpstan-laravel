@@ -288,7 +288,7 @@ class User extends Authenticatable
     protected function newStyleAttribute(): Attribute
     {
         return Attribute::make(
-            fn ($value) => 5,
+            static fn ($value) => 5,
         );
     }
 
@@ -298,8 +298,8 @@ class User extends Authenticatable
     protected function stringButInt(): Attribute
     {
         return Attribute::make(
-            fn ($value) => 5,
-            fn (string $value) => strtolower($value)
+            static fn ($value) => 5,
+            static fn (string $value) => strtolower($value)
         );
     }
 
@@ -307,8 +307,8 @@ class User extends Authenticatable
     public function email(): Attribute
     {
         return Attribute::make(
-            fn ($value) => 5,
-            fn (string $value) => strtolower($value)
+            static fn ($value) => 5,
+            static fn (string $value) => strtolower($value)
         );
     }
 
@@ -316,7 +316,7 @@ class User extends Authenticatable
     protected function computed(): Attribute
     {
         return Attribute::get(
-            fn ($value) => 5,
+            static fn ($value) => 5,
         );
     }
 
@@ -324,7 +324,7 @@ class User extends Authenticatable
     protected function accessedOnly(): Attribute
     {
         return Attribute::get(
-            fn (string $value): int => (int) $value,
+            static fn (string $value): int => (int) $value,
         );
     }
 
@@ -332,7 +332,7 @@ class User extends Authenticatable
     protected function mutatedOnly(): Attribute
     {
         return Attribute::set(
-            fn (float|string $value): float => (float) $value,
+            static fn (float|string $value): float => (float) $value,
         );
     }
 
@@ -340,7 +340,7 @@ class User extends Authenticatable
     protected function mutatedWithoutColumn(): Attribute
     {
         return Attribute::set(
-            fn (string $value): array => ['name' => $value],
+            static fn (string $value): array => ['name' => $value],
         );
     }
 }
