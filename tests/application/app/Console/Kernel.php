@@ -12,7 +12,7 @@ class Kernel extends \Illuminate\Foundation\Console\Kernel
 {
     protected function commands(): void
     {
-        Artisan::starting(function (Artisan $artisan) {
+        Artisan::starting(static function (Artisan $artisan) {
             $artisan->resolve(FooCommand::class);
             $artisan->resolve(BarCommand::class);
             $artisan->resolve(BazCommand::class);

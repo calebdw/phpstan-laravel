@@ -16,7 +16,7 @@ return Architecture::define()
             __DIR__ . '/tests/application',
         ],
     ])
-    ->withPreset(Preset::PSR4())
+    ->withPresets(Preset::PSR4(), Preset::CODEQUALITY())
 
     ->rule(
         'source.must_be_final',
