@@ -10,6 +10,8 @@ class FormRequest
      * @param  array<string>|null  $keys
      *
      * @return ($keys is null ? \Illuminate\Support\ValidatedInput : array<string, mixed>)
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function safe(?array $keys = null);
 

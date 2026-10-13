@@ -9,11 +9,15 @@ interface Validator
 {
     /**
      * @return TValidated
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function validate();
 
     /**
      * @return TValidated
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function validated();
 }

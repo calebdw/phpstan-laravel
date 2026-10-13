@@ -363,6 +363,9 @@ class Builder
      * @param mixed $id
      * @param array<int, model-property<TModel>|\Illuminate\Contracts\Database\Query\Expression|'*'>|model-property<TModel>|\Illuminate\Contracts\Database\Query\Expression|'*' $columns
      * @return TModel
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<TModel>
+     * @throws \Illuminate\Database\MultipleRecordsFoundException
      */
     public function findSole($id, $columns = ['*']);
 
@@ -457,6 +460,8 @@ class Builder
      * @param  array<model-property<TModel>, mixed>  $attributes
      * @param  array<model-property<TModel>, mixed>  $values
      * @return TModel
+     *
+     * @throws \Illuminate\Database\UniqueConstraintViolationException
      */
     public function createOrFirst(array $attributes = [], array $values = []);
 
