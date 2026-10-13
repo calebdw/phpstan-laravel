@@ -1,0 +1,9 @@
+includes:
+    - ../../phpstan-tests.neon
+
+parameters:
+    exceptions:
+        implicitThrows: false
+        check:
+            missingCheckedExceptionInThrows: true
+            tooWideThrowType: true

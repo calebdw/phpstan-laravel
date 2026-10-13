@@ -30,6 +30,7 @@ namespace Illuminate\Http\Client
          * @param  string  $url
          * @param  array<string, mixed>|list<array{name: scalar, contents: scalar}>|string|null  $query
          * @return (TAsync is true ? \Illuminate\Http\Client\Promises\LazyPromise : \Illuminate\Http\Client\Response)
+         * @throws \Exception
          */
         public function get(string $url, $query = null);
 
@@ -39,8 +40,17 @@ namespace Illuminate\Http\Client
          * @param  string  $url
          * @param  array<string, mixed>|list<array{name: scalar, contents: scalar}>|string|null  $query
          * @return (TAsync is true ? \Illuminate\Http\Client\Promises\LazyPromise : \Illuminate\Http\Client\Response)
+         * @throws \Exception
          */
         public function head(string $url, $query = null);
+
+        /**
+         * @param string $url
+         * @param array<string, mixed>|list<array{name: scalar, contents: scalar}>|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable<string, mixed>|object|null $data
+         * @return (TAsync is true ? \Illuminate\Http\Client\Promises\LazyPromise : \Illuminate\Http\Client\Response)
+         * @throws \Exception
+         */
+        public function query(string $url, $data = []);
 
         /**
          * Issue a POST request to the given URL.
@@ -48,6 +58,7 @@ namespace Illuminate\Http\Client
          * @param  string  $url
          * @param  array<string, mixed>|list<array{name: scalar, contents: scalar}>|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable<string, mixed>|object|null  $data
          * @return (TAsync is true ? \Illuminate\Http\Client\Promises\LazyPromise : \Illuminate\Http\Client\Response)
+         * @throws \Exception
          */
         public function post(string $url, $data = []);
 
@@ -57,6 +68,7 @@ namespace Illuminate\Http\Client
          * @param  string  $url
          * @param  array<string, mixed>|list<array{name: scalar, contents: scalar}>|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable<string, mixed>|object|null  $data
          * @return (TAsync is true ? \Illuminate\Http\Client\Promises\LazyPromise : \Illuminate\Http\Client\Response)
+         * @throws \Exception
          */
         public function patch(string $url, $data = []);
 
@@ -66,6 +78,7 @@ namespace Illuminate\Http\Client
          * @param  string  $url
          * @param  array<string, mixed>|list<array{name: scalar, contents: scalar}>|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable<string, mixed>|object|null  $data
          * @return (TAsync is true ? \Illuminate\Http\Client\Promises\LazyPromise : \Illuminate\Http\Client\Response)
+         * @throws \Exception
          */
         public function put(string $url, $data = []);
 
@@ -75,6 +88,7 @@ namespace Illuminate\Http\Client
          * @param  string  $url
          * @param  array<string, mixed>|list<array{name: scalar, contents: scalar}>|\JsonSerializable|\Illuminate\Contracts\Support\Arrayable<string, mixed>|object|null  $data
          * @return (TAsync is true ? \Illuminate\Http\Client\Promises\LazyPromise : \Illuminate\Http\Client\Response)
+         * @throws \Exception
          */
         public function delete(string $url, $data = []);
 
@@ -85,6 +99,7 @@ namespace Illuminate\Http\Client
          * @param string  $url
          * @param array<string, mixed>|list<array{name: scalar, contents: scalar}> $options
          * @return (TAsync is true ? \Illuminate\Http\Client\Promises\LazyPromise : \Illuminate\Http\Client\Response)
+         * @throws \Exception
          */
         public function send(string $method, string $url, array $options = []);
     }
@@ -99,6 +114,48 @@ namespace Illuminate\Http\Client
      * @mixin PendingRequest
      */
     class Factory{}
+
+    /**
+     * @mixin PendingRequest<true>
+     */
+    class Pool
+    {
+        /**
+         * @return PendingRequest<true>
+         */
+        public function newRequest();
+
+        /**
+         * @param  string  $key
+         * @return PendingRequest<true>
+         */
+        public function as(string $key);
+    }
+
+    /**
+     * @mixin PendingRequest<true>
+     */
+    class Batch
+    {
+        /**
+         * @return PendingRequest<true>
+         *
+         * @throws \Illuminate\Http\Client\BatchInProgressException
+         */
+        public function newRequest();
+
+        /**
+         * @param  string  $key
+         * @return PendingRequest<true>
+         *
+         * @throws \Illuminate\Http\Client\BatchInProgressException
+         */
+        public function as(string $key);
+    }
+
+    class HttpClientException extends \Exception {}
+
+    class BatchInProgressException extends HttpClientException {}
 }
 
 namespace Illuminate\Http\Client\Promises
