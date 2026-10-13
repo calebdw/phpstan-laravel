@@ -76,6 +76,8 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     /**
      * @param  int  $numberOfGroups
      * @return static<int, static<int, TValue>>
+     *
+     * @throws \InvalidArgumentException
      */
     public function split($numberOfGroups);
 
@@ -129,6 +131,8 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
      *
      * @param  int  $count
      * @return ($count is 1 ? TValue|null : static<int, TValue>)
+     *
+     * @throws \InvalidArgumentException
      */
     public function shift($count = 1);
 
@@ -244,6 +248,8 @@ class LazyCollection implements CanBeEscapedWhenCastToString, Enumerable
     /**
      * @param  int  $numberOfGroups
      * @return static<int, \Illuminate\Support\Collection<int, TValue>>
+     *
+     * @throws \InvalidArgumentException
      */
     public function split($numberOfGroups);
 

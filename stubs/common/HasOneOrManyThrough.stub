@@ -77,6 +77,8 @@ abstract class HasOneOrManyThrough extends Relation
      * @param  mixed  $id
      * @param  array<int, (model-property<TRelatedModel>|'*')>  $columns
      * @return ($id is (\Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>) ? \Illuminate\Database\Eloquent\Collection<int, TRelatedModel> : TRelatedModel)
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<TRelatedModel>
      */
     public function findOrFail($id, $columns = ['*']);
 
