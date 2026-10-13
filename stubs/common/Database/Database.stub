@@ -13,3 +13,6 @@ interface ConnectionResolverInterface {}
  */
 class DatabaseManager implements ConnectionResolverInterface {}
 
+class QueryException extends \PDOException {}
+
+class UniqueConstraintViolationException extends QueryException {}

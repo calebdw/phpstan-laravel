@@ -17,6 +17,8 @@ class Collection extends BaseCollection implements QueueableCollection
      * Get the Eloquent query builder from the collection.
      *
      * @return builder-of<TModel>
+     *
+     * @throws \LogicException
      */
     public function toQuery();
 
@@ -69,6 +71,8 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @param  mixed  $key
      * @phpstan-return ($key is (\Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>) ? static<TKey, TModel> : TModel)
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<TModel>
      */
     public function findOrFail($key);
 

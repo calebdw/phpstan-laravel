@@ -441,6 +441,8 @@ class Builder
      * @param  array<model-property<TModel>, mixed>  $attributes
      * @param  array<model-property<TModel>, mixed>  $values
      * @return TModel
+     *
+     * @throws \Illuminate\Database\UniqueConstraintViolationException
      */
     public function createOrFirst(array $attributes = [], array $values = []);
 
