@@ -99,6 +99,48 @@ namespace Illuminate\Http\Client
      * @mixin PendingRequest
      */
     class Factory{}
+
+    /**
+     * @mixin PendingRequest<true>
+     */
+    class Pool
+    {
+        /**
+         * @return PendingRequest<true>
+         */
+        public function newRequest();
+
+        /**
+         * @param  string  $key
+         * @return PendingRequest<true>
+         */
+        public function as(string $key);
+    }
+
+    /**
+     * @mixin PendingRequest<true>
+     */
+    class Batch
+    {
+        /**
+         * @return PendingRequest<true>
+         *
+         * @throws \Illuminate\Http\Client\BatchInProgressException
+         */
+        public function newRequest();
+
+        /**
+         * @param  string  $key
+         * @return PendingRequest<true>
+         *
+         * @throws \Illuminate\Http\Client\BatchInProgressException
+         */
+        public function as(string $key);
+    }
+
+    class HttpClientException extends \Exception {}
+
+    class BatchInProgressException extends HttpClientException {}
 }
 
 namespace Illuminate\Http\Client\Promises
