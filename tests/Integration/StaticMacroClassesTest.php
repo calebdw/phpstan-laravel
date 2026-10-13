@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use PHPStan\Analyser\Analyser;
-use PHPStan\Analyser\Error;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class StaticMacroClassesTest extends PHPStanTestCase
 {
+    use AnalysesFile;
+
     #[Test]
     public function it_allows_configured_models_to_call_macros_statically(): void
     {
@@ -32,13 +32,5 @@ final class StaticMacroClassesTest extends PHPStanTestCase
     public static function getAdditionalConfigFiles(): array
     {
         return [__DIR__ . '/data/config-static-model-macro.neon'];
-    }
-
-    /** @return list<Error> */
-    private function analyse(string $file): array
-    {
-        $analyser = self::getContainer()->getByType(Analyser::class);
-
-        return $analyser->analyse([$file], null, null, true)->getErrors();
     }
 }
