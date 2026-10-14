@@ -34,6 +34,7 @@ return Architecture::define()
     ->layer('Rules', 'src/Rules/')
     ->layer('Schema', 'src/Schema/')
     ->layer('Support', 'src/Support/')
+    ->layer('ThrowTypes', 'src/ThrowTypes/')
     ->layer('Types', 'src/Types/')
     ->ruleset([
         'Collectors'  => ['+Support'],
@@ -47,5 +48,6 @@ return Architecture::define()
         'Rules'       => ['+Collectors', '+Properties'],
         'Schema'      => ['Support'],
         'Support'     => ['Methods', 'Reflection', 'Schema'],
+        'ThrowTypes'  => [],
         'Types'       => ['+Support'],
     ]);

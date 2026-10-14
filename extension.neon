@@ -487,6 +487,8 @@ services:
   - class: CalebDW\PhpstanLaravel\Ignore\MacroStaticCallIgnoreExtension
     arguments: {staticMacroClasses: %laravel.staticMacroClasses%}
     tags: [phpstan.ignoreErrorExtension]
+  - class: CalebDW\PhpstanLaravel\ThrowTypes\PendingRequestThrowTypeExtension
+    tags: [phpstan.dynamicMethodThrowTypeExtension, phpstan.dynamicStaticMethodThrowTypeExtension]
 
 rules:
   - CalebDW\PhpstanLaravel\Rules\NoUselessWithFunctionCallsRule
