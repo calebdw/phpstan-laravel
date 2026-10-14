@@ -17,6 +17,7 @@ use function file_put_contents;
 use function glob;
 use function mkdir;
 use function random_bytes;
+use function realpath;
 use function rmdir;
 use function sort;
 use function sys_get_temp_dir;
@@ -30,7 +31,7 @@ class StubFilesExtensionTest extends PHPStanTestCase
 
     protected function setUp(): void
     {
-        $this->directory = sys_get_temp_dir() . '/phpstan-laravel-stubs-' . bin2hex(random_bytes(8));
+        $this->directory = realpath(sys_get_temp_dir()) . '/phpstan-laravel-stubs-' . bin2hex(random_bytes(8));
 
         mkdir($this->directory . '/common/Nested', recursive: true);
     }
