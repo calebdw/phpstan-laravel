@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use Illuminate\Http\Client\PendingRequest;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\Attributes\Test;
 
 use function array_map;
@@ -21,16 +23,25 @@ final class HttpClientThrowsTest extends PHPStanTestCase
         $missing = static fn (int $line, string $method, string $exception = 'Exception'): string => $line . ': Method HttpClientThrows\\' . $method . '() throws checked exception ' . $exception . ' but it\'s missing from the PHPDoc @throws tag.';
 
         $this->assertSame([
-            ...array_map(static fn ($l) => $missing($l, 'Requests::undeclared'), range(22, 29)),
-            $missing(41, 'Requests::declaredConnection'),
-            $missing(55, 'Requests::caughtRequest'),
-            $missing(63, 'Requests::maybeAsync'),
-            $missing(91, 'Requests::factory'),
+            ...array_map(static fn ($l) => $missing($l, 'Requests::undeclared'), range(22, 28)),
+            $missing(40, 'Requests::declaredConnection'),
+            $missing(54, 'Requests::caughtRequest'),
+            $missing(62, 'Requests::maybeAsync'),
+            $missing(90, 'Requests::factory'),
+            $missing(95, 'Requests::facade'),
             $missing(96, 'Requests::facade'),
-            $missing(97, 'Requests::facade'),
-            $missing(102, 'Requests::overridden', 'DomainException'),
-            $missing(123, 'SyncRequest::fetch'),
+            $missing(101, 'Requests::overridden', 'DomainException'),
+            $missing(122, 'SyncRequest::fetch'),
         ], array_map(static fn ($e) => $e->getLine() . ': ' . $e->getMessage(), $errors));
+    }
+
+    #[Test]
+    #[RequiresMethod(PendingRequest::class, 'query')]
+    public function it_throws_an_exception_from_query_requests(): void
+    {
+        $errors = $this->analyse(__DIR__ . '/data/http-client-throws-query.php');
+
+        $this->assertSame(['13: Method HttpClientThrowsQuery\\Requests::undeclared() throws checked exception Exception but it\'s missing from the PHPDoc @throws tag.'], array_map(static fn ($e) => $e->getLine() . ': ' . $e->getMessage(), $errors));
     }
 
     /** @return string[] */

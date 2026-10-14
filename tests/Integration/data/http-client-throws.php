@@ -25,7 +25,6 @@ final class Requests
         $request->patch('localhost');
         $request->put('localhost');
         $request->delete('localhost');
-        $request->query('localhost');
         $request->send('GET', 'localhost');
     }
 

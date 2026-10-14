@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\ThrowTypes;
 
 use Exception;
+use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Promises\LazyPromise;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
@@ -50,6 +50,6 @@ final class PendingRequestThrowTypeExtension implements DynamicMethodThrowTypeEx
         // retry, throw and middleware callbacks throw, so every verb shares
         // the @throws \Exception that Laravel puts on send().
         // phpcs:ignore SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly
-        return (new ObjectType(LazyPromise::class))->isSuperTypeOf($response)->yes() ? null : new ObjectType(Exception::class);
+        return (new ObjectType(PromiseInterface::class))->isSuperTypeOf($response)->yes() ? null : new ObjectType(Exception::class);
     }
 }
