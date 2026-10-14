@@ -50,6 +50,8 @@ abstract class HasOneOrMany extends Relation
      * @param  array<model-property<TRelatedModel>, mixed>  $attributes
      * @param  array<model-property<TRelatedModel>, mixed>  $values
      * @return TRelatedModel
+     *
+     * @throws \Illuminate\Database\UniqueConstraintViolationException
      */
     public function createOrFirst(array $attributes = [], array $values = []);
 
