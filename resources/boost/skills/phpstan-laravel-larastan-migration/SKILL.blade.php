@@ -1,6 +1,6 @@
 ---
 name: phpstan-laravel-larastan-migration
-description: "Performs the migration from larastan/larastan or calebdw/larastan to calebdw/phpstan-laravel. Activates when the user asks to migrate, switch, move off, or replace Larastan, when both packages are installed at once, when a phpstan.neon still carries Larastan-era options such as checkModelProperties, checkUnusedViews, databaseMigrationsPath or disableMigrationScan, or when a baseline or @phpstan-ignore comment still uses a larastan. prefixed identifier."
+description: "Performs the migration from larastan/larastan or calebdw/larastan to calebdw/phpstan-laravel. Activates when the user asks to migrate, switch, move off, or replace Larastan, when both packages are installed at once, when a phpstan.neon still carries Larastan-era options such as checkModelProperties, checkUnusedViews, databaseMigrationsPath or disableMigrationScan, or when a baseline or @@phpstan-ignore comment still uses a larastan. prefixed identifier."
 license: MIT
 ---
 @php
