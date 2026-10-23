@@ -18,6 +18,10 @@ use function trim;
 
 final class PhpMyAdminSqlParser implements SqlParser
 {
+    public function __construct(private readonly SqlParser|null $fallback = null)
+    {
+    }
+
     /** @inheritDoc */
     public function parseTables(string $sql): array
     {
@@ -28,6 +32,10 @@ final class PhpMyAdminSqlParser implements SqlParser
             // catch of ParserException alone.
             $parser = new Parser($sql, true);
         } catch (LexerException | ParserException $exception) {
+            if ($this->fallback !== null) {
+                return $this->fallback->parseTables($sql);
+            }
+
             throw SqlParserFailure::create('Failed to parse SQL schema with phpmyadmin/sql-parser.', $exception);
         }
 

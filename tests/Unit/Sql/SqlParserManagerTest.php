@@ -7,6 +7,7 @@ namespace Tests\Unit\Sql;
 use CalebDW\PhpstanLaravel\Schema\Sql\IamcalSqlParser;
 use CalebDW\PhpstanLaravel\Schema\Sql\PhpMyAdminSqlParser;
 use CalebDW\PhpstanLaravel\Schema\Sql\PostgresSqlParser;
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserNotAvailable;
 use PHPUnit\Framework\Attributes\Test;
@@ -151,5 +152,53 @@ class SqlParserManagerTest extends TestCase
             ['postgres'],
             $this->manager(installed: ['CalebDW\PgSchemaParser\PgDumpParser'])->availableDrivers(),
         );
+    }
+
+    #[Test]
+    public function it_uses_iamcal_when_the_automatic_mysql_parser_cannot_parse_a_dump(): void
+    {
+        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_IAMCAL, SqlParserManager::DRIVER_PHPMYADMIN);
+
+        $manager = $this->manager();
+        $tables  = $manager->driver()->parseTables($this->mariaDbSchema());
+
+        self::assertCount(1, $tables);
+        self::assertSame('accounts', $tables[0]->name);
+        self::assertCount(2, $tables[0]->columns);
+        self::assertSame($manager->driver(), $manager->driver());
+    }
+
+    #[Test]
+    public function it_does_not_fall_back_from_an_explicit_mysql_parser(): void
+    {
+        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_IAMCAL, SqlParserManager::DRIVER_PHPMYADMIN);
+
+        $manager = $this->manager();
+        $manager->driver()->parseTables($this->mariaDbSchema());
+
+        $this->expectException(SqlParserFailure::class);
+
+        $manager->driver('phpmyadmin')->parseTables($this->mariaDbSchema());
+    }
+
+    #[Test]
+    public function it_does_not_require_iamcal_for_the_automatic_mysql_parser(): void
+    {
+        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_PHPMYADMIN);
+
+        $manager = $this->manager(installed: ['PhpMyAdmin\SqlParser\Parser']);
+
+        $this->expectException(SqlParserFailure::class);
+
+        $manager->driver()->parseTables($this->mariaDbSchema());
+    }
+
+    private function mariaDbSchema(): string
+    {
+        return <<<'SQL'
+            DROP SEQUENCE IF EXISTS `invoice_seq`;
+            CREATE SEQUENCE `invoice_seq` start with 1 minvalue 1 maxvalue 9223372036854775806 increment by 1 cache 1000 nocycle ENGINE=InnoDB;
+            CREATE TABLE `accounts` (`id` bigint unsigned NOT NULL, `name` varchar(255) NOT NULL);
+            SQL;
     }
 }

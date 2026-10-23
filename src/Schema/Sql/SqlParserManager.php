@@ -123,6 +123,10 @@ final class SqlParserManager
                 continue;
             }
 
+            if ($driver === self::DRIVER_PHPMYADMIN && ($this->classExists)(self::REQUIREMENTS[self::DRIVER_IAMCAL]['class'])) {
+                return new PhpMyAdminSqlParser($this->driver(self::DRIVER_IAMCAL));
+            }
+
             return $this->driver($driver);
         }
 
