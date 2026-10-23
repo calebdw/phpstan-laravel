@@ -50,6 +50,17 @@ class IntegrationTest extends PHPStanTestCase
 
         yield [__DIR__ . '/data/test-case-extension.php', [34 => ['Call to function method_exists() with $this(TestTestCase) and \'partialMock\' will always evaluate to true.']]];
         yield 'model-builder' => [__DIR__ . '/data/model-builder.php'];
+        yield 'model-property-fill' => [
+            __DIR__ . '/data/model-property-fill.php',
+            [
+                10 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Model::fill() expects array<model property of App\User, mixed>, array<string, string> given.'],
+                11 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Model::forceFill() expects array<model property of App\User, mixed>, array<string, string> given.'],
+                30 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Model::fill() expects array<model property of static(ModelPropertyFill\FillOnModel), mixed>, array<string, string> given.'],
+                31 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Model::forceFill() expects array<model property of static(ModelPropertyFill\FillOnModel), mixed>, array<string, string> given.'],
+            ],
+            true,
+        ];
+
         yield 'model-date-column-casts' => [
             __DIR__ . '/data/model-date-column-casts.php',
             [

@@ -65,6 +65,19 @@ abstract class Model implements \JsonSerializable, \ArrayAccess, \Illuminate\Con
      */
     public function update(array $attributes = [], array $options = []);
 
+    /**
+     * @param array<model-property<static>, mixed> $attributes
+     * @return $this
+     * @throws \Illuminate\Database\Eloquent\MassAssignmentException
+     */
+    public function fill(array $attributes);
+
+    /**
+     * @param array<model-property<static>, mixed> $attributes
+     * @return $this
+     */
+    public function forceFill(array $attributes);
+
     /** @return builder-of<static> */
     public static function query();
 
