@@ -16,6 +16,16 @@ use Illuminate\Database\Eloquent\Model;
 class BelongsToMany extends Relation
 {
     /**
+     * @param array<model-property<TRelatedModel>, mixed> $attributes
+     * @param model-property<TRelatedModel> $column
+     * @param float|int $default
+     * @param float|int $step
+     * @param array<model-property<TRelatedModel>, mixed> $extra
+     * @return TRelatedModel
+     */
+    public function incrementOrCreate(array $attributes, string $column = 'count', $default = 1, $step = 1, array $extra = []);
+
+    /**
      * Prepare the query builder for query execution.
      *
      * @return builder-of<TRelatedModel>

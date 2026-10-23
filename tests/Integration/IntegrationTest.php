@@ -50,6 +50,16 @@ class IntegrationTest extends PHPStanTestCase
 
         yield [__DIR__ . '/data/test-case-extension.php', [34 => ['Call to function method_exists() with $this(TestTestCase) and \'partialMock\' will always evaluate to true.']]];
         yield 'model-builder' => [__DIR__ . '/data/model-builder.php'];
+        yield 'model-property-increment-or-create' => [
+            __DIR__ . '/data/model-property-increment-or-create.php',
+            [
+                5 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Builder<App\User>::incrementOrCreate() expects array<model property of App\User, mixed>, array<string, int> given.'],
+                6 => ['Parameter #2 $column of method Illuminate\Database\Eloquent\Builder<App\User>::incrementOrCreate() expects model property of App\User, string given.'],
+                7 => ['Parameter $extra of method Illuminate\Database\Eloquent\Builder<App\User>::incrementOrCreate() expects array<model property of App\User, mixed>, array<string, int> given.'],
+            ],
+            true,
+        ];
+
         yield 'eager-load-closures' => [
             __DIR__ . '/data/eager-load-closures.php',
             [
@@ -62,6 +72,15 @@ class IntegrationTest extends PHPStanTestCase
         yield [__DIR__ . '/data/model-properties.php'];
 
         if (laravel_version_compare('13.3.0', '>=')) {
+            yield 'model-property-relation-increment-or-create' => [
+                __DIR__ . '/data/model-property-relation-increment-or-create.php',
+                [
+                    5 => ['Parameter #2 $column of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::incrementOrCreate() expects model property of App\Account, string given.'],
+                    6 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Relations\BelongsToMany<App\Role,App\User,Illuminate\Database\Eloquent\Relations\Pivot,string>::incrementOrCreate() expects array<model property of App\Role, mixed>, array<string, int> given.'],
+                ],
+                true,
+            ];
+
             yield 'model-property-increment-each' => [
                 __DIR__ . '/data/model-property-increment-each.php',
                 [

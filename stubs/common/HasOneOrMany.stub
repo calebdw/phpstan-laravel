@@ -13,6 +13,16 @@ abstract class HasOneOrMany extends Relation
 {
     /**
      * @param array<model-property<TRelatedModel>, mixed> $attributes
+     * @param model-property<TRelatedModel> $column
+     * @param float|int $default
+     * @param float|int $step
+     * @param array<model-property<TRelatedModel>, mixed> $extra
+     * @return TRelatedModel
+     */
+    public function incrementOrCreate(array $attributes, string $column = 'count', $default = 1, $step = 1, array $extra = []);
+
+    /**
+     * @param array<model-property<TRelatedModel>, mixed> $attributes
      * @phpstan-return TRelatedModel
      */
     public function make(array $attributes = []);
