@@ -22,6 +22,14 @@ abstract class HasOneOrMany extends Relation
     public function incrementOrCreate(array $attributes, string $column = 'count', $default = 1, $step = 1, array $extra = []);
 
     /**
+     * @param array<model-property<TRelatedModel>, scalar|object|null>|array<int, array<model-property<TRelatedModel>, mixed>> $values
+     * @param model-property<TRelatedModel>|array<int, model-property<TRelatedModel>> $uniqueBy
+     * @param ($update is array<int, mixed> ? array<int, model-property<TRelatedModel>> : array<int|model-property<TRelatedModel>, mixed>|null) $update
+     * @return int
+     */
+    public function upsert(array $values, $uniqueBy, $update = null);
+
+    /**
      * @param array<model-property<TRelatedModel>, mixed> $attributes
      * @phpstan-return TRelatedModel
      */

@@ -70,6 +70,18 @@ class IntegrationTest extends PHPStanTestCase
             true,
         ];
 
+        yield 'model-property-upsert' => [
+            __DIR__ . '/data/model-property-upsert.php',
+            [
+                6 => ['Parameter #1 $values of method Illuminate\Database\Eloquent\Builder<App\User>::upsert() expects array<int|model property of App\User, array<model property of App\User, mixed>|bool|float|int|object|string|null>, array<int, array<string, int>> given.'],
+                7 => ['Parameter #2 $uniqueBy of method Illuminate\Database\Eloquent\Builder<App\User>::upsert() expects array<int, model property of App\User>|model property of App\User, string given.'],
+                8 => ['Parameter #3 $update of method Illuminate\Database\Eloquent\Builder<App\User>::upsert() expects array<int, model property of App\User>, array<int, string> given.'],
+                9 => ['Parameter #3 $update of method Illuminate\Database\Eloquent\Builder<App\User>::upsert() expects array<int|model property of App\User, mixed>|null, array<string, Illuminate\Contracts\Database\Query\Expression> given.'],
+                10 => ['Parameter #2 $uniqueBy of method Illuminate\Database\Eloquent\Relations\HasOneOrMany<App\Account,App\User,Illuminate\Database\Eloquent\Collection<int, App\Account>>::upsert() expects array<int, model property of App\Account>|model property of App\Account, string given.'],
+            ],
+            true,
+        ];
+
         yield 'eager-load-closures' => [
             __DIR__ . '/data/eager-load-closures.php',
             [

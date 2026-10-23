@@ -480,6 +480,14 @@ class Builder
     public function incrementOrCreate(array $attributes, string $column = 'count', $default = 1, $step = 1, array $extra = []);
 
     /**
+     * @param array<model-property<TModel>, scalar|object|null>|array<int, array<model-property<TModel>, mixed>> $values
+     * @param model-property<TModel>|array<int, model-property<TModel>> $uniqueBy
+     * @param ($update is array<int, mixed> ? array<int, model-property<TModel>> : array<int|model-property<TModel>, mixed>|null) $update
+     * @return int
+     */
+    public function upsert(array $values, $uniqueBy, $update = null);
+
+    /**
      * @param  array<model-property<TModel>, mixed>  $attributes
      * @phpstan-return TModel
      */
