@@ -7,7 +7,6 @@ namespace CalebDW\PhpstanLaravel\Support;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
-use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Generic\GenericObjectType;
@@ -19,11 +18,10 @@ use PHPStan\Type\TypeUtils;
 
 use function array_key_exists;
 use function class_exists;
-use function count;
 
 final class FactoryHelper
 {
-    /** @var array<class-string, ClassReflection|null> */
+    /** @var array<class-string, list<ClassReflection>> */
     private array $factories = [];
 
     public function __construct(
@@ -49,19 +47,25 @@ final class FactoryHelper
                     continue;
                 }
 
-                $factoryReflection = $this->factoryReflection($modelReflection);
+                $factoryReflections = $this->factoryReflections($modelReflection);
                 // A model without a factory still has Factory::factoryForModel()
                 // behind it, so fall back to the base rather than erroring out.
-                $types[] = $factoryReflection === null
-                    ? new GenericObjectType(Factory::class, [new ObjectType($className)])
-                    : $factoryType($factoryReflection);
+                if ($factoryReflections === []) {
+                    $types[] = new GenericObjectType(Factory::class, [new ObjectType($className)]);
+                    continue;
+                }
+
+                foreach ($factoryReflections as $factoryReflection) {
+                    $types[] = $factoryType($factoryReflection);
+                }
             }
         }
 
         return $types === [] ? new NeverType() : TypeCombinator::union(...$types);
     }
 
-    private function factoryReflection(ClassReflection $modelReflection): ClassReflection|null
+    /** @return list<ClassReflection> */
+    private function factoryReflections(ClassReflection $modelReflection): array
     {
         $modelClass = $modelReflection->getName();
 
@@ -69,24 +73,16 @@ final class FactoryHelper
             return $this->factories[$modelClass];
         }
 
-        return $this->factories[$modelClass] = $this->resolveFactoryReflection($modelReflection);
+        return $this->factories[$modelClass] = $this->resolveFactoryReflections($modelReflection);
     }
 
-    private function resolveFactoryReflection(ClassReflection $modelReflection): ClassReflection|null
+    /** @return list<ClassReflection> */
+    private function resolveFactoryReflections(ClassReflection $modelReflection): array
     {
-        if ($modelReflection->hasMethod('newFactory')) {
-            $factoryReflections = $modelReflection->getMethod('newFactory', new OutOfClassScope())
-                ->getVariants()[0]
-                ->getReturnType()
-                ->getObjectClassReflections();
+        $factories = $this->factoriesFromMethod($modelReflection, 'newFactory');
 
-            if (count($factoryReflections) === 1) {
-                $factoryReflection = $factoryReflections[0];
-
-                if ($factoryReflection->is(Factory::class) && ! $factoryReflection->isAbstract()) {
-                    return $factoryReflection;
-                }
-            }
+        if ($factories !== []) {
+            return $factories;
         }
 
         $factoryClass = $this->reflectionHelper->classStringPropertyDefault($modelReflection, 'factory');
@@ -95,7 +91,7 @@ final class FactoryHelper
             $factoryReflection = $this->reflectionProvider->getClass($factoryClass);
 
             if ($factoryReflection->is(Factory::class) && ! $factoryReflection->isAbstract()) {
-                return $factoryReflection;
+                return [$factoryReflection];
             }
         }
 
@@ -109,13 +105,41 @@ final class FactoryHelper
             $factoryReflection = $this->reflectionProvider->getClass($factoryClass);
 
             if ($factoryReflection->is(Factory::class) && ! $factoryReflection->isAbstract()) {
-                return $factoryReflection;
+                return [$factoryReflection];
             }
+        }
+
+        $factories = $this->factoriesFromMethod($modelReflection, 'factory');
+
+        if ($factories !== []) {
+            return $factories;
         }
 
         /** @phpstan-ignore argument.type (guaranteed to be model class-string) */
         $factoryClass = Factory::resolveFactoryName($modelReflection->getName());
 
-        return class_exists($factoryClass) ? $this->reflectionProvider->getClass($factoryClass) : null;
+        return class_exists($factoryClass) ? [$this->reflectionProvider->getClass($factoryClass)] : [];
+    }
+
+    /** @return list<ClassReflection> */
+    private function factoriesFromMethod(ClassReflection $modelReflection, string $methodName): array
+    {
+        if (! $modelReflection->hasNativeMethod($methodName)) {
+            return [];
+        }
+
+        $factories = [];
+
+        foreach ($modelReflection->getNativeMethod($methodName)->getVariants() as $variant) {
+            foreach ($variant->getReturnType()->getObjectClassReflections() as $factory) {
+                if (! $factory->is(Factory::class) || $factory->isAbstract()) {
+                    continue;
+                }
+
+                $factories[] = $factory;
+            }
+        }
+
+        return $factories;
     }
 }
