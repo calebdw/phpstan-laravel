@@ -56,7 +56,7 @@ class ModelFactoryDynamicStaticMethodReturnTypeExtensionTest extends PHPStanTest
         $scope->expects($this->once())->method('resolveTypeByName')->willReturn(new ObjectType(User::class));
 
         $extension = new ModelFactoryDynamicStaticMethodReturnTypeExtension(
-            new CallHelper(new TypeHelper()),
+            new CallHelper(new TypeHelper(), $this->reflectionProvider),
             new FactoryHelper($this->reflectionProvider, new ReflectionHelper()),
         );
 
@@ -81,7 +81,7 @@ class ModelFactoryDynamicStaticMethodReturnTypeExtensionTest extends PHPStanTest
         $scope->method('getType')->willReturn($phpstanType);
 
         $extension = new ModelFactoryDynamicStaticMethodReturnTypeExtension(
-            new CallHelper(new TypeHelper()),
+            new CallHelper(new TypeHelper(), $this->reflectionProvider),
             new FactoryHelper($this->reflectionProvider, new ReflectionHelper()),
         );
 

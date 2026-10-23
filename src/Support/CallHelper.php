@@ -14,6 +14,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 
@@ -37,8 +38,10 @@ use function collect;
  */
 final class CallHelper
 {
-    public function __construct(private TypeHelper $typeHelper)
-    {
+    public function __construct(
+        private TypeHelper $typeHelper,
+        private ReflectionProvider $reflectionProvider,
+    ) {
     }
 
     /**
@@ -143,7 +146,9 @@ final class CallHelper
     {
         if ($node instanceof FuncCall) {
             if ($node->name instanceof Name) {
-                return [$scope->resolveName($node->name)];
+                $name = $this->reflectionProvider->resolveFunctionName($node->name, $scope);
+
+                return $name === null ? [] : [$name];
             }
 
             return $this->typeHelper->constantStrings($scope->getType($node->name));

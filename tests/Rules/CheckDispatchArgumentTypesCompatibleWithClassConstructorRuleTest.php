@@ -25,7 +25,7 @@ class CheckDispatchArgumentTypesCompatibleWithClassConstructorRuleTest extends R
         return new CheckDispatchArgumentTypesCompatibleWithClassConstructorRule(
             $broker,
             self::getContainer()->getByType(FunctionCallParametersCheck::class),
-            new CallHelper(new TypeHelper()),
+            new CallHelper(new TypeHelper(), $this->createReflectionProvider()),
             $this->dispatchableClass,
         );
     }

@@ -43,6 +43,6 @@ class NoUselessValueFunctionCallsRuleTest extends RuleTestCase
 
     protected function getRule(): Rule
     {
-        return new NoUselessValueFunctionCallsRule(new CallHelper(new TypeHelper()));
+        return new NoUselessValueFunctionCallsRule(new CallHelper(new TypeHelper(), $this->createReflectionProvider()));
     }
 }

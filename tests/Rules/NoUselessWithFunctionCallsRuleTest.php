@@ -46,6 +46,6 @@ class NoUselessWithFunctionCallsRuleTest extends RuleTestCase
 
     protected function getRule(): Rule
     {
-        return new NoUselessWithFunctionCallsRule(new CallHelper(new TypeHelper()));
+        return new NoUselessWithFunctionCallsRule(new CallHelper(new TypeHelper(), $this->createReflectionProvider()));
     }
 }

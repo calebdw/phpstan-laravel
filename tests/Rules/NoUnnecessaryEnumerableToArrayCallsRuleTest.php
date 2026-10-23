@@ -15,7 +15,7 @@ class NoUnnecessaryEnumerableToArrayCallsRuleTest extends RuleTestCase
 {
     protected function getRule(): Rule
     {
-        return new NoUnnecessaryEnumerableToArrayCallsRule(new CallHelper(new TypeHelper()), new TypeHelper());
+        return new NoUnnecessaryEnumerableToArrayCallsRule(new CallHelper(new TypeHelper(), $this->createReflectionProvider()), new TypeHelper());
     }
 
     public function test_rule(): void
