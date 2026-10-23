@@ -58,3 +58,14 @@ function test(Foo $foo, User $user, Builder $query): void
     // when() on a relation with a custom builder model should still return the relation type
     assertType("Illuminate\Database\Eloquent\Relations\BelongsToMany<App\Post, App\User, Illuminate\Database\Eloquent\Relations\Pivot, 'pivot'>", $user->posts()->when(true, fn ($q) => $q));
 }
+
+function relationReturns(User $user, bool $condition): void
+{
+    assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $user->accounts()->when($condition, fn ($q) => $q->where('active', 1)));
+    assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $user->accounts()->unless($condition, fn ($q) => $q->where('active', 1)));
+    assertType('int<0, max>', $user->accounts()->when($condition, fn ($q) => $q->count()));
+    assertType('int<0, max>', $user->accounts()->unless($condition, fn ($q) => $q->count()));
+    assertType('Illuminate\Database\Eloquent\Builder<App\User>', $user->accounts()->when($condition, fn ($q) => User::query()));
+    assertType('Illuminate\Database\Eloquent\Builder<App\Account>', $user->accounts()->when($condition, fn ($q) => \App\Account::query()));
+    assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $user->accounts()->tap(fn ($q) => $q->where('active', 1)));
+}
