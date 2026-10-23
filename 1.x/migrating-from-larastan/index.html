@@ -843,6 +843,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../guide/http-client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  HTTP client
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../guide/cache/" class="md-nav__link">
         
   
@@ -1663,30 +1690,10 @@ count from before the switch. Commit your work first, ask the agent to
 migrate off Larastan, and review the diff.</p>
 </div>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Larastan 3.x</th>
-<th>This package</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>PHP</td>
-<td><code>^8.2</code></td>
-<td><code>^8.3</code></td>
-</tr>
-<tr>
-<td>Laravel</td>
-<td>11, 12, 13</td>
-<td>12, 13</td>
-</tr>
-</tbody>
-</table>
-<p>Laravel 11 is no longer supported. Only the two most recent Laravel releases are supported,
-and each is required at a recent minor version (<code>^12.67.0 \|\| ^13.26.1</code>) rather than the
-oldest release of that major.</p>
+<p>See <a href="https://github.com/calebdw/phpstan-laravel/blob/master/composer.json">composer.json</a>
+for the current PHP and Laravel requirements.
+Only the two most recent Laravel major releases are supported, each at a recent
+minor version rather than the oldest release of that major.</p>
 <h2 id="1-swap-the-package">1. Swap the package<a class="headerlink" href="#1-swap-the-package" title="Permanent link">&para;</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>composer<span class="w"> </span>remove<span class="w"> </span>--dev<span class="w"> </span>larastan/larastan
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>composer<span class="w"> </span>require<span class="w"> </span>--dev<span class="w"> </span>calebdw/phpstan-laravel
