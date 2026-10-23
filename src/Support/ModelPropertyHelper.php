@@ -7,12 +7,15 @@ namespace CalebDW\PhpstanLaravel\Support;
 use CalebDW\PhpstanLaravel\Reflection\ModelPropertyReflection;
 use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use CalebDW\PhpstanLaravel\Schema\SchemaDependencyTracker;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\Constant\ConstantStringType;
+use PHPStan\Type\FloatType;
+use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
@@ -136,6 +139,10 @@ final class ModelPropertyHelper
         } else {
             $readableType = $this->stringResolver->resolve($column->readableType);
             $writableType = $this->stringResolver->resolve($column->writeableType);
+        }
+
+        if ($this->hasDate($modelInstance, $propertyName)) {
+            $writableType = TypeCombinator::union(new ObjectType(DateTimeInterface::class), new StringType(), new IntegerType(), new FloatType());
         }
 
         if ($column->nullable) {

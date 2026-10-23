@@ -50,6 +50,14 @@ class IntegrationTest extends PHPStanTestCase
 
         yield [__DIR__ . '/data/test-case-extension.php', [34 => ['Call to function method_exists() with $this(TestTestCase) and \'partialMock\' will always evaluate to true.']]];
         yield 'model-builder' => [__DIR__ . '/data/model-builder.php'];
+        yield 'model-date-column-casts' => [
+            __DIR__ . '/data/model-date-column-casts.php',
+            [
+                19 => ['Property ModelDateColumnCasts\DateColumns::$created_at (DateTimeInterface|float|int|string|null) does not accept array<string, string>.'],
+            ],
+            true,
+        ];
+
         yield 'model-property-increment-or-create' => [
             __DIR__ . '/data/model-property-increment-or-create.php',
             [
