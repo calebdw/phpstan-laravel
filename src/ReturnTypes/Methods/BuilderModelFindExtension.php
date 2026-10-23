@@ -12,7 +12,9 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Str;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -66,11 +68,22 @@ final class BuilderModelFindExtension implements DynamicMethodReturnTypeExtensio
             return null;
         }
 
-        $returnType = $methodReflection->getVariants()[0]->getReturnType();
-        $argType    = $scope->getType($methodCall->getArgs()[0]->value);
+        $returnType = ParametersAcceptorSelector::selectFromArgs($scope, $methodCall->getArgs(), $methodReflection->getVariants(), $methodReflection instanceof ExtendedMethodReflection ? $methodReflection->getNamedArgumentsVariants() : null)->getReturnType();
 
-        if ($argType instanceof MixedType) {
+        if ($methodReflection->getName() === 'findSole') {
             return $returnType;
+        }
+
+        $id = $methodCall->getArg('id', 0) ?? $methodCall->getArg('ids', 0);
+
+        if ($id === null) {
+            return null;
+        }
+
+        $argType = $scope->getType($id->value);
+
+        if ($argType instanceof MixedType || $argType->isIterable()->maybe()) {
+            return $this->collectionHelper->replaceCollectionsInType($returnType);
         }
 
         $models = [];

@@ -360,6 +360,22 @@ class Builder
     public function find($id, $columns = ['*']);
 
     /**
+     * @param mixed $id
+     * @param array<int, model-property<TModel>|\Illuminate\Contracts\Database\Query\Expression|'*'>|model-property<TModel>|\Illuminate\Contracts\Database\Query\Expression|'*' $columns
+     * @return TModel
+     */
+    public function findSole($id, $columns = ['*']);
+
+    /**
+     * @template TValue
+     * @param mixed $id
+     * @param (\Closure(): TValue)|array<int, model-property<TModel>|\Illuminate\Contracts\Database\Query\Expression|'*'>|model-property<TModel>|\Illuminate\Contracts\Database\Query\Expression|'*' $columns
+     * @param (\Closure(): TValue)|null $callback
+     * @return ($id is \Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed> ? \Illuminate\Database\Eloquent\Collection<int, TModel> : TModel|TValue)
+     */
+    public function findOr($id, $columns = ['*'], ?\Closure $callback = null);
+
+    /**
      * Find multiple models by their primary keys.
      *
      * @param  \Illuminate\Contracts\Support\Arrayable<array-key, mixed>|array<mixed>  $ids

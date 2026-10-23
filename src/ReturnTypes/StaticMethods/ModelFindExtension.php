@@ -13,7 +13,9 @@ use Illuminate\Support\Str;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
@@ -61,16 +63,9 @@ final class ModelFindExtension implements DynamicStaticMethodReturnTypeExtension
         if ($class instanceof Name) {
             $modelNames = [$scope->resolveName($class)];
         } else {
-            $type = $scope->getType($class);
+            $modelNames = $scope->getType($class)->getObjectTypeOrClassStringObjectType()->getObjectClassNames();
 
-            if ($type->getObjectClassNames() !== []) {
-                $modelNames = $type->getObjectClassNames();
-            } elseif (
-                $type->isClassString()->yes() &&
-                count($type->getReferencedClasses()) > 0
-            ) {
-                $modelNames = $type->getReferencedClasses();
-            } else {
+            if ($modelNames === []) {
                 return new ErrorType();
             }
         }
@@ -78,8 +73,24 @@ final class ModelFindExtension implements DynamicStaticMethodReturnTypeExtension
         $types = [];
 
         foreach ($modelNames as $modelName) {
-            $returnType = $methodReflection->getVariants()[0]->getReturnType();
-            $argType    = $scope->getType($methodCall->getArgs()[0]->value);
+            $returnType = ParametersAcceptorSelector::selectFromArgs($scope, $methodCall->getArgs(), $methodReflection->getVariants(), $methodReflection instanceof ExtendedMethodReflection ? $methodReflection->getNamedArgumentsVariants() : null)->getReturnType();
+
+            if ($methodReflection->getName() === 'findSole') {
+                return $returnType;
+            }
+
+            $id = $methodCall->getArg('id', 0) ?? $methodCall->getArg('ids', 0);
+
+            if ($id === null) {
+                return new ErrorType();
+            }
+
+            $argType = $scope->getType($id->value);
+
+            if ($argType instanceof MixedType || $argType->isIterable()->maybe()) {
+                $types[] = $this->collectionHelper->replaceCollectionsInType($returnType);
+                continue;
+            }
 
             if ($argType->isIterable()->yes()) {
                 if (in_array(Collection::class, $returnType->getReferencedClasses(), true)) {
@@ -91,17 +102,13 @@ final class ModelFindExtension implements DynamicStaticMethodReturnTypeExtension
                 continue;
             }
 
-            if ($argType instanceof MixedType) {
-                $types[] = $returnType;
-            } else {
-                $types[] = TypeCombinator::remove(
-                    TypeCombinator::remove(
-                        $returnType,
-                        new ArrayType(new MixedType(), new ObjectType($modelName)),
-                    ),
-                    new ObjectType(Collection::class),
-                );
-            }
+            $types[] = TypeCombinator::remove(
+                TypeCombinator::remove(
+                    $returnType,
+                    new ArrayType(new MixedType(), new ObjectType($modelName)),
+                ),
+                new ObjectType(Collection::class),
+            );
         }
 
         $types = array_filter($types);

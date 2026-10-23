@@ -60,6 +60,16 @@ class IntegrationTest extends PHPStanTestCase
             true,
         ];
 
+        yield 'model-property-find-or' => [
+            __DIR__ . '/data/model-property-find-or.php',
+            [
+                6 => ["Parameter #2 \$columns of method Illuminate\Database\Eloquent\Builder<App\User>::findSole() expects '*'|array<int, '*'|Illuminate\Contracts\Database\Query\Expression|model property of App\User>|Illuminate\Contracts\Database\Query\Expression|model property of App\User, array{'foo'} given."],
+                7 => ["Parameter #2 \$columns of method Illuminate\Database\Eloquent\Builder<App\User>::findOr() expects '*'|array<int, '*'|Illuminate\Contracts\Database\Query\Expression|model property of App\User>|(Closure(): null)|Illuminate\Contracts\Database\Query\Expression|model property of App\User, array{'foo'} given."],
+                8 => ["Parameter #2 \$columns of static method Illuminate\Database\Eloquent\Builder<static(App\User)>::findOr() expects '*'|array<int, '*'|Illuminate\Contracts\Database\Query\Expression|model property of App\User>|(Closure(): null)|Illuminate\Contracts\Database\Query\Expression|model property of App\User, array{'foo'} given."],
+            ],
+            true,
+        ];
+
         yield 'eager-load-closures' => [
             __DIR__ . '/data/eager-load-closures.php',
             [
