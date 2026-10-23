@@ -26,10 +26,19 @@ use PHPStan\Rules\RuleErrorBuilder;
 use function array_intersect;
 use function in_array;
 use function is_string;
+use function ltrim;
 
 /** @implements Rule<MethodCall> */
 final class OctaneCompatibilityRule implements Rule
 {
+    private const array FORBIDDEN_SERVICES = [
+        'request',
+        'config',
+        'Illuminate\Http\Request',
+        'Illuminate\Contracts\Config\Repository',
+        'Illuminate\Config\Repository',
+    ];
+
     private NodeFinder $nodeFinder;
 
     public function __construct(
@@ -100,28 +109,51 @@ final class OctaneCompatibilityRule implements Rule
                 return false;
             }
 
-            $args = $node->getArgs();
-
-            if ($args === []) {
-                return false;
+            foreach ($node->getArgs() as $arg) {
+                if ($this->isForbiddenInjection($arg->value, $container, $scope)) {
+                    return true;
+                }
             }
 
-            $value = $args[0]->value;
-
-            if ($value instanceof Variable) {
-                return $this->sameVariable($value, $container, $scope);
-            }
-
-            if (! $value instanceof ArrayDimFetch || $value->dim === null || ! $value->var instanceof Variable) {
-                return false;
-            }
-
-            if (! $this->sameVariable($value->var, $container, $scope)) {
-                return false;
-            }
-
-            return array_intersect($this->typeHelper->constantStrings($scope->getType($value->dim)), ['request', 'config']) !== [];
+            return false;
         });
+    }
+
+    private function isForbiddenInjection(Expr $value, Variable $container, Scope $scope): bool
+    {
+        if ($value instanceof Variable) {
+            return $this->sameVariable($value, $container, $scope);
+        }
+
+        if (! $value instanceof ArrayDimFetch && ! $value instanceof MethodCall) {
+            return false;
+        }
+
+        if (! $value->var instanceof Variable || ! $this->sameVariable($value->var, $container, $scope)) {
+            return false;
+        }
+
+        if ($value instanceof ArrayDimFetch) {
+            $key = $value->dim;
+        } else {
+            if ($this->callHelper->matchingNames($value, $scope, ['make', 'get', 'makeWith']) === []) {
+                return false;
+            }
+
+            $key = ($value->getArg('abstract', 0) ?? $value->getArg('id', 0))?->value;
+        }
+
+        if ($key === null) {
+            return false;
+        }
+
+        foreach ($this->typeHelper->constantStrings($scope->getType($key)) as $service) {
+            if (in_array(ltrim($service, '\\'), self::FORBIDDEN_SERVICES, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

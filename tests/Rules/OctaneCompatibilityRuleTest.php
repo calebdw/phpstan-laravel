@@ -40,4 +40,17 @@ class OctaneCompatibilityRuleTest extends RuleTestCase
     {
         return [__DIR__ . '/../phpstan-tests.neon'];
     }
+
+    public function testResolvedInjection(): void
+    {
+        $this->analyse([__DIR__ . '/data/OctaneResolvedInjection.php'], [
+            ['Consider using bind method instead or pass a closure.', 17, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 18, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 19, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 20, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 21, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 22, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+            ['Consider using bind method instead or pass a closure.', 25, 'See: https://laravel.com/docs/octane#dependency-injection-and-octane'],
+        ]);
+    }
 }
