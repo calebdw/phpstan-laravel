@@ -815,18 +815,21 @@ final class MigrationSchemaParser
                 return;
 
             case 'morphs':
+            case 'numericmorphs':
                 $table->setColumn(new Column($columnName . '_type', 'string', $nullable));
                 $table->setColumn(new Column($columnName . '_id', 'non-negative-int', $nullable));
 
                 return;
 
             case 'nullablemorphs':
+            case 'nullablenumericmorphs':
                 $table->setColumn(new Column($columnName . '_type', 'string', true));
                 $table->setColumn(new Column($columnName . '_id', 'non-negative-int', true));
 
                 return;
 
             case 'nullableuuidmorphs':
+            case 'nullableulidmorphs':
                 $table->setColumn(new Column($columnName . '_type', 'string', true));
                 $table->setColumn(new Column($columnName . '_id', 'string', true));
 
@@ -859,6 +862,7 @@ final class MigrationSchemaParser
                 return;
 
             case 'uuidmorphs':
+            case 'ulidmorphs':
                 $table->setColumn(new Column($columnName . '_type', 'string', $nullable));
                 $table->setColumn(new Column($columnName . '_id', 'string', $nullable));
 
