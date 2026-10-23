@@ -21,14 +21,10 @@ package, so migrating takes a handful of mechanical changes.
 
 ## Requirements
 
-| | Larastan 3.x | This package |
-| --- | --- | --- |
-| PHP | `^8.2` | `^8.3` |
-| Laravel | 11, 12, 13 | 12, 13 |
-
-Laravel 11 is no longer supported. Only the two most recent Laravel releases are supported,
-and each is required at a recent minor version (`^12.67.0 \|\| ^13.26.1`) rather than the
-oldest release of that major.
+See [composer.json](https://github.com/calebdw/phpstan-laravel/blob/master/composer.json)
+for the current PHP and Laravel requirements.
+Only the two most recent Laravel major releases are supported, each at a recent
+minor version rather than the oldest release of that major.
 
 ## 1. Swap the package
 

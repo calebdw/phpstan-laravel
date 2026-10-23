@@ -141,6 +141,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-model-serialization.php');
         } else {
             yield from self::gatherAssertTypes(__DIR__ . '/data/l12-model-class-properties.php');
+            yield from self::gatherAssertTypes(__DIR__ . '/data/l12-model-counter-methods.php');
         }
 
         //##############################################################################################################

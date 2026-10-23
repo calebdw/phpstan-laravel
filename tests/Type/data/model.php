@@ -187,11 +187,6 @@ function test(
         return $query->where('active', true);
     }));
 
-    assertType('int', $user->increment('counter'));
-    assertType('int', $user->incrementQuietly('counter'));
-    assertType('int', $user->decrement('counter'));
-    assertType('int', $user->decrementQuietly('counter'));
-
     assertType('App\User|null', User::first());
     assertType('App\User', User::make([]));
     assertType('App\User', User::create([]));

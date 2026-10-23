@@ -2,7 +2,6 @@
 
 namespace ModelBuilder;
 
-use App\Account;
 use App\Post;
 use App\Team;
 use Illuminate\Database\Eloquent\Builder;
@@ -46,7 +45,7 @@ class User extends Model
     }
 }
 
-function test(User|Account $userOrAccount): void
+function test(): void
 {
     \App\User::query()->where(DB::raw('1'), 1)->get();
 
@@ -61,10 +60,6 @@ function test(User|Account $userOrAccount): void
     // survive a chain of inherited builder methods.
     Team::query()->where('name', 'Team A')->orderBy('name')->get();
 
-    assertType('int', $userOrAccount->increment('counter'));
-    assertType('int', $userOrAccount->incrementQuietly('counter'));
-    assertType('int', $userOrAccount->decrement('counter'));
-    assertType('int', $userOrAccount->decrementQuietly('counter'));
 }
 
 /**

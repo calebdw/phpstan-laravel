@@ -33,11 +33,9 @@ If that run already fails, note why. A pre-existing failure is not something
 the migration will fix, and mistaking one for a migration regression wastes the
 rest of the effort.
 
-Check the requirements while you are here. PHP must be `^8.3` and Laravel
-`^12.67.0 || ^13.26.1`. Laravel 11 is not supported, and only the two most
-recent Laravel releases are, each at a recent minor rather than the oldest
-release of that major. If the project is on Laravel 11 or PHP 8.2, stop and
-tell the user: that upgrade comes first and is not part of this skill.
+Check the project's PHP and Laravel versions against the package's current
+`composer.json` requirements. If they are incompatible, stop and tell the user:
+that upgrade comes first and is not part of this skill.
 
 ## 1. Swap the package
 
