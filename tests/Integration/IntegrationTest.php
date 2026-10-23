@@ -82,6 +82,15 @@ class IntegrationTest extends PHPStanTestCase
             true,
         ];
 
+        yield 'model-property-with-attributes' => [
+            __DIR__ . '/data/model-property-with-attributes.php',
+            [
+                5 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Builder<App\User>::withAttributes() expects array<model property of App\User, mixed>|Illuminate\Contracts\Database\Query\Expression|model property of App\User, array<string, int> given.'],
+                6 => ['Parameter #1 $attributes of method Illuminate\Database\Eloquent\Builder<App\User>::withAttributes() expects array<model property of App\User, mixed>|Illuminate\Contracts\Database\Query\Expression|model property of App\User, string given.'],
+            ],
+            true,
+        ];
+
         yield 'eager-load-closures' => [
             __DIR__ . '/data/eager-load-closures.php',
             [

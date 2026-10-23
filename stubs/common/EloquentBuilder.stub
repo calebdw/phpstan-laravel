@@ -488,6 +488,14 @@ class Builder
     public function upsert(array $values, $uniqueBy, $update = null);
 
     /**
+     * @param \Illuminate\Contracts\Database\Query\Expression|array<model-property<TModel>, mixed>|model-property<TModel> $attributes
+     * @param mixed $value
+     * @param bool $asConditions
+     * @return $this
+     */
+    public function withAttributes($attributes, $value = null, $asConditions = true);
+
+    /**
      * @param  array<model-property<TModel>, mixed>  $attributes
      * @phpstan-return TModel
      */
