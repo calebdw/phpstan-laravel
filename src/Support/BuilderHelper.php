@@ -15,7 +15,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Str;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Name;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\Analyser\Scope as AnalyserScope;
+use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
@@ -25,6 +30,7 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\GenericObjectType;
+use PHPStan\Type\Generic\TemplateType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
@@ -446,7 +452,7 @@ final class BuilderHelper
 
         $results = [];
 
-        foreach (TypeUtils::flattenTypes($modelType) as $type) {
+        foreach ($modelType instanceof TemplateType ? [$modelType] : TypeUtils::flattenTypes($modelType) as $type) {
             foreach ($type->getObjectClassNames() as $className) {
                 if (! $this->reflectionProvider->hasClass($className)) {
                     continue;
@@ -469,6 +475,27 @@ final class BuilderHelper
         }
 
         return $results === [] ? new NeverType() : TypeCombinator::union(...$results);
+    }
+
+    public function templateStaticCallReturnType(StaticCall $methodCall, AnalyserScope $scope): Type|null
+    {
+        if ($methodCall->class instanceof Name || $methodCall->isFirstClassCallable()) {
+            return null;
+        }
+
+        $modelType = $scope->getType($methodCall->class)->getObjectTypeOrClassStringObjectType();
+
+        if (! TypeUtils::containsTemplateType($modelType)) {
+            return null;
+        }
+
+        $builderType = $this->determineBuilderType($modelType);
+
+        if ($builderType instanceof NeverType) {
+            return null;
+        }
+
+        return $scope->getType(new MethodCall(new TypeExpr($builderType), $methodCall->name, $methodCall->getArgs()));
     }
 
     public function methodIsBuilderPassthru(string $methodName): bool

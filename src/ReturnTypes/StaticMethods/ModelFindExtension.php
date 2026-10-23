@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods;
 
+use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,7 +32,7 @@ use function in_array;
 
 final class ModelFindExtension implements DynamicStaticMethodReturnTypeExtension
 {
-    public function __construct(private ReflectionProvider $reflectionProvider, private CollectionHelper $collectionHelper)
+    public function __construct(private ReflectionProvider $reflectionProvider, private CollectionHelper $collectionHelper, private BuilderHelper $builderHelper)
     {
     }
 
@@ -54,6 +55,14 @@ final class ModelFindExtension implements DynamicStaticMethodReturnTypeExtension
 
     public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type
     {
+        if ($methodReflection->getDeclaringClass()->is(Builder::class)) {
+            $forwardedType = $this->builderHelper->templateStaticCallReturnType($methodCall, $scope);
+
+            if ($forwardedType !== null) {
+                return $forwardedType;
+            }
+        }
+
         if (count($methodCall->getArgs()) < 1) {
             return new ErrorType();
         }

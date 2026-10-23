@@ -41,8 +41,16 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
     {
-        $name = $methodReflection->getName();
+        if (Str::startsWith($methodReflection->getName(), 'find')) {
+            return false;
+        }
 
+        return $this->isNativeModelMethod($methodReflection->getName())
+            || $methodReflection->getDeclaringClass()->is(EloquentBuilder::class);
+    }
+
+    private function isNativeModelMethod(string $name): bool
+    {
         if ($name === '__construct') {
             return false;
         }
@@ -61,6 +69,18 @@ final class ModelDynamicStaticMethodReturnTypeExtension implements DynamicStatic
 
     public function getTypeFromStaticMethodCall(MethodReflection $methodReflection, StaticCall $methodCall, Scope $scope): Type|null
     {
+        if ($methodReflection->getDeclaringClass()->is(EloquentBuilder::class)) {
+            $forwardedType = $this->builderHelper->templateStaticCallReturnType($methodCall, $scope);
+
+            if ($forwardedType !== null) {
+                return $forwardedType;
+            }
+        }
+
+        if (! $this->isNativeModelMethod($methodReflection->getName())) {
+            return null;
+        }
+
         $method = $methodReflection->getDeclaringClass()
             ->getMethod($methodReflection->getName(), $scope);
 

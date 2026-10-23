@@ -93,7 +93,7 @@ final class BuilderModelFindExtension implements DynamicMethodReturnTypeExtensio
 
             if ($argType->isIterable()->yes()) {
                 if (in_array(Collection::class, $returnType->getReferencedClasses(), true)) {
-                    $models[] = $this->collectionHelper->determineCollectionType($modelName);
+                    $models[] = $this->collectionHelper->determineCollectionType($modelName, $modelClassType);
                     continue;
                 }
 
