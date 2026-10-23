@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Support;
 use Composer\InstalledVersions;
 use Illuminate\Database\Eloquent\Attributes\CollectedBy;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\HasCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
@@ -269,7 +270,10 @@ final class CollectionHelper
             ->getDeclaringClass()
             ->getName();
 
-        if ($declaringClass !== Model::class) {
+        if (
+            $declaringClass !== Model::class
+            && $modelReflection->getNativeReflection()->getMethod('newCollection')->getFileName() !== $this->reflectionProvider->getClass(HasCollection::class)->getFileName()
+        ) {
             return $method->getVariants()[0]->getReturnType();
         }
 

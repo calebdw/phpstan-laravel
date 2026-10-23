@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
-use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Name;
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute as NativeAttribute;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
@@ -18,6 +16,7 @@ use function array_values;
 use function collect;
 use function is_array;
 use function is_string;
+use function ltrim;
 
 final class ReflectionHelper
 {
@@ -97,7 +96,7 @@ final class ReflectionHelper
     }
 
     /**
-     * First constructor argument when it is a class constant fetch.
+     * First positional constructor argument naming a class.
      * Used by CollectedBy, UseFactory, and UseEloquentBuilder.
      */
     public function attributeClassName(
@@ -106,19 +105,19 @@ final class ReflectionHelper
         bool $inherited = true,
         bool $traits = true,
     ): string|null {
-        $attr = $this->findAttribute($class, $attribute, $inherited, $traits);
+        foreach ($inherited ? [$class, ...$class->getParents()] : [$class] as $reflection) {
+            $reflections = $inherited && $traits ? [$reflection, ...$reflection->getTraits()] : [$reflection];
 
-        if ($attr === null) {
-            return null;
+            foreach ($reflections as $candidate) {
+                $arguments = $this->declaredAttribute($candidate, $attribute)?->getArguments() ?? [];
+
+                if (is_string($arguments[0] ?? null)) {
+                    return ltrim($arguments[0], '\\');
+                }
+            }
         }
 
-        $expr = $attr->getArgumentsExpressions()[0] ?? null;
-
-        if (! $expr instanceof ClassConstFetch || ! $expr->class instanceof Name) {
-            return null;
-        }
-
-        return $expr->class->toString();
+        return null;
     }
 
     public function classStringPropertyDefault(ClassReflection $class, string $property): string|null

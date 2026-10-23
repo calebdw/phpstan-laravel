@@ -100,6 +100,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/mixin-infinite-recursion.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-attributes.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-collections.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/model-collected-by.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-class-properties.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-factories.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/model-keys.php');
