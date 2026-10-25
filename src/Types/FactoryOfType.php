@@ -20,7 +20,6 @@ use PHPStan\Type\VerbosityLevel;
 /** @phpstan-ignore phpstanApi.interface (LateResolvableType has no public substitute) */
 final class FactoryOfType implements CompoundType, LateResolvableType
 {
-    /** @phpstan-ignore phpstanApi.trait (LateResolvableType has no public substitute) */
     use LateResolvableTypeTrait;
 
     public function __construct(private Type $type, private FactoryHelper $factoryHelper)

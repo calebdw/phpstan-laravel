@@ -22,7 +22,6 @@ use function array_merge;
 /** @phpstan-ignore phpstanApi.interface (LateResolvableType has no public substitute) */
 final class BuilderOfType implements CompoundType, LateResolvableType
 {
-    /** @phpstan-ignore phpstanApi.trait (LateResolvableType has no public substitute) */
     use LateResolvableTypeTrait;
 
     public function __construct(
