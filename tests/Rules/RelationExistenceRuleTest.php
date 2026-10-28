@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\RelationExistenceRule;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\NullsafeMethodCall;
+use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -14,6 +17,11 @@ class RelationExistenceRuleTest extends RuleTestCase
     protected function getRule(): Rule
     {
         return self::getContainer()->getByType(RelationExistenceRule::class);
+    }
+
+    public function testNodeTypes(): void
+    {
+        self::assertSame([MethodCall::class, NullsafeMethodCall::class, StaticCall::class], $this->getRule()->getNodeTypes());
     }
 
     public function testRule(): void

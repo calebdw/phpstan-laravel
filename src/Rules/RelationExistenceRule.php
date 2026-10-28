@@ -12,8 +12,9 @@ use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\NullsafeMethodCall;
+use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\Rules\Rule;
+use PHPStan\Rules\MultipleNodeTypesRule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Type\ObjectType;
 
@@ -22,8 +23,8 @@ use function in_array;
 use function str_starts_with;
 use function strtolower;
 
-/** @implements Rule<Node\Expr\CallLike> */
-final class RelationExistenceRule implements Rule
+/** @implements MultipleNodeTypesRule<Node\Expr\CallLike> */
+final class RelationExistenceRule implements MultipleNodeTypesRule
 {
     private const array METHODS = [
         'has'                            => 1,
@@ -86,10 +87,20 @@ final class RelationExistenceRule implements Rule
         return Node\Expr\CallLike::class;
     }
 
-    /** @return RuleError[] */
+    /** @inheritDoc */
+    public function getNodeTypes(): array
+    {
+        return [MethodCall::class, NullsafeMethodCall::class, StaticCall::class];
+    }
+
+    /**
+     * @param MethodCall|NullsafeMethodCall|StaticCall $node
+     *
+     * @return RuleError[]
+     */
     public function processNode(Node $node, Scope $scope): array
     {
-        if ((! $node instanceof MethodCall && ! $node instanceof NullsafeMethodCall && ! $node instanceof Node\Expr\StaticCall) || ! $node->name instanceof Node\Identifier || $node->isFirstClassCallable() || $node->getAttribute('virtualNullsafeMethodCall', false)) {
+        if (! $node->name instanceof Node\Identifier || $node->isFirstClassCallable() || $node->getAttribute('virtualNullsafeMethodCall', false)) {
             return [];
         }
 

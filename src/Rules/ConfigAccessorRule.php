@@ -15,7 +15,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\IdentifierRuleError;
-use PHPStan\Rules\Rule;
+use PHPStan\Rules\MultipleNodeTypesRule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Type;
@@ -30,9 +30,9 @@ use function sprintf;
  * that do not hold the required type. Each throws an
  * InvalidArgumentException at runtime, as none of them coerce.
  *
- * @implements Rule<Node\Expr\CallLike>
+ * @implements MultipleNodeTypesRule<Node\Expr\CallLike>
  */
-final class ConfigAccessorRule implements Rule
+final class ConfigAccessorRule implements MultipleNodeTypesRule
 {
     /**
      * The wording mirrors the runtime exception, so the reported message
@@ -59,17 +59,20 @@ final class ConfigAccessorRule implements Rule
         return Node\Expr\CallLike::class;
     }
 
+    /** @inheritDoc */
+    public function getNodeTypes(): array
+    {
+        return [MethodCall::class, StaticCall::class];
+    }
+
     /**
+     * @param MethodCall|StaticCall   $node
      * @param  Scope&DependencyTracker $scope
      *
      * @return list<IdentifierRuleError>
      */
     public function processNode(Node $node, Scope $scope): array
     {
-        if (! $node instanceof MethodCall && ! $node instanceof StaticCall) {
-            return [];
-        }
-
         if (! $this->isConfigCall($node, $scope)) {
             return [];
         }

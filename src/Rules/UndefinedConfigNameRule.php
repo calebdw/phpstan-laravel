@@ -31,7 +31,7 @@ use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\IdentifierRuleError;
-use PHPStan\Rules\Rule;
+use PHPStan\Rules\MultipleNodeTypesRule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Type;
@@ -41,8 +41,8 @@ use function in_array;
 use function sprintf;
 use function str_contains;
 
-/** @implements Rule<CallLike> */
-final class UndefinedConfigNameRule implements Rule
+/** @implements MultipleNodeTypesRule<CallLike> */
+final class UndefinedConfigNameRule implements MultipleNodeTypesRule
 {
     private const array LOOKUPS = [
         [
@@ -109,17 +109,20 @@ final class UndefinedConfigNameRule implements Rule
         return CallLike::class;
     }
 
+    /** @inheritDoc */
+    public function getNodeTypes(): array
+    {
+        return [MethodCall::class, StaticCall::class];
+    }
+
     /**
+     * @param MethodCall|StaticCall   $node
      * @param  Scope&DependencyTracker $scope
      *
      * @return list<IdentifierRuleError>
      */
     public function processNode(Node $node, Scope $scope): array
     {
-        if (! $node instanceof MethodCall && ! $node instanceof StaticCall) {
-            return [];
-        }
-
         $args = $node->getArgs();
 
         if ($args === []) {

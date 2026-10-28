@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\ConfigAccessorRule;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -33,6 +35,11 @@ class ConfigAccessorRuleTest extends RuleTestCase
             ["Config key 'auth.password_timeout' is int, but 'float' requires a float.", 68],
             ["Config key 'auth.defaults.guard' is string, but 'boolean' requires a boolean.", 74],
         ]);
+    }
+
+    public function testNodeTypes(): void
+    {
+        self::assertSame([MethodCall::class, StaticCall::class], $this->getRule()->getNodeTypes());
     }
 
     /** @return string[] */

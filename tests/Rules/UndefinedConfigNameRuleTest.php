@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Rules;
 
 use CalebDW\PhpstanLaravel\Rules\UndefinedConfigNameRule;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
@@ -44,6 +46,11 @@ class UndefinedConfigNameRuleTest extends RuleTestCase
             ['Broadcast connection [missing] is not defined.', 130],
             ['The [missing] queue connection has not been configured.', 130],
         ]);
+    }
+
+    public function testNodeTypes(): void
+    {
+        self::assertSame([MethodCall::class, StaticCall::class], $this->getRule()->getNodeTypes());
     }
 
     /** @return string[] */
