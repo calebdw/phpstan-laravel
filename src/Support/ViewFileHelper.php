@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\Factory as ViewFactoryContract;
 use Illuminate\View\Factory as ViewFactory;
 use Illuminate\View\FileViewFinder;
 use Illuminate\View\ViewFinderInterface;
+use PHPStan\Analyser\DependencyTracker;
 use SplFileInfo;
 
 use function array_merge;
@@ -111,6 +112,24 @@ final class ViewFileHelper
         }
 
         return $files;
+    }
+
+    /** Tracks the Blade files in every view directory, as getAllViewFilePaths() reads them. */
+    public function trackViewDirectories(DependencyTracker $tracker): void
+    {
+        $this->fileHelper->trackDirectories($tracker, $this->getViewDirectories(), '*.blade.php');
+    }
+
+    /** Tracks the Blade files in the finder's own paths, as getRootViewFilePaths() reads them. */
+    public function trackRootViewDirectories(DependencyTracker $tracker): void
+    {
+        $finder = $this->finder();
+
+        if ($finder === null) {
+            return;
+        }
+
+        $this->fileHelper->trackDirectories($tracker, $finder->getPaths(), '*.blade.php');
     }
 
     /** @return Generator<int, string, void, void> */

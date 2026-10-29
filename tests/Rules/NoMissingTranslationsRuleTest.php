@@ -11,10 +11,17 @@ use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use CalebDW\PhpstanLaravel\Support\ViewParser;
+use Illuminate\View\Factory;
 use PhpParser\Node\Expr\CallLike;
+use PHPStan\Analyser\DependencyTracker;
+use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
+use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+
+use function array_map;
+use function lang_path;
 
 use const PHP_EOL;
 
@@ -33,6 +40,7 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
         return new NoMissingTranslationsRule(
             new UsedTranslationViewCollector($viewParser, $viewFileHelper),
             new FileHelper($this->getFileHelper()),
+            $viewFileHelper,
             [],
         );
     }
@@ -135,6 +143,24 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
                 41,
             ],
         ]);
+    }
+
+    public function testTracksTranslationAndViewDirectories(): void
+    {
+        $tracked = [];
+        $scope   = $this->createStubForIntersectionOfInterfaces([Scope::class, DependencyTracker::class]);
+        $scope->method('trackDirectoryDependency')->willReturnCallback(static function (string $directory, string $pattern) use (&$tracked): void {
+            $tracked[] = [$directory, $pattern];
+        });
+
+        $this->getRule()->processNode(new CollectedDataNode([], false), $scope);
+
+        $finder = self::getContainer()->getByType(ContainerHelper::class)->resolve(Factory::class)->getFinder();
+
+        $this->assertSame([
+            [lang_path(), '*'],
+            ...array_map(static fn (string $path): array => [$path, '*.blade.php'], $finder->getPaths()),
+        ], $tracked);
     }
 
     /** @return string[] */

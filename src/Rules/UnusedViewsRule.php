@@ -10,6 +10,7 @@ use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use Illuminate\View\Factory;
 use PhpParser\Node;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
@@ -33,9 +34,17 @@ final class UnusedViewsRule implements Rule
         return CollectedDataNode::class;
     }
 
-    /** @return RuleError[] */
+    /**
+     * @param  Scope&DependencyTracker $scope
+     *
+     * @return RuleError[]
+     */
     public function processNode(Node $node, Scope $scope): array
     {
+        // The view files are read from disk, not collected, so the result
+        // cache has to be told to run this rule again when one changes.
+        $this->viewFileHelper->trackViewDirectories($scope);
+
         $factory = $this->containerHelper->resolve(Factory::class);
         $finder  = $factory->getFinder();
 
