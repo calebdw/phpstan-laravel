@@ -7,8 +7,10 @@ namespace CalebDW\PhpstanLaravel\Rules;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationCollector;
 use CalebDW\PhpstanLaravel\Collectors\UsedTranslationViewCollector;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
+use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use Illuminate\Support\Str;
 use PhpParser\Node;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
@@ -40,6 +42,7 @@ final class NoMissingTranslationsRule implements Rule
     public function __construct(
         private UsedTranslationViewCollector $usedTranslationViewCollector,
         private FileHelper $fileHelper,
+        private ViewFileHelper $viewFileHelper,
         private array $translationDirectories,
     ) {
     }
@@ -49,10 +52,20 @@ final class NoMissingTranslationsRule implements Rule
         return CollectedDataNode::class;
     }
 
-    /** @return RuleError[] */
+    /**
+     * @param  Scope&DependencyTracker $scope
+     *
+     * @return RuleError[]
+     */
     public function processNode(Node $node, Scope $scope): array
     {
         $paths = $this->translationDirectories ?: [lang_path()];
+
+        // The translation files and the Blade files are read from disk, not
+        // collected, so the result cache has to be told to run this rule again
+        // when one changes.
+        $this->fileHelper->trackDirectories($scope, $paths);
+        $this->viewFileHelper->trackRootViewDirectories($scope);
 
         $availableTranslations = [];
 

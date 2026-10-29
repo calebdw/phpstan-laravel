@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
@@ -76,5 +77,27 @@ final class FileHelper
         }
 
         return $resolved;
+    }
+
+    /**
+     * Lets the result cache run the current rule again when a file matching
+     * the pattern changes in one of the given directories. A directory that
+     * does not exist yet is tracked too, so creating it counts as a change.
+     *
+     * @param  array<array-key, string> $directories
+     */
+    public function trackDirectories(DependencyTracker $tracker, array $directories, string $pattern = '*'): void
+    {
+        foreach ($directories as $directory) {
+            $directory = $this->fileHelper->absolutizePath($directory);
+
+            $resolved = is_dir($directory)
+                ? [$directory]
+                : (glob($directory, GLOB_ONLYDIR) ?: [$directory]);
+
+            foreach ($resolved as $resolvedDirectory) {
+                $tracker->trackDirectoryDependency($resolvedDirectory, $pattern);
+            }
+        }
     }
 }
