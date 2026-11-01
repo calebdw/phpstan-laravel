@@ -609,6 +609,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#migration-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Migration syntax
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checking-column-names" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1433,6 +1444,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#migration-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Migration syntax
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checking-column-names" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1557,30 +1579,42 @@ directories. Enabling
 <a href="../../reference/configuration/#modelpropertytype"><code>modelPropertyType</code></a> then
 checks property <em>names</em> passed to methods, catching typos in things like
 <code>User::create([...])</code>.</p>
+<h2 id="migration-syntax">Migration syntax<a class="headerlink" href="#migration-syntax" title="Permanent link">&para;</a></h2>
+<p>Migration callbacks can be closures or arrow functions, including nested
+<code>$table-&gt;after()</code> callbacks. Literal <code>CREATE TABLE</code> SQL passed to
+<code>DB::statement()</code> or <code>DB::unprepared()</code> is also scanned:</p>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nx">DB</span><span class="o">::</span><span class="na">statement</span><span class="p">(</span><span class="s1">'CREATE TABLE labels (id BIGINT NOT NULL, name VARCHAR(80));'</span><span class="p">);</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nx">DB</span><span class="o">::</span><span class="na">connection</span><span class="p">(</span><span class="s1">'reporting'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">unprepared</span><span class="p">(</span><span class="s1">'CREATE TABLE totals (amount DECIMAL(10, 2));'</span><span class="p">);</span>
+</span></code></pre></div>
+<p>SQL tables stay on their migration or explicitly selected connection. The
+configured <a href="../../reference/configuration/#sqlparser"><code>sqlParser</code></a> driver is
+used; <code>auto</code> selects the PostgreSQL parser for a <code>pgsql</code> connection. Install
+the corresponding optional parser package when using SQL migrations. Dynamic
+SQL expressions and statements the parser cannot understand are not inferred.</p>
 <h2 id="checking-column-names">Checking column names<a class="headerlink" href="#checking-column-names" title="Permanent link">&para;</a></h2>
 <p>Resolving the columns tells you the <em>type</em> of <code>$user-&gt;email</code>. Turning on
 <code>modelPropertyType</code> also checks the column <em>names</em> you pass to methods, so a
 typo is caught where it is written:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>parameters:
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    laravel:
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        modelPropertyType: true
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>parameters:
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    laravel:
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        modelPropertyType: true
 </span></code></pre></div>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">create</span><span class="p">([</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'John Doe'</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="s1">'emaiil'</span> <span class="o">=&gt;</span> <span class="s1">'john@example.test'</span><span class="p">,</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">]);</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nx">User</span><span class="o">::</span><span class="na">create</span><span class="p">([</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'John Doe'</span><span class="p">,</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="s1">'emaiil'</span> <span class="o">=&gt;</span> <span class="s1">'john@example.test'</span><span class="p">,</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">]);</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
 </span></code></pre></div>
 <p>Laravel's own methods that expect a column are annotated for you, so this
 applies across the query builder, relations and mass assignment without any
 work. You can annotate your own the same way:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">/** @param model-property&lt;\App\User&gt; $column */</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">function</span> <span class="nf">sortBy</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$column</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="p">{</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="c1">// ...</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nx">sortBy</span><span class="p">(</span><span class="s1">'emaiil'</span><span class="p">);</span>  <span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="sd">/** @param model-property&lt;\App\User&gt; $column */</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">function</span> <span class="nf">sortBy</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$column</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="p">{</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="c1">// ...</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">}</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="nx">sortBy</span><span class="p">(</span><span class="s1">'emaiil'</span><span class="p">);</span>  <span class="c1">// Property 'emaiil' does not exist in App\User model.</span>
 </span></code></pre></div>
 <p>It is a type rather than a rule, which is why it has no <code>laravel.</code> identifier:
 the option activates <a href="../custom-types/"><code>model-property</code></a>, and PHPStan's ordinary
@@ -1596,23 +1630,23 @@ right places, before turning it on.</p>
 <p><code>only</code> builds a shape out of the attributes you name, resolved exactly the way
 <code>$user-&gt;email</code> is. Columns, casts, both accessor styles and <code>@property</code>
 annotations all carry their types through it:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'email'</span><span class="p">);</span>                   <span class="c1">// array{name: string, email: string}</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'blocked'</span><span class="p">]);</span>                       <span class="c1">// array{blocked: bool}</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'only_available_with_accessor'</span><span class="p">]);</span>  <span class="c1">// array{only_available_with_accessor: string}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'email'</span><span class="p">);</span>                   <span class="c1">// array{name: string, email: string}</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'blocked'</span><span class="p">]);</span>                       <span class="c1">// array{blocked: bool}</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'only_available_with_accessor'</span><span class="p">]);</span>  <span class="c1">// array{only_available_with_accessor: string}</span>
 </span></code></pre></div>
 <p>An attribute the model does not have comes back as null rather than being
 dropped, which is what <code>getAttribute()</code> does at runtime:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'nope'</span><span class="p">]);</span>  <span class="c1">// array{name: string, nope: null}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'nope'</span><span class="p">]);</span>  <span class="c1">// array{name: string, nope: null}</span>
 </span></code></pre></div>
 <p>A key that is not known while analysing leaves no shape to build, so the result
 widens:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="nv">$key</span><span class="p">]);</span>  <span class="c1">// array&lt;string, mixed&gt;</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'name'</span><span class="p">,</span> <span class="nv">$key</span><span class="p">]);</span>  <span class="c1">// array&lt;string, mixed&gt;</span>
 </span></code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">No dot notation</p>
 <p><code>getAttribute()</code> does not split on dots, so a dotted key is looked up whole
 and misses:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'meta.a'</span><span class="p">]);</span>  <span class="c1">// array{'meta.a': null}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">only</span><span class="p">([</span><span class="s1">'meta.a'</span><span class="p">]);</span>  <span class="c1">// array{'meta.a': null}</span>
 </span></code></pre></div>
 <p>That is what the framework returns at runtime.
 <a href="../collections/#only"><code>Arr::only</code></a> has the same limitation, for its own
@@ -1623,8 +1657,8 @@ reasons.</p>
 appends, minus <code>$hidden</code> and respecting <code>$visible</code>. Dates, enums, Arrayables,
 and class-cast <code>serialize()</code> hooks are applied. Extra keys from partial
 selects, aggregates, and loaded relations stay available as <code>string</code> → <code>mixed</code>.</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">$post</span><span class="o">-&gt;</span><span class="na">toArray</span><span class="p">();</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">// array{id?: int, title?: string, published_at?: string|null, ...&lt;string, mixed&gt;}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">$post</span><span class="o">-&gt;</span><span class="na">toArray</span><span class="p">();</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="c1">// array{id?: int, title?: string, published_at?: string|null, ...&lt;string, mixed&gt;}</span>
 </span></code></pre></div>
 <p>A model that overrides <code>toArray</code>, <code>attributesToArray</code>, <code>getAppends</code>,
 <code>getHidden</code>, or <code>getVisible</code> is left as <code>array&lt;string, mixed&gt;</code>.</p>
@@ -1633,28 +1667,28 @@ selects, aggregates, and loaded relations stay available as <code>string</code> 
 <code>protected</code> method annotated with the <code>Attribute</code> generic types: the first is
 the getter's return type, the second the setter's argument type.</p>
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="sd">/** @return Attribute&lt;string[], string[]&gt; */</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">scopes</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="p">{</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="k">return</span> <span class="nx">Attribute</span><span class="o">::</span><span class="na">make</span><span class="p">(</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>        <span class="nx">get</span><span class="o">:</span> <span class="nx">fn</span> <span class="p">(</span><span class="o">?</span><span class="nx">string</span> <span class="nv">$value</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">is_null</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span> <span class="o">?</span> <span class="p">[]</span> <span class="o">:</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="nv">$value</span><span class="p">),</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>        <span class="nx">set</span><span class="o">:</span> <span class="k">function</span><span class="p">(</span><span class="k">array</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>            <span class="nv">$set</span> <span class="o">=</span> <span class="nb">array_unique</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>            <span class="nb">sort</span><span class="p">(</span><span class="nv">$set</span><span class="p">);</span>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>            <span class="k">return</span> <span class="p">[</span><span class="s1">'scopes'</span> <span class="o">=&gt;</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="nv">$set</span><span class="p">)];</span>
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>        <span class="p">}</span>
-</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>    <span class="p">);</span>
-</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="p">}</span>
-</span></code></pre></div>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="sd">/** @return Attribute&lt;bool, never&gt; */</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">isTrue</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="sd">/** @return Attribute&lt;string[], string[]&gt; */</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">scopes</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="p">{</span>
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="k">return</span> <span class="nx">Attribute</span><span class="o">::</span><span class="na">make</span><span class="p">(</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>        <span class="nx">get</span><span class="o">:</span> <span class="nx">fn</span> <span class="p">(</span><span class="o">?</span><span class="nx">string</span> <span class="nv">$value</span><span class="p">)</span><span class="o">:</span> <span class="nx">bool</span> <span class="o">=&gt;</span> <span class="nv">$value</span> <span class="o">===</span> <span class="k">null</span><span class="p">,</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>    <span class="p">);</span>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="p">}</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>        <span class="nx">get</span><span class="o">:</span> <span class="nx">fn</span> <span class="p">(</span><span class="o">?</span><span class="nx">string</span> <span class="nv">$value</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">is_null</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span> <span class="o">?</span> <span class="p">[]</span> <span class="o">:</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="nv">$value</span><span class="p">),</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>        <span class="nx">set</span><span class="o">:</span> <span class="k">function</span><span class="p">(</span><span class="k">array</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>            <span class="nv">$set</span> <span class="o">=</span> <span class="nb">array_unique</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>            <span class="nb">sort</span><span class="p">(</span><span class="nv">$set</span><span class="p">);</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>            <span class="k">return</span> <span class="p">[</span><span class="s1">'scopes'</span> <span class="o">=&gt;</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="nv">$set</span><span class="p">)];</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>        <span class="p">}</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>    <span class="p">);</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="sd">/** @return Attribute&lt;bool, never&gt; */</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">protected</span> <span class="k">function</span> <span class="nf">isTrue</span><span class="p">()</span><span class="o">:</span> <span class="nx">Attribute</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="p">{</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="k">return</span> <span class="nx">Attribute</span><span class="o">::</span><span class="na">make</span><span class="p">(</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>        <span class="nx">get</span><span class="o">:</span> <span class="nx">fn</span> <span class="p">(</span><span class="o">?</span><span class="nx">string</span> <span class="nv">$value</span><span class="p">)</span><span class="o">:</span> <span class="nx">bool</span> <span class="o">=&gt;</span> <span class="nv">$value</span> <span class="o">===</span> <span class="k">null</span><span class="p">,</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>    <span class="p">);</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="p">}</span>
 </span></code></pre></div>
 <p><code>Attribute::get()</code> leaves <code>TSet</code> as <code>never</code>, and <code>Attribute::set()</code> leaves
 <code>TGet</code> as <code>never</code>. That describes the hooks, not the model property. A
@@ -1665,11 +1699,11 @@ side.</p>
 <p>The older <code>getFooAttribute()</code> style is supported as well, and its return type is
 used directly. It is still found when a method of the same camel case name
 exists alongside it:</p>
-<div class="language-php highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">getFullNameAttribute</span><span class="p">()</span><span class="o">:</span> <span class="nx">string</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="p">{</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_name</span> <span class="o">.</span> <span class="s1">' '</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_name</span><span class="p">;</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="p">}</span>
+<div class="language-php highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">public</span> <span class="k">function</span> <span class="nf">getFullNameAttribute</span><span class="p">()</span><span class="o">:</span> <span class="nx">string</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="p">{</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">first_name</span> <span class="o">.</span> <span class="s1">' '</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">last_name</span><span class="p">;</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="p">}</span>
 </span></code></pre></div>
 
 
