@@ -493,6 +493,30 @@ class Builder
     public function upsert(array $values, $uniqueBy, $update = null);
 
     /**
+     * @param array<int, array<model-property<TModel>, mixed>> $values
+     * @return bool
+     */
+    public function fillAndInsert(array $values);
+
+    /**
+     * @param array<int, array<model-property<TModel>, mixed>> $values
+     * @return int
+     */
+    public function fillAndInsertOrIgnore(array $values);
+
+    /**
+     * @param array<model-property<TModel>, mixed> $values
+     * @return int
+     */
+    public function fillAndInsertGetId(array $values);
+
+    /**
+     * @param array<int, array<model-property<TModel>, mixed>> $values
+     * @return array<int, array<string, mixed>>
+     */
+    public function fillForInsert(array $values);
+
+    /**
      * @param \Illuminate\Contracts\Database\Query\Expression|array<model-property<TModel>, mixed>|model-property<TModel> $attributes
      * @param mixed $value
      * @param bool $asConditions

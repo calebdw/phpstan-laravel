@@ -69,6 +69,19 @@ class IntegrationTest extends PHPStanTestCase
             true,
         ];
 
+        yield 'model-property-fill-and-insert' => [
+            __DIR__ . '/data/model-property-fill-and-insert.php',
+            [
+                5 => ['Parameter #1 $values of method Illuminate\Database\Eloquent\Builder<App\User>::fillAndInsert() expects array<int, array<model property of App\User, mixed>>, array<int, array<string, string>> given.'],
+                6 => ['Parameter #1 $values of method Illuminate\Database\Eloquent\Builder<App\User>::fillAndInsertOrIgnore() expects array<int, array<model property of App\User, mixed>>, array<int, array<string, string>> given.'],
+                7 => ['Parameter #1 $values of method Illuminate\Database\Eloquent\Builder<App\User>::fillAndInsertGetId() expects array<model property of App\User, mixed>, array<string, string> given.'],
+                8 => ['Parameter #1 $values of method Illuminate\Database\Eloquent\Builder<App\User>::fillForInsert() expects array<int, array<model property of App\User, mixed>>, array<int, array<string, string>> given.'],
+                9 => ['Parameter #1 $values of static method Illuminate\Database\Eloquent\Builder<static(App\User)>::fillAndInsert() expects array<int, array<model property of App\User, mixed>>, array<int, array<string, string>> given.'],
+                18 => ['Parameter #1 $values of method Illuminate\Database\Eloquent\Builder<App\Account>::fillAndInsert() expects array<int, array<model property of App\Account, mixed>>, array<int, array<string, string>> given.'],
+            ],
+            true,
+        ];
+
         yield 'model-date-column-casts' => [
             __DIR__ . '/data/model-date-column-casts.php',
             [
