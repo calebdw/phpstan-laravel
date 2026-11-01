@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Methods\MacroMethodsClassReflectionExtension;
 use CalebDW\PhpstanLaravel\Reflection\DynamicWhereParameterReflection;
 use CalebDW\PhpstanLaravel\Reflection\EloquentBuilderMethodReflection;
 use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
+use Composer\InstalledVersions;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -52,6 +53,7 @@ use function preg_split;
 use function strtolower;
 use function substr;
 use function ucfirst;
+use function version_compare;
 
 use const PREG_SPLIT_DELIM_CAPTURE;
 
@@ -285,13 +287,20 @@ final class BuilderHelper
         $method          = $modelReflection->getNativeMethod('newEloquentBuilder');
 
         if ($method->getDeclaringClass()->getName() === Model::class) {
-            $builderClass = $this->reflectionHelper->attributeClassName(
+            $laravelVersion = InstalledVersions::getVersion('laravel/framework')
+                ?? InstalledVersions::getVersion('illuminate/database')
+                ?? '0';
+            $builderClass   = $this->reflectionHelper->attributeClassName(
                 $modelReflection,
                 UseEloquentBuilder::class,
-                inherited: false,
+                inherited: version_compare($laravelVersion, '13.31.0.0', '>='),
             );
 
-            if ($builderClass !== null) {
+            if (
+                $builderClass !== null
+                && $this->reflectionProvider->hasClass($builderClass)
+                && $this->reflectionProvider->getClass($builderClass)->is(EloquentBuilder::class)
+            ) {
                 return $builderClass;
             }
 

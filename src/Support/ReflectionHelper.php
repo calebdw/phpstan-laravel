@@ -96,7 +96,7 @@ final class ReflectionHelper
     }
 
     /**
-     * First positional constructor argument naming a class.
+     * Constructor argument naming a class, positional or named.
      * Used by CollectedBy, UseFactory, and UseEloquentBuilder.
      */
     public function attributeClassName(
@@ -105,19 +105,9 @@ final class ReflectionHelper
         bool $inherited = true,
         bool $traits = true,
     ): string|null {
-        foreach ($inherited ? [$class, ...$class->getParents()] : [$class] as $reflection) {
-            $reflections = $inherited && $traits ? [$reflection, ...$reflection->getTraits()] : [$reflection];
+        $arguments = array_values($this->findAttribute($class, $attribute, $inherited, $traits)?->getArguments() ?? []);
 
-            foreach ($reflections as $candidate) {
-                $arguments = $this->declaredAttribute($candidate, $attribute)?->getArguments() ?? [];
-
-                if (is_string($arguments[0] ?? null)) {
-                    return ltrim($arguments[0], '\\');
-                }
-            }
-        }
-
-        return null;
+        return is_string($arguments[0] ?? null) ? ltrim($arguments[0], '\\') : null;
     }
 
     public function classStringPropertyDefault(ClassReflection $class, string $property): string|null

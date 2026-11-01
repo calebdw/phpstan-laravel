@@ -88,3 +88,16 @@ function testFactoryOf(Factory $factory): void
 {
     assertType('ModelAttributes\WidgetFactory', $factory);
 }
+
+#[UseFactory(factoryClass: GadgetFactory::class)]
+#[CollectedBy(collectionClass: WidgetCollection::class)]
+class NamedGadget extends Model
+{
+    use HasFactory;
+}
+
+function namedAttributes(): void
+{
+    assertType('ModelAttributes\GadgetFactory', NamedGadget::factory());
+    assertType('ModelAttributes\WidgetCollection', NamedGadget::all());
+}

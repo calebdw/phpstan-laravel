@@ -45,5 +45,5 @@ function test(Collection $models): void
     assertType('Laravel13ModelClassProperties\ParentCollection', $models);
     assertType('Laravel13ModelClassProperties\ParentCollection', ChildModel::all());
     assertType('Laravel13ModelClassProperties\ParentCollection', ChildUsingTrait::all());
-    assertType('Laravel13ModelClassProperties\ParentCollection', NamedArgumentChild::all());
+    assertType('Laravel13ModelClassProperties\PropertyCollection', NamedArgumentChild::all());
 }

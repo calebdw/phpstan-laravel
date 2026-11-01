@@ -33,6 +33,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/benchmark.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/boolean-rules.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/builder-of-type.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/builder-attributes.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/cache-remember.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-aggregates.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/collection-collapse.php');
@@ -145,6 +146,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/where-relation.php');
 
         if (laravel_version_compare('13.0.0', '>=')) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/l13-builder-attributes.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-cache-remember.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-eloquent-builder-model-keys.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-http-client-query.php');
@@ -152,6 +154,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-model-counter-methods.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l13-model-serialization.php');
         } else {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/l12-builder-attributes.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l12-model-class-properties.php');
             yield from self::gatherAssertTypes(__DIR__ . '/data/l12-model-counter-methods.php');
         }
