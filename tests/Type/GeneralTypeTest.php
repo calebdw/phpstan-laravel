@@ -88,6 +88,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/environment-helper.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/facades.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/factory-of-type.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/factory-inheritance.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/form-request.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/form-request-validated-key.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/framework-docblock-types.php');

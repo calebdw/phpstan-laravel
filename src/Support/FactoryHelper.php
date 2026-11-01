@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
@@ -109,12 +110,38 @@ final class FactoryHelper
             }
         }
 
+        if (! $this->isFactoryGenericBoundTo($modelReflection)) {
+            $factories = $this->factoriesFromName($modelReflection);
+
+            if ($factories !== []) {
+                return $factories;
+            }
+        }
+
         $factories = $this->factoriesFromMethod($modelReflection, 'factory');
 
         if ($factories !== []) {
             return $factories;
         }
 
+        return $this->factoriesFromName($modelReflection);
+    }
+
+    private function isFactoryGenericBoundTo(ClassReflection $modelReflection): bool
+    {
+        if (! $modelReflection->hasNativeMethod('factory')) {
+            return false;
+        }
+
+        $method = $modelReflection->getNativeReflection()->getMethod('factory');
+
+        return $method->getDeclaringClass()->getName() === $modelReflection->getName()
+            || $method->getFileName() !== $this->reflectionProvider->getClass(HasFactory::class)->getFileName();
+    }
+
+    /** @return list<ClassReflection> */
+    private function factoriesFromName(ClassReflection $modelReflection): array
+    {
         /** @phpstan-ignore argument.type (guaranteed to be model class-string) */
         $factoryClass = Factory::resolveFactoryName($modelReflection->getName());
 
