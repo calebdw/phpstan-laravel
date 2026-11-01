@@ -13,6 +13,7 @@ use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
+use CalebDW\PhpstanLaravel\Support\SqlSchemaHelper;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Testing\PHPStanTestCase;
@@ -61,6 +62,7 @@ trait HasDatabaseHelper
             $this->modelHelper,
             self::createReflectionProvider(),
             self::getContainer()->getByType(InitializerExprTypeResolver::class),
+            self::getContainer()->getByType(SqlSchemaHelper::class),
         );
     }
 
@@ -72,10 +74,18 @@ trait HasDatabaseHelper
             new FileHelper(
                 self::getContainer()->getByType(PHPStanFileHelper::class),
             ),
+            $this->getSqlSchemaHelper($driver),
+            $scan,
+        );
+    }
+
+    private function getSqlSchemaHelper(string $driver = SqlParserManager::DRIVER_AUTO): SqlSchemaHelper
+    {
+        return new SqlSchemaHelper(
+            new SqlParserManager($driver),
             new SqlDataTypeToPhpTypeConverter(),
             new PostgresDataTypeToPhpTypeConverter(),
-            new SqlParserManager($driver),
-            $scan,
+            self::getContainer()->getByType(ContainerHelper::class),
         );
     }
 }

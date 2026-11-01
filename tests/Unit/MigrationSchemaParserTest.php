@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use CalebDW\PhpstanLaravel\Schema\MigrationSchemaParser;
+use CalebDW\PhpstanLaravel\Support\SqlSchemaHelper;
 use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -38,6 +39,7 @@ class MigrationSchemaParserTest extends PHPStanTestCase
             $this->modelHelper,
             $this->createReflectionProvider(),
             self::getContainer()->getByType(InitializerExprTypeResolver::class),
+            self::getContainer()->getByType(SqlSchemaHelper::class),
         );
 
         $statements = $parser->parseString(sprintf(<<<'PHP'
@@ -82,6 +84,7 @@ class MigrationSchemaParserTest extends PHPStanTestCase
             $this->modelHelper,
             $this->createReflectionProvider(),
             self::getContainer()->getByType(InitializerExprTypeResolver::class),
+            self::getContainer()->getByType(SqlSchemaHelper::class),
         );
 
         $statements = $parser->parseString(<<<'PHP'
@@ -140,6 +143,7 @@ class MigrationSchemaParserTest extends PHPStanTestCase
             $this->modelHelper,
             $this->createReflectionProvider(),
             self::getContainer()->getByType(InitializerExprTypeResolver::class),
+            self::getContainer()->getByType(SqlSchemaHelper::class),
         );
 
         $statements = $parser->parseString(<<<'PHP'
@@ -193,6 +197,7 @@ class MigrationSchemaParserTest extends PHPStanTestCase
             $this->modelHelper,
             $this->createReflectionProvider(),
             self::getContainer()->getByType(InitializerExprTypeResolver::class),
+            self::getContainer()->getByType(SqlSchemaHelper::class),
         );
 
         $statements = $parser->parseString(<<<'PHP'
@@ -234,6 +239,7 @@ class MigrationSchemaParserTest extends PHPStanTestCase
             $this->modelHelper,
             $this->createReflectionProvider(),
             self::getContainer()->getByType(InitializerExprTypeResolver::class),
+            self::getContainer()->getByType(SqlSchemaHelper::class),
         );
 
         $statements = $parser->parseString(<<<'PHP'
@@ -287,6 +293,7 @@ class MigrationSchemaParserTest extends PHPStanTestCase
             $this->modelHelper,
             $this->createReflectionProvider(),
             self::getContainer()->getByType(InitializerExprTypeResolver::class),
+            self::getContainer()->getByType(SqlSchemaHelper::class),
         );
 
         $schemaParser->addStatements($parser->parseString(<<<'PHP'
@@ -326,6 +333,7 @@ class MigrationSchemaParserTest extends PHPStanTestCase
             $this->modelHelper,
             $this->createReflectionProvider(),
             self::getContainer()->getByType(InitializerExprTypeResolver::class),
+            self::getContainer()->getByType(SqlSchemaHelper::class),
         );
 
         // Reflection throws for a constant it cannot find, which a migration

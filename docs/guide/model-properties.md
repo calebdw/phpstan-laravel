@@ -50,6 +50,23 @@ directories. Enabling
 checks property *names* passed to methods, catching typos in things like
 `User::create([...])`.
 
+## Migration syntax
+
+Migration callbacks can be closures or arrow functions, including nested
+`$table->after()` callbacks. Literal `CREATE TABLE` SQL passed to
+`DB::statement()` or `DB::unprepared()` is also scanned:
+
+```php
+DB::statement('CREATE TABLE labels (id BIGINT NOT NULL, name VARCHAR(80));');
+DB::connection('reporting')->unprepared('CREATE TABLE totals (amount DECIMAL(10, 2));');
+```
+
+SQL tables stay on their migration or explicitly selected connection. The
+configured [`sqlParser`](../reference/configuration.md#sqlparser) driver is
+used; `auto` selects the PostgreSQL parser for a `pgsql` connection. Install
+the corresponding optional parser package when using SQL migrations. Dynamic
+SQL expressions and statements the parser cannot understand are not inferred.
+
 ## Checking column names
 
 Resolving the columns tells you the *type* of `$user->email`. Turning on

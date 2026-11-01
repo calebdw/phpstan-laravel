@@ -328,6 +328,7 @@ services:
     arguments: {dispatchableClass: Illuminate\Foundation\Events\Dispatchable}
     tags: [phpstan.rules.rule]
   - class: CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter
+  - class: CalebDW\PhpstanLaravel\Support\SqlSchemaHelper
   - class: CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter
   - class: CalebDW\PhpstanLaravel\PhpDoc\StubFilesExtension
     tags: [phpstan.stubFilesExtension]

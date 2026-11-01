@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Schema;
 
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
+use CalebDW\PhpstanLaravel\Support\SqlSchemaHelper;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Reflection\InitializerExprTypeResolver;
@@ -31,6 +32,7 @@ final class MigrationFileParser
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
         private InitializerExprTypeResolver $initializerExprTypeResolver,
+        private SqlSchemaHelper $sqlSchemaHelper,
         string $currentWorkingDirectory = '',
     ) {
         if ($this->databaseMigrationPath !== []) {
@@ -47,6 +49,7 @@ final class MigrationFileParser
             $this->modelHelper,
             $this->reflectionProvider,
             $this->initializerExprTypeResolver,
+            $this->sqlSchemaHelper,
         );
 
         foreach ($this->files() as $file) {

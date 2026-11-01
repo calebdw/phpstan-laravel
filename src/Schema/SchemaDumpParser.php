@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Schema;
 
-use CalebDW\PhpstanLaravel\Schema\Sql\SqlDialect;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
-use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
-use CalebDW\PhpstanLaravel\Schema\Type\DataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
-use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
+use CalebDW\PhpstanLaravel\Support\SqlSchemaHelper;
 use SplFileInfo;
 
 use function array_key_exists;
@@ -30,9 +26,7 @@ final class SchemaDumpParser
     public function __construct(
         private array $schemaPaths,
         private FileHelper $fileHelper,
-        private SqlDataTypeToPhpTypeConverter $converter,
-        private PostgresDataTypeToPhpTypeConverter $postgresConverter,
-        private SqlParserManager $parserManager,
+        private SqlSchemaHelper $sqlSchemaHelper,
         private bool $scanSchema,
         string $currentWorkingDirectory = '',
     ) {
@@ -43,14 +37,6 @@ final class SchemaDumpParser
         $this->schemaPaths = [$currentWorkingDirectory . '/database/schema'];
     }
 
-    private function converterFor(SqlDialect $dialect): DataTypeToPhpTypeConverter
-    {
-        return match ($dialect) {
-            SqlDialect::MySql => $this->converter,
-            SqlDialect::Postgres => $this->postgresConverter,
-        };
-    }
-
     public function parseSchemaDumps(ModelSchema &$modelSchema): void
     {
         $files = $this->files();
@@ -58,10 +44,6 @@ final class SchemaDumpParser
         if ($files === []) {
             return;
         }
-
-        // Resolved lazily: neither parser is a hard requirement, so a project
-        // without schema dumps never needs one installed.
-        $parser = $this->parserManager->driver();
 
         foreach ($files as $file) {
             // Laravel generates schema files with the format `connectionName-schema.{sql,dump}`
@@ -78,25 +60,14 @@ final class SchemaDumpParser
             }
 
             try {
-                $tableDefinitions = $parser->parseTables($fileContents);
+                $tables = $this->sqlSchemaHelper->tables($fileContents, $connectionName);
             } catch (SqlParserFailure $failure) {
                 throw SqlParserFailure::unreadableDump($file->getPathname(), $failure);
             }
 
-            foreach ($tableDefinitions as $definition) {
-                if (array_key_exists($definition->name, $connection->tables)) {
+            foreach ($tables as $table) {
+                if (array_key_exists($table->name, $connection->tables)) {
                     continue;
-                }
-
-                $table = new Table($definition->name);
-
-                foreach ($definition->columns as $column) {
-                    $table->setColumn(new Column(
-                        $column->name,
-                        $this->converterFor($column->dialect)
-                            ->convert($column->type, $column->typeOptions, $column->values),
-                        $column->nullable,
-                    ));
                 }
 
                 $connection->setTable($table);

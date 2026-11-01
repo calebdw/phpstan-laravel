@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Schema;
 
+use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
+use CalebDW\PhpstanLaravel\Support\SqlSchemaHelper;
 use Exception;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
@@ -42,6 +45,7 @@ use function count;
 use function end;
 use function in_array;
 use function is_string;
+use function stripos;
 use function strtolower;
 
 /** @see https://github.com/psalm/laravel-psalm-plugin/blob/master/src/SchemaAggregator.php */
@@ -88,6 +92,7 @@ final class MigrationSchemaParser
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
         private InitializerExprTypeResolver $initializerExprTypeResolver,
+        private SqlSchemaHelper $sqlSchemaHelper,
     ) {
         $this->nodeFinder       = new NodeFinder();
         $this->schemaFacadeType = new ObjectType(Schema::class);
@@ -213,6 +218,8 @@ final class MigrationSchemaParser
             ) {
                 $statement = $stmt->expr;
             } else {
+                $this->addDatabaseStatement($stmt->expr);
+
                 continue;
             }
 
@@ -237,6 +244,63 @@ final class MigrationSchemaParser
             }
 
             array_pop($this->connectionStack);
+        }
+    }
+
+    private function addDatabaseStatement(Expr $expression): void
+    {
+        if (
+            (! $expression instanceof StaticCall && ! $expression instanceof MethodCall)
+            || ! $expression->name instanceof Identifier
+            || ! in_array(strtolower($expression->name->name), ['statement', 'unprepared'], true)
+            || $expression->isFirstClassCallable()
+        ) {
+            return;
+        }
+
+        $query = $expression->getArg('query', 0)?->value;
+
+        if (! $query instanceof String_ || stripos($query->value, 'create') === false) {
+            return;
+        }
+
+        $connection = $this->getCurrentConnection();
+        $call       = $expression instanceof StaticCall ? $expression : $expression->var;
+
+        if (! $call instanceof StaticCall || ! $call->class instanceof Name) {
+            return;
+        }
+
+        if (! (new ObjectType(DB::class))->isSuperTypeOf(new ObjectType($call->class->toCodeString()))->yes()) {
+            return;
+        }
+
+        if ($expression instanceof MethodCall) {
+            if (! $call->name instanceof Identifier || ! in_array(strtolower($call->name->name), ['connection', 'setconnection'], true)) {
+                return;
+            }
+
+            $name = $call->getArg('name', 0)?->value;
+
+            if ($name instanceof String_) {
+                $connection = $this->modelSchema->getOrCreateConnection($name->value);
+            } elseif ($name !== null && (! $name instanceof ConstFetch || strtolower($name->name->toString()) !== 'null')) {
+                return;
+            }
+        }
+
+        try {
+            $tables = $this->sqlSchemaHelper->tables($query->value, $connection->name);
+        } catch (SqlParserFailure) {
+            return;
+        }
+
+        foreach ($tables as $table) {
+            if (isset($connection->tables[$table->name])) {
+                continue;
+            }
+
+            $connection->setTable($table);
         }
     }
 
