@@ -32,7 +32,7 @@ final class FactoryOfTypeNodeResolverExtension implements TypeNodeResolverExtens
     {
         if (
             ! $typeNode instanceof GenericTypeNode
-            || $typeNode->type->name !== 'factory-of'
+            || (string) $typeNode->type !== 'factory-of'
             || count($typeNode->genericTypes) !== 1
         ) {
             return null;

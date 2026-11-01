@@ -30,7 +30,7 @@ final class EagerLoadOfTypeNodeResolverExtension implements TypeNodeResolverExte
     {
         if (
             ! $typeNode instanceof GenericTypeNode
-            || $typeNode->type->name !== 'eager-load-of'
+            || (string) $typeNode->type !== 'eager-load-of'
             || count($typeNode->genericTypes) !== 2
         ) {
             return null;

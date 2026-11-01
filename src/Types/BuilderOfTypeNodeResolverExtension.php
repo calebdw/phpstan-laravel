@@ -27,7 +27,7 @@ final class BuilderOfTypeNodeResolverExtension implements TypeNodeResolverExtens
 
     public function resolve(TypeNode $typeNode, NameScope $nameScope): Type|null
     {
-        if (! $typeNode instanceof GenericTypeNode || $typeNode->type->name !== 'builder-of') {
+        if (! $typeNode instanceof GenericTypeNode || (string) $typeNode->type !== 'builder-of') {
             return null;
         }
 

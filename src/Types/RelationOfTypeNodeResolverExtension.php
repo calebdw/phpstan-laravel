@@ -29,7 +29,7 @@ final class RelationOfTypeNodeResolverExtension implements TypeNodeResolverExten
     {
         if (
             ! $typeNode instanceof GenericTypeNode
-            || $typeNode->type->name !== 'relation-of'
+            || (string) $typeNode->type !== 'relation-of'
             || count($typeNode->genericTypes) !== 2
         ) {
             return null;

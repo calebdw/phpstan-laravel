@@ -31,7 +31,7 @@ final class CollectionOfTypeNodeResolverExtension implements TypeNodeResolverExt
 
     public function resolve(TypeNode $typeNode, NameScope $nameScope): Type|null
     {
-        if (! $typeNode instanceof GenericTypeNode || $typeNode->type->name !== 'collection-of') {
+        if (! $typeNode instanceof GenericTypeNode || (string) $typeNode->type !== 'collection-of') {
             return null;
         }
 
