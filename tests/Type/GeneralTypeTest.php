@@ -122,6 +122,7 @@ class GeneralTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/model.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/optional-helper.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/paginator-extension.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/pagination-signatures.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/passthru.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/query-builder.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/relation-of-type.php');
