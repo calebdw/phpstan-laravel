@@ -279,6 +279,45 @@ class MigrationSchemaParserTest extends PHPStanTestCase
     }
 
     #[Test]
+    public function it_reads_arrow_callbacks_and_skips_invalid_blueprints(): void
+    {
+        $parser       = self::getContainer()->getService('currentPhpVersionSimpleDirectParser');
+        $schemaParser = new MigrationSchemaParser(
+            $this->modelDatabaseHelper,
+            $this->modelHelper,
+            $this->createReflectionProvider(),
+            self::getContainer()->getByType(InitializerExprTypeResolver::class),
+        );
+
+        $schemaParser->addStatements($parser->parseString(<<<'PHP'
+            <?php
+
+            use Illuminate\Database\Schema\Blueprint;
+            use Illuminate\Support\Facades\Schema;
+
+            class CreateArrowRows
+            {
+                public function up(): void
+                {
+                    Schema::create('arrow_rows', fn (Blueprint $table) => $table->id());
+                    Schema::table('arrow_rows', fn ($table) => $table->string('name')->nullable());
+                    Schema::table('arrow_rows', fn (Blueprint $table) => $table->after('id', fn ($table) => $table->integer('age')));
+                    Schema::table('arrow_rows', fn (stdClass $table) => $table->string('ignored'));
+                    Schema::table('arrow_rows', fn () => null);
+                    Schema::table('arrow_rows', fn ($table) => $table->after('id', fn () => null));
+                }
+            }
+            PHP));
+
+        $table = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables['arrow_rows'];
+
+        self::assertSame(['id', 'name', 'age'], array_keys($table->columns));
+        self::assertSame('string', $table->columns['name']->readableType);
+        self::assertTrue($table->columns['name']->nullable);
+        self::assertSame('int', $table->columns['age']->readableType);
+    }
+
+    #[Test]
     public function it_survives_a_constant_that_is_not_there(): void
     {
         $parser       = self::getContainer()->getService('currentPhpVersionSimpleDirectParser');

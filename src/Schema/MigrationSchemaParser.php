@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\Closure;
@@ -41,7 +42,6 @@ use function count;
 use function end;
 use function in_array;
 use function is_string;
-use function property_exists;
 use function strtolower;
 
 /** @see https://github.com/psalm/laravel-psalm-plugin/blob/master/src/SchemaAggregator.php */
@@ -274,7 +274,7 @@ final class MigrationSchemaParser
 
         if (
             ! isset($call->args[1])
-            || ! $call->getArgs()[1]->value instanceof Closure
+            || (! $call->getArgs()[1]->value instanceof Closure && ! $call->getArgs()[1]->value instanceof ArrowFunction)
             || count($call->getArgs()[1]->value->params) < 1
             || (
                 $call->getArgs()[1]->value->params[0]->type instanceof Name
@@ -618,10 +618,10 @@ final class MigrationSchemaParser
     }
 
     /** @return Expression[] */
-    private function getUpdateStatements(Expr $updateClosure): array
+    private function getUpdateStatements(Closure|ArrowFunction $updateClosure): array
     {
-        if (! property_exists($updateClosure, 'stmts')) {
-            return [];
+        if ($updateClosure instanceof ArrowFunction) {
+            return [new Expression($updateClosure->expr)];
         }
 
         $statements = [];
@@ -633,6 +633,10 @@ final class MigrationSchemaParser
                     $this->nodeFinder->findInstanceOf($updateStatement, Expression::class),
                 );
 
+                continue;
+            }
+
+            if (! ($updateStatement instanceof Expression)) {
                 continue;
             }
 
@@ -759,12 +763,13 @@ final class MigrationSchemaParser
 
             case 'after':
                 if (
-                    $secondArg instanceof Closure
+                    ($secondArg instanceof Closure || $secondArg instanceof ArrowFunction)
+                    && isset($secondArg->params[0])
                     && $secondArg->params[0]->var instanceof Variable
                     && ! ($secondArg->params[0]->var->name instanceof Expr)
                 ) {
                     $argName = $secondArg->params[0]->var->name;
-                    $this->processColumnUpdates($tableName, $argName, $secondArg->stmts);
+                    $this->processColumnUpdates($tableName, $argName, $this->getUpdateStatements($secondArg));
                 }
 
                 return;
