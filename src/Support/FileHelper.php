@@ -9,9 +9,11 @@ use PHPStan\File\FileHelper as PHPStanFileHelper;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 
+use function dirname;
 use function glob;
 use function is_dir;
 use function iterator_to_array;
+use function strpbrk;
 
 use const GLOB_ONLYDIR;
 
@@ -80,9 +82,8 @@ final class FileHelper
     }
 
     /**
-     * Lets the result cache run the current rule again when a file matching
-     * the pattern changes in one of the given directories. A directory that
-     * does not exist yet is tracked too, so creating it counts as a change.
+     * Tracks missing directories too, and tracks a glob's non-glob ancestor
+     * so creating another matching directory also invalidates the cache.
      *
      * @param  array<array-key, string> $directories
      */
@@ -91,13 +92,11 @@ final class FileHelper
         foreach ($directories as $directory) {
             $directory = $this->fileHelper->absolutizePath($directory);
 
-            $resolved = is_dir($directory)
-                ? [$directory]
-                : (glob($directory, GLOB_ONLYDIR) ?: [$directory]);
-
-            foreach ($resolved as $resolvedDirectory) {
-                $tracker->trackDirectoryDependency($resolvedDirectory, $pattern);
+            while (! is_dir($directory) && strpbrk($directory, '*?[') !== false) {
+                $directory = dirname($directory);
             }
+
+            $tracker->trackDirectoryDependency($directory, $pattern);
         }
     }
 }

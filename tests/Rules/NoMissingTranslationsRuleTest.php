@@ -159,7 +159,7 @@ class NoMissingTranslationsRuleTest extends RuleTestCase
 
         $this->assertSame([
             [lang_path(), '*'],
-            ...array_map(static fn (string $path): array => [$path, '*.blade.php'], $finder->getPaths()),
+            ...array_map(static fn ($p) => [$p, '*'], $finder->getPaths()),
         ], $tracked);
     }
 

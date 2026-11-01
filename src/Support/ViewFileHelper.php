@@ -117,7 +117,7 @@ final class ViewFileHelper
     /** Tracks the Blade files in every view directory, as getAllViewFilePaths() reads them. */
     public function trackViewDirectories(DependencyTracker $tracker): void
     {
-        $this->fileHelper->trackDirectories($tracker, $this->getViewDirectories(), '*.blade.php');
+        $this->fileHelper->trackDirectories($tracker, $this->getViewDirectories());
     }
 
     /** Tracks the Blade files in the finder's own paths, as getRootViewFilePaths() reads them. */
@@ -129,7 +129,7 @@ final class ViewFileHelper
             return;
         }
 
-        $this->fileHelper->trackDirectories($tracker, $finder->getPaths(), '*.blade.php');
+        $this->fileHelper->trackDirectories($tracker, $finder->getPaths());
     }
 
     /** @return Generator<int, string, void, void> */

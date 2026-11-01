@@ -70,8 +70,8 @@ class UnusedViewsRuleTest extends RuleTestCase
         $this->getRule()->processNode(new CollectedDataNode([], false), $scope);
 
         $this->assertSame([
-            [__DIR__ . '/../application/resources/views/', '*.blade.php'],
-            [__DIR__ . '/../../vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/views', '*.blade.php'],
+            [__DIR__ . '/../application/resources/views/', '*'],
+            [__DIR__ . '/../../vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/views', '*'],
         ], $tracked);
     }
 
