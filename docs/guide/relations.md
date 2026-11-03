@@ -29,3 +29,31 @@ the related model's builder, including custom builders. `withWhereHas` and
 ([`eager-load-of`](custom-types.md#eager-load-of)). See
 [`builder-of`](custom-types.md#builder-of) for the `builder-of<User, 'posts'>`
 phpdoc form.
+
+## Pivot accessors
+
+`BelongsToMany` and `MorphToMany` results carry their pivot model, including a
+custom accessor named with `as()`. Declare the pivot class and accessor as the
+third and fourth relation templates:
+
+```php
+/** @return BelongsToMany<Podcast, $this, Subscription, 'subscription'> */
+public function podcasts(): BelongsToMany
+{
+    return $this->belongsToMany(Podcast::class)
+        ->using(Subscription::class)
+        ->as('subscription');
+}
+
+$member->podcasts()->firstOrFail()->subscription;
+$member->podcasts->firstOrFail()->subscription;
+```
+
+Both accessor expressions have type `Subscription`. The pivot shape is
+preserved in collection results, including custom model
+collections, as well as paginated and lazy results. Collection value templates
+are invariant: a collection of `Podcast&object{subscription: Subscription}`
+is not interchangeable with a collection declared as just `Podcast`.
+
+If the accessor is an unknown string or a union of names, no single pivot
+property is guaranteed.

@@ -48,7 +48,7 @@ function test(
     );
     assertType('Illuminate\Database\Eloquent\Relations\MorphMany<App\Address, App\User>', $appUser->address()->where('name', 'bar'));
     assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $appUser->accounts()->active());
-    assertType('App\RoleCollection<int, App\Role>', $appUser->roles()->get());
+    assertType('App\RoleCollection<int, App\Role&object{pivot: Illuminate\Database\Eloquent\Relations\Pivot}>', $appUser->roles()->get());
     /** @var Group $group */
     $group = $appUser->group;
 
@@ -116,7 +116,7 @@ function test(
 
     $users = (new Post())->users();
     assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->getEager());
-    assertType('Illuminate\Database\Eloquent\Collection<int, App\User>', $users->get());
+    assertType('Illuminate\Database\Eloquent\Collection<int, App\User&object{pivot: Illuminate\Database\Eloquent\Relations\Pivot}>', $users->get());
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', $users->getQuery());
     assertType('Illuminate\Database\Eloquent\Builder<App\User>', $users->getRelationExistenceCountQuery(User::query(), Post::query()));
     assertType('App\PostBuilder<App\Post>', $appUser->posts()->getRelationExistenceCountQuery(Post::query(), User::query()));

@@ -388,13 +388,8 @@ final class CollectionHelper
             }
 
             $templateType = $type->getTemplateType(EloquentCollection::class, 'TModel');
-            $models       = $templateType->getObjectClassNames();
 
-            return match (count($models)) {
-                0 => $type,
-                1 => $this->determineCollectionType($models[0], $templateType) ?? $type,
-                default => TypeCombinator::union(...array_filter(array_map(fn ($m) => $this->determineCollectionType($m), $models))),
-            };
+            return $this->determineCollectionTypeFromModels($templateType) ?? $type;
         });
     }
 
