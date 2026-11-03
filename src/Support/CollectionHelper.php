@@ -23,6 +23,7 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\StaticType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -345,6 +346,10 @@ final class CollectionHelper
         }
 
         return TypeTraverser::map($collectionType, function (Type $type, callable $traverse) use ($keyType, $modelType): Type {
+            if ($type instanceof StaticType) {
+                return $modelType;
+            }
+
             if ($type instanceof UnionType || $type instanceof IntersectionType) {
                 return $traverse($type);
             }
@@ -358,7 +363,7 @@ final class CollectionHelper
             $classReflection = $classReflections[0];
 
             if (! $classReflection->is(EloquentCollection::class) || ! $classReflection->isGeneric()) {
-                return $type;
+                return $traverse($type);
             }
 
             $keyType ??= new IntegerType();

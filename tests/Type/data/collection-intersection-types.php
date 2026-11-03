@@ -58,8 +58,10 @@ class Post extends Model
 
 function test(): void
 {
-    assertType('CollectionIntersectionTypes\TreeLikeCollection<static(CollectionIntersectionTypes\User)>&Illuminate\Database\Eloquent\Collection<int, CollectionIntersectionTypes\User>', User::all());
-    assertType('CollectionIntersectionTypes\TreeLikeCollection<static(CollectionIntersectionTypes\User)>&Illuminate\Database\Eloquent\Collection<int, CollectionIntersectionTypes\User>', User::all()->getTree());
+    assertType('CollectionIntersectionTypes\TreeLikeCollection<CollectionIntersectionTypes\User>&Illuminate\Database\Eloquent\Collection<int, CollectionIntersectionTypes\User>', User::all());
+    assertType('CollectionIntersectionTypes\TreeLikeCollection<CollectionIntersectionTypes\User>&Illuminate\Database\Eloquent\Collection<int, CollectionIntersectionTypes\User>', User::all()->getTree());
+    assertType('CollectionIntersectionTypes\User', User::all()->firstOrFail());
+    assertType('CollectionIntersectionTypes\TreeLikeCollection<CollectionIntersectionTypes\User>&Illuminate\Database\Eloquent\Collection<int, CollectionIntersectionTypes\User>', User::query()->get());
     assertType('CollectionIntersectionTypes\TreeCollection<int, CollectionIntersectionTypes\Post>', Post::all());
     assertType('CollectionIntersectionTypes\TreeCollection<int, CollectionIntersectionTypes\Post>', Post::all()->getTree());
 }
