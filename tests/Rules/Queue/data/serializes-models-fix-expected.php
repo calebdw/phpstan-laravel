@@ -6,6 +6,7 @@ namespace Tests\Rules\Queue\Data;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Queue\SerializesModels;
 
 class ProductFix extends Model
 {
@@ -13,7 +14,7 @@ class ProductFix extends Model
 
 class JobMissingSerializesModelsFix implements ShouldQueue
 {
-    use \Illuminate\Queue\SerializesModels;
+    use SerializesModels;
     public function __construct(public ProductFix $product)
     {
     }

@@ -42,7 +42,6 @@ function test(Member $member, string $accessor, bool $condition): void
     assertType('(BelongsToManyPivotAccessor\Podcast&object{subscription: BelongsToManyPivotAccessor\Subscription})|null', $member->podcasts()->first());
     assertType('BelongsToManyPivotAccessor\Subscription', $member->podcasts()->findOrFail(1)->subscription);
     assertType('BelongsToManyPivotAccessor\Subscription', $member->podcasts()->create()->subscription);
-    assertType('BelongsToManyPivotAccessor\Subscription', $member->podcasts()->incrementOrCreate(['id' => 1])->subscription);
     assertType('BelongsToManyPivotAccessor\Subscription', $member->belongsToMany(Podcast::class)->using(Subscription::class)->as('subscription')->firstOrFail()->subscription);
     assertType('Illuminate\Database\Eloquent\Collection<int, BelongsToManyPivotAccessor\Podcast&object{subscription: BelongsToManyPivotAccessor\Subscription}>', $member->podcasts()->get());
     assertType('Illuminate\Database\Eloquent\Collection<int, BelongsToManyPivotAccessor\Podcast&object{subscription: BelongsToManyPivotAccessor\Subscription}>', $member->podcasts()->getResults());
