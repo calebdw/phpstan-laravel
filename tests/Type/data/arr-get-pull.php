@@ -71,3 +71,35 @@ function testPullUnion(array $array, string $key): void
     assertType('1|2', Arr::pull($array, $key));
     assertType('array{bar: 2}|array{foo: 1}', $array);
 }
+
+/**
+ * @param list<string> $list
+ * @param array{'a.b'?: int, a: array{b: string, c: bool}} $optionalLiteral
+ * @param array{0: int}|string $arrayOrString
+ */
+function edgeCases(array $list, array $optionalLiteral, array|string $arrayOrString): void
+{
+    assertType('null', Arr::get(['word' => 'hello'], 'word.0'));
+    assertType('null', Arr::get('hello', 0));
+    assertType('int|null', Arr::get($arrayOrString, 0));
+    assertType('int|null', Arr::get(['nested' => $arrayOrString], 'nested.0'));
+    assertType('int|string', Arr::get($optionalLiteral, 'a.b'));
+    Arr::pull($optionalLiteral, 'a.b');
+    assertType('array{a: array{b?: string, c: bool}}', $optionalLiteral);
+
+    Arr::pull($list, '0');
+    assertType('array<int<1, max>, string>', $list);
+}
+
+class CustomArr extends Arr
+{
+    public static function get($array, $key, $default = null): int
+    {
+        return 42;
+    }
+}
+
+function overridden(): void
+{
+    assertType('int', CustomArr::get(['value' => 'string'], 'value'));
+}

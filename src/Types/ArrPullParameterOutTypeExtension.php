@@ -15,9 +15,11 @@ use PHPStan\Type\ConstantScalarType;
 use PHPStan\Type\StaticMethodParameterOutTypeExtension;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\UnionType;
 use Webmozart\Assert\Assert;
 
 use function array_filter;
+use function array_map;
 use function array_shift;
 use function explode;
 use function is_string;
@@ -28,9 +30,9 @@ final class ArrPullParameterOutTypeExtension implements StaticMethodParameterOut
 {
     public function isStaticMethodSupported(MethodReflection $methodReflection, ParameterReflection $parameter): bool
     {
-        return $methodReflection->getDeclaringClass()->is(Arr::class)
-            && $methodReflection->getName() === 'pull'
-            && $parameter->getName() === 'array';
+        return $methodReflection->getName() === 'pull'
+            && $parameter->getName() === 'array'
+            && $methodReflection->getDeclaringClass()->getName() === Arr::class;
     }
 
     public function getParameterOutTypeFromStaticMethodCall(
@@ -72,7 +74,15 @@ final class ArrPullParameterOutTypeExtension implements StaticMethodParameterOut
 
     private function unsetKey(Type $array, ConstantScalarType $key): Type
     {
-        if (! $array->hasOffsetValueType($key)->no()) {
+        if ($array instanceof UnionType) {
+            return TypeCombinator::union(...array_map(fn ($t) => $this->unsetKey($t, $key), $array->getTypes()));
+        }
+
+        $key = $key->toArrayKey();
+
+        $hasOffset = $array->hasOffsetValueType($key);
+
+        if ($hasOffset->yes()) {
             return $array->unsetOffset($key);
         }
 
@@ -82,16 +92,23 @@ final class ArrPullParameterOutTypeExtension implements StaticMethodParameterOut
         $value = $values[0];
 
         if (! is_string($value) || ! str_contains($value, '.')) {
-            return $array;
+            return $array->unsetOffset($key);
         }
 
-        return $this->unsetPath($array, explode('.', $value));
+        $withoutLiteral = $array->unsetOffset($key);
+        $withoutPath    = $this->unsetPath($withoutLiteral, explode('.', $value));
+
+        return $hasOffset->maybe() ? TypeCombinator::union($withoutLiteral, $withoutPath) : $withoutPath;
     }
 
     /** @param non-empty-list<string> $segments */
     private function unsetPath(Type $array, array $segments): Type
     {
-        $key = new ConstantStringType(array_shift($segments));
+        if (! $array->isArray()->yes()) {
+            return $array;
+        }
+
+        $key = (new ConstantStringType(array_shift($segments)))->toArrayKey();
 
         if ($segments === []) {
             return $array->unsetOffset($key);
