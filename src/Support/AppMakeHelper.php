@@ -6,8 +6,10 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use PhpParser\Node\Arg;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class AppMakeHelper
 {
     public function __construct(

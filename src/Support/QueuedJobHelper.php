@@ -6,9 +6,11 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use PhpParser\Node\Expr\Array_;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class QueuedJobHelper
 {
     public function isDispatchableClass(ClassReflection $class): bool

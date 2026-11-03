@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods;
 use Illuminate\Support\Facades\Date;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
@@ -15,6 +16,7 @@ use PHPStan\Type\TypeCombinator;
 
 use function now;
 
+#[AutowiredService]
 final class DateExtension implements DynamicStaticMethodReturnTypeExtension
 {
     // if true, then method returns nullable type

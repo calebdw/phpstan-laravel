@@ -11,6 +11,7 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\PhpDoc\TypeStringResolver;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\Constant\ConstantStringType;
@@ -30,6 +31,7 @@ use function count;
 use function in_array;
 use function method_exists;
 
+#[AutowiredService]
 final class ModelPropertyHelper
 {
     /** @var array<string, ModelPropertyReflection|false> */

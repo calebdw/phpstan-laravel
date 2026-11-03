@@ -9,10 +9,12 @@ use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class EnumerableMapSpreadExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

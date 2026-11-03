@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
@@ -29,6 +30,7 @@ use function is_array;
 use function is_object;
 use function is_string;
 
+#[AutowiredService]
 final class AuthHelper
 {
     /** @var array<string, Type> */

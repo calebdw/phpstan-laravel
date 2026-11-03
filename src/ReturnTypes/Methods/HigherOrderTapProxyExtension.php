@@ -7,10 +7,12 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 use Illuminate\Support\HigherOrderTapProxy;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class HigherOrderTapProxyExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

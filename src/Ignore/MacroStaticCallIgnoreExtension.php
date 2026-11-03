@@ -11,12 +11,16 @@ use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\IgnoreErrorExtension;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class MacroStaticCallIgnoreExtension implements IgnoreErrorExtension
 {
     public function __construct(
         /** @var list<class-string> */
+        #[AutowiredParameter(ref: '%laravel.staticMacroClasses%')]
         private array $staticMacroClasses,
         private CallHelper $callHelper,
     ) {

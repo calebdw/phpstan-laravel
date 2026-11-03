@@ -7,6 +7,8 @@ namespace CalebDW\PhpstanLaravel\Schema;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use CalebDW\PhpstanLaravel\Support\SqlSchemaHelper;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Reflection\InitializerExprTypeResolver;
@@ -15,6 +17,7 @@ use SplFileInfo;
 
 use function uasort;
 
+#[AutowiredService]
 final class MigrationFileParser
 {
     /** @var array<string, SplFileInfo>|null */
@@ -24,15 +27,19 @@ final class MigrationFileParser
     private array|null $directories = null;
 
     public function __construct(
+        #[AutowiredParameter(ref: '@currentPhpVersionSimpleDirectParser')]
         private Parser $parser,
         /** @var string[] */
+        #[AutowiredParameter(ref: '%laravel.migrationDirectories%')]
         private array $databaseMigrationPath,
         private FileHelper $fileHelper,
+        #[AutowiredParameter(ref: '%laravel.scanMigrations%')]
         private bool $scanMigrations,
         private ModelHelper $modelHelper,
         private ReflectionProvider $reflectionProvider,
         private InitializerExprTypeResolver $initializerExprTypeResolver,
         private SqlSchemaHelper $sqlSchemaHelper,
+        #[AutowiredParameter]
         string $currentWorkingDirectory = '',
     ) {
         if ($this->databaseMigrationPath !== []) {

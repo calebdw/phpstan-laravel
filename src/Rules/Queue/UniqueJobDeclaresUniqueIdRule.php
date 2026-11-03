@@ -8,6 +8,8 @@ use CalebDW\PhpstanLaravel\Support\QueuedJobHelper;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\InClassNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\IdentifierRuleError;
@@ -24,6 +26,7 @@ use function sprintf;
  *
  * @implements Rule<InClassNode>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.uniqueJobUniqueId%')]
 final class UniqueJobDeclaresUniqueIdRule implements Rule
 {
     public function __construct(private QueuedJobHelper $queuedJobHelper)

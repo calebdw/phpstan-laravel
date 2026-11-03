@@ -14,6 +14,7 @@ use Illuminate\Support\Enumerable;
 use Iterator;
 use IteratorAggregate;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\BenevolentUnionType;
@@ -39,6 +40,7 @@ use function count;
 use function in_array;
 use function version_compare;
 
+#[AutowiredService]
 final class CollectionHelper
 {
     public const int MAX_NESTING = 16;

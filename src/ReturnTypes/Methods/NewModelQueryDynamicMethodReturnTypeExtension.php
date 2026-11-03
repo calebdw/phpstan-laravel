@@ -9,6 +9,7 @@ use CalebDW\PhpstanLaravel\Types\BuilderOfType;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
@@ -16,6 +17,7 @@ use PHPStan\Type\StaticType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class NewModelQueryDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     private const array METHODS = [

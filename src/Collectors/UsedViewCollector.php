@@ -27,10 +27,12 @@ use PhpParser\Node\Expr\New_;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
+use PHPStan\DependencyInjection\AutowiredService;
 
 use function array_map;
 
 /** @implements Collector<CallLike, list<string>> */
+#[AutowiredService]
 final class UsedViewCollector implements Collector
 {
     private const array FUNCTIONS = [

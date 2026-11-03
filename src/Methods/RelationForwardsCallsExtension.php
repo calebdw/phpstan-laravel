@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -18,6 +19,7 @@ use PHPStan\Type\ThisType;
 
 use function assert;
 
+#[AutowiredService]
 final class RelationForwardsCallsExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection|false> */

@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\ArrayType;
@@ -19,6 +20,7 @@ use PHPStan\Type\TypeCombinator;
 
 use function in_array;
 
+#[AutowiredService]
 final class EnumerableAggregateExtension implements DynamicMethodReturnTypeExtension
 {
     private const array METHODS = ['sum', 'min', 'max', 'avg', 'average', 'median', 'mode'];

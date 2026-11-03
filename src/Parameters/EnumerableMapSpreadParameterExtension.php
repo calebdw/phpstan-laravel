@@ -9,6 +9,7 @@ use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\ClosureType;
@@ -19,6 +20,7 @@ use PHPStan\Type\Type;
 use function array_map;
 use function in_array;
 
+#[AutowiredService]
 final class EnumerableMapSpreadParameterExtension implements MethodParameterClosureTypeExtension
 {
     public function __construct(private ColumnHelper $columnHelper)

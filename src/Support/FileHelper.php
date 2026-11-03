@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use PHPStan\Analyser\DependencyTracker;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
@@ -17,6 +18,7 @@ use function strpbrk;
 
 use const GLOB_ONLYDIR;
 
+#[AutowiredService]
 final class FileHelper
 {
     public function __construct(

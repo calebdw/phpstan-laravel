@@ -7,11 +7,13 @@ namespace CalebDW\PhpstanLaravel\Parameters;
 use CalebDW\PhpstanLaravel\Support\OrWhereClosureHelper;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\MethodParameterClosureTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class EloquentBuilderWhereParameterExtension implements MethodParameterClosureTypeExtension
 {
     public function __construct(private OrWhereClosureHelper $orWhereClosureHelper)

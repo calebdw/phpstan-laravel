@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Support\Collection;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
@@ -17,6 +18,7 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class CollectExtension implements DynamicFunctionReturnTypeExtension
 {
     private Type|null $emptyCollectionType = null;

@@ -1,0 +1,7 @@
+includes:
+    - ../../../extension.neon
+parameters:
+    laravel:
+        rules:
+            modelMake: false
+            configAccessor: true

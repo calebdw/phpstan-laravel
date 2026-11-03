@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\StaticMethods;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ConstantScalarType;
@@ -20,6 +21,7 @@ use function explode;
 use function is_string;
 use function str_contains;
 
+#[AutowiredService]
 final class ArrExceptExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string

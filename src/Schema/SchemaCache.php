@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Schema;
 
 use Composer\InstalledVersions;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use Throwable;
 
 use function dirname;
@@ -28,11 +30,13 @@ use function var_export;
 use const LOCK_EX;
 use const PHP_VERSION;
 
+#[AutowiredService]
 final class SchemaCache
 {
     public function __construct(
         private MigrationFileParser $migrationFileParser,
         private SchemaDumpParser $schemaDumpParser,
+        #[AutowiredParameter]
         private string $tmpDir,
     ) {
     }

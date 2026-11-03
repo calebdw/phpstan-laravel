@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\Config;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 use function in_array;
 
+#[AutowiredService]
 final class ConfigDynamicStaticMethodReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private ConfigHelper $configHelper)

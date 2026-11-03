@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Schema;
 use PHPStan\Analyser\DeclarationDependencyTracker;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 
 use function array_merge;
@@ -30,6 +31,7 @@ use function array_values;
  * only that file has to run again - including when the file is the model's
  * own, which does not depend on the model as a class.
  */
+#[AutowiredService]
 final class SchemaDependencyTracker
 {
     /** @var list<string>|null */

@@ -15,6 +15,8 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -29,6 +31,7 @@ use function sprintf;
  *
  * @implements Rule<StaticCall>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.batchedUniqueJob%')]
 final class NoBatchedUniqueJobRule implements Rule
 {
     private const array BULK_METHODS = ['batch', 'bulk'];

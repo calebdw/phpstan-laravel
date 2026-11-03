@@ -12,6 +12,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PHPStan\Analyser\MutatingScope;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\ArrayType;
@@ -46,6 +47,7 @@ use function is_int;
 use function is_string;
 use function strval;
 
+#[AutowiredService]
 final class ColumnHelper
 {
     public function __construct(private TypeHelper $typeHelper)

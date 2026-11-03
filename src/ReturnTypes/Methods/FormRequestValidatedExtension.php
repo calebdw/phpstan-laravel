@@ -9,11 +9,13 @@ use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Foundation\Http\FormRequest;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
+#[AutowiredService]
 final class FormRequestValidatedExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

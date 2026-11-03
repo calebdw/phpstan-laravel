@@ -12,6 +12,9 @@ use Illuminate\Support\Str;
 use PhpParser\Node;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -36,6 +39,7 @@ use function strval;
 use const DIRECTORY_SEPARATOR;
 
 /** @implements Rule<CollectedDataNode> */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.missingTranslation%')]
 final class NoMissingTranslationsRule implements Rule
 {
     /** @param string[] $translationDirectories */
@@ -43,6 +47,7 @@ final class NoMissingTranslationsRule implements Rule
         private UsedTranslationViewCollector $usedTranslationViewCollector,
         private FileHelper $fileHelper,
         private ViewFileHelper $viewFileHelper,
+        #[AutowiredParameter(ref: '%laravel.translationDirectories%')]
         private array $translationDirectories,
     ) {
     }

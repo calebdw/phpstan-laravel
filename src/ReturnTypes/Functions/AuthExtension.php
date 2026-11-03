@@ -9,10 +9,12 @@ use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Illuminate\Contracts\Auth\Factory;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class AuthExtension implements DynamicFunctionReturnTypeExtension
 {
     public function __construct(private AuthHelper $authHelper, private ContainerHelper $containerHelper)

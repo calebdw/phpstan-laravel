@@ -7,12 +7,14 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Methods;
 use Illuminate\Contracts\Foundation\Application;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class AppEnvironmentReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

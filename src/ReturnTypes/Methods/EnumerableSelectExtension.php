@@ -9,12 +9,14 @@ use CalebDW\PhpstanLaravel\Support\SelectHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class EnumerableSelectExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

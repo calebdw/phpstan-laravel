@@ -8,12 +8,14 @@ use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 use function in_array;
 
+#[AutowiredService]
 final class RequestValidateExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ValidationHelper $validationHelper)

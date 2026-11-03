@@ -8,11 +8,13 @@ use CalebDW\PhpstanLaravel\Support\AppMakeHelper;
 use Illuminate\Container\Container;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 /** Array access is only declared on the concrete container, which the application extends. */
+#[AutowiredService]
 final class ContainerArrayAccessDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private AppMakeHelper $appMakeHelper)

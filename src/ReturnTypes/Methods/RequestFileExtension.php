@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\BenevolentUnionType;
@@ -19,6 +20,7 @@ use PHPStan\Type\Type;
 
 use function count;
 
+#[AutowiredService]
 final class RequestFileExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\MixedType;
@@ -18,6 +19,7 @@ use function is_numeric;
 
 use const INF;
 
+#[AutowiredService]
 final class EnumerableDotExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private CollectionHelper $collectionHelper)

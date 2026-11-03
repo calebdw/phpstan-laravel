@@ -10,7 +10,9 @@ use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
 use CalebDW\PhpstanLaravel\Schema\Table;
 use CalebDW\PhpstanLaravel\Schema\Type\PostgresDataTypeToPhpTypeConverter;
 use CalebDW\PhpstanLaravel\Schema\Type\SqlDataTypeToPhpTypeConverter;
+use PHPStan\DependencyInjection\AutowiredService;
 
+#[AutowiredService]
 final class SqlSchemaHelper
 {
     public function __construct(

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\ClosureType;
@@ -17,6 +18,7 @@ use PHPStan\Type\TypeTraverser;
 
 use function count;
 
+#[AutowiredService]
 final class OrWhereClosureHelper
 {
     public function isMethodSupported(MethodReflection $methodReflection, ParameterReflection $parameter): bool

@@ -11,10 +11,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class EnumerablePluckExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

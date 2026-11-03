@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Types;
 use CalebDW\PhpstanLaravel\Support\FactoryHelper;
 use Illuminate\Database\Eloquent\Model;
 use PHPStan\Analyser\NameScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\PhpDoc\TypeNodeResolver;
 use PHPStan\PhpDoc\TypeNodeResolverExtension;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
@@ -17,6 +18,7 @@ use PHPStan\Type\Type;
 
 use function count;
 
+#[AutowiredService]
 final class FactoryOfTypeNodeResolverExtension implements TypeNodeResolverExtension
 {
     private readonly ObjectType $modelType;

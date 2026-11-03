@@ -9,6 +9,7 @@ use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Validation\Validator;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
@@ -18,6 +19,7 @@ use PHPStan\Type\Type;
 
 use function count;
 
+#[AutowiredService]
 final class ValidatorSafeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

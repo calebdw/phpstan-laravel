@@ -40,6 +40,8 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Reflection\ClassReflection;
@@ -104,6 +106,7 @@ use function strtolower;
  * @phpstan-type Group array{type: Type, kept: bool, keepsParent: bool}
  * @phpstan-type Shape array{type: Type, anyKept: bool, allKeepParent: bool}
  */
+#[AutowiredService]
 final class ValidationHelper
 {
     /** Implicit rules that fail when the key is absent. */
@@ -127,6 +130,7 @@ final class ValidationHelper
     private array $properties = [];
 
     public function __construct(
+        #[AutowiredParameter(ref: '@currentPhpVersionSimpleDirectParser')]
         private Parser $parser,
         private ReflectionProvider $reflectionProvider,
         private TypeHelper $typeHelper,

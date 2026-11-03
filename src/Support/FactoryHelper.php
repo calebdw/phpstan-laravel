@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Generic\GenericObjectType;
@@ -20,6 +21,7 @@ use PHPStan\Type\TypeUtils;
 use function array_key_exists;
 use function class_exists;
 
+#[AutowiredService]
 final class FactoryHelper
 {
     /** @var array<class-string, list<ClassReflection>> */

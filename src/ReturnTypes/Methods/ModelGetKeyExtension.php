@@ -8,11 +8,13 @@ use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
+#[AutowiredService]
 final class ModelGetKeyExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ModelHelper $modelHelper)

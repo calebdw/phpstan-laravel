@@ -16,6 +16,9 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\InClassNode;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
@@ -33,6 +36,7 @@ use function sprintf;
  *
  * @implements Rule<InClassNode>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.batchableJobChecksCancellation%')]
 final class BatchableJobChecksCancellationRule implements Rule
 {
     private const array GUARD_METHODS = ['handle', 'middleware'];
@@ -41,6 +45,7 @@ final class BatchableJobChecksCancellationRule implements Rule
     private array $parsed = [];
 
     public function __construct(
+        #[AutowiredParameter(ref: '@currentPhpVersionSimpleDirectParser')]
         private Parser $parser,
         private QueuedJobHelper $queuedJobHelper,
         private NodeFinder $nodeFinder = new NodeFinder(),

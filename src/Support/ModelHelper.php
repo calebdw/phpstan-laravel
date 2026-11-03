@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\BenevolentUnionType;
@@ -17,6 +18,7 @@ use Throwable;
 use function array_key_exists;
 use function is_string;
 
+#[AutowiredService]
 final class ModelHelper
 {
     /** @var array<class-string, Model|null> */

@@ -6,7 +6,9 @@ namespace CalebDW\PhpstanLaravel\Schema;
 
 use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\DependencyInjection\AutowiredService;
 
+#[AutowiredService]
 final class ModelSchema
 {
     /** @var array<string, Connection> */

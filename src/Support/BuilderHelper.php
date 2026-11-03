@@ -21,6 +21,8 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Analyser\Scope as AnalyserScope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
@@ -57,6 +59,7 @@ use function version_compare;
 
 use const PREG_SPLIT_DELIM_CAPTURE;
 
+#[AutowiredService]
 final class BuilderHelper
 {
     public const array MODEL_RETRIEVAL_METHODS = ['first', 'find', 'findMany', 'findOrFail', 'firstOrFail', 'sole'];
@@ -74,6 +77,7 @@ final class BuilderHelper
 
     public function __construct(
         private ReflectionProvider $reflectionProvider,
+        #[AutowiredParameter(ref: '%laravel.modelPropertyType%')]
         private bool $checkProperties,
         private MacroMethodsClassReflectionExtension $macroMethodsClassReflectionExtension,
         private ReflectionHelper $reflectionHelper,

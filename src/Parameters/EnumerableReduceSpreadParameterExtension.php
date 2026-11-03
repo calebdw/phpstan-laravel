@@ -9,6 +9,7 @@ use Illuminate\Support\Enumerable;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\ClosureType;
@@ -19,6 +20,7 @@ use PHPStan\Type\Type;
 
 use function array_map;
 
+#[AutowiredService]
 final class EnumerableReduceSpreadParameterExtension implements MethodParameterClosureTypeExtension
 {
     public function isMethodSupported(MethodReflection $methodReflection, ParameterReflection $parameter): bool

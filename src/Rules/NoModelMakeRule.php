@@ -10,6 +10,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -25,6 +27,7 @@ use PHPStan\Rules\RuleErrorBuilder;
  *
  * @implements Rule<StaticCall>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.modelMake%')]
 final class NoModelMakeRule implements Rule
 {
     public function __construct(
@@ -49,7 +52,6 @@ final class NoModelMakeRule implements Rule
         }
 
         return [
-            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message("Called 'Model::make()' which performs unnecessary work, use 'new Model()'.")
                 ->identifier('laravel.modelMake')
                 ->line($node->getStartLine())

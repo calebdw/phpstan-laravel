@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use Closure;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
@@ -14,6 +15,7 @@ use PHPStan\Type\TypeTraverser;
 
 use function collect;
 
+#[AutowiredService]
 final class TypeHelper
 {
     /**

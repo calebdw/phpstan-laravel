@@ -10,6 +10,7 @@ use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\FunctionVariant;
 use PHPStan\Reflection\MethodReflection;
@@ -27,6 +28,7 @@ use function array_map;
 use function assert;
 use function in_array;
 
+#[AutowiredService]
 final class ModelForwardsCallsExtension implements MethodsClassReflectionExtension
 {
     private const array FORWARDED_COUNTER_METHODS = [

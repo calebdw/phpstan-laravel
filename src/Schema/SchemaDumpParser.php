@@ -7,6 +7,8 @@ namespace CalebDW\PhpstanLaravel\Schema;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use CalebDW\PhpstanLaravel\Support\SqlSchemaHelper;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use SplFileInfo;
 
 use function array_key_exists;
@@ -14,6 +16,7 @@ use function explode;
 use function file_get_contents;
 use function ksort;
 
+#[AutowiredService]
 final class SchemaDumpParser
 {
     /** @var array<string, SplFileInfo>|null */
@@ -24,10 +27,13 @@ final class SchemaDumpParser
 
     /** @param  string[] $schemaPaths */
     public function __construct(
+        #[AutowiredParameter(ref: '%laravel.schemaDirectories%')]
         private array $schemaPaths,
         private FileHelper $fileHelper,
         private SqlSchemaHelper $sqlSchemaHelper,
+        #[AutowiredParameter(ref: '%laravel.scanSchema%')]
         private bool $scanSchema,
+        #[AutowiredParameter]
         string $currentWorkingDirectory = '',
     ) {
         if ($this->schemaPaths !== []) {

@@ -9,6 +9,9 @@ use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\File\FileHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -24,6 +27,7 @@ use function str_starts_with;
  *
  * @implements Rule<FuncCall>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.envCallOutsideConfig%')]
 final class NoEnvCallsOutsideOfConfigRule implements Rule
 {
     /** @var list<string> */
@@ -31,11 +35,14 @@ final class NoEnvCallsOutsideOfConfigRule implements Rule
 
     /** @param  list<non-empty-string> $configDirectories */
     public function __construct(
+        #[AutowiredParameter(ref: '%laravel.configDirectories%')]
         array $configDirectories,
         private FileHelper $fileHelper,
         private ContainerHelper $containerHelper,
         private CallHelper $callHelper,
+        #[AutowiredParameter]
         private string|null $singleReflectionFile = null,
+        #[AutowiredParameter]
         private string|null $singleReflectionInsteadOfFile = null,
     ) {
         if ($configDirectories !== []) {

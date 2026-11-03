@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 use InvalidArgumentException;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantBooleanType;
@@ -21,6 +22,7 @@ use function array_unique;
 use function count;
 use function in_array;
 
+#[AutowiredService]
 final class CommandArgumentDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

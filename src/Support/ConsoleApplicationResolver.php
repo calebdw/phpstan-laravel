@@ -6,12 +6,14 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Kernel;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 
 use function app;
 use function collect;
 use function is_a;
 
+#[AutowiredService]
 final class ConsoleApplicationResolver
 {
     /** @var array<string, Command>|null */

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
@@ -13,6 +14,7 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
+#[AutowiredService]
 final class SelectHelper
 {
     public function __construct(private ColumnHelper $columnHelper)

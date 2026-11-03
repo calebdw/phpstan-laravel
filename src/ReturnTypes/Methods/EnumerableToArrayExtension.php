@@ -9,6 +9,7 @@ use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -22,6 +23,7 @@ use PHPStan\Type\UnionType;
 use function array_map;
 use function in_array;
 
+#[AutowiredService]
 final class EnumerableToArrayExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

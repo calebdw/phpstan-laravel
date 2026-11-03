@@ -8,10 +8,12 @@ use CalebDW\PhpstanLaravel\Support\SelectHelper;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class ArrSelectExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private SelectHelper $selectHelper)

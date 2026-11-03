@@ -19,6 +19,8 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -29,6 +31,7 @@ use function is_string;
 use function ltrim;
 
 /** @implements Rule<MethodCall> */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.octaneCompatibility%')]
 final class OctaneCompatibilityRule implements Rule
 {
     private const array FORBIDDEN_SERVICES = [

@@ -10,11 +10,14 @@ use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Validation\Validator;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class ValidatorExtension implements DynamicFunctionReturnTypeExtension
 {
     private ObjectType|null $factoryType = null;
@@ -23,6 +26,7 @@ final class ValidatorExtension implements DynamicFunctionReturnTypeExtension
 
     public function __construct(
         private ValidationHelper $validationHelper,
+        #[AutowiredParameter(ref: '%laravel.strictContracts%')]
         private bool $strictContracts,
     ) {
     }

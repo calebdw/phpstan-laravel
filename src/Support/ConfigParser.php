@@ -9,6 +9,8 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Parser\Parser;
 use PHPStan\Parser\ParserErrorsException;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
@@ -38,6 +40,7 @@ use function substr;
  * Only consulted for keys the booted container does not know about, which is
  * typically the case when analysing a package without a host application.
  */
+#[AutowiredService]
 final class ConfigParser
 {
     /** @var array<string, SplFileInfo>|null */
@@ -54,10 +57,13 @@ final class ConfigParser
 
     /** @param list<non-empty-string> $configDirectories */
     public function __construct(
+        #[AutowiredParameter(ref: '%laravel.configDirectories%')]
         private array $configDirectories,
         private FileHelper $fileHelper,
+        #[AutowiredParameter(ref: '@currentPhpVersionSimpleDirectParser')]
         private Parser $parser,
         private FileTypeMapper $fileTypeMapper,
+        #[AutowiredParameter]
         private bool $treatPhpDocTypesAsCertain,
     ) {
     }

@@ -9,6 +9,7 @@ use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\ClosureType;
@@ -18,6 +19,7 @@ use PHPStan\Type\Type;
 
 use function array_map;
 
+#[AutowiredService]
 final class ArrMapSpreadParameterExtension implements StaticMethodParameterClosureTypeExtension
 {
     public function __construct(private ColumnHelper $columnHelper)

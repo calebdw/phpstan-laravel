@@ -9,11 +9,13 @@ use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Support\Manager;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
+#[AutowiredService]
 final class ManagerDriverExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

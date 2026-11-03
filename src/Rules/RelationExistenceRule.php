@@ -14,6 +14,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\NullsafeMethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Rules\MultipleNodeTypesRule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Type\ObjectType;
@@ -24,6 +25,7 @@ use function str_starts_with;
 use function strtolower;
 
 /** @implements MultipleNodeTypesRule<Node\Expr\CallLike> */
+#[AutowiredService]
 final class RelationExistenceRule implements MultipleNodeTypesRule
 {
     private const array METHODS = [

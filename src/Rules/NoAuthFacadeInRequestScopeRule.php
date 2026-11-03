@@ -15,6 +15,8 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -23,6 +25,7 @@ use PHPStan\ShouldNotHappenException;
 use function sprintf;
 
 /** @implements Rule<StaticCall> */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.authInRequestScope%')]
 final class NoAuthFacadeInRequestScopeRule implements Rule
 {
     public function __construct(
@@ -69,7 +72,6 @@ final class NoAuthFacadeInRequestScopeRule implements Rule
         $replacement = $this->replacement($variable, $methodName);
 
         return [
-            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message(sprintf($message, $variable))
                 ->identifier('laravel.authInRequestScope.facade')
                 ->fixNode($node, static fn () => $replacement)

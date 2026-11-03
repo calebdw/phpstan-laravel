@@ -10,6 +10,7 @@ use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -17,6 +18,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 use function sprintf;
 
 /** @implements Rule<MethodCall> */
+#[RegisteredRule(level: 0)]
 final class UndefinedCommandInputRule implements Rule
 {
     public function __construct(

@@ -12,6 +12,8 @@ use Illuminate\View\Factory;
 use PhpParser\Node;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
@@ -20,6 +22,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 use function collect;
 
 /** @implements Rule<CollectedDataNode> */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.unusedView%')]
 final class UnusedViewsRule implements Rule
 {
     public function __construct(

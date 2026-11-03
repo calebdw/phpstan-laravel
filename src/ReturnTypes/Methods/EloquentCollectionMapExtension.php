@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -19,6 +20,7 @@ use PHPStan\Type\TypeCombinator;
 
 use function in_array;
 
+#[AutowiredService]
 final class EloquentCollectionMapExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private CollectionHelper $collectionHelper)

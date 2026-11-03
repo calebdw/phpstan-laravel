@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\ViewFileHelper;
 use CalebDW\PhpstanLaravel\Support\ViewParser;
 use Illuminate\View\ViewName;
 use PhpParser\Node;
+use PHPStan\DependencyInjection\AutowiredService;
 
 use function array_merge;
 use function preg_match_all;
@@ -15,6 +16,7 @@ use function str_contains;
 
 use const PREG_SET_ORDER;
 
+#[AutowiredService]
 final class UsedViewInAnotherViewCollector
 {
     /** @see https://regex101.com/r/OyHHCY/1 */

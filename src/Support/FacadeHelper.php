@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use PHPStan\DependencyInjection\AutowiredService;
+
 use function rescue;
 
+#[AutowiredService]
 final class FacadeHelper
 {
     /** @var array<class-string, object|false> */

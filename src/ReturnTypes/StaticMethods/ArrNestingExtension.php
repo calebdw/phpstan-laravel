@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\ArrayType;
@@ -23,6 +24,7 @@ use function is_numeric;
 
 use const INF;
 
+#[AutowiredService]
 final class ArrNestingExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private CollectionHelper $collectionHelper)

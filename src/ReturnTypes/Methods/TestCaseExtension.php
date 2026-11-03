@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\TestCase;
 use Mockery\MockInterface;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
@@ -18,6 +19,7 @@ use PHPStan\Type\TypeCombinator;
 use function array_map;
 use function in_array;
 
+#[AutowiredService]
 final class TestCaseExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private TypeHelper $typeHelper)

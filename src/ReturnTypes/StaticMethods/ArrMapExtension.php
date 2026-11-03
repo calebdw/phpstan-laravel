@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\ArrayType;
@@ -17,6 +18,7 @@ use PHPStan\Type\TypeCombinator;
 
 use function in_array;
 
+#[AutowiredService]
 final class ArrMapExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private ColumnHelper $columnHelper)

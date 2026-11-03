@@ -18,6 +18,7 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Return_;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
@@ -31,6 +32,7 @@ use function count;
 use function in_array;
 use function is_string;
 
+#[AutowiredService]
 final class RelationCollectionExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

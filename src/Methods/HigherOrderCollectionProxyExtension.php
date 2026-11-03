@@ -7,12 +7,14 @@ namespace CalebDW\PhpstanLaravel\Methods;
 use CalebDW\PhpstanLaravel\Reflection\HigherOrderCollectionProxyMethodReflection;
 use CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 
 use function assert;
 
+#[AutowiredService]
 final class HigherOrderCollectionProxyExtension implements MethodsClassReflectionExtension
 {
     public function __construct(private HigherOrderCollectionProxyHelper $higherOrderCollectionProxyHelper)

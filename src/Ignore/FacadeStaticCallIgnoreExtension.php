@@ -12,7 +12,9 @@ use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\IgnoreErrorExtension;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 
+#[AutowiredService]
 final class FacadeStaticCallIgnoreExtension implements IgnoreErrorExtension
 {
     public function __construct(

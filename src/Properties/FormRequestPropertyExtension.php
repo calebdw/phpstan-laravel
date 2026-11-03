@@ -7,12 +7,14 @@ namespace CalebDW\PhpstanLaravel\Properties;
 use CalebDW\PhpstanLaravel\Reflection\ModelPropertyReflection;
 use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Foundation\Http\FormRequest;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
 
 use function assert;
 
+#[AutowiredService]
 final class FormRequestPropertyExtension implements PropertiesClassReflectionExtension
 {
     /** @var array<string, ModelPropertyReflection|false> */

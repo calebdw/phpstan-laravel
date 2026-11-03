@@ -21,6 +21,8 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -40,6 +42,7 @@ use function sprintf;
  *
  * @implements Rule<StaticCall>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.dispatchInTransactionAfterCommit%')]
 final class JobDispatchedInTransactionUsesAfterCommitRule implements Rule
 {
     /** @var array<string, bool> */
@@ -103,7 +106,6 @@ final class JobDispatchedInTransactionUsesAfterCommitRule implements Rule
                 continue;
             }
 
-            /** @phpstan-ignore method.internal (still experimental) */
             $errors[] = RuleErrorBuilder::message(sprintf(
                 'Job %s is dispatched inside a transaction without deferring until commit.',
                 $job->getDisplayName(),

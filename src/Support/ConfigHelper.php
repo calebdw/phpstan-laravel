@@ -12,6 +12,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\BooleanType;
@@ -46,6 +47,7 @@ use function is_object;
 use function is_string;
 use function str_replace;
 
+#[AutowiredService]
 final class ConfigHelper
 {
     /** The whole repository, for `all()`. Not a key any file can declare. */

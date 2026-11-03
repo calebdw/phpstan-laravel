@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Methods;
 
 use CalebDW\PhpstanLaravel\Reflection\DynamicWithMethodReflection;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection;
 
 use function str_starts_with;
 
+#[AutowiredService]
 final class RedirectResponseMethodsClassReflectionExtension implements Reflection\MethodsClassReflectionExtension
 {
     public function hasMethod(Reflection\ClassReflection $classReflection, string $methodName): bool

@@ -10,6 +10,8 @@ use Illuminate\View\Factory as ViewFactory;
 use Illuminate\View\FileViewFinder;
 use Illuminate\View\ViewFinderInterface;
 use PHPStan\Analyser\DependencyTracker;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use SplFileInfo;
 
 use function array_merge;
@@ -23,6 +25,7 @@ use function strpos;
 
 use const DIRECTORY_SEPARATOR;
 
+#[AutowiredService]
 final class ViewFileHelper
 {
     /** @var list<string>|null */
@@ -30,6 +33,7 @@ final class ViewFileHelper
 
     /** @param  list<non-empty-string> $viewDirectories */
     public function __construct(
+        #[AutowiredParameter(ref: '%laravel.viewDirectories%')]
         private array $viewDirectories,
         private FileHelper $fileHelper,
         private ContainerHelper $containerHelper,

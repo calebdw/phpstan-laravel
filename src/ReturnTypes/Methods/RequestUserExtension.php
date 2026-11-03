@@ -8,10 +8,12 @@ use CalebDW\PhpstanLaravel\Support\AuthHelper;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class RequestUserExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private AuthHelper $authHelper)

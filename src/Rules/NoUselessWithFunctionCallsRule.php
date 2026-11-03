@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\CallHelper;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -15,6 +16,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 use function count;
 
 /** @implements Rule<FuncCall> */
+#[RegisteredRule(level: 0)]
 final class NoUselessWithFunctionCallsRule implements Rule
 {
     public function __construct(private CallHelper $callHelper)
@@ -48,7 +50,6 @@ final class NoUselessWithFunctionCallsRule implements Rule
             : "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything";
 
         return [
-            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message($message)
                 ->line($node->getStartLine())
                 ->identifier('laravel.uselessConstructs.with')

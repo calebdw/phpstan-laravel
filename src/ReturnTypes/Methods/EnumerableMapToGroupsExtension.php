@@ -9,6 +9,7 @@ use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -21,6 +22,7 @@ use function array_map;
 use function count;
 use function in_array;
 
+#[AutowiredService]
 final class EnumerableMapToGroupsExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

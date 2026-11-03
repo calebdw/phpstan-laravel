@@ -8,11 +8,13 @@ use CalebDW\PhpstanLaravel\Reflection\ModelFactoryMethodReflection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Type\ErrorType;
 
+#[AutowiredService]
 final class ModelFactoryMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, bool> */

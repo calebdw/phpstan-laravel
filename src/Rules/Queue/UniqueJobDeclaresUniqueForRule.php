@@ -9,6 +9,8 @@ use CalebDW\PhpstanLaravel\Support\ReflectionHelper;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\InClassNode;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -23,6 +25,7 @@ use function version_compare;
  *
  * @implements Rule<InClassNode>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.uniqueJobUniqueFor%')]
 final class UniqueJobDeclaresUniqueForRule implements Rule
 {
     private const string UNIQUE_FOR = 'Illuminate\Queue\Attributes\UniqueFor';

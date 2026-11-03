@@ -12,10 +12,12 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
+use PHPStan\DependencyInjection\AutowiredService;
 
 use function array_map;
 
 /** @implements Collector<CallLike, list<array{0: string, 1: int}>> */
+#[AutowiredService]
 final class UsedTranslationCollector implements Collector
 {
     private const array FUNCTIONS = [

@@ -13,6 +13,8 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -21,6 +23,7 @@ use PHPStan\Type\TypeCombinator;
 use function sprintf;
 
 /** @implements Rule<MethodCall> */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.modelForwardingToBuilder%')]
 final class NoModelForwardingToBuilderRule implements Rule
 {
     public function __construct(

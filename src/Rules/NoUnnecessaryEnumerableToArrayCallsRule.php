@@ -12,6 +12,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -30,6 +32,7 @@ use PHPStan\Type\ObjectType;
  *
  * @implements Rule<MethodCall>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.unnecessaryEnumerableToArrayCall%')]
 final class NoUnnecessaryEnumerableToArrayCallsRule implements Rule
 {
     public function __construct(
@@ -63,7 +66,6 @@ final class NoUnnecessaryEnumerableToArrayCallsRule implements Rule
         }
 
         return [
-            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message(
                 'Called [toArray()] on an Enumerable which does not contain any Arrayables.',
             )

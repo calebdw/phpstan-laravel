@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use Illuminate\Support\Manager;
 use Illuminate\Support\Str;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
@@ -18,6 +19,7 @@ use function is_object;
 use function is_string;
 use function preg_match;
 
+#[AutowiredService]
 final class ManagerHelper
 {
     /** @var array<string, string|null> */

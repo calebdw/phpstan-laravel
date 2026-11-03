@@ -14,6 +14,8 @@ use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\TraitUse;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\InClassNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\IdentifierRuleError;
@@ -32,6 +34,7 @@ use function sprintf;
  *
  * @implements Rule<InClassNode>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.jobSerializesModels%')]
 final class JobWithModelPropertyDeclaresSerializesModelsRule implements Rule
 {
     public function __construct(
@@ -69,7 +72,6 @@ final class JobWithModelPropertyDeclaresSerializesModelsRule implements Rule
         }
 
         return [
-            /** @phpstan-ignore method.internal (still experimental) */
             RuleErrorBuilder::message(sprintf(
                 'Job %s has model properties (%s) but does not use SerializesModels.',
                 $class->getDisplayName(),

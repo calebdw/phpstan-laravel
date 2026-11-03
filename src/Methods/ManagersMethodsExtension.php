@@ -9,6 +9,7 @@ use CalebDW\PhpstanLaravel\Support\ManagerHelper;
 use CalebDW\PhpstanLaravel\Support\RecursionGuard;
 use Illuminate\Support\Manager;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -16,6 +17,7 @@ use PHPStan\Reflection\MethodsClassReflectionExtension;
 use function array_key_exists;
 use function assert;
 
+#[AutowiredService]
 final class ManagersMethodsExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection|false> */

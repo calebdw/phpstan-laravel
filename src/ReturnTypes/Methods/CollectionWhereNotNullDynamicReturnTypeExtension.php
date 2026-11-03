@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\CollectionHelper;
 use Illuminate\Support\Enumerable;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -21,6 +22,7 @@ use PHPStan\Type\TypeCombinator;
 use function count;
 use function in_array;
 
+#[AutowiredService]
 final class CollectionWhereNotNullDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private CollectionHelper $collectionHelper)

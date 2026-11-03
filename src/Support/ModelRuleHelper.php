@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
@@ -12,6 +13,7 @@ use PHPStan\Type\TypeCombinator;
 
 use function count;
 
+#[AutowiredService]
 final class ModelRuleHelper
 {
     private ObjectType $modelType;

@@ -14,6 +14,8 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\MultipleNodeTypesRule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -32,6 +34,7 @@ use function sprintf;
  *
  * @implements MultipleNodeTypesRule<Node\Expr\CallLike>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.configAccessor%')]
 final class ConfigAccessorRule implements MultipleNodeTypesRule
 {
     /**

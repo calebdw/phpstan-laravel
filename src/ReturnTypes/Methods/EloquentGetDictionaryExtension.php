@@ -8,11 +8,13 @@ use CalebDW\PhpstanLaravel\Support\ModelHelper;
 use Illuminate\Database\Eloquent\Collection;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class EloquentGetDictionaryExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ModelHelper $modelHelper)

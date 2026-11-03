@@ -7,6 +7,7 @@ namespace CalebDW\PhpstanLaravel\Types;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParameterReflection;
 use PHPStan\Type\Constant\ConstantStringType;
@@ -22,6 +23,7 @@ use function explode;
 use function is_string;
 use function str_contains;
 
+#[AutowiredService]
 final class ArrPullParameterOutTypeExtension implements StaticMethodParameterOutTypeExtension
 {
     public function isStaticMethodSupported(MethodReflection $methodReflection, ParameterReflection $parameter): bool

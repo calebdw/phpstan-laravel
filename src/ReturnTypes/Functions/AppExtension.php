@@ -8,11 +8,13 @@ use CalebDW\PhpstanLaravel\Support\AppMakeHelper;
 use Illuminate\Foundation\Application;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class AppExtension implements DynamicFunctionReturnTypeExtension
 {
     private ObjectType|null $applicationType = null;

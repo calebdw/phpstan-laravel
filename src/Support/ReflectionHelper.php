@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Support;
 
 use PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute as NativeAttribute;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\Mixin\MixinMethodsClassReflectionExtension;
@@ -18,6 +19,7 @@ use function is_array;
 use function is_string;
 use function ltrim;
 
+#[AutowiredService]
 final class ReflectionHelper
 {
     /** @var array<string, bool> */

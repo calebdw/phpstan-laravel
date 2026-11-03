@@ -8,6 +8,7 @@ use CalebDW\PhpstanLaravel\Support\TypeHelper;
 use Illuminate\Support\Arr;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
@@ -19,6 +20,7 @@ use function explode;
 use function in_array;
 use function str_contains;
 
+#[AutowiredService]
 final class ArrGetPullExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private TypeHelper $typeHelper)

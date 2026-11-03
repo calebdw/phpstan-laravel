@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
@@ -23,6 +24,7 @@ use PHPStan\Type\ThisType;
 use function assert;
 use function in_array;
 
+#[AutowiredService]
 final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflectionExtension
 {
     /** @var array<string, MethodReflection|false> */

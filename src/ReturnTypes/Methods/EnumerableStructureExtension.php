@@ -11,6 +11,7 @@ use Illuminate\Support\Enumerable;
 use Illuminate\Support\LazyCollection;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -23,6 +24,7 @@ use PHPStan\Type\UnionType;
 
 use function in_array;
 
+#[AutowiredService]
 final class EnumerableStructureExtension implements DynamicMethodReturnTypeExtension
 {
     private const array METHODS = ['concat', 'pad', 'zip'];

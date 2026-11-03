@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use PhpParser\Modifiers;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope as AnalyserScope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\InClassMethodNode;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -20,6 +22,7 @@ use function str_ends_with;
 use function str_starts_with;
 
 /** @implements Rule<InClassMethodNode> */
+#[Conditional(attribute: new AutowiredService(), if: '%laravel.rules.modelMethodVisibility%')]
 final class NoPublicModelScopeAndAccessorRule implements Rule
 {
     public function getNodeType(): string
@@ -73,7 +76,6 @@ final class NoPublicModelScopeAndAccessorRule implements Rule
         string $message,
         string $identifier,
     ): IdentifierRuleError {
-        /** @phpstan-ignore method.internal (still experimental) */
         return RuleErrorBuilder::message(sprintf($message, $node->getMethodReflection()->getName()))
             ->identifier($identifier)
             ->line($node->getStartLine())

@@ -7,12 +7,14 @@ namespace CalebDW\PhpstanLaravel\Properties;
 use CalebDW\PhpstanLaravel\Reflection\ModelPropertyReflection;
 use CalebDW\PhpstanLaravel\Support\HigherOrderCollectionProxyHelper;
 use PHPStan\Analyser\OutOfClassScope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
 
 use function assert;
 
+#[AutowiredService]
 final class HigherOrderCollectionProxyPropertyExtension implements PropertiesClassReflectionExtension
 {
     public function __construct(private HigherOrderCollectionProxyHelper $higherOrderCollectionProxyHelper)

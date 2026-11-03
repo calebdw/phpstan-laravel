@@ -7,6 +7,8 @@ namespace CalebDW\PhpstanLaravel\Support;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container as ContainerContract;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ConstantTypeHelper;
 use PHPStan\Type\ErrorType;
@@ -18,10 +20,12 @@ use Throwable;
 
 use function is_object;
 
+#[AutowiredService]
 final class ContainerHelper
 {
     public function __construct(
         private ReflectionProvider $reflectionProvider,
+        #[AutowiredParameter(ref: '%laravel.strictContracts%')]
         private readonly bool $strictContracts = false,
     ) {
     }

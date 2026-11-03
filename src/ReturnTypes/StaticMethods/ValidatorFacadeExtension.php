@@ -8,12 +8,14 @@ use CalebDW\PhpstanLaravel\Support\ValidationHelper;
 use Illuminate\Support\Facades\Validator;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 use function in_array;
 
+#[AutowiredService]
 final class ValidatorFacadeExtension implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private ValidationHelper $validationHelper)

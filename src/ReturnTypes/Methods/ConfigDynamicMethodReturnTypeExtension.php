@@ -9,12 +9,14 @@ use Illuminate\Contracts\Config\Repository;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 use function in_array;
 
+#[AutowiredService]
 final class ConfigDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(private ConfigHelper $configHelper)

@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
@@ -50,6 +51,7 @@ use function is_string;
 use function lcfirst;
 use function str_contains;
 
+#[AutowiredService]
 final class ModelSerializationDynamicMethodReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     private const array DATE_CASTS = [

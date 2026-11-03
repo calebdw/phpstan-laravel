@@ -7,10 +7,12 @@ namespace CalebDW\PhpstanLaravel\ReturnTypes\Functions;
 use CalebDW\PhpstanLaravel\Support\ColumnHelper;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\Type;
 
+#[AutowiredService]
 final class DataGetExtension implements DynamicFunctionReturnTypeExtension
 {
     public function __construct(private ColumnHelper $columnHelper)

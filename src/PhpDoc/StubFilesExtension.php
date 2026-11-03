@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\PhpDoc;
 
 use CalebDW\PhpstanLaravel\Support\FileHelper;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\PhpDoc\StubFilesExtension as StubFilesExtensionContract;
 use SplFileInfo;
 
@@ -22,6 +23,7 @@ use function version_compare;
 use const DIRECTORY_SEPARATOR;
 use const GLOB_ONLYDIR;
 
+#[AutowiredService]
 final class StubFilesExtension implements StubFilesExtensionContract
 {
     public function __construct(

@@ -8,12 +8,14 @@ use CalebDW\PhpstanLaravel\Support\AppMakeHelper;
 use Illuminate\Contracts\Container\Container;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
 use function in_array;
 
+#[AutowiredService]
 final class ContainerMakeDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function __construct(
