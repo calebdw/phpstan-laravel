@@ -40,6 +40,22 @@ function test(FormRequest $request, AuthedRequest $authedRequest, StorePostReque
     assertType('array{title: string, body?: string|null, age?: int|numeric-string, status: \'draft\'|\'published\', kind: \'draft\'|\'published\', priority: 1|2|\'1\'|\'2\', role: \'admin\'|\'user\', size?: int<1, 10>|numeric-string, color?: \'blue\'|\'red\', tags?: array<int|string, string>, author: array{name: string}, avatar?: Illuminate\Http\UploadedFile}', $post->safe()->all());
 }
 
+/** @param array{'title'}|array{'body'} $keys */
+function safeAlternatives(FormRequest $request, StorePostRequest $post, array $keys): void
+{
+    assertType('array{body: mixed}|array{title: mixed}', $request->safe($keys));
+    assertType('array{body?: string|null}|array{title: string}', $post->safe($keys));
+    assertType('array{}', $request->safe([]));
+    assertType('array{}', $post->safe([]));
+}
+
+/** @param array{0?: 'title'} $keys */
+function safeOptionalKeys(FormRequest $request, StorePostRequest $post, array $keys): void
+{
+    assertType('array{}|array{title: mixed}', $request->safe($keys));
+    assertType('array{}|array{title: string}', $post->safe($keys));
+}
+
 /** Narrows user() to a concrete model. */
 class AuthedRequest extends FormRequest
 {

@@ -50,12 +50,24 @@ final class FormRequestSafeDynamicMethodReturnTypeExtension implements DynamicMe
             return $shape === null ? null : new GenericObjectType(ValidatedInput::class, [$shape]);
         }
 
-        $keys = $this->typeHelper->constantStrings($scope->getType($args[0]->value));
+        $keyLists = $this->typeHelper->constantStringLists($scope->getType($args[0]->value));
 
-        if ($keys === []) {
+        if ($keyLists === []) {
             return null;
         }
 
+        $types = [];
+
+        foreach ($keyLists as $keys) {
+            $types[] = $this->pick($shape, $keys);
+        }
+
+        return TypeCombinator::union(...$types);
+    }
+
+    /** @param list<string> $keys */
+    private function pick(Type|null $shape, array $keys): Type
+    {
         if ($shape !== null) {
             return $this->validationHelper->pick($shape, $keys);
         }

@@ -89,6 +89,16 @@ final class TypeHelper
             ->all();
     }
 
+    /** @return list<list<string>> */
+    public function constantStringLists(Type $type): array
+    {
+        return collect($type->getConstantArrays())
+            ->flatMap(static fn ($a) => $a->getAllArrays())
+            ->map($this->constantStrings(...))
+            ->values()
+            ->all();
+    }
+
     /**
      * What `value()` hands back, and with it every default that goes through
      * it. Only a Closure is called: a callable string such as `'time'` is a
