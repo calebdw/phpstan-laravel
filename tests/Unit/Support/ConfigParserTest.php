@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\Support;
 
 use CalebDW\PhpstanLaravel\Support\ConfigParser;
+use CalebDW\PhpstanLaravel\Support\DependencyHelper;
 use CalebDW\PhpstanLaravel\Support\FileHelper;
 use PhpParser\Node\Stmt;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\ScopeContext;
+use PHPStan\Analyser\ScopeFactory;
 use PHPStan\Analyser\TypeSpecifier;
 use PHPStan\File\FileHelper as PHPStanFileHelper;
 use PHPStan\Parser\Parser;
@@ -24,7 +27,7 @@ class ConfigParserTest extends PHPStanTestCase
 
     public function setUp(): void
     {
-        $this->parser = new class (self::getContainer()->getService('currentPhpVersionSimpleDirectParser')) implements Parser {
+        $this->parser = new class (self::getContainer()->getService('currentPhpVersionRichParser')) implements Parser {
             public int $count = 0;
 
             public function __construct(private Parser $parser)
@@ -144,6 +147,9 @@ class ConfigParserTest extends PHPStanTestCase
             $this->parser,
             self::getContainer()->getByType(FileTypeMapper::class),
             true,
+            self::getContainer()->getByType(ScopeFactory::class),
+            self::getContainer()->getByType(NodeScopeResolver::class),
+            new DependencyHelper(),
         );
     }
 

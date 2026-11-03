@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use Closure;
+use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Stmt\Return_;
-use PhpParser\NodeFinder;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor;
+use PhpParser\NodeVisitorAbstract;
+use PHPStan\Analyser\DependencyTracker;
+use PHPStan\Analyser\NodeScopeResolver;
 use PHPStan\Analyser\Scope;
+use PHPStan\Analyser\ScopeContext;
+use PHPStan\Analyser\ScopeFactory;
+use PHPStan\Analyser\StatementContext;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Parser\Parser;
@@ -19,10 +28,12 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FileTypeMapper;
 use PHPStan\Type\GeneralizePrecision;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 use SplFileInfo;
 
 use function array_key_exists;
+use function array_search;
 use function array_shift;
 use function array_slice;
 use function count;
@@ -49,22 +60,34 @@ final class ConfigParser
     /** @var list<string>|null */
     private array|null $directories = null;
 
-    /** @var array<string, Return_|null> */
+    /** @var array<string, array{Return_, list<Node\Stmt>, string|null}|null> */
     private array $returns = [];
 
     /** @var array<string, Type|null> */
     private array $types = [];
+
+    /** @var array<string, Scope|null> */
+    private array $scopes = [];
+
+    /** @var array<string, array<string, Closure(DependencyTracker): void>> */
+    private array $dependencies = [];
+
+    /** @var array<string, array<string, Closure(DependencyTracker): void>> */
+    private array $fileDependencies = [];
 
     /** @param list<non-empty-string> $configDirectories */
     public function __construct(
         #[AutowiredParameter(ref: '%laravel.configDirectories%')]
         private array $configDirectories,
         private FileHelper $fileHelper,
-        #[AutowiredParameter(ref: '@currentPhpVersionSimpleDirectParser')]
+        #[AutowiredParameter(ref: '@currentPhpVersionRichParser')]
         private Parser $parser,
         private FileTypeMapper $fileTypeMapper,
         #[AutowiredParameter]
         private bool $treatPhpDocTypesAsCertain,
+        private ScopeFactory $scopeFactory,
+        private NodeScopeResolver $nodeScopeResolver,
+        private DependencyHelper $dependencyHelper,
     ) {
     }
 
@@ -105,6 +128,7 @@ final class ConfigParser
         return $files;
     }
 
+    /** @param Scope&DependencyTracker $scope */
     public function getType(string $key, Scope $scope): Type|null
     {
         if (! $this->hasDirectories()) {
@@ -112,13 +136,26 @@ final class ConfigParser
         }
 
         if (array_key_exists($key, $this->types)) {
+            $this->dependencyHelper->replay($scope, $this->dependencies[$key] ?? []);
+
             return $this->types[$key];
         }
 
-        return $this->types[$key] = $this->resolve($key, $scope);
+        $result = RecursionGuard::run(self::class . ':key:' . $key, fn () => $this->dependencyHelper->capture(fn () => $this->resolve($key, $scope)));
+
+        if ($result === null) {
+            return null;
+        }
+
+        [$type, $dependencies] = $result;
+        $this->dependencyHelper->replay($scope, $dependencies);
+        $this->dependencies[$key] = $dependencies;
+
+        return $this->types[$key] = $type;
     }
 
-    private function resolve(string $key, Scope $scope): Type|null
+    /** @param Scope&DependencyTracker $caller */
+    private function resolve(string $key, Scope $caller): Type|null
     {
         $parts      = explode('.', $key);
         $candidates = self::candidateFiles($key);
@@ -127,17 +164,25 @@ final class ConfigParser
         // `eagle.php` and `eagle/payments.php` declare `eagle.payments` it is
         // the nested one that was written last.
         for ($depth = count($candidates); $depth > 0; $depth--) {
-            $file = $candidates[$depth - 1];
-            $node = $this->getReturn($file);
+            $file   = $candidates[$depth - 1];
+            $parsed = $this->getReturn($file);
 
-            if ($node === null) {
+            if ($parsed === null) {
                 continue;
             }
 
-            $rest = array_slice($parts, $depth);
+            [$node] = $parsed;
+            $rest   = array_slice($parts, $depth);
 
-            return $this->getTypeFromDocComment($node, $rest, $file)
-                ?? $this->getTypeFromExpr($node->expr, $rest, $scope);
+            $documented = $this->getTypeFromDocComment($node, $rest, $file);
+
+            if ($documented !== null) {
+                return $documented;
+            }
+
+            $scope = $this->getReturnScope($file, $parsed, $caller);
+
+            return $scope === null ? null : $this->getTypeFromExpr($node->expr, $rest, $scope);
         }
 
         return null;
@@ -237,6 +282,10 @@ final class ConfigParser
      */
     private function generalize(Type $type): Type
     {
+        if ($type instanceof ErrorType) {
+            return new MixedType();
+        }
+
         $constantArrays = $type->getConstantArrays();
 
         if (count($constantArrays) === 1 && $constantArrays[0]->equals($type)) {
@@ -267,7 +316,8 @@ final class ConfigParser
         return $type;
     }
 
-    private function getReturn(string $file): Return_|null
+    /** @return array{Return_, list<Node\Stmt>, string|null}|null */
+    private function getReturn(string $file): array|null
     {
         if (array_key_exists($file, $this->returns)) {
             return $this->returns[$file];
@@ -285,10 +335,92 @@ final class ConfigParser
             return $this->returns[$file] = null;
         }
 
-        /** @var Return_|null $node */
-        $node = (new NodeFinder())->findFirstInstanceOf($stmts, Return_::class);
+        $visitor = new class extends NodeVisitorAbstract {
+            /** @var list<Return_> */
+            public array $returns = [];
 
-        return $this->returns[$file] = $node;
+            public function enterNode(Node $node): int|null
+            {
+                if ($node instanceof Node\FunctionLike || $node instanceof Node\Stmt\ClassLike) {
+                    return NodeVisitor::DONT_TRAVERSE_CHILDREN;
+                }
+
+                if ($node instanceof Return_) {
+                    $this->returns[] = $node;
+                }
+
+                return null;
+            }
+        };
+
+        (new NodeTraverser($visitor))->traverse($stmts);
+
+        if (count($visitor->returns) !== 1) {
+            return $this->returns[$file] = null;
+        }
+
+        $node       = $visitor->returns[0];
+        $namespace  = null;
+        $statements = [];
+
+        foreach ($stmts as $stmt) {
+            if ($stmt instanceof Node\Stmt\Namespace_) {
+                if ($namespace !== null) {
+                    return $this->returns[$file] = null;
+                }
+
+                $namespace = $stmt->name?->toString() ?? '';
+                foreach ($stmt->stmts as $namespaced) {
+                    $statements[] = $namespaced;
+                }
+            } else {
+                $statements[] = $stmt;
+            }
+        }
+
+        $index = array_search($node, $statements, true);
+
+        return $this->returns[$file] = $index === false ? null : [$node, array_slice($statements, 0, $index), $namespace];
+    }
+
+    /**
+     * @param array{Return_, list<Node\Stmt>, string|null} $parsed
+     * @param Scope&DependencyTracker                      $caller
+     */
+    private function getReturnScope(string $file, array $parsed, Scope $caller): Scope|null
+    {
+        if (array_key_exists($file, $this->scopes)) {
+            $this->dependencyHelper->replay($caller, $this->fileDependencies[$file] ?? []);
+
+            return $this->scopes[$file];
+        }
+
+        $result = RecursionGuard::run(self::class . ':file:' . $file, fn () => $this->dependencyHelper->capture(function () use ($file, $parsed) {
+            [$node, $statements, $namespace] = $parsed;
+            $scope                           = $this->scopeFactory->create(ScopeContext::create($this->getFiles()[$file]->getPathname()));
+
+            if ($namespace !== null && $namespace !== '') {
+                $scope = $scope->enterNamespace($namespace);
+            }
+
+            if ($statements === []) {
+                return $scope;
+            }
+
+            $result = $this->nodeScopeResolver->processStmtNodes($node, $statements, $scope, static function (): void {
+            }, StatementContext::createTopLevel());
+
+            return $result->isAlwaysTerminating() ? null : $result->getScope();
+        }));
+
+        if ($result === null) {
+            return null;
+        }
+
+        [$scope, $dependencies]        = $result;
+        $this->fileDependencies[$file] = $dependencies;
+
+        return $this->scopes[$file] = $scope;
     }
 
     /**

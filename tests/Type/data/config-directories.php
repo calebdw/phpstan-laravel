@@ -59,4 +59,17 @@ function test(): void
     assertType("'redis'|'sync'|null", config('documented.driver'));
     assertType('int<1, max>|null', config('documented.retries'));
     assertType("array{driver: 'redis'|'sync', retries: int<1, max>}|null", config('documented'));
+
+    $value = 'caller value';
+    assertType('int|null', config('scoped.local'));
+    assertType('App\User|null', config('scoped.imported'));
+    assertType('int|null', config('scoped.length'));
+    assertType('(literal-string&non-falsy-string)|null', config('scoped.file'));
+    assertType('mixed', config('scoped.unknown'));
+    assertType('int|null', config('closure-return.value'));
+    assertType('mixed', config('conditional-return.value'));
+    assertType('App\User|null', config('imported-doc.model'));
+    assertType('int|null', config('dependent.local'));
+    assertType('int|null', config('dependent.expression'));
+    assertType('mixed', config('recursive.value'));
 }

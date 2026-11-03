@@ -63,6 +63,7 @@ final class ConfigHelper
         private ConfigParser $configParser,
         private ContainerHelper $containerHelper,
         private TypeHelper $typeHelper,
+        private DependencyHelper $dependencyHelper,
     ) {
     }
 
@@ -228,7 +229,7 @@ final class ConfigHelper
     {
         foreach ($this->configDirectories() as $directory) {
             if ($key === self::ALL_KEYS) {
-                $scope->trackDirectoryDependency($directory, '*.php');
+                $this->dependencyHelper->trackDirectory($scope, $directory, '*.php');
 
                 continue;
             }
@@ -236,7 +237,8 @@ final class ConfigHelper
             foreach (ConfigParser::candidateFiles($key) as $candidate) {
                 $nested = dirname($candidate);
 
-                $scope->trackDirectoryDependency(
+                $this->dependencyHelper->trackDirectory(
+                    $scope,
                     $nested === '.' ? $directory : $directory . '/' . $nested,
                     basename($candidate),
                 );
@@ -245,7 +247,8 @@ final class ConfigHelper
             // Files below the key are part of its value: `config('email')` is
             // built from everything under `config/email`, down to
             // `config/email/engineering/designs.php`.
-            $scope->trackDirectoryDependency(
+            $this->dependencyHelper->trackDirectory(
+                $scope,
                 $directory . '/' . str_replace('.', '/', $key),
                 '*.php',
             );
@@ -254,7 +257,7 @@ final class ConfigHelper
         // Any key can be read from the environment, and a cached config file
         // replaces the lot of them.
         foreach ($this->configFiles() as $file) {
-            $scope->trackFileDependency($file);
+            $this->dependencyHelper->trackFile($scope, $file);
         }
     }
 
