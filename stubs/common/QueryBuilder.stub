@@ -72,7 +72,7 @@ class Builder
      * Add a "where not in raw" clause for integer values to the query.
      *
      * @param  string  $column
-     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, covariant mixed>|array<string, mixed>  $values
+     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, covariant mixed>|array<int|string, mixed>  $values
      * @param  string  $boolean
      * @return $this
      */
@@ -82,7 +82,7 @@ class Builder
      * Add an "or where not in raw" clause for integer values to the query.
      *
      * @param  string  $column
-     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, covariant mixed>|array<string, mixed>  $values
+     * @param  \Illuminate\Contracts\Support\Arrayable<array-key, covariant mixed>|array<int|string, mixed>  $values
      * @return $this
      */
     public function orWhereIntegerNotInRaw($column, $values);
