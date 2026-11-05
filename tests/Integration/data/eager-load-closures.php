@@ -20,3 +20,12 @@ function test(string $name): void
     User::query()->with(["{$name}.accounts" => $broken]);
     User::query()->with(['group' => $nested, 'accounts' => $broken]);
 }
+
+function model(User $user, \App\Post $post): void
+{
+    $post->load(['user' => fn ($q) => $q->withTrashed()]);
+    $post->loadMissing(['user' => fn (BelongsTo $q) => $q->withTrashed()]);
+    $user->load(['accounts' => fn ($q) => $q->active()]);
+
+    $user->load(['accounts' => fn (BelongsTo $q) => $q]);
+}
