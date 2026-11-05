@@ -148,9 +148,9 @@ resolve once their types are known.
 The `eager-load-of<Model, TRelations>` type is the `with()` argument with each
 closure typed by its key: the closure under `'posts'` receives
 `relation-of<Model, 'posts'>`. The builder's `with()` / `withOnly()` and the
-Eloquent collection's `load()` / `loadMissing()` bind `TRelations` to their
-argument with a template, whose bound checks the argument. A wrapper does the
-same:
+`load()` / `loadMissing()` of a model and of an Eloquent collection bind
+`TRelations` to their argument with a template, whose bound checks the argument.
+A wrapper does the same:
 
 ```php
 /**

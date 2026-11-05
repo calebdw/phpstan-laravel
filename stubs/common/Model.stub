@@ -114,6 +114,26 @@ abstract class Model implements \JsonSerializable, \ArrayAccess, \Illuminate\Con
     public static function with($relations);
 
     /**
+     * Eager load relations on the model.
+     *
+     * @template TRelations of array<array-key, array<mixed>|\Closure|string>|string
+     *
+     * @param eager-load-of<static, TRelations> $relations
+     * @return $this
+     */
+    public function load($relations);
+
+    /**
+     * Eager load relations on the model if they are not already eager loaded.
+     *
+     * @template TRelations of array<array-key, array<mixed>|\Closure|string>|string
+     *
+     * @param eager-load-of<static, TRelations> $relations
+     * @return $this
+     */
+    public function loadMissing($relations);
+
+    /**
      * Convert the model instance to an array.
      *
      * @return array<string, mixed>

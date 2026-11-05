@@ -137,6 +137,7 @@ class IntegrationTest extends PHPStanTestCase
                 14 => ['Parameter #1 $relations of method Illuminate\Database\Eloquent\Builder<App\User>::with() expects array{accounts: Closure(Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>): mixed}, array{accounts: Closure(Illuminate\Database\Eloquent\Relations\BelongsTo): Illuminate\Database\Eloquent\Relations\BelongsTo} given.'],
                 // Narrowing cannot be verified under a key that cannot be read.
                 20 => ['Parameter #1 $relations of method Illuminate\Database\Eloquent\Builder<App\User>::with() expects array<array<mixed>|(Closure(Illuminate\Database\Eloquent\Relations\Relation<Illuminate\Database\Eloquent\Model, App\User>): mixed)|string>|string, non-empty-array<non-falsy-string, Closure(Illuminate\Database\Eloquent\Relations\HasMany): mixed> given.'],
+                30 => ['Parameter #1 $relations of method Illuminate\Database\Eloquent\Model::load() expects array{accounts: Closure(Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>): mixed}, array{accounts: Closure(Illuminate\Database\Eloquent\Relations\BelongsTo): Illuminate\Database\Eloquent\Relations\BelongsTo} given.'],
             ],
         ];
 

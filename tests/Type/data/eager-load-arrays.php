@@ -74,3 +74,19 @@ function wrapper(): void
 {
     eagerUsers(['accounts' => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $q)]);
 }
+
+function model(User $user, Model $any, string $name): void
+{
+    $user->load(['accounts' => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $q)]);
+    $user->loadMissing(['accounts' => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $q)]);
+    $user->load(['posts.comments' => fn ($q) => assertType('Illuminate\Database\Eloquent\Relations\MorphMany<App\Comment, App\Post>', $q)]);
+    $user->load(['accounts' => fn (HasMany $q) => assertType('Illuminate\Database\Eloquent\Relations\HasMany<App\Account, App\User>', $q)]);
+    $user->load('accounts');
+    $user->load(['accounts', 'group']);
+
+    assertType('App\User', $user->load(['accounts' => fn ($q) => $q]));
+    assertType('App\User', $user->loadMissing('accounts'));
+
+    $any->load(['accounts' => fn ($q) => assertType('mixed', $q)]);
+    $any->load([$name => fn ($q) => assertType('mixed', $q)]);
+}
