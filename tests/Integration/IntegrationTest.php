@@ -140,6 +140,7 @@ class IntegrationTest extends PHPStanTestCase
             ],
         ];
 
+        yield [__DIR__ . '/data/where-integer-in-raw.php'];
         yield [__DIR__ . '/data/model-properties.php'];
 
         if (laravel_version_compare('13.3.0', '>=')) {
