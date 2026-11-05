@@ -204,8 +204,8 @@ Product::query()->with([
 ]);
 ```
 
-`withOnly()` and an Eloquent collection's `load()` / `loadMissing()` work the
-same way.
+`withOnly()`, a model's `load()` / `loadMissing()` and an Eloquent collection's
+`load()` / `loadMissing()` work the same way.
 
 #### Where it stops
 
