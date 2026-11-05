@@ -20,4 +20,9 @@ function test(Collection $ids): void
     DB::table('users')->orWhereIntegerNotInRaw('id', $ids);
 
     User::query()->whereIntegerInRaw('id', User::query()->pluck('id'));
+
+    User::query()->whereIntegerNotInRaw('id', [1, 2]);
+    User::query()->orWhereIntegerNotInRaw('id', [1, 2]);
+    DB::table('users')->whereIntegerNotInRaw('id', [1, 2]);
+    DB::table('users')->orWhereIntegerNotInRaw('id', [1, 2]);
 }
