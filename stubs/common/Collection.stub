@@ -21,6 +21,12 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     use EnumeratesValues;
 
     /**
+     * @param TKey $offset
+     * @return TValue
+     */
+    public function offsetGet($offset): mixed;
+
+    /**
      * Get one or a specified number of items randomly from the collection.
      *
      * @param  (callable(static<TKey, TValue>): int)|int|null  $number

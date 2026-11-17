@@ -177,6 +177,11 @@ function test(
     assertType('Illuminate\Support\Collection<int<0, 1>, App\TransactionCollection<int, App\Transaction>>', $customEloquentCollection->partition('foo'));
     assertType('Illuminate\Support\Collection<int<0, 1>, App\UserCollection>', $secondCustomEloquentCollection->partition('foo'));
     assertType('Illuminate\Support\Collection<int<0, 1>, Illuminate\Support\Collection<string, int>>', $items->partition('foo'));
+    [$passed, $failed] = $items->partition('foo');
+    assertType('Illuminate\Support\Collection<string, int>', $passed);
+    assertType('Illuminate\Support\Collection<string, int>', $failed);
+    assertType('int', $items['foo']);
+    assertType('int', $items->offsetGet('foo'));
 
     assertType('Illuminate\Support\Collection<int, App\User|int>', $collection->pad(10, 10));
     assertType('Illuminate\Support\Collection<int, App\Transaction|string>', $customEloquentCollection->pad(10, 'foo'));
