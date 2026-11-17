@@ -10,6 +10,7 @@ use CalebDW\PhpstanLaravel\Reflection\SimpleParameterReflection;
 use CalebDW\PhpstanLaravel\Support\BuilderHelper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\FunctionVariant;
@@ -118,9 +119,9 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
             return $reflection;
         }
 
-        $returnType = $reflection->getVariants()[0]->getReturnType();
+        $returnType = $builderType->getMethod($methodName, new OutOfClassScope())->getVariants()[0]->getReturnType();
 
-        if (! $returnType instanceof ThisType) {
+        if ($returnType->equals($reflection->getVariants()[0]->getReturnType()) && ! $returnType instanceof ThisType) {
             return $reflection;
         }
 
@@ -128,7 +129,7 @@ final class ModelForwardsCallsExtension implements MethodsClassReflectionExtensi
             $reflection->getName(),
             $reflection->getDeclaringClass(),
             $reflection->getVariants()[0]->getParameters(),
-            $returnType->getStaticObjectType(),
+            $returnType instanceof ThisType ? $returnType->getStaticObjectType() : $returnType,
             $reflection->getVariants()[0]->isVariadic(),
         );
     }

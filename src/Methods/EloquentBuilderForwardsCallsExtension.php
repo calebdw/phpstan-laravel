@@ -82,19 +82,24 @@ final class EloquentBuilderForwardsCallsExtension implements MethodsClassReflect
                 return false;
             }
 
-            $ref = $this->reflectionProvider->getClass(SoftDeletes::class)->getMethod($methodName, new OutOfClassScope());
+            $ref            = $this->reflectionProvider->getClass(SoftDeletes::class)->getMethod($methodName, new OutOfClassScope());
+            $declaringClass = $classReflection;
 
             if ($methodName === 'restore') {
                 $returnType = new IntegerType();
             } elseif ($methodName === 'restoreOrCreate' || $methodName === 'createOrRestore') {
-                $returnType = $modelType;
+                $creationMethod = $methodName === 'restoreOrCreate' ? 'firstOrCreate' : 'createOrFirst';
+                $creation       = $classReflection->getNativeMethod($creationMethod);
+                $declaringClass = $creation->getDeclaringClass();
+                $returnType     = $creation->getResolvedPhpDoc()?->getReturnTag()?->getType()
+                    ?? $creation->getVariants()[0]->getReturnType();
             } else {
                 $returnType = new ThisType($classReflection);
             }
 
             return new EloquentBuilderMethodReflection(
                 $methodName,
-                $classReflection,
+                $declaringClass,
                 $ref->getVariants()[0]->getParameters(),
                 $returnType,
                 $ref->getVariants()[0]->isVariadic(),
