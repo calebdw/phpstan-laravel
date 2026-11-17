@@ -6,6 +6,7 @@ namespace CalebDW\PhpstanLaravel\Support;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use DateTimeInterface;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Database\Eloquent\CastsInboundAttributes;
@@ -173,8 +174,7 @@ final class ModelCastHelper
             'object' => new ObjectType(stdClass::class),
             'array', 'json' => new ArrayType(new BenevolentUnionType([new IntegerType(), new StringType()]), new MixedType()),
             'collection' => new ObjectType(Collection::class),
-            'date', 'datetime' => $this->getDateType(),
-            'immutable_date', 'immutable_datetime' => new ObjectType(CarbonImmutable::class),
+            'date', 'datetime', 'immutable_date', 'immutable_datetime' => $this->getDateWritableType(),
             AsArrayObject::class, AsCollection::class,
             AsEncryptedArrayObject::class, AsEncryptedCollection::class,
             AsEnumArrayObject::class, AsEnumCollection::class => new MixedType(),
@@ -236,6 +236,11 @@ final class ModelCastHelper
         }
 
         return new MixedType();
+    }
+
+    public function getDateWritableType(): Type
+    {
+        return TypeCombinator::union(new ObjectType(DateTimeInterface::class), new StringType(), new IntegerType(), new FloatType());
     }
 
     public function getDateType(): Type
