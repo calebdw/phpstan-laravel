@@ -12,4 +12,9 @@ class CorrectValueFunctionCall
             return 'foo';
         });
     }
+
+    public function namedArguments(): string
+    {
+        return value(number: 1, value: fn ($v) => (string) $v);
+    }
 }

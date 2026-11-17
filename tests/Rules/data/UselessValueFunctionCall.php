@@ -17,4 +17,9 @@ class UselessValueFunctionCall
 
         return $value('foo');
     }
+
+    public function namedArguments(): string
+    {
+        return value(number: 1, value: 'bar');
+    }
 }

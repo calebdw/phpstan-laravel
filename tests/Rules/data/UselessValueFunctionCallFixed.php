@@ -17,4 +17,9 @@ class UselessValueFunctionCall
 
         return 'foo';
     }
+
+    public function namedArguments(): string
+    {
+        return 'bar';
+    }
 }

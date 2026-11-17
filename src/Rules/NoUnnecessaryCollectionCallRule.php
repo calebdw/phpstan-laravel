@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Rules;
 
 use CalebDW\PhpstanLaravel\Properties\ModelPropertyExtension;
+use CalebDW\PhpstanLaravel\Support\CallHelper;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -108,6 +109,7 @@ final class NoUnnecessaryCollectionCallRule implements Rule
         array $onlyMethods,
         #[AutowiredParameter(ref: '%laravel.rules.unnecessaryCollectionCall.except%')]
         array $excludeMethods,
+        private CallHelper $callHelper,
     ) {
         $allMethods = array_merge(
             self::RISKY_METHODS,
@@ -215,8 +217,7 @@ final class NoUnnecessaryCollectionCallRule implements Rule
      */
     protected function firstArgIsDatabaseColumn(StaticCall|MethodCall $node, Scope $scope): bool
     {
-        /** @var Arg[] $args */
-        $args = $node->args;
+        $args = $this->callHelper->arguments($node, $scope) ?? [];
         if (count($args) === 0 || ! ($args[0]->value instanceof String_)) {
             return false;
         }

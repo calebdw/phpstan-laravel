@@ -24,7 +24,6 @@ use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 
 use function array_keys;
-use function count;
 use function sprintf;
 
 /**
@@ -80,16 +79,16 @@ final class ConfigAccessorRule implements MultipleNodeTypesRule
             return [];
         }
 
-        $args = $node->getArgs();
+        $arg = $node->getArg('key', 0);
 
-        if (count($args) === 0) {
+        if ($arg === null) {
             return [];
         }
 
         $errors = [];
 
         foreach ($this->callHelper->matchingNames($node, $scope, array_keys(self::REQUIREMENTS)) as $method) {
-            foreach ($this->typeHelper->constantStrings($scope->getType($args[0]->value)) as $key) {
+            foreach ($this->typeHelper->constantStrings($scope->getType($arg->value)) as $key) {
                 $type = $this->configHelper->getKeyType($key, $scope);
 
                 // A key neither the container nor the parser knows about could

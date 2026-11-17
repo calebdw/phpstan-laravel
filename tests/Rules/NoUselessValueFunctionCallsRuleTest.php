@@ -32,6 +32,7 @@ class NoUselessValueFunctionCallsRuleTest extends RuleTestCase
             [
                 ["Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything", 11],
                 ["Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything", 18],
+                ["Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything", 23],
             ],
         );
     }

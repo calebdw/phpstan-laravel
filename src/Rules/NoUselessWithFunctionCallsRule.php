@@ -13,8 +13,6 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
-use function count;
-
 /** @implements Rule<FuncCall> */
 #[RegisteredRule(level: 0)]
 final class NoUselessWithFunctionCallsRule implements Rule
@@ -35,17 +33,18 @@ final class NoUselessWithFunctionCallsRule implements Rule
             return [];
         }
 
-        $args = $node->getArgs();
+        $value    = $node->getArg('value', 0);
+        $callback = $node->getArg('callback', 1);
 
-        if ($args === []) {
+        if ($value === null) {
             return [];
         }
 
-        if (count($args) > 1 && $scope->getType($args[1]->value)->isCallable()->no() === false) {
+        if ($callback !== null && $scope->getType($callback->value)->isCallable()->no() === false) {
             return [];
         }
 
-        $message = count($args) === 1
+        $message = $callback === null
             ? "Calling the helper function 'with()' with only one argument simply returns the value itself. If you want to chain methods on a construct, use '(new ClassName())->foo()' instead"
             : "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything";
 
@@ -53,7 +52,7 @@ final class NoUselessWithFunctionCallsRule implements Rule
             RuleErrorBuilder::message($message)
                 ->line($node->getStartLine())
                 ->identifier('laravel.uselessConstructs.with')
-                ->fixNode($node, static fn () => $args[0]->value)
+                ->fixNode($node, static fn () => $value->value)
                 ->build(),
         ];
     }

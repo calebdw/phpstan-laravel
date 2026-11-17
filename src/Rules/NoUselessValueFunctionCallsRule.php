@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CalebDW\PhpstanLaravel\Rules;
 
 use CalebDW\PhpstanLaravel\Support\CallHelper;
+use Closure;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
@@ -12,8 +13,7 @@ use PHPStan\DependencyInjection\RegisteredRule;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\ClosureType;
-use PHPStan\Type\MixedType;
+use PHPStan\Type\ObjectType;
 
 /** @implements Rule<FuncCall> */
 #[RegisteredRule(level: 0)]
@@ -35,13 +35,13 @@ final class NoUselessValueFunctionCallsRule implements Rule
             return [];
         }
 
-        $args = $node->getArgs();
+        $arg = $node->getArg('value', 0);
 
-        if ($args === []) {
+        if ($arg === null) {
             return [];
         }
 
-        if ($scope->getType($args[0]->value)->isSuperTypeOf(new ClosureType([], new MixedType(), true))->no() === false) {
+        if (! (new ObjectType(Closure::class))->isSuperTypeOf($scope->getType($arg->value))->no()) {
             return [];
         }
 
@@ -49,7 +49,7 @@ final class NoUselessValueFunctionCallsRule implements Rule
             RuleErrorBuilder::message("Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything")
                 ->line($node->getStartLine())
                 ->identifier('laravel.uselessConstructs.value')
-                ->fixNode($node, static fn () => $args[0]->value)
+                ->fixNode($node, static fn () => $arg->value)
                 ->build(),
         ];
     }

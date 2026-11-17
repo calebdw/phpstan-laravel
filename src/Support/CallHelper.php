@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CalebDW\PhpstanLaravel\Support;
 
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\FuncCall;
@@ -13,8 +14,10 @@ use PhpParser\Node\Expr\NullsafeMethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
@@ -93,6 +96,37 @@ final class CallHelper
     public function isCalledOn(MethodCall|New_|NullsafeMethodCall|StaticCall $node, Scope $scope, string|array $classes): bool
     {
         return $this->typeHelper->isCalledOn($this->receiverType($node, $scope), $classes);
+    }
+
+    /** @return list<Arg>|null */
+    public function arguments(CallLike $node, Scope $scope): array|null
+    {
+        if ($node->isFirstClassCallable()) {
+            return null;
+        }
+
+        $args = $node->getArgs();
+
+        if (collect($args)->every(static fn ($a) => $a->name === null)) {
+            return array_values($args);
+        }
+
+        if ($node instanceof FuncCall && $node->name instanceof Name && $this->reflectionProvider->hasFunction($node->name, $scope)) {
+            $reflection = $this->reflectionProvider->getFunction($node->name, $scope);
+        } elseif (($node instanceof MethodCall || $node instanceof NullsafeMethodCall || $node instanceof StaticCall) && $node->name instanceof Identifier) {
+            $reflection = $scope->getMethodReflection($this->receiverType($node, $scope), $node->name->toString());
+        } else {
+            return null;
+        }
+
+        if ($reflection === null) {
+            return null;
+        }
+
+        return ArgumentsNormalizer::reorderArgs(
+            ParametersAcceptorSelector::selectFromArgs($scope, $args, $reflection->getVariants(), $reflection->getNamedArgumentsVariants()),
+            $args,
+        );
     }
 
     public function receiverType(MethodCall|New_|NullsafeMethodCall|StaticCall $node, Scope $scope): Type

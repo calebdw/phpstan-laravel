@@ -78,3 +78,9 @@ function testNonConstantKey(string $key): void
 {
     Config::string($key);
 }
+
+function namedArguments(Repository $config): void
+{
+    Config::string(default: 'fallback', key: 'auth.password_timeout');
+    $config->integer(default: 0, key: 'auth.defaults.guard');
+}

@@ -34,4 +34,9 @@ class UselessWithFunctionCall
     {
         return 'foo';
     }
+
+    public function namedArguments(): string
+    {
+        return 'baz';
+    }
 }

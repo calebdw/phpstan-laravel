@@ -26,4 +26,9 @@ class CorrectWithFunctionCall
             return strtoupper($bar);
         });
     }
+
+    public function namedArguments(): string
+    {
+        return with(callback: 'strtoupper', value: 'foo');
+    }
 }

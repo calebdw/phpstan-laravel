@@ -34,6 +34,8 @@ class ConfigAccessorRuleTest extends RuleTestCase
             ["Config key 'auth.defaults.guard' is string, but 'integer' requires an integer.", 63],
             ["Config key 'auth.password_timeout' is int, but 'float' requires a float.", 68],
             ["Config key 'auth.defaults.guard' is string, but 'boolean' requires a boolean.", 74],
+            ["Config key 'auth.password_timeout' is int, but 'string' requires a string.", 84],
+            ["Config key 'auth.defaults.guard' is string, but 'integer' requires an integer.", 85],
         ]);
     }
 

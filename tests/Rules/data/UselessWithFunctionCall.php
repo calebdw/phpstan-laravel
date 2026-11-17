@@ -34,4 +34,9 @@ class UselessWithFunctionCall
     {
         return ('with')('foo');
     }
+
+    public function namedArguments(): string
+    {
+        return with(callback: null, value: 'baz');
+    }
 }

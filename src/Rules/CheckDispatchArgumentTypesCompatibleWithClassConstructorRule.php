@@ -19,7 +19,8 @@ use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\TrinaryLogic;
 
-use function array_shift;
+use function array_filter;
+use function array_values;
 use function count;
 use function in_array;
 use function sprintf;
@@ -84,13 +85,12 @@ final class CheckDispatchArgumentTypesCompatibleWithClassConstructorRule impleme
             return [];
         }
 
-        if (in_array($methodName, ['dispatchIf', 'dispatchUnless'], true)) {
-            if ($node->getArgs() === []) {
-                return []; // Handled by other rules
-            }
+        $condition = null;
 
-            $firstArgType = $scope->getType($node->getArgs()[0]->value);
-            if (! $firstArgType->isBoolean()->yes()) {
+        if (in_array($methodName, ['dispatchIf', 'dispatchUnless'], true)) {
+            $condition = $node->getArg('boolean', 0);
+
+            if ($condition === null || ! $scope->getType($condition->value)->isBoolean()->yes()) {
                 return []; // Handled by other rules
             }
         }
@@ -100,9 +100,8 @@ final class CheckDispatchArgumentTypesCompatibleWithClassConstructorRule impleme
         $classDisplayName = str_replace('%', '%%', $jobClassReflection->getDisplayName());
 
         // Special case because these methods have another parameter as first argument.
-        if (in_array($methodName, ['dispatchIf', 'dispatchUnless'], true)) {
-            $args = $node->getArgs();
-            array_shift($args);
+        if ($condition !== null) {
+            $args = array_values(array_filter($node->getArgs(), static fn ($a) => $a !== $condition));
             $node = (new BuilderFactory())->staticCall($node->class, $node->name, $args);
         }
 
