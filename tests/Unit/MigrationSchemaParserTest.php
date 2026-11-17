@@ -218,6 +218,8 @@ class MigrationSchemaParserTest extends PHPStanTestCase
                         $table->id();
                         $table->foreignIdFor(User::class, ColumnConstants::CREATED_BY);
                         $table->foreignIdFor(User::class);
+                        $table->foreignUuidFor(User::class, 'reviewer_uuid');
+                        $table->foreignUlidFor(User::class, 'owner_ulid')->nullable();
                     });
                 }
             }
@@ -227,7 +229,10 @@ class MigrationSchemaParserTest extends PHPStanTestCase
 
         $table = $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables['notes'];
 
-        self::assertSame(['id', 'created_by', 'user_id'], array_keys($table->columns));
+        self::assertSame(['id', 'created_by', 'user_id', 'reviewer_uuid', 'owner_ulid'], array_keys($table->columns));
+        self::assertSame('string', $table->columns['reviewer_uuid']->readableType);
+        self::assertSame('string', $table->columns['owner_ulid']->readableType);
+        self::assertTrue($table->columns['owner_ulid']->nullable);
     }
 
     #[Test]

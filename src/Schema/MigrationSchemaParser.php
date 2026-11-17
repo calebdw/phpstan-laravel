@@ -57,6 +57,8 @@ final class MigrationSchemaParser
      */
     private const array MODEL_KEYED_METHODS = [
         'foreignIdFor',
+        'foreignUuidFor',
+        'foreignUlidFor',
         'dropForeignIdFor',
         'dropConstrainedForeignIdFor',
     ];
@@ -442,15 +444,20 @@ final class MigrationSchemaParser
                     ? $model->getForeignKey()
                     : $this->resolveName($secondArg) ?? $model->getForeignKey();
 
-                if ($firstMethodCall->name->name !== 'foreignIdFor') {
+                if (in_array($firstMethodCall->name->name, ['dropForeignIdFor', 'dropConstrainedForeignIdFor'], true)) {
                     $table->dropColumn($columnName);
 
                     continue;
                 }
 
-                $type = $this->modelSchema->hasModelColumn($model, $model->getKeyName())
-                    ? $this->modelSchema->getModelColumn($model, $model->getKeyName())->readableType
-                    : 'int';
+                $type = 'string';
+
+                if ($firstMethodCall->name->name === 'foreignIdFor') {
+                    $type = $this->modelSchema->hasModelColumn($model, $model->getKeyName())
+                        ? $this->modelSchema->getModelColumn($model, $model->getKeyName())->readableType
+                        : 'int';
+                }
+
                 $table->setColumn(new Column($columnName, $type, $nullable));
 
                 continue;
