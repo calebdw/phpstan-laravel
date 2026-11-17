@@ -25,4 +25,7 @@ trait HasAttributes
      * @return list<string>
      */
     public function getMutatedAttributes();
+
+    /** @return array<string, mixed> */
+    protected function getArrayableAttributes();
 }
