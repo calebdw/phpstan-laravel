@@ -134,6 +134,9 @@ function test(?int $value = 0, int|\Closure $intOrClosure = 0, int|\Closure $int
 
     assertType('Illuminate\Support\Stringable', str('foo'));
     assertType('object', str());
+    assertType('non-empty-string', base_path('composer.json'));
+    assertType('string', base_path());
+    assertType('string', base_path(''));
 
     assertType("'Laravel'", Str::replace('foo', 'bar', 'Laravel'));
     assertType("array{'Laravel', 'Framework'}", Str::replace('foo', 'bar', ['Laravel', 'Framework']));

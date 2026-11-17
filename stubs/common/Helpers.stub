@@ -86,6 +86,12 @@ function session($key = null, $default = null) {}
 function url($path = null, $parameters = [], $secure = null) {}
 
 /**
+ * @param string $path
+ * @return ($path is non-empty-string ? non-empty-string : string)
+ */
+function base_path($path = '') {}
+
+/**
  * @template TValue
  * @template TDefault
  *
