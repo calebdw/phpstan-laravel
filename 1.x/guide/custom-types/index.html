@@ -1640,9 +1640,9 @@ resolve once their types are known.</p>
 <p>The <code>eager-load-of&lt;Model, TRelations&gt;</code> type is the <code>with()</code> argument with each
 closure typed by its key: the closure under <code>'posts'</code> receives
 <code>relation-of&lt;Model, 'posts'&gt;</code>. The builder's <code>with()</code> / <code>withOnly()</code> and the
-Eloquent collection's <code>load()</code> / <code>loadMissing()</code> bind <code>TRelations</code> to their
-argument with a template, whose bound checks the argument. A wrapper does the
-same:</p>
+<code>load()</code> / <code>loadMissing()</code> of a model and of an Eloquent collection bind
+<code>TRelations</code> to their argument with a template, whose bound checks the argument.
+A wrapper does the same:</p>
 <div class="language-php highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="sd">/**</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="sd"> * @template TRelations of array&lt;array-key, array&lt;mixed&gt;|\Closure|string&gt;|string</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="sd"> * @param eager-load-of&lt;\App\User, TRelations&gt; $relations</span>
