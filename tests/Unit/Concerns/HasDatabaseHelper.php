@@ -75,6 +75,7 @@ trait HasDatabaseHelper
                 self::getContainer()->getByType(PHPStanFileHelper::class),
             ),
             $this->getSqlSchemaHelper($driver),
+            self::getContainer()->getByType(ContainerHelper::class),
             $scan,
         );
     }

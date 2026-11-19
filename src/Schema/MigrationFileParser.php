@@ -15,6 +15,8 @@ use PHPStan\Reflection\InitializerExprTypeResolver;
 use PHPStan\Reflection\ReflectionProvider;
 use SplFileInfo;
 
+use function array_keys;
+use function str_replace;
 use function uasort;
 
 #[AutowiredService]
@@ -49,7 +51,8 @@ final class MigrationFileParser
         $this->databaseMigrationPath = [$currentWorkingDirectory . '/database/migrations'];
     }
 
-    public function parseMigrations(ModelSchema &$modelSchema): void
+    /** @param array<string, array<string, true>> $ranMigrations */
+    public function parseMigrations(ModelSchema &$modelSchema, array $ranMigrations = []): void
     {
         $schemaParser = new MigrationSchemaParser(
             $modelSchema,
@@ -59,9 +62,23 @@ final class MigrationFileParser
             $this->sqlSchemaHelper,
         );
 
+        $connectionsByMigration = [];
+
+        foreach ($ranMigrations as $connection => $migrations) {
+            foreach (array_keys($migrations) as $migration) {
+                $connectionsByMigration[$migration][$connection] = true;
+            }
+        }
+
         foreach ($this->files() as $file) {
+            // Match Migrator::getMigrationName(), which strips every `.php`.
+            $migration = str_replace('.php', '', $file->getFilename());
+
             try {
-                $schemaParser->addStatements($this->parser->parseFile($file->getPathname()));
+                $schemaParser->addStatements(
+                    $this->parser->parseFile($file->getPathname()),
+                    $connectionsByMigration[$migration] ?? [],
+                );
             } catch (ParserErrorsException) {
                 continue;
             }

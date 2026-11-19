@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use CalebDW\PhpstanLaravel\Schema\ModelSchema;
 use CalebDW\PhpstanLaravel\Schema\SchemaDumpParser;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserFailure;
 use CalebDW\PhpstanLaravel\Schema\Sql\SqlParserManager;
+use CalebDW\PhpstanLaravel\Support\ContainerHelper;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -235,6 +237,101 @@ class SquashedMigrationHelperTest extends PHPStanTestCase
             static fn ($c) => $c->readableType,
             $this->modelDatabaseHelper->connections[$this->defaultConnection]->tables['counters']->columns,
         );
+    }
+
+    /**
+     * Laravel loads the dump and then runs only the migrations missing from
+     * the `migrations` table it carries, so a migration the dump already ran
+     * must not be replayed over it.
+     *
+     * The foo statements are their own migration. Folded into the one that
+     * also alters the default connection, `migrate --database=foo` would
+     * apply both to foo.
+     */
+    #[Test]
+    public function it_skips_the_migrations_the_dump_has_already_run(): void
+    {
+        $schema = new ModelSchema(
+            $this->getSquashedMigrationHelper([__DIR__ . '/data/dump_with_ran_migrations/schema']),
+            $this->getMigrationHelper([__DIR__ . '/data/dump_with_ran_migrations/migrations']),
+            self::getContainer()->getByType(ContainerHelper::class),
+        );
+
+        $schema->ensureInitialized();
+
+        $columns = $schema->connections['mysql']->tables['dump_posts']->columns;
+
+        $this->assertSame(['id', 'title', 'status', 'body'], array_keys($columns));
+        $this->assertSame('string', $columns['body']->readableType);
+
+        $tables = $schema->connections['foo']->tables;
+        $this->assertSame('int', $tables['dump_posts']->columns['body']->readableType);
+        $this->assertArrayNotHasKey('obsolete_posts', $tables);
+    }
+
+    #[Test]
+    public function it_reads_postgres_copy_from_a_configured_migration_table(): void
+    {
+        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_POSTGRES);
+
+        $container = self::getContainer()->getByType(ContainerHelper::class);
+        $config    = $container->getConfigRepository();
+        self::assertNotNull($config);
+
+        $settings = [
+            'database.default' => 'pgsql',
+            'database.migrations' => ['table' => 'audit log.history'],
+            'database.connections.pgsql' => ['driver' => 'pgsql', 'prefix' => 'app_'],
+        ];
+        $original = $config->getMany(array_keys($settings));
+        $config->set($settings);
+
+        try {
+            $schema = new ModelSchema(
+                $this->getSquashedMigrationHelper([__DIR__ . '/data/schema/postgres_with_ran_migrations'], driver: SqlParserManager::DRIVER_POSTGRES),
+                $this->getMigrationHelper([__DIR__ . '/data/dump_with_ran_migrations/migrations']),
+                $container,
+            );
+
+            $schema->ensureInitialized();
+
+            $this->assertSame(['id', 'title', 'status', 'body'], array_keys($schema->connections['pgsql']->tables['dump_posts']->columns));
+        } finally {
+            $config->set($original);
+        }
+    }
+
+    #[Test]
+    public function it_reads_postgres_copy_from_the_default_migration_table(): void
+    {
+        $this->skipUnlessParserInstalled(SqlParserManager::DRIVER_POSTGRES);
+
+        $container = self::getContainer()->getByType(ContainerHelper::class);
+        $config    = $container->getConfigRepository();
+        self::assertNotNull($config);
+
+        $settings = [
+            'database.default' => 'pgsql',
+            'database.migrations' => 'migrations',
+            'database.connections.pgsql' => ['driver' => 'pgsql'],
+        ];
+        $original = $config->getMany(array_keys($settings));
+        $config->set($settings);
+
+        try {
+            $schema = new ModelSchema(
+                $this->getSquashedMigrationHelper([__DIR__ . '/data/schema/postgres_default_copy'], driver: SqlParserManager::DRIVER_POSTGRES),
+                $this->getMigrationHelper([__DIR__ . '/data/dump_with_ran_migrations/migrations']),
+                $container,
+            );
+
+            $schema->ensureInitialized();
+
+            $this->assertSame(['id', 'title', 'status', 'body'], array_keys($schema->connections['pgsql']->tables['dump_posts']->columns));
+            $this->assertSame('string', $schema->connections['pgsql']->tables['dump_posts']->columns['body']->readableType);
+        } finally {
+            $config->set($original);
+        }
     }
 
     #[Test]

@@ -115,4 +115,27 @@ class SchemaCacheTest extends PHPStanTestCase
             $cacheDirectory,
         );
     }
+
+    #[Test]
+    public function changing_the_migration_table_changes_the_input_hash(): void
+    {
+        $config = self::getContainer()->getByType(ContainerHelper::class)->getConfigRepository();
+        self::assertNotNull($config);
+
+        $cache = new SchemaCache(
+            $this->getMigrationHelper(),
+            $this->getSquashedMigrationHelper([__DIR__ . '/data/dump_with_ran_migrations/schema']),
+            $this->directory,
+        );
+
+        $original = $config->get('database.migrations');
+        $hash     = $cache->inputHash();
+        $config->set('database.migrations', 'another_history_table');
+
+        try {
+            self::assertNotSame($hash, $cache->inputHash());
+        } finally {
+            $config->set('database.migrations', $original);
+        }
+    }
 }

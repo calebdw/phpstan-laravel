@@ -120,16 +120,22 @@ final class MigrationSchemaParser
             ->yes();
     }
 
-    /** @param  array<int, Stmt> $stmts */
-    public function addStatements(array $stmts): void
+    /**
+     * @param array<int, Stmt>    $stmts
+     * @param array<string, true> $dumpedConnections
+     */
+    public function addStatements(array $stmts, array $dumpedConnections = []): void
     {
         foreach ($this->nodeFinder->findInstanceOf($stmts, Class_::class) as $stmt) {
-            $this->addClassStatements($stmt->stmts);
+            $this->addClassStatements($stmt->stmts, $dumpedConnections);
         }
     }
 
-    /** @param  array<int, Stmt> $stmts */
-    private function addClassStatements(array $stmts): void
+    /**
+     * @param array<int, Stmt>    $stmts
+     * @param array<string, true> $dumpedConnections
+     */
+    private function addClassStatements(array $stmts, array $dumpedConnections): void
     {
         $connectionName = null;
 
@@ -156,14 +162,17 @@ final class MigrationSchemaParser
                 continue;
             }
 
-            $this->addUpMethodStatements($stmt->stmts);
+            $this->addUpMethodStatements($stmt->stmts, $dumpedConnections);
         }
 
         array_pop($this->connectionStack);
     }
 
-    /** @param  Stmt[] $stmts */
-    private function addUpMethodStatements(array $stmts): void
+    /**
+     * @param Stmt[]              $stmts
+     * @param array<string, true> $dumpedConnections
+     */
+    private function addUpMethodStatements(array $stmts, array $dumpedConnections): void
     {
         $schemaVariables = [];
 
@@ -220,12 +229,15 @@ final class MigrationSchemaParser
             ) {
                 $statement = $stmt->expr;
             } else {
-                $this->addDatabaseStatement($stmt->expr);
+                $this->addDatabaseStatement($stmt->expr, $dumpedConnections);
 
                 continue;
             }
 
-            if (! $statement->name instanceof Identifier) {
+            if (
+                ! $statement->name instanceof Identifier
+                || isset($dumpedConnections[$connection ?? $this->getCurrentConnection()->name])
+            ) {
                 continue;
             }
 
@@ -249,7 +261,8 @@ final class MigrationSchemaParser
         }
     }
 
-    private function addDatabaseStatement(Expr $expression): void
+    /** @param array<string, true> $dumpedConnections */
+    private function addDatabaseStatement(Expr $expression, array $dumpedConnections): void
     {
         if (
             (! $expression instanceof StaticCall && ! $expression instanceof MethodCall)
@@ -289,6 +302,10 @@ final class MigrationSchemaParser
             } elseif ($name !== null && (! $name instanceof ConstFetch || strtolower($name->name->toString()) !== 'null')) {
                 return;
             }
+        }
+
+        if (isset($dumpedConnections[$connection->name])) {
+            return;
         }
 
         try {

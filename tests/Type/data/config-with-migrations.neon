@@ -4,3 +4,6 @@ parameters:
     laravel:
         migrationDirectories:
             - %rootDir%/../../../tests/application/database/migrations
+            - %rootDir%/../../../tests/Unit/data/dump_with_ran_migrations/migrations
+        schemaDirectories:
+            - %rootDir%/../../../tests/Unit/data/dump_with_ran_migrations/schema
