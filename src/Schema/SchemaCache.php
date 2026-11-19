@@ -24,6 +24,7 @@ use function ksort;
 use function mkdir;
 use function rename;
 use function sprintf;
+use function str_starts_with;
 use function unlink;
 use function var_export;
 
@@ -59,6 +60,10 @@ final class SchemaCache
         ksort($files);
 
         foreach ($files as $identity => $file) {
+            if (str_starts_with($identity, 'schema:')) {
+                hash_update($context, 'migration-table:' . $this->schemaDumpParser->migrationTable($file) . "\0");
+            }
+
             $digest = @hash_file('xxh128', $file->getPathname());
 
             hash_update($context, sprintf(

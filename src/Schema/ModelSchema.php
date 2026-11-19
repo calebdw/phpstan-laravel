@@ -125,8 +125,8 @@ final class ModelSchema
 
     private function parseSchema(): void
     {
-        $this->schemaDumpParser->parseSchemaDumps($this);
-        $this->migrationFileParser->parseMigrations($this);
+        $ranMigrations = $this->schemaDumpParser->parseSchemaDumps($this);
+        $this->migrationFileParser->parseMigrations($this, $ranMigrations);
     }
 
     public function getDefaultConnection(): string
